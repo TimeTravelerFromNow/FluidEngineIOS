@@ -45,6 +45,8 @@ extension Renderer: MTKViewDelegate{
     }
     
     func draw(in view: MTKView) {
+        updateScreenSize(view: view)
+
         GameTime.UpdateTime( 1 / Float(view.preferredFramesPerSecond))
         SceneManager.update(GameTime.DeltaTime)
         

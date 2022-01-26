@@ -175,9 +175,12 @@ class Mesh {
         
         var mtkMeshes: [MTKMesh] = []
         for mdlMesh in mdlMeshes {
-            mdlMesh.addTangentBasis(forTextureCoordinateAttributeNamed: MDLVertexAttributeTextureCoordinate,
-                                    tangentAttributeNamed: MDLVertexAttributeTangent,
-                                    bitangentAttributeNamed: MDLVertexAttributeBitangent)
+            // originally, (a little different than MacOS)
+//            mdlMesh.addTangentBasis(forTextureCoordinateAttributeNamed: MDLVertexAttributeTextureCoordinate,
+//                                    tangentAttributeNamed: MDLVertexAttributeTangent,
+//                                    bitangentAttributeNamed: MDLVertexAttributeBitangent)
+            mdlMesh.addAttribute(withName: MDLVertexAttributeTextureCoordinate, format: MDLVertexFormat.float2   )
+            mdlMesh.addAttribute(withName: MDLVertexAttributeTangent, format: MDLVertexFormat.float2)
             mdlMesh.vertexDescriptor = descriptor
             do{
                 let mtkMesh = try MTKMesh(mesh: mdlMesh, device: Engine.Device)
@@ -329,7 +332,7 @@ class Submesh {
     private func createIndexBuffer() {
         if(_indices.count > 0) {
             _indexBuffer = Engine.Device.makeBuffer(bytes: _indices,
-                                                    length: UInt32.Stride(_indices.count),
+                                                    length: UInt32.stride(_indices.count),
                                                     options: [])
         }
     }

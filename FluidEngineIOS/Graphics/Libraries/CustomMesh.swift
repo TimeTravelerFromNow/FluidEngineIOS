@@ -60,7 +60,7 @@ class CustomMesh {
                                                  options: [])
         
         _indexBuffer = Engine.Device.makeBuffer(bytes: _indices,
-                                                length: UInt32.Stride(self._indices.count),
+                                                length: uint32.stride(self._indices.count),
                                                 options: [])
     }
     

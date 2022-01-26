@@ -19,6 +19,7 @@ extension sizeable{
     }
 }
 
+typealias uint32 = UInt32
 typealias half2  = SIMD2<Float32>
 typealias float2 = SIMD2<Float>
 typealias float3 = SIMD3<Float>
@@ -28,7 +29,7 @@ typealias int2 = SIMD2<Int32>
 
 extension Vector2D: sizeable { }
 extension Bool: sizeable { }
-extension UInt32: sizeable { }
+extension uint32: sizeable { }
 extension Int32: sizeable { }
 extension Float: sizeable { }
 extension float2: sizeable { }
