@@ -1,20 +1,30 @@
 import Foundation
 
 
-var MyGameLevels = [  level0, level1 ]
+var MyGameLevels: [StartingColorState] = [  level0, level1 ]
 
-let level0: [ [TubeColors] ] =
+
+struct StartingColorState {
+    let linearColors: [ [TubeColors] ]!
+    let rows: Int!
+    let columns: Int!
+}
+// linear representations, convert to matrix at runtime.
+let level0 = StartingColorState( linearColors:
     [
         
             [ .Blue, .Red, .Green, .Red],
             [  .Green, .Red, .Blue, .Empty ],
             [  .Red, .Empty, .Empty, .Empty],
         [ .Empty, .Empty, .Empty, .Empty],
-        [ .Red, .Red, .Red, .Red]
+        [ .Red, .Red, .Red, .Red],
+        []
         
     ]
+                                , rows: 2, columns: 3)
 
-let level1: [ [TubeColors] ] =
+
+let level1 = StartingColorState( linearColors:
     [
         
             [ .Blue, .Red, .Green, .Red],
@@ -26,3 +36,4 @@ let level1: [ [TubeColors] ] =
 
         
     ]
+    , rows: 2, columns: 3)

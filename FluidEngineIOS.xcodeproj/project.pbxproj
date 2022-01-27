@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		922ED14D27A23F5400DFA367 /* Matrix.swift in Sources */ = {isa = PBXBuildFile; fileRef = 922ED14C27A23F5400DFA367 /* Matrix.swift */; };
 		923F2B4627A0FC5A00443936 /* Renderer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 923F2B4527A0FC5A00443936 /* Renderer.swift */; };
 		923F2B5127A0FCD900443936 /* LiquidFun.mm in Sources */ = {isa = PBXBuildFile; fileRef = 923F2B4927A0FCD900443936 /* LiquidFun.mm */; };
 		923F2B5227A0FCD900443936 /* JointTest.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 923F2B4C27A0FCD900443936 /* JointTest.cpp */; };
@@ -136,6 +137,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		922ED14C27A23F5400DFA367 /* Matrix.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Matrix.swift; sourceTree = "<group>"; };
 		923F2B4527A0FC5A00443936 /* Renderer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Renderer.swift; sourceTree = "<group>"; };
 		923F2B4827A0FCD900443936 /* BridgingHeader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BridgingHeader.h; sourceTree = "<group>"; };
 		923F2B4927A0FCD900443936 /* LiquidFun.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = LiquidFun.mm; sourceTree = "<group>"; };
@@ -486,6 +488,7 @@
 		923F2BDD27A0FD8C00443936 /* Scenes */ = {
 			isa = PBXGroup;
 			children = (
+				922ED14C27A23F5400DFA367 /* Matrix.swift */,
 				923F2BDE27A0FD8C00443936 /* Scene.swift */,
 				923F2BDF27A0FD8C00443936 /* TestTubeScene.swift */,
 				923F2BE027A0FD8C00443936 /* Node.swift */,
@@ -983,6 +986,7 @@
 				923F2BD327A0FD7300443936 /* DepthStencilStates.swift in Sources */,
 				92489BA62799DA0400639B52 /* b2DistanceJoint.cpp in Sources */,
 				923F2C0627A0FDB500443936 /* OBJLoader.swift in Sources */,
+				922ED14D27A23F5400DFA367 /* Matrix.swift in Sources */,
 				92489BA12799DA0400639B52 /* b2Contact.cpp in Sources */,
 				92489BA52799DA0400639B52 /* b2FrictionJoint.cpp in Sources */,
 				92489BC52799DA0400639B52 /* b2Distance.cpp in Sources */,

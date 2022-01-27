@@ -534,20 +534,23 @@ b2PolygonShape shape;
           vertices:(void *) vertices vertexCount:(UInt32)vertexCount
           hitBoxVertices:(void *)hitBoxVertices hitBoxCount:(UInt32)hitBoxCount
           sensorVertices:(void *)sensorVertices sensorCount:(UInt32)sensorCount
-          gridId:(int)gridId {
+          row:(int)row
+          col:(int)col
+          gridId:(int)gridId{
     Tube* newTube = new Tube(world,
                              (b2ParticleSystem*) particleSysRef,
                              b2Vec2(location.x,location.y),
                              (b2Vec2*)vertices, (unsigned int)vertexCount,
                              (b2Vec2*)hitBoxVertices, (unsigned int)hitBoxCount,
                              (b2Vec2*)sensorVertices, (unsigned int)sensorCount,
+                             row,
+                             col,
                              gridId);
     tubes.push_back(newTube);
     return newTube;
 }
-//hover candidate testing
-+ (int)hoverCandidate:(void *)tube {
-    return ((Tube *)tube)->GetHoverCandidateGridId();
++ (void)destroyTube:(void *)tube {
+    ((Tube *)tube)->~Tube();
 }
 //collision
 + (bool)isColliding:(void *)tube {
@@ -574,7 +577,6 @@ b2PolygonShape shape;
 +(void)UnYieldToFill:(void *)tube {
     ((Tube *)tube)->UnYieldToFill();
 }
-+ (void)UnYieldToFill:(void *)tube;
 + (void)PickUp:(void *)tube {
     ((Tube *)tube)->StartPickup();
 }

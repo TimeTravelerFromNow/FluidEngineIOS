@@ -13,12 +13,17 @@ Tube::Tube(b2World* worldRef,
            b2Vec2* vertices, unsigned int count,
            b2Vec2* hitBoxVertices, unsigned int hitBoxCount,
            b2Vec2* sensorVertices, unsigned int sensorCount,
+           int row,
+           int col,
            int gridId) {
+    m_world = worldRef;
     gridId = gridId;
+    row = row;
+    col = col;
     m_particleSys = particleSysRef;
     b2BodyDef body1Def;
     body1Def.type = b2_kinematicBody;
-    body1Def.active = true;
+    body1Def.active = false;
     body1Def.gravityScale = 0.0;
     body1Def.position.Set(location.x, location.y);
     b2Body *body1 = worldRef->CreateBody(&body1Def);
@@ -32,7 +37,7 @@ Tube::Tube(b2World* worldRef,
     //sensor Body (must stay active to continue registering collision when the hitboxes and frame freeze.)
     b2BodyDef sensorBodyDef;
     sensorBodyDef.type = b2_dynamicBody;
-    sensorBodyDef.active = true;
+    sensorBodyDef.active = false;
     sensorBodyDef.bullet = true;
     sensorBodyDef.position.Set(location.x, location.y);
     sensorBodyDef.gravityScale = 0.0;
@@ -53,7 +58,7 @@ Tube::Tube(b2World* worldRef,
    //hitboxes
     b2BodyDef hboxBodyDef;
     hboxBodyDef.type = b2_dynamicBody;
-    hboxBodyDef.active = true;
+    hboxBodyDef.active = false;
     hboxBodyDef.gravityScale = 0.0;
     hboxBodyDef.position.Set(location.x, location.y);
     b2Body *body2 = worldRef->CreateBody(&hboxBodyDef);
@@ -87,13 +92,16 @@ Tube::Tube(b2World* worldRef,
     m_body->SetUserData(this);
     m_hboxBody->SetUserData(this);
     m_sensorBody->SetUserData(this);
-    isFrozen = false;
+    isFrozen = true;
     returningToOrigin = false;
     pickedUp = false;
     pouring = false;
     yieldToFill = true;
 }
 Tube::~Tube() {
+    m_world->DestroyBody(m_body);
+    m_world->DestroyBody(m_hboxBody);
+    m_world->DestroyBody(m_sensorBody);
 }
 //collision
 void Tube::YieldToFill() {
@@ -157,25 +165,6 @@ void Tube::PostSolve() {
         UnFreeze();
     }
     }
-}
-
-int Tube::GetHoverCandidateGridId() {
-    unsigned long collidingNum = tubesColliding.size();
-    int returnVal = -1;
-    if (collidingNum > 0) {
-    for(int i = 0; i<collidingNum; i++) {
-        if(tubesColliding[i]->returningToOrigin || tubesColliding[i]->pouring || tubesColliding[i]->pickedUp ){
-            return -1; // not viable
-        } else {
-            if(returnVal == -1) {
-                returnVal = tubesColliding[i]->gridId;
-            } else {
-                return -1; // dont want to set more than once. (overlapping, then wait until valid).
-            }
-        }
-    }
-    }
-    return returnVal;
 }
 //top cap
 void Tube::CapTop(b2Vec2* capVertices) {

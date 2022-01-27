@@ -1,5 +1,5 @@
 import MetalKit
-
+// make it possible to be empty for matrix representation.
 class TubeRep: Node {
 
     private var _selectColors : [TubeSelectColors:float3] =  [ .Selected: float3(1.0,1.0,1.0),

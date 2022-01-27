@@ -14,7 +14,9 @@
 
 class Tube {
 public:
-    int gridId;
+    int row;
+    int col;
+    int gridId; // linear unique identifier
     bool returningToOrigin;
     bool pickedUp;
     bool isFrozen;
@@ -22,6 +24,7 @@ public:
     bool yieldToFill;
     std::vector<Tube*> tubesColliding;
     b2ParticleSystem* m_particleSys;
+    b2World* m_world;
 public:
     Tube(b2World* worldRef,
          b2ParticleSystem* particleSysRef,
@@ -29,10 +32,10 @@ public:
          b2Vec2* vertices, unsigned int count,
          b2Vec2* hitBoxVertices, unsigned int hitBoxCount,
          b2Vec2* sensorVertices, unsigned int sensorCount,
+         int row,
+         int col,
          int gridId);
     ~Tube();
-    //hover candidate testing
-    int GetHoverCandidateGridId();
     //collision
     void YieldToFill();
     void UnYieldToFill();

@@ -114,7 +114,10 @@ typedef struct VertexIn {
           vertices:(void *)vertices vertexCount:(UInt32)vertexCount
           hitBoxVertices:(void *)hitBoxVertices hitBoxCount:(UInt32)hitBoxCount
           sensorVertices:(void *)sensorVertices sensorCount:(UInt32)sensorCount
+          row:(int)row
+          col:(int)col
           gridId:(int)gridId;
++ (void)destroyTube:(void *)tube;
 //hover candidate
 + (int)hoverCandidate:(void *)tube;
 //collision

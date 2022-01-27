@@ -7,7 +7,8 @@ class TestTubeScene : Scene {
     var backGroundObject = CloudsBackground()
     var fluidObject: DebugEnvironment!
 
-    var tubeGrid: [ TestTube ] = []
+    //var tubeGrid: [ TestTube ] = []
+    var tubes: TestTubeMatrix!
     
     var debugQuad: GameObject!
     
@@ -49,11 +50,13 @@ class TestTubeScene : Scene {
 
         fluidObject = DebugEnvironment()
         fluidObject.setScale(2 / (GameSettings.ptmRatio * 10) )
-        fluidObject.setPositionZ(1)
+        fluidObject.setPositionZ(2)
         
         InitializeGrid()
-        for tube in tubeGrid {
-            addChild(tube)
+        for y in 0..<tubes.rows {
+            for x in 0..<tubes.columns {
+            addChild(tubes[y,x])
+        }
         }
         addChild(fluidObject)
         addChild(backGroundObject)
@@ -71,59 +74,66 @@ class TestTubeScene : Scene {
             }
         cameras[1].setPosition(float3((Renderer.ScreenSize.x * 0.25) / (1080.0  ),(Renderer.ScreenSize.y * 0.25 ) / 1080.0,0.0) )
     }
-    var rowNum: Int = 0
-    var colNum: Int = 0
-    var xOffset : Float = 0.5
     let leftStart: Float = 0.5
+    private let _ySep : Float = 2.0
+    private let _xSep : Float = 0.8
+
+    private var _gridHeight : Float = 3.5
+    private var _gridWidth  : Float = 2.5
     private func InitializeGrid() {
-        rowNum = 0
-        colNum = 0
-        let height : Float = 3.5
-        let width  : Float = 2.5
-        let xSep : Float = 0.8
-        let ySep : Float = 2.0
-        var y : Float = height
-        
-        rowNum = Int(width / xSep)
-        let maxColNum = Int(height / ySep)
-        if tubeLevel.startingLevel.count > (rowNum * maxColNum ){
-            print("warning we will probably be out of bounds with this many tubes.")
-        }
-        for (i, tubeColors) in tubeLevel.startingLevel.enumerated() {
-            if(xOffset < width) {
-                let currentTube = TestTube(origin: float2(x:xOffset,y:y), gridId: i)
-                if tubeHeight == 0.0  {// unitiialized, then initialize
-                    self.tubeHeight = currentTube.getTubeHeight()
-                    print("initializing real tube height for collision testing")
+        let colNum = tubeLevel.startingLevel.columns
+        let rowNum = tubeLevel.startingLevel.rows
+        tubes = TestTubeMatrix(rows: rowNum,
+                               columns: colNum,
+                               defaultValue: TestTube(origin: float2(0,0), row: -1, col: -1, gridId: -1))
+        var linOff = 0
+        for y in 0..<rowNum {
+            for x in 0..<colNum {
+                if( tubeLevel.startingLevel[y,x].count > 0) {
+                    tubes[y,x] = TestTube(origin: float2(x:_xSep * Float(x) + leftStart,y:_ySep * Float(y + 1)),
+                                          row: y, col: x,
+                                          gridId: linOff)
+                    tubes[y,x].setupTube()
+                    self.addChild(tubes[y,x].sceneRepresentation)
+                    self.tubeHeight = tubes[y,x].getTubeHeight()
                 }
-                currentTube.setScale(2 / (GameSettings.ptmRatio * 10) )
-                currentTube.setPositionZ(1)
-                addChild(currentTube.sceneRepresentation)
-                tubeGrid.append(currentTube)
-                xOffset += xSep
-            } else {
-                colNum += 1
-                xOffset = leftStart
-                y -= ySep
-                let currentTube = TestTube(origin: float2(x:xOffset,y:y), gridId: i)
-                currentTube.setScale(2 / (GameSettings.ptmRatio * 10) )
-                currentTube.setPositionZ(1)
-                addChild(currentTube.sceneRepresentation)
-                tubeGrid.append(currentTube)
-                xOffset += xSep
+                linOff += 1
             }
         }
+        refillTubesToCurrentState()
     }
     //fill from bottom to top
     private var levelFilling: Int = 0
     private func refillTubesToCurrentState() {
+        tubesFilled = []
+        levelFilling = 0
+        _currentState = .Filling
+    }
+    var rowScanned: Int = 0
+    var tubesFilled: [long2] = []
+    private func refillStep(_ deltaTime: Float){
+        // fill each row until done
+        var oneFilling = false
+            for col in 0..<tubes.columns {
+                let fillPos = long2(levelFilling, col)
+                if !(tubesFilled.contains(fillPos)) {
+                    tubesFilled.append(fillPos)
+                    if tubes[fillPos.x, fillPos.y].hasInitialized {
+                        tubes[fillPos.x,fillPos.y].startFill(colors: tubeLevel.colorStates[fillPos.x,fillPos.y] )
+                }
+                }
+                oneFilling = oneFilling || tubes[fillPos.x,fillPos.y].isFilling
+            }
+            if !oneFilling {
+                if levelFilling < tubes.rows - 1 {
+                levelFilling += 1
+                } else {
+                    _currentState = .Idle
+                }
+            }
         
     }
-    private func refillStep(_ deltaTime: Float){
-        for tube in tubeGrid {
-            
-        }
-    }
+    
     private func beginEmpty() {
         tubeIsActive = false
         _emptyDuration = defaultEmptyTime
@@ -134,7 +144,7 @@ class TestTubeScene : Scene {
     private func EmptyTubesStep(_ deltaTime: Float) {
         switch _emptyKF{
         case 0: // empty evens
-            for  (i,tube) in tubeGrid.enumerated() {
+            for  (i,tube) in tubes.grid.enumerated() {
                 if (i % 2 == 0 ) {
                 tube.BeginEmpty()
                 }
@@ -147,7 +157,7 @@ class TestTubeScene : Scene {
                 nextEmptyKF()
             }
         case 2:  // empty odds
-            for  (i,tube) in tubeGrid.enumerated() {
+            for  (i,tube) in tubes.grid.enumerated() {
                 if (i % 1 == 0 ) && i != 0 {
                     
                 tube.BeginEmpty()
@@ -172,10 +182,10 @@ class TestTubeScene : Scene {
         _emptyKF += 1
     }
     
-    private func gridHitTest( windowPosition: float2, excludeDragging: Int ) -> TestTube? {
+    private func gridHitTest( windowPosition: float2, excludeDragging: long2 ) -> TestTube? {
         let boxPosition = windowPosition / GameSettings.ptmRatio
-        for tube in tubeGrid {
-            if !(tube.gridId == excludeDragging) {
+        for tube in tubes.grid {
+            if !( long2(tube.row, tube.column) == excludeDragging) {
                 let tPos = tube.getBoxPosition()
                 if( ( (-tubeDimensions.x + tPos.x)  < boxPosition.x && boxPosition.x < (tubeDimensions.x + tPos.x) ) &&
                         ( (-tubeDimensions.y + tPos.y)  < boxPosition.y && boxPosition.y < (tubeDimensions.y + tPos.y) ) ) {
@@ -189,7 +199,7 @@ class TestTubeScene : Scene {
     private func kineticHitTest( windowPosition: float2 ) -> TestTube? { // tests based on current location
         let boxPosition = windowPosition / GameSettings.ptmRatio
         print(boxPosition)
-        for tube in tubeGrid {
+        for tube in tubes.grid {
             if( ( ((-tubeDimensions.x + tube.getBoxPositionX())  < boxPosition.x) && (boxPosition.x < (tubeDimensions.x + tube.getBoxPositionX()) )) &&
                     ( ((-tubeDimensions.y + tube.getBoxPositionY())  < boxPosition.y) && (boxPosition.y < (tubeDimensions.y + tube.getBoxPositionY()) )) ) {
                         return tube
@@ -203,12 +213,15 @@ class TestTubeScene : Scene {
         var newPouringTubeColors = [TubeColors].init(repeating: .Empty, count: 4)
         var newCandidateTubeColors = [TubeColors].init(repeating: .Empty, count: 4)
 
-        (newPouringTubeColors, newCandidateTubeColors) = tubeLevel.pourTube(pouringTubeIndex: self.selectedTube!.gridId, pourCandidateIndex: self.pourCandidate!.gridId)
+        (newPouringTubeColors, newCandidateTubeColors) = tubeLevel.pourTube(
+            pourPos: long2(selectedTube!.row, selectedTube!.column),
+            candPos: long2(pourCandidate!.row, pourCandidate!.column)
+        )
         self.selectedTube!.startPouring( newPourTubeColors: newPouringTubeColors,
                                          newCandidateTubeColors: newCandidateTubeColors)
     }
     
-    func hoverSelect(_ windowPos: float2, deltaTime: Float, excludeMoving: Int) {
+    func hoverSelect(_ windowPos: float2, deltaTime: Float, excludeMoving: long2) {
         guard let tubeHovering = gridHitTest(windowPosition: windowPos, excludeDragging: excludeMoving ) else
         {
             startedHovering = false
@@ -222,7 +235,7 @@ class TestTubeScene : Scene {
             } else { startedHovering = false }
             _selectorTime -= deltaTime
             if _selectorTime < 0.0 {
-                if pourCandidate?.currentState == .Frozen {
+                if pourCandidate?.currentState == .AtRest {
                     print("Committed to pOUR!")
                     hasCommittedtoPour = true
                 pourTubes()
@@ -235,9 +248,9 @@ class TestTubeScene : Scene {
         } else {
             //logic for if a pour is possible
             pourCandidate = tubeHovering
-            let candidateIndex = pourCandidate!.gridId!
+            let candidatePosition = long2(pourCandidate!.row, pourCandidate!.column)
             
-            if !(tubeLevel.pourConflict(pouringTubeIndex: excludeMoving, pouringCandidateIndex: candidateIndex) ){
+            if !(tubeLevel.pourConflict(pourPos: excludeMoving, candPos: candidatePosition) ){
                 print("no conflict")
                 startedHovering = true
                 _selectorTime = hoverSelectTime
@@ -277,7 +290,7 @@ class TestTubeScene : Scene {
             selectedTube?.moveToCursor(touchPos)
         case .Emptying:
             var oneEmptying = false
-            for tube in tubeGrid {
+            for tube in tubes.grid {
                 oneEmptying = (tube.isEmptying || oneEmptying)
             }
             if !oneEmptying {
@@ -285,7 +298,7 @@ class TestTubeScene : Scene {
             }
         case .Filling:
             var oneFilling = false
-            for tube in tubeGrid {
+            for tube in tubes.grid {
                 oneFilling = (tube.isEmptying || oneFilling)
             }
             if !oneFilling {
@@ -300,7 +313,7 @@ class TestTubeScene : Scene {
                 _currentState = .Moving
             } else { // pour into nodeAt
                 pourCandidate = nodeAt
-                if !(tubeLevel.pourConflict(pouringTubeIndex: selectedTube?.gridId ?? -1, pouringCandidateIndex: nodeAt.gridId ) ) && (nodeAt.currentState == .AtRest){
+                if !(tubeLevel.pourConflict(pourPos: long2(selectedTube?.row ?? -1, selectedTube?.column ?? -1), candPos: long2(nodeAt.row, nodeAt.column) ) ) && (nodeAt.currentState == .AtRest){
                     pourTubes()
                     _currentState = .Idle
                 } else { // red highlights Flash
@@ -309,7 +322,7 @@ class TestTubeScene : Scene {
                 }
             }
         case .Idle:
-            guard let nodeAt = gridHitTest(windowPosition: touchPos, excludeDragging: -1) else { return }
+            guard let nodeAt = gridHitTest(windowPosition: touchPos, excludeDragging: long2(-1,1)) else { return }
             if nodeAt.currentState == .AtRest {
             selectedTube = nodeAt
             selectedTube?.select()
@@ -365,10 +378,12 @@ class TestTubeScene : Scene {
             _currentState = .Idle
     }
 //    
-//    override func update(deltaTime : Float) {
-//        super.update(deltaTime: deltaTime)
-//        backGroundObject.update(deltaTime: GameTime.DeltaTime)
-//    
+    override func update(deltaTime : Float) {
+        super.update(deltaTime: deltaTime)
+        if _currentState == .Filling {
+            refillStep(deltaTime)
+        }
+//
 //        if (Mouse.IsMouseButtonPressed(button: .left)) {
 //        switch _currentState {
 //        case .HoldInterval:
@@ -389,7 +404,7 @@ class TestTubeScene : Scene {
 //        default:
 //            print("current scene state: \(_currentState)")
 //        }
-//        }
+        }
 //    }
 //    
 }

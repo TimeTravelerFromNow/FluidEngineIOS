@@ -5,18 +5,23 @@ enum TestTubeStates {
     case AtRest
     case Emptying
     case Initializing
+    case Filling
     case Pouring
     case Moving
     case ReturningToOrigin
     case CleanupValues
     case Selected
-    case Reject
-    case Frozen
 }
 class TestTube: Node {
-    var currentState: TestTubeStates = .AtRest
-    var gridId: Int!
+    var shouldUpdate = false
+    private var _frozen = true
+    var currentState: TestTubeStates = .Initializing
+    var hasInitialized = false // whether or not the Box2D state has been initialized.
     
+    var row: Int!
+    var column: Int!
+    var gridId: Int! // linear offset for unique identification
+
     var particleCount: Int = 0
     var origin : float2!
 //emptying
@@ -25,10 +30,10 @@ class TestTube: Node {
     var isEmptying = false
     var emptyKeyFrame = 0
     // initial pour animation
-    var isInitialFilling = true
     var timeToSkim : Float = GameSettings.CapPlaceDelay
     private let capPlaceDelay : Float = GameSettings.CapPlaceDelay
     var particleGroupPlaced = false
+    var isFilling = false
     private var _colorsFilled : [TubeColors] = []
     private var _startingDividerMap : [Bool] = []
     private let _groupScaleY: Float = GameSettings.GroupScaleY // factors to multiply fluid box dimensions by
@@ -95,21 +100,24 @@ class TestTube: Node {
     
     var sceneRepresentation: TubeRep!
     
-    init( origin: float2, color: float4 = float4(0,0,1,1), gridId: Int) {
+    init( origin: float2, color: float4 = float4(0,0,1,1), row: Int, col: Int, gridId: Int) {
         super.init()
+        self.row = row
+        self.column = col
         self.gridId = gridId
         self.waterColor = color
         self.ptmRatio = GameSettings.ptmRatio
         self.origin = origin
         self.pointSize = 1
         self.tubeMesh = MeshLibrary.Get(.TestTube)
-        self.makeContainer()
-        self.sceneRepresentation = TubeRep(tubeHeight + bottomOffset)
-        self.toBackground()
+        self.setScale(2 / (GameSettings.ptmRatio * 10) )
+        currentState = .Initializing
     }
 
     deinit {
-//      LiquidFun.destroyBody(_tube)
+        if hasInitialized {
+            LiquidFun.destroyTube(_tube)
+        }
     }
     func yieldToFill() {
         LiquidFun.yield(toFill: _tube)
@@ -158,7 +166,6 @@ class TestTube: Node {
         default:
             print("not supposed to get here (empty animation step \(emptyKeyFrame) not defined).")
         }
-        
     }
     func nextEmptyKF() {
         emptyKeyFrame += 1
@@ -183,18 +190,15 @@ class TestTube: Node {
             sceneRepresentation.update(deltaTime: deltaTime)
             shouldUpdateRep = sceneRepresentation.shouldUpdate 
         }
-        if LiquidFun.isColliding(_tube) {
-            if currentState != .Frozen {
-            beginCollide()
-            }
-        } else if currentState == .Frozen {
-            currentState = _previousState
-        }
-        if currentState != .Frozen {
+        if shouldUpdate {
+            _frozen = LiquidFun.isColliding(_tube)
+        if !_frozen {
         switch currentState {
         case .Emptying:
             emptyAnimationStep(deltaTime)
         case .Initializing:
+            shouldUpdate = false
+        case .Filling:
             initialFillStep(deltaTime)
         case .Pouring:
             if !isPourCandidate {
@@ -215,7 +219,7 @@ class TestTube: Node {
                     currentState = .CleanupValues
                     setFrozenDelay = _settleDelay
                     boxMove() //bring to stop
-                    print("Tube \(gridId) Returned To Origin.")
+                    print("Tube row: \(row) col: \(column) Returned To Origin.")
                 }
             }
             else {
@@ -228,7 +232,6 @@ class TestTube: Node {
         case .CleanupValues:
             self.sceneRepresentation.clearEffect()
             self.rotateZ(0.0)
-            self.isInitialFilling = false
             self.isEmptying = false
             self.donePouring = true
             self.beingMoved = false
@@ -236,18 +239,10 @@ class TestTube: Node {
         case .AtRest:
         LiquidFun.restTube(_tube) // it's done returning to origin,
         LiquidFun.drop(_tube) // it's done returning to origin,
-        default:
-            print("Tube \(gridId) atRest")
+         shouldUpdate  = false
         }
-        }
+        }}
     }
-    
-    private var _previousState: TestTubeStates = .AtRest
-    func beginCollide() {
-        _previousState = currentState
-        currentState = .Frozen
-    }
-    
     var shouldUpdateRep = false
     func select() {
         self.sceneRepresentation.selectEffect(.Selected)
@@ -490,6 +485,7 @@ class TestTube: Node {
     
     func moveToCursor(_ windowPos: float2) {
         if !isPouring{
+            shouldUpdate = true
         LiquidFun.pickUp(_tube) // automatic camel casing lmfao
         self.currentState = .Moving
         let boxPos = windowPos / GameSettings.ptmRatio
@@ -526,13 +522,15 @@ class TestTube: Node {
     
     func updateModelConstants() {
         modelConstants.modelMatrix = modelMatrix
+        if hasInitialized {
         sceneRepresentation.setPositionX(self.getBoxPositionX() * GameSettings.stmRatio)
         sceneRepresentation.setPositionY(self.getBoxPositionY() * GameSettings.stmRatio)
         sceneRepresentation.setRotationZ(getRotationZ())
+        }
     }
    
     func refreshVertexBuffer() {
-        if particleSystem != nil {
+        if hasInitialized {
             if currentState != .Initializing && currentState != .Emptying && currentState != .Moving && currentState != .ReturningToOrigin {
             LiquidFun.updateColors(particleSystem,
                                    colors: &_colors,
@@ -593,9 +591,12 @@ class TestTube: Node {
                                    vertices: jugVerticesPointer, vertexCount: UInt32(tubeOBJVertices.count),
                                    hitBoxVertices: &hitBoxVertices, hitBoxCount: UInt32(hitBoxVertices.count),
                                    sensorVertices: &sensorVertices, sensorCount: 4,
+                                   row: Int32(row),
+                                   col: Int32(column),
                                    gridId: Int32(gridId!))
   
         LiquidFun.setParticleLimitForSystem(particleSystem, maxParticles: GameSettings.MaxParticles)
+        hasInitialized = true
      }
     
     func removeDivider(_ atIndex: Int = -1) { // -1 will simply remove the topmost
@@ -696,22 +697,30 @@ class TestTube: Node {
     func resetDividerMap() {
         _dividerMap = _startingDividerMap
     }
-    func initialFillContainer(colors: [TubeColors] ) {
-        self.currentState = .Initializing
+
+    func setupTube() {
+        makeContainer()
+        self.sceneRepresentation = TubeRep(tubeHeight + bottomOffset)
+        self.toBackground()
+    }
+    
+    func startFill(colors: [TubeColors] ) {
+        LiquidFun.unYield(toFill: _tube)
+        isFilling = true
+        _frozen = false
+        shouldUpdate = true
+        currentState = .Filling
         _fillKeyFrame = 0
         timeToSkim = capPlaceDelay
         segmentsCount = 0
         gameSegments = colors.count
         initializeDividerPositions()
         initializeColorsAndDividerMap(colors)
-        self.isInitialFilling = true
-        self.currentState = .Initializing
-        if particleSystem == nil { print("particle system unitialized before initial fill.")}
     }
     // need to determine fullNumber before continuing
     var fullNum: Int = 0
     private var _fillKeyFrame = 0
-    func initialFillStep(_ deltaTime: Float) {
+    private func initialFillStep(_ deltaTime: Float) {
         switch _fillKeyFrame {
         case 0:
             if segmentsCount < gameSegments {
@@ -770,7 +779,9 @@ class TestTube: Node {
                                              rotation: 0.0,
                                              position: Vector2D(x:self.getBoxPositionX(),y:getBoxPositionY()))
             print("deleted \(outsidesDelet) particles outside.")
+            print("done filling")
             self.returnToOrigin()
+            isFilling = false
             if getTopMostNonEmptyIndex() == 3 {
             fullNum = Int(LiquidFun.particleCount(forSystem: particleSystem))
                 print("fullNumber = \(fullNum)")

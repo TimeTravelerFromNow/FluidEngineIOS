@@ -33,7 +33,7 @@ class Clouds: InstancedObject {
     private var _speedBuffer: [Float] = []
     
     var vRange: [Float] { return [Renderer.ScreenSize.y * scale * 0.5, 0.9 * Renderer.ScreenSize.y * scale] }
-    var hRange: [Float] { return  [-Renderer.ScreenSize.x * scale , 1.6 * Renderer.ScreenSize.x * scale] }
+    var hRange: [Float] { return  [-Renderer.ScreenSize.x * scale * 2 * GameSettings.pxPtsR, Renderer.ScreenSize.x * scale] }
     init(instanceCount: Int, meshType: MeshTypes) {
         super.init(meshType: meshType, instanceCount: instanceCount )
         randomizeStart()
