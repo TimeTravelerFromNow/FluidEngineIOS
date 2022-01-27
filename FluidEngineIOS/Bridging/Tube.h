@@ -19,6 +19,7 @@ public:
     bool pickedUp;
     bool isFrozen;
     bool pouring;
+    bool yieldToFill;
     std::vector<Tube*> tubesColliding;
     b2ParticleSystem* m_particleSys;
 public:
@@ -33,6 +34,8 @@ public:
     //hover candidate testing
     int GetHoverCandidateGridId();
     //collision
+    void YieldToFill();
+    void UnYieldToFill();
     void StartPickup();
     void EndPickup();
     void StartReturn();

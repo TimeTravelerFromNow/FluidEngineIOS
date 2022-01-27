@@ -32,9 +32,9 @@ fragment half4 color_fragment_shader(ColorRasterizerData rd [[ stage_in ]],
 
 fragment float4 bg_color_fragment(const ColorRasterizerData rd [[ stage_in ]],
                                                constant float &totalGameTime [[ buffer(0) ]]) {
-    float4 color = abs(float4(rd.color.r * (1 - rd.textureCoordinate.y *abs(sin(totalGameTime*0.1))),
-                              rd.color.g * (1 - rd.textureCoordinate.y *abs(sin(totalGameTime*0.1))),
-                              rd.color.b * (1 - rd.textureCoordinate.y *abs(sin(totalGameTime*0.1))), 1.0));
+    float4 color = abs(float4(rd.color.r * (rd.textureCoordinate.y) *( 1 - 0.3 * abs(sin(totalGameTime*0.1))),
+                              rd.color.g * (rd.textureCoordinate.y) *( 1 - 0.3 * abs(sin(totalGameTime*0.1))),
+                              rd.color.b * (rd.textureCoordinate.y) *( 1 - 0.3 * abs(sin(totalGameTime*0.1))), 1.0));
 
     return color;
 }

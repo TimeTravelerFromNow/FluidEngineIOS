@@ -28,41 +28,10 @@ class Scene: Node {
       }
     }
     
-     func keyDown( ) {
+    func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
+       print( touches.first?.location(in: touches.first?.view) )
     }
-    
-     func keyUp( ) {
-    }
-     func mouseDown( ) {
-    }
-    
-     func mouseUp( ) {
-    }
-    
-     func rightMouseDown( ) {
-    }
-    
-     func rightMouseUp( ) {
-    }
-    
-     func otherMouseDown( ) {
-    }
-    
-     func otherMouseUp( ) {
-    }
-     func mouseMoved( ) {
-    }
-    
-     func scrollWheel( ) {
-    }
-    
-     func mouseDragged( ) {
-    }
-    
-     func rightMouseDragged( ) {
-    }
-    
-     func otherMouseDragged( ) {
+    func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
     }
 }
 
@@ -101,6 +70,14 @@ class SceneManager: Library<SceneTypes, Scene> {
     }
 }
 
+extension GameView {
+    override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
+        SceneManager.currentScene.touchesBegan(touches, with: event)
+    }
+    override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
+        SceneManager.currentScene.touchesEnded(touches, with: event)
+    }
+}
 //
 ////--- Keyboard Input ---
 //extension GameView {

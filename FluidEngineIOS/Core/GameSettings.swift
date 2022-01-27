@@ -36,6 +36,9 @@ class GameSettings {
     public static var CapPlaceDelay: Float = 0.53
     public static var PourSpeed: Float =  4.0
     
+    public static let pxPtsR: Float = Renderer.ScreenSize.x / 1080.0
+    public static let pxTchR: Float = 1080.0 / Float(UIScreen.main.bounds.size.width)
+    
     public static var stmRatio: Float { return ptmRatio * 0.001 } //experimentally determined  0.188 / 189
     public static var AspectRatio: Float { return Renderer.ScreenSize.x / Renderer.ScreenSize.y }
     public static var MaxParticles: Int32 = 10000

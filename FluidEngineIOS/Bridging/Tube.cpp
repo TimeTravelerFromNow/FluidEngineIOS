@@ -91,10 +91,17 @@ Tube::Tube(b2World* worldRef,
     returningToOrigin = false;
     pickedUp = false;
     pouring = false;
+    yieldToFill = true;
 }
 Tube::~Tube() {
 }
 //collision
+void Tube::YieldToFill() {
+    yieldToFill = true;
+}
+void Tube::UnYieldToFill() {
+    yieldToFill = false;
+}
 void Tube::StartReturn() {
     returningToOrigin = true;
 }
@@ -114,6 +121,9 @@ void Tube::EndCollide(Tube* tube) {
      tubesColliding.erase( std::find(tubesColliding.begin(), tubesColliding.end(), tube ) );
 }
 void Tube::PostSolve() {
+    if( yieldToFill ) {
+        Freeze();
+    } else {
     unsigned long collidingNum = tubesColliding.size();
     if (collidingNum > 0) {
     bool freeze = false;
@@ -145,6 +155,7 @@ void Tube::PostSolve() {
         }
     } else {
         UnFreeze();
+    }
     }
 }
 
@@ -212,15 +223,19 @@ float Tube::GetRotation() {
 }
 // activeness
 void Tube::Freeze() {
+    if( !isFrozen  ) {
         m_body->SetActive(false);
         m_sensorBody->SetLinearVelocity(b2Vec2()); // stop it from leaving current freeze location.
         m_hboxBody->SetActive(false);
         m_particleSys->SetPaused(true);
         isFrozen = true;
+    }
 }
 void Tube::UnFreeze() {
+    if( isFrozen ){
         m_body->SetActive(true);
         m_hboxBody->SetActive(true);
         m_particleSys->SetPaused(false);
         isFrozen = false;
+    }
 }

@@ -111,7 +111,12 @@ class TestTube: Node {
     deinit {
 //      LiquidFun.destroyBody(_tube)
     }
-    
+    func yieldToFill() {
+        LiquidFun.yield(toFill: _tube)
+    }
+    func unYieldToFill() {
+        LiquidFun.unYield(toFill: _tube)
+    }
     func BeginEmpty() {
         self.rotateZ(0.0)
         print("rotation before empty: \(self.getRotationZ())")
@@ -558,13 +563,13 @@ class TestTube: Node {
         self.tubeHeight = self.tubeHeight - bottomOffset
         let jugVerticesPointer = LiquidFun.getVec2(&tubeOBJVertices, vertexCount: UInt32(tubeOBJVertices.count))
         var sensorVertices : [Vector2D] = [
-            Vector2D(x: -tubeWidth * 2.2, y:  tubeHeight*0.6),
-            Vector2D(x: -tubeWidth * 2.2, y: -tubeHeight*0.9),
-            Vector2D(x: tubeWidth  * 2.2, y: -tubeHeight*0.9),
-            Vector2D(x: tubeWidth  * 2.2, y:  tubeHeight*0.6)
+            Vector2D(x: -tubeWidth * 1.7, y:  tubeHeight*0.6),
+            Vector2D(x: -tubeWidth * 1.7, y: -tubeHeight*0.9),
+            Vector2D(x: tubeWidth  * 1.7, y: -tubeHeight*0.9),
+            Vector2D(x: tubeWidth  * 1.7, y:  tubeHeight*0.6)
         ]
-        let hBE: Float = 0.1 // hit box extent
-        let hBD: Float = 0.1 // how far the hitbox is from body
+        let hBE: Float = 0.2 // hit box extent
+        let hBD: Float = 0 // how far the hitbox is from body
         var hitBoxVertices : [Vector2D] = [
             Vector2D(x: tubeWidth + hBD + hBE, y: tubeHeight * 0.5),
             Vector2D(x: tubeWidth + hBD + hBE, y: -tubeHeight * 0.5),

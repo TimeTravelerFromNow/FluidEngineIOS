@@ -12,9 +12,6 @@
 		923F2B5227A0FCD900443936 /* JointTest.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 923F2B4C27A0FCD900443936 /* JointTest.cpp */; };
 		923F2B5327A0FCD900443936 /* Tube.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 923F2B4D27A0FCD900443936 /* Tube.cpp */; };
 		923F2B5D27A0FCE200443936 /* Engine.swift in Sources */ = {isa = PBXBuildFile; fileRef = 923F2B5527A0FCE200443936 /* Engine.swift */; };
-		923F2B5E27A0FCE200443936 /* KeyCodes.swift in Sources */ = {isa = PBXBuildFile; fileRef = 923F2B5727A0FCE200443936 /* KeyCodes.swift */; };
-		923F2B5F27A0FCE200443936 /* Mouse.swift in Sources */ = {isa = PBXBuildFile; fileRef = 923F2B5827A0FCE200443936 /* Mouse.swift */; };
-		923F2B6027A0FCE200443936 /* Input.swift in Sources */ = {isa = PBXBuildFile; fileRef = 923F2B5927A0FCE200443936 /* Input.swift */; };
 		923F2B6127A0FCE200443936 /* Preferences.swift in Sources */ = {isa = PBXBuildFile; fileRef = 923F2B5A27A0FCE200443936 /* Preferences.swift */; };
 		923F2B6227A0FCE200443936 /* GameTime.swift in Sources */ = {isa = PBXBuildFile; fileRef = 923F2B5B27A0FCE200443936 /* GameTime.swift */; };
 		923F2B6327A0FCE200443936 /* GameSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 923F2B5C27A0FCE200443936 /* GameSettings.swift */; };
@@ -75,6 +72,7 @@
 		923F2C0727A0FDB500443936 /* ColorUtil.swift in Sources */ = {isa = PBXBuildFile; fileRef = 923F2C0327A0FDB500443936 /* ColorUtil.swift */; };
 		923F2C0A27A0FE7400443936 /* quad.mtl in Resources */ = {isa = PBXBuildFile; fileRef = 923F2C0827A0FE7400443936 /* quad.mtl */; };
 		923F2C0B27A0FE7400443936 /* quad.obj in Resources */ = {isa = PBXBuildFile; fileRef = 923F2C0927A0FE7400443936 /* quad.obj */; };
+		923F2C0E27A10CFA00443936 /* Touches.swift in Sources */ = {isa = PBXBuildFile; fileRef = 923F2C0D27A10CFA00443936 /* Touches.swift */; };
 		92489A0B2799D9BD00639B52 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 92489A0A2799D9BD00639B52 /* AppDelegate.swift */; };
 		92489A0D2799D9BD00639B52 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 92489A0C2799D9BD00639B52 /* SceneDelegate.swift */; };
 		92489A122799D9BD00639B52 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 92489A102799D9BD00639B52 /* Main.storyboard */; };
@@ -148,9 +146,6 @@
 		923F2B4F27A0FCD900443936 /* LiquidFun.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LiquidFun.h; sourceTree = "<group>"; };
 		923F2B5027A0FCD900443936 /* CustomContactListener.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CustomContactListener.h; sourceTree = "<group>"; };
 		923F2B5527A0FCE200443936 /* Engine.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Engine.swift; sourceTree = "<group>"; };
-		923F2B5727A0FCE200443936 /* KeyCodes.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = KeyCodes.swift; sourceTree = "<group>"; };
-		923F2B5827A0FCE200443936 /* Mouse.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Mouse.swift; sourceTree = "<group>"; };
-		923F2B5927A0FCE200443936 /* Input.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Input.swift; sourceTree = "<group>"; };
 		923F2B5A27A0FCE200443936 /* Preferences.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Preferences.swift; sourceTree = "<group>"; };
 		923F2B5B27A0FCE200443936 /* GameTime.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GameTime.swift; sourceTree = "<group>"; };
 		923F2B5C27A0FCE200443936 /* GameSettings.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GameSettings.swift; sourceTree = "<group>"; };
@@ -211,6 +206,7 @@
 		923F2C0327A0FDB500443936 /* ColorUtil.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ColorUtil.swift; sourceTree = "<group>"; };
 		923F2C0827A0FE7400443936 /* quad.mtl */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = quad.mtl; sourceTree = "<group>"; };
 		923F2C0927A0FE7400443936 /* quad.obj */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = quad.obj; sourceTree = "<group>"; };
+		923F2C0D27A10CFA00443936 /* Touches.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Touches.swift; sourceTree = "<group>"; };
 		92489A072799D9BD00639B52 /* FluidEngineIOS.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = FluidEngineIOS.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		92489A0A2799D9BD00639B52 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		92489A0C2799D9BD00639B52 /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
@@ -370,23 +366,13 @@
 		923F2B5427A0FCE200443936 /* Core */ = {
 			isa = PBXGroup;
 			children = (
+				923F2C0C27A10B7C00443936 /* Input */,
 				923F2B5527A0FCE200443936 /* Engine.swift */,
-				923F2B5627A0FCE200443936 /* Input */,
 				923F2B5A27A0FCE200443936 /* Preferences.swift */,
 				923F2B5B27A0FCE200443936 /* GameTime.swift */,
 				923F2B5C27A0FCE200443936 /* GameSettings.swift */,
 			);
 			path = Core;
-			sourceTree = "<group>";
-		};
-		923F2B5627A0FCE200443936 /* Input */ = {
-			isa = PBXGroup;
-			children = (
-				923F2B5727A0FCE200443936 /* KeyCodes.swift */,
-				923F2B5827A0FCE200443936 /* Mouse.swift */,
-				923F2B5927A0FCE200443936 /* Input.swift */,
-			);
-			path = Input;
 			sourceTree = "<group>";
 		};
 		923F2B8727A0FD6C00443936 /* Res */ = {
@@ -562,6 +548,14 @@
 			path = Utils;
 			sourceTree = "<group>";
 		};
+		923F2C0C27A10B7C00443936 /* Input */ = {
+			isa = PBXGroup;
+			children = (
+				923F2C0D27A10CFA00443936 /* Touches.swift */,
+			);
+			path = Input;
+			sourceTree = "<group>";
+		};
 		924899FE2799D9BD00639B52 = {
 			isa = PBXGroup;
 			children = (
@@ -582,9 +576,9 @@
 			isa = PBXGroup;
 			children = (
 				92489A3A2799DA0300639B52 /* Box2D */,
+				923F2B4727A0FCD900443936 /* Bridging */,
 				923F2B5427A0FCE200443936 /* Core */,
 				923F2BDC27A0FD8C00443936 /* Game */,
-				923F2B4727A0FCD900443936 /* Bridging */,
 				923F2BFF27A0FDB500443936 /* Utils */,
 				923F2BC227A0FD7300443936 /* Graphics */,
 				923F2B8727A0FD6C00443936 /* Res */,
@@ -904,7 +898,6 @@
 				92489BAD2799DA0400639B52 /* b2PulleyJoint.cpp in Sources */,
 				92489BCF2799DA0400639B52 /* b2CollideEdge.cpp in Sources */,
 				923F2BFB27A0FD8C00443936 /* CloudsBackground.swift in Sources */,
-				923F2B5F27A0FCE200443936 /* Mouse.swift in Sources */,
 				92489BAA2799DA0400639B52 /* b2GearJoint.cpp in Sources */,
 				92489B982799DA0400639B52 /* b2Fixture.cpp in Sources */,
 				92489BC62799DA0400639B52 /* b2CollideCircle.cpp in Sources */,
@@ -913,7 +906,7 @@
 				92489B992799DA0400639B52 /* b2ChainAndPolygonContact.cpp in Sources */,
 				92489BA02799DA0400639B52 /* b2EdgeAndCircleContact.cpp in Sources */,
 				92489BB82799DA0400639B52 /* b2Timer.cpp in Sources */,
-				923F2B6027A0FCE200443936 /* Input.swift in Sources */,
+				923F2C0E27A10CFA00443936 /* Touches.swift in Sources */,
 				923F2BF927A0FD8C00443936 /* TubeRep.swift in Sources */,
 				923F2B5D27A0FCE200443936 /* Engine.swift in Sources */,
 				92489BB72799DA0400639B52 /* b2Settings.cpp in Sources */,
@@ -959,7 +952,6 @@
 				92489B962799DA0400639B52 /* b2Body.cpp in Sources */,
 				92489B9F2799DA0400639B52 /* b2CircleContact.cpp in Sources */,
 				923F2C0427A0FDB500443936 /* Math.swift in Sources */,
-				923F2B5E27A0FCE200443936 /* KeyCodes.swift in Sources */,
 				92489BC32799DA0400639B52 /* b2Particle.cpp in Sources */,
 				92489BB52799DA0400639B52 /* b2TrackedBlock.cpp in Sources */,
 				923F2BFA27A0FD8C00443936 /* SkyBackground.swift in Sources */,

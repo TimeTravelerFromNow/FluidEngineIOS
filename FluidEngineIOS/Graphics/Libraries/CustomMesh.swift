@@ -77,10 +77,10 @@ class CustomMesh {
 
 class SkyQuad: CustomMesh {
     override func buildMesh() {
-        addVertex(position: float3( 0.5, 0.5, 0.0),color: float4(0.2,0.2,0.6,1.0), textureCoordinate: float2(1,0)) // Top Right,
-        addVertex(position: float3(-0.5, 0.5, 0.0),color: float4(0.2,0.2,0.6,1.0), textureCoordinate: float2(0,0)) // Top Left,
-        addVertex(position: float3(-0.5,-0.5, 0.0),color: float4(0.6,0.8,1.0,1.0), textureCoordinate: float2(0,1)) // Bottom Left,
-        addVertex(position: float3( 0.5,-0.5, 0.0),color: float4(0.4,0.6,1.0,1.0), textureCoordinate: float2(1,1)) // Bottom Right
+        addVertex(position: float3( 0.5, 0.5, 0.0),color: float4(0.05,0.6,0.9,1.0), textureCoordinate: float2(1,0)) // Top Right,
+        addVertex(position: float3(-0.5, 0.5, 0.0),color: float4(0.05,0.6,0.9,1.0), textureCoordinate: float2(0,0)) // Top Left,
+        addVertex(position: float3(-0.5,-0.5, 0.0),color: float4(0.1,0.6,1.0,1.0), textureCoordinate: float2(0,1)) // Bottom Left,
+        addVertex(position: float3( 0.5,-0.5, 0.0),color: float4(0.1,0.6,1.0,1.0), textureCoordinate: float2(1,1)) // Bottom Right
         
         setIndices( [ 0, 1, 2,    0, 2, 3 ])
     }

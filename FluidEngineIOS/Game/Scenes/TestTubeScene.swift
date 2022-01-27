@@ -42,10 +42,9 @@ class TestTubeScene : Scene {
         self.removeChildren()
         tubeLevel = TubeLevel()
         cameras.append( OrthoCamera())
-        cameras[1].setPositionZ(10)
         cameras[0].setPositionZ(1.78)
         
-        (cameras[1] as! OrthoCamera).setFrameSize( (Renderer.ScreenSize.y < Renderer.ScreenSize.x ? Renderer.ScreenSize.y : Renderer.ScreenSize.x ) / (GameSettings.ptmRatio * 10) )
+        sceneSizeWillChange()
         self.currentCamera = cameras[1]
 
         fluidObject = DebugEnvironment()
@@ -58,56 +57,73 @@ class TestTubeScene : Scene {
         }
         addChild(fluidObject)
         addChild(backGroundObject)
-        backGroundObject.setPosition(float3(0.5,0.5,2))
-        backGroundObject.setScale(2)
+        backGroundObject.setPosition(float3(0.5 * GameSettings.pxPtsR,0.5 * GameSettings.pxPtsR,2))
+        backGroundObject.setScale(GameSettings.pxPtsR)
     }
-    
+    override func sceneSizeWillChange() {
+        for camera in cameras {
+            camera.aspect = GameSettings.AspectRatio
+            if let cam = camera as? OrthoCamera {
+                cam.setFrameSize(0.5)
+                } else {
+                
+                }
+            }
+        cameras[1].setPosition(float3((Renderer.ScreenSize.x * 0.25) / (1080.0  ),(Renderer.ScreenSize.y * 0.25 ) / 1080.0,0.0) )
+    }
+    var rowNum: Int = 0
+    var colNum: Int = 0
+    var xOffset : Float = 0.5
+    let leftStart: Float = 0.5
     private func InitializeGrid() {
-        let height : Float = 2.0
-        let width  : Float = 5.0
-        let xSep : Float = 1.0
+        rowNum = 0
+        colNum = 0
+        let height : Float = 3.5
+        let width  : Float = 2.5
+        let xSep : Float = 0.8
         let ySep : Float = 2.0
         var y : Float = height
-        var x : Float = 0.5
-        let rowNum = Int(width / xSep)
+        
+        rowNum = Int(width / xSep)
         let maxColNum = Int(height / ySep)
         if tubeLevel.startingLevel.count > (rowNum * maxColNum ){
             print("warning we will probably be out of bounds with this many tubes.")
         }
         for (i, tubeColors) in tubeLevel.startingLevel.enumerated() {
-            if(x < width) {
-                let currentTube = TestTube(origin: float2(x:x,y:y), gridId: i)
+            if(xOffset < width) {
+                let currentTube = TestTube(origin: float2(x:xOffset,y:y), gridId: i)
                 if tubeHeight == 0.0  {// unitiialized, then initialize
                     self.tubeHeight = currentTube.getTubeHeight()
                     print("initializing real tube height for collision testing")
                 }
-                currentTube.initialFillContainer(colors: tubeColors)
                 currentTube.setScale(2 / (GameSettings.ptmRatio * 10) )
                 currentTube.setPositionZ(1)
                 addChild(currentTube.sceneRepresentation)
                 tubeGrid.append(currentTube)
-                x += xSep
+                xOffset += xSep
             } else {
-                x = 0.5
+                colNum += 1
+                xOffset = leftStart
                 y -= ySep
-                let currentTube = TestTube(origin: float2(x:x,y:y), gridId: i)
-                currentTube.initialFillContainer(colors: tubeColors)
+                let currentTube = TestTube(origin: float2(x:xOffset,y:y), gridId: i)
                 currentTube.setScale(2 / (GameSettings.ptmRatio * 10) )
                 currentTube.setPositionZ(1)
                 addChild(currentTube.sceneRepresentation)
                 tubeGrid.append(currentTube)
-                x += xSep
+                xOffset += xSep
             }
         }
     }
-    
+    //fill from bottom to top
+    private var levelFilling: Int = 0
     private func refillTubesToCurrentState() {
-        for (i, tubeColors) in tubeLevel.colorStates.enumerated() {
-        tubeGrid[i].initialFillContainer(colors: tubeColors)
+        
+    }
+    private func refillStep(_ deltaTime: Float){
+        for tube in tubeGrid {
             
         }
     }
-    
     private func beginEmpty() {
         tubeIsActive = false
         _emptyDuration = defaultEmptyTime
@@ -182,25 +198,6 @@ class TestTubeScene : Scene {
         return nil
     }
     
-    override func sceneSizeWillChange() {
-        for camera in cameras {
-            camera.aspect = GameSettings.AspectRatio
-            if let cam = camera as? OrthoCamera {
-                if Renderer.ScreenSize.x > 1000 {
-                cam.setFrameSize( ( Renderer.ScreenSize.y < Renderer.ScreenSize.x ? Renderer.ScreenSize.y : Renderer.ScreenSize.x )  / (GameSettings.ptmRatio * 10) )
-                } else {
-                
-                }
-            }
-            if Renderer.ScreenSize.x > 1000  {
-            cameras[1].setPosition(float3(0.5 + ((Renderer.ScreenSize.x > 1000 ? Renderer.ScreenSize.x : 1000 ) - 1000)/2000, 0.5 + (Renderer.ScreenSize.y - 1000)/2000, 0 )) // on a scale of 1000 pixels per scene space
-            cameras[0].setPosition(float3(0.5 + ( (Renderer.ScreenSize.x > 1000 ? Renderer.ScreenSize.x : 1000 ) - 1000)/2000, 0.5 + (Renderer.ScreenSize.y - 1000)/2000, 0 )) // on a scale of 1000 pixels per scene space
-            } else {
-                cameras[1].setPosition(float3(0.5 + ((Renderer.ScreenSize.x > 1000 ? Renderer.ScreenSize.x : 1000 ) - 1000)/2000, 0.5 + (Renderer.ScreenSize.y - 1000)/2000, 0 ))
-            }
-        }
-    }
-    
     func pourTubes() {
         self.selectedTube!.setCandidateTube( self.pourCandidate! )
         var newPouringTubeColors = [TubeColors].init(repeating: .Empty, count: 4)
@@ -262,14 +259,22 @@ class TestTubeScene : Scene {
     private var _holdDelay: Float = 0.2
     private let _defaultHoldTime: Float = 0.2
     
-    override func mouseDown() {
+    override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
+        print("Name:\t\(UIDevice.current.name)")
+          print("Size:\t\(UIScreen.main.bounds.size)")
+          print("Scale:\t\(UIScreen.main.scale)")
+          print("Native:\t\(UIScreen.main.nativeBounds.size)")
+        let touchPosCG = touches.first?.location(in: nil)
+        print(touchPosCG)
+        let touchPos = float2( Float(touchPosCG!.x) * GameSettings.pxTchR * 0.5, Float(UIScreen.main.bounds.size.height - touchPosCG!.y ) * GameSettings.pxTchR * 0.5)
+        print(touchPos)
         switch _currentState {
         case .HoldInterval:
         print("grabbed tube, determining hold status")
             selectedTube?.select()
         case .Moving: // use hover code
             print("grabbed tube")
-            selectedTube?.moveToCursor(Mouse.GetMouseWindowPosition())
+            selectedTube?.moveToCursor(touchPos)
         case .Emptying:
             var oneEmptying = false
             for tube in tubeGrid {
@@ -287,7 +292,7 @@ class TestTubeScene : Scene {
                 _currentState = .Idle
             }
         case .Selected:
-            guard let nodeAt = kineticHitTest(windowPosition: Mouse.GetMouseWindowPosition()) else {
+            guard let nodeAt = kineticHitTest(windowPosition: touchPos) else {
                 unSelect()
                 return
             }
@@ -304,7 +309,7 @@ class TestTubeScene : Scene {
                 }
             }
         case .Idle:
-            guard let nodeAt = gridHitTest(windowPosition: Mouse.GetMouseWindowPosition(), excludeDragging: -1) else { return }
+            guard let nodeAt = gridHitTest(windowPosition: touchPos, excludeDragging: -1) else { return }
             if nodeAt.currentState == .AtRest {
             selectedTube = nodeAt
             selectedTube?.select()
@@ -314,30 +319,30 @@ class TestTubeScene : Scene {
             print("nothing to do")
         }
     }
-    
-    override func keyDown() {
-        if( KeyBoard.IsKeyPressed(.m)){
-            currentCamera = cameras[0]
-//            cameras[0].setRotationY(Float.pi)
-        }
-        if( KeyBoard.IsKeyPressed(.o)){
-            currentCamera = cameras[1]
-            
-        }
-        if( KeyBoard.IsKeyPressed(.upArrow)) {
-            fluidObject.movePointTest(velocity: float2(0,1.0))
-        }
-        if( KeyBoard.IsKeyPressed(.downArrow)) {
-            fluidObject.movePointTest(velocity: float2(0,-1.0))
-        }
-    }
-    
-    override func scrollWheel() {
-        currentCamera.moveZ(Mouse.GetDWheel())
-    }
-    
-    override func mouseUp() {
-        switch _currentState {
+//    
+//    override func keyDown() {
+//        if( KeyBoard.IsKeyPressed(.m)){
+//            currentCamera = cameras[0]
+////            cameras[0].setRotationY(Float.pi)
+//        }
+//        if( KeyBoard.IsKeyPressed(.o)){
+//            currentCamera = cameras[1]
+//            
+//        }
+//        if( KeyBoard.IsKeyPressed(.upArrow)) {
+//            fluidObject.movePointTest(velocity: float2(0,1.0))
+//        }
+//        if( KeyBoard.IsKeyPressed(.downArrow)) {
+//            fluidObject.movePointTest(velocity: float2(0,-1.0))
+//        }
+//    }
+//    
+//    override func scrollWheel() {
+//        currentCamera.moveZ(Mouse.GetDWheel())
+//    }
+//    
+    override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
+    switch _currentState {
         case .HoldInterval:
             if _holdDelay > 0.0 {
                 selectedTube?.currentState = .Selected
@@ -351,7 +356,7 @@ class TestTubeScene : Scene {
             print("nothing to do")
         }
     }
-    
+//    
     func unSelect() {
         print("let go of tube")
         selectedTube?.returnToOrigin()
@@ -359,33 +364,33 @@ class TestTubeScene : Scene {
                     _holdDelay = _defaultHoldTime
             _currentState = .Idle
     }
-    
-    override func update(deltaTime : Float) {
-        super.update(deltaTime: deltaTime)
-        backGroundObject.update(deltaTime: GameTime.DeltaTime)
-    
-        if (Mouse.IsMouseButtonPressed(button: .left)) {
-        switch _currentState {
-        case .HoldInterval:
-            if _holdDelay == _defaultHoldTime {
-                selectedTube?.select()
-            }
-                    if _holdDelay >= 0.0 {
-                        _holdDelay -= deltaTime
-                    }
-                    else {
-                        _currentState = .Moving
-                    }
-        case .Moving:
-            let winPos = Mouse.GetMouseWindowPosition()
-            selectedTube?.moveToCursor(winPos)
-            guard let selectId = selectedTube?.gridId else { return }
-            hoverSelect(winPos, deltaTime: deltaTime, excludeMoving: selectId)
-        default:
-            print("current scene state: \(_currentState)")
-        }
-        }
-    }
-    
+//    
+//    override func update(deltaTime : Float) {
+//        super.update(deltaTime: deltaTime)
+//        backGroundObject.update(deltaTime: GameTime.DeltaTime)
+//    
+//        if (Mouse.IsMouseButtonPressed(button: .left)) {
+//        switch _currentState {
+//        case .HoldInterval:
+//            if _holdDelay == _defaultHoldTime {
+//                selectedTube?.select()
+//            }
+//                    if _holdDelay >= 0.0 {
+//                        _holdDelay -= deltaTime
+//                    }
+//                    else {
+//                        _currentState = .Moving
+//                    }
+//        case .Moving:
+//            let winPos = touchPos
+//            selectedTube?.moveToCursor(winPos)
+//            guard let selectId = selectedTube?.gridId else { return }
+//            hoverSelect(winPos, deltaTime: deltaTime, excludeMoving: selectId)
+//        default:
+//            print("current scene state: \(_currentState)")
+//        }
+//        }
+//    }
+//    
 }
 

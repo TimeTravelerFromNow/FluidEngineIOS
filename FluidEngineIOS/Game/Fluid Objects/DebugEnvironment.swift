@@ -112,7 +112,7 @@ class DebugEnvironment : Node {
         let screenWidth = simulationFrame.x
         let screenHeight = simulationFrame.y
 
-        LiquidFun.createEdgeBox(withOrigin: Vector2D(x: -0.5, y: 0),
+        LiquidFun.createEdgeBox(withOrigin: Vector2D(x: -1.5, y: 0),
                                 size: Size2D(width: screenWidth * 2 / ptmRatio, height: screenHeight * 2 / ptmRatio)) // square
         var sensorVertices : [Vector2D] = [
             Vector2D(x: 1, y: 1),

@@ -568,6 +568,13 @@ b2PolygonShape shape;
     ((Tube *)tube)->PopCap();
 }
 //collision heirarchy
++ (void)YieldToFill:(void *)tube{
+    ((Tube *)tube)->YieldToFill();
+}
++(void)UnYieldToFill:(void *)tube {
+    ((Tube *)tube)->UnYieldToFill();
+}
++ (void)UnYieldToFill:(void *)tube;
 + (void)PickUp:(void *)tube {
     ((Tube *)tube)->StartPickup();
 }
