@@ -399,7 +399,7 @@ return belowPositionsCount;
   world->Step(timeStep, velocityIterations, positionIterations);
     world->DrawDebugData();
     for(int i = 0; i < tubes.size(); i++) {
-        tubes[i]->PostSolve();
+        tubes.at(i)->PostSolve();
     }
 }
 + (void *)createEdgeBoxWithOrigin:(Vector2D)origin size:(Size2D)size {

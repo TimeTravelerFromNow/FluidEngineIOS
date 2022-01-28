@@ -29,9 +29,9 @@ class TestTubeScene : Scene {
     // tube moving
     var tubeIsActive: Bool = false
     var tubeReleased: Bool = true
-    var selectedTube: TestTube?
+    var selectedTube: TestTube!
     // tube pour selection
-    var pourCandidate: TestTube?
+    var pourCandidate: TestTube!
     private var _selectorTime: Float = 0.6
     var startedHovering: Bool = false
     let hoverSelectTime: Float = 0.6 // when we reach 0.0, pourCandidate becomes the tube we are hovering over.
@@ -80,12 +80,17 @@ class TestTubeScene : Scene {
 
     private var _gridHeight : Float = 3.5
     private var _gridWidth  : Float = 2.5
+
     private func InitializeGrid() {
         let colNum = tubeLevel.startingLevel.columns
         let rowNum = tubeLevel.startingLevel.rows
+        var emptyTube = TestTube(origin: float2(0,0), row: -1, col: -1, gridId: -1)
+        
+        pourCandidate = emptyTube
+        selectedTube = emptyTube
         tubes = TestTubeMatrix(rows: rowNum,
                                columns: colNum,
-                               defaultValue: TestTube(origin: float2(0,0), row: -1, col: -1, gridId: -1))
+                               defaultValue: emptyTube)
         var linOff = 0
         for y in 0..<rowNum {
             for x in 0..<colNum {
@@ -185,12 +190,14 @@ class TestTubeScene : Scene {
     private func gridHitTest( windowPosition: float2, excludeDragging: long2 ) -> TestTube? {
         let boxPosition = windowPosition / GameSettings.ptmRatio
         for tube in tubes.grid {
+            if tube.hasInitialized {
             if !( long2(tube.row, tube.column) == excludeDragging) {
                 let tPos = tube.getBoxPosition()
                 if( ( (-tubeDimensions.x + tPos.x)  < boxPosition.x && boxPosition.x < (tubeDimensions.x + tPos.x) ) &&
                         ( (-tubeDimensions.y + tPos.y)  < boxPosition.y && boxPosition.y < (tubeDimensions.y + tPos.y) ) ) {
                         return tube
                     }
+            }
             }
         }
         return nil
@@ -200,14 +207,15 @@ class TestTubeScene : Scene {
         let boxPosition = windowPosition / GameSettings.ptmRatio
         print(boxPosition)
         for tube in tubes.grid {
+            if tube.hasInitialized {
             if( ( ((-tubeDimensions.x + tube.getBoxPositionX())  < boxPosition.x) && (boxPosition.x < (tubeDimensions.x + tube.getBoxPositionX()) )) &&
                     ( ((-tubeDimensions.y + tube.getBoxPositionY())  < boxPosition.y) && (boxPosition.y < (tubeDimensions.y + tube.getBoxPositionY()) )) ) {
                         return tube
                     }
+            }
         }
         return nil
     }
-    
     func pourTubes() {
         self.selectedTube!.setCandidateTube( self.pourCandidate! )
         var newPouringTubeColors = [TubeColors].init(repeating: .Empty, count: 4)
@@ -220,7 +228,6 @@ class TestTubeScene : Scene {
         self.selectedTube!.startPouring( newPourTubeColors: newPouringTubeColors,
                                          newCandidateTubeColors: newCandidateTubeColors)
     }
-    
     func hoverSelect(_ windowPos: float2, deltaTime: Float, excludeMoving: long2) {
         guard let tubeHovering = gridHitTest(windowPosition: windowPos, excludeDragging: excludeMoving ) else
         {

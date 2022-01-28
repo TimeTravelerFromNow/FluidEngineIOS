@@ -237,6 +237,7 @@ class TestTube: Node {
             self.beingMoved = false
             self.currentState = .AtRest
         case .AtRest:
+            unYieldToFill()
         LiquidFun.restTube(_tube) // it's done returning to origin,
         LiquidFun.drop(_tube) // it's done returning to origin,
          shouldUpdate  = false
@@ -245,7 +246,10 @@ class TestTube: Node {
     }
     var shouldUpdateRep = false
     func select() {
+        print("has init \(hasInitialized), \n ")
         self.sceneRepresentation.selectEffect(.Selected)
+        shouldUpdateRep = true
+        shouldUpdate = true
         currentState = .Selected
     }
     
@@ -271,6 +275,7 @@ class TestTube: Node {
     }
     
     func startPouring(newPourTubeColors: [TubeColors], newCandidateTubeColors: [TubeColors]) {
+        shouldUpdate = true
         self.candidateTube.toForeground()
         self._newColorTypes = newPourTubeColors
         self.candidateTube._newColorTypes = newCandidateTubeColors
@@ -473,6 +478,7 @@ class TestTube: Node {
     }
         
     func returnToOrigin(_ customDelay: Float = 1.0) {
+        shouldUpdate = true
         LiquidFun.startReturnTube(_tube)
         LiquidFun.endPourTube(_tube)
         LiquidFun.drop(_tube)     // it's not being picked up anymore.
@@ -705,9 +711,8 @@ class TestTube: Node {
     }
     
     func startFill(colors: [TubeColors] ) {
-        LiquidFun.unYield(toFill: _tube)
+        unYieldToFill()
         isFilling = true
-        _frozen = false
         shouldUpdate = true
         currentState = .Filling
         _fillKeyFrame = 0
@@ -778,8 +783,6 @@ class TestTube: Node {
                                              height: tubeHeight,
                                              rotation: 0.0,
                                              position: Vector2D(x:self.getBoxPositionX(),y:getBoxPositionY()))
-            print("deleted \(outsidesDelet) particles outside.")
-            print("done filling")
             self.returnToOrigin()
             isFilling = false
             if getTopMostNonEmptyIndex() == 3 {

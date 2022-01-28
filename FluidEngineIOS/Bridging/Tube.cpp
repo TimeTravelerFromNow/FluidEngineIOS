@@ -23,7 +23,7 @@ Tube::Tube(b2World* worldRef,
     m_particleSys = particleSysRef;
     b2BodyDef body1Def;
     body1Def.type = b2_kinematicBody;
-    body1Def.active = false;
+    body1Def.active = true;
     body1Def.gravityScale = 0.0;
     body1Def.position.Set(location.x, location.y);
     b2Body *body1 = worldRef->CreateBody(&body1Def);
@@ -37,7 +37,7 @@ Tube::Tube(b2World* worldRef,
     //sensor Body (must stay active to continue registering collision when the hitboxes and frame freeze.)
     b2BodyDef sensorBodyDef;
     sensorBodyDef.type = b2_dynamicBody;
-    sensorBodyDef.active = false;
+    sensorBodyDef.active = true;
     sensorBodyDef.bullet = true;
     sensorBodyDef.position.Set(location.x, location.y);
     sensorBodyDef.gravityScale = 0.0;
@@ -58,7 +58,7 @@ Tube::Tube(b2World* worldRef,
    //hitboxes
     b2BodyDef hboxBodyDef;
     hboxBodyDef.type = b2_dynamicBody;
-    hboxBodyDef.active = false;
+    hboxBodyDef.active = true;
     hboxBodyDef.gravityScale = 0.0;
     hboxBodyDef.position.Set(location.x, location.y);
     b2Body *body2 = worldRef->CreateBody(&hboxBodyDef);
@@ -92,11 +92,12 @@ Tube::Tube(b2World* worldRef,
     m_body->SetUserData(this);
     m_hboxBody->SetUserData(this);
     m_sensorBody->SetUserData(this);
-    isFrozen = true;
     returningToOrigin = false;
     pickedUp = false;
     pouring = false;
     yieldToFill = true;
+    isFrozen = false;
+    Freeze();
 }
 Tube::~Tube() {
     m_world->DestroyBody(m_body);
