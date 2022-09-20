@@ -75,6 +75,10 @@ class Scene: Node {
             }
             isSharingNodes = true
         }
+        
+        func touchesBegan() { }
+        
+        func touchesEnded() { }
     }
     
     func removeSharedNodes() { for node in sharedNodes { self.removeChild(node) } }

@@ -12,7 +12,7 @@ class Renderer: NSObject {
         
         updateScreenSize(view: mtkView)
         
-        SceneManager.Initialize(.TestTubes)
+        SceneManager.Initialize(.Menu)
         
         setupBaseRenderPass()
 
