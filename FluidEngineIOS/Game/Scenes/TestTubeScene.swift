@@ -188,9 +188,9 @@ class TestTubeScene : Scene {
     // cant see much of difference from above now
     private func kineticHitTest() -> TestTube? { // tests based on current location
         for testTube in tubeGrid {
-//            if let testTube = testTube.getTubeAtBox2DPosition(Mouse.GetBoxPos()) {
-//                return testTube
-//            }
+            if let testTube = testTube.getTubeAtBox2DPosition(Touches.GetBoxPos()) {
+                return testTube
+            }
         }
         return nil
     }
@@ -376,6 +376,28 @@ class TestTubeScene : Scene {
         
         if _currentState ==  .Emptying {
         EmptyTubesStep(deltaTime)
+        }
+        if (Touches.IsDragging) {
+            switch _currentState {
+            case .HoldInterval:
+                if _holdDelay == _defaultHoldTime {
+                    selectedTube?.select()
+                }
+                if _holdDelay >= 0.0 {
+                    _holdDelay -= deltaTime
+                }
+                else {
+                    _currentState = .Moving
+                }
+            case .Moving:
+                let boxPos = Touches.GetBoxPos()
+                selectedTube?.moveToCursor(boxPos)
+                guard let selectId = selectedTube?.gridId else { return }
+                hoverSelect(boxPos, deltaTime: deltaTime, excludeMoving: selectId)
+            default:
+                break
+                print("current scene state: \(_currentState)")
+            }
         }
 
     }

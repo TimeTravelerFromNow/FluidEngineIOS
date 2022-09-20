@@ -49,7 +49,7 @@ class BeachScene : Scene {
     
     override func sceneSizeWillChange() {
         super.sceneSizeWillChange()
-        fluidObject.makeBoundingBox(center: box2DOrigin - float2(6,2), size: Size2D(width: 12, height: 4))
+//        fluidObject.makeBoundingBox(center: box2DOrigin - float2(6,2), size: Size2D(width: 12, height: 4))
         GameSettings.particleRadius = 20.0
     }
     

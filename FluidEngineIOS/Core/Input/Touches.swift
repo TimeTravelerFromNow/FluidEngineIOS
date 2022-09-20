@@ -4,10 +4,12 @@ class Touches {
 
     private static var MAX_TOUCHES_COUNT = 10
     private static var touchList = [Bool].init(repeating: false, count: MAX_TOUCHES_COUNT)
-    private static var touchIndex = -1
+    private static var touchIndex = 0
     
     private static var lastTouchPosition = float2(0,0)
 
+    public static var IsDragging: Bool { return touchList[ touchIndex ] }
+    
     public static func startTouch() {
         if touchIndex < MAX_TOUCHES_COUNT - 1 {
             touchIndex += 1
@@ -16,7 +18,7 @@ class Touches {
     }
 
     public static func endTouch() {
-        if touchIndex > 0 {
+        if touchIndex > 1 {
             touchIndex -= 1
             touchList[ touchIndex ] = false
         }
