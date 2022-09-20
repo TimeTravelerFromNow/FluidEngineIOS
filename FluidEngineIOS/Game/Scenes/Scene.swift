@@ -75,10 +75,6 @@ class Scene: Node {
             }
             isSharingNodes = true
         }
-        
-        func touchesBegan() { }
-        
-        func touchesEnded() { }
     }
     
     func removeSharedNodes() { for node in sharedNodes { self.removeChild(node) } }
@@ -128,6 +124,10 @@ class Scene: Node {
             camera.aspect = Renderer.ScreenSize.x / Renderer.ScreenSize.y
         }
     }
+    
+    func touchesBegan() { }
+    
+    func touchesEnded() { }
 }
 
 class SceneManager: Library<SceneTypes, Scene> {

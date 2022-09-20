@@ -272,6 +272,103 @@ class TestTubeScene : Scene {
         _holdDelay = _defaultHoldTime
         _currentState = .Idle
     }
+    override func touchesBegan() {
+        
+        switch boxButtonHitTest(boxPos: Touches.GetBoxPos()) {
+        case .None:
+            print("hit a test button")
+        case .Clear:
+            print("hit the clear button")
+        case nil:
+            print("clicked no button")
+        default:
+            break
+        }
+        fluidObject.debugParticleDraw(atPosition: Touches.GetBoxPos())
+    
+        switch _currentState {
+        case .HoldInterval:
+            print("grabbed tube, determining hold status")
+            selectedTube?.select()
+        case .Moving: // use hover code
+            print("grabbed tube")
+            selectedTube?.moveToCursor(Touches.GetTouchViewportPosition()) // MARK: Needs refactoring in both
+        case .Emptying:
+            var oneEmptying = false
+            for tube in tubeGrid {
+                oneEmptying = (tube.isEmptying || oneEmptying)
+            }
+            if !oneEmptying {
+                _currentState = .Filling
+            }
+        case .Filling:
+            var oneFilling = false
+            for tube in tubeGrid {
+                oneFilling = (tube.isEmptying || oneFilling)
+            }
+            if !oneFilling {
+                _currentState = .Idle
+            }
+        case .Selected:
+            guard let nodeAt = kineticHitTest() else {
+                unSelect()
+                return
+            }
+            if nodeAt.gridId == selectedTube?.gridId { // we clicked the same selected tube
+                _currentState = .Moving
+            } else { // pour into nodeAt
+                pourCandidate = nodeAt
+                if !(tubeLevel.pourConflict(pouringTubeIndex: selectedTube?.gridId ?? -1, pouringCandidateIndex: nodeAt.gridId ) ) && (nodeAt.currentState == .AtRest){
+                    pourTubes()
+                    _currentState = .Idle
+                } else { // red highlights Flash
+                    pourCandidate?.conflict()
+                    unSelect()
+                }
+            }
+        case .Idle:
+            guard let nodeAt = boxHitTest(boxPos: Touches.GetBoxPos(), excludeDragging: -1) else { return }
+            if nodeAt.currentState == .AtRest {
+                selectedTube = nodeAt
+                selectedTube?.select()
+                _currentState = .HoldInterval
+            }
+        default:
+            print("nothing to do")
+        }
+    }
+    
+    override func touchesEnded() {
+        switch boxButtonHitTest(boxPos: Touches.GetBoxPos()) {
+        case .None:
+            print("let go of a button")
+        case .Clear:
+            beginEmpty()
+            print("clear action now")
+        case .ToMenu:
+            SceneManager.sceneSwitchingTo = .Menu
+        case nil:
+            print("let go of no button")
+        default:
+            break
+        }
+        for b in buttons {
+            b.deSelect()
+        }
+        switch _currentState {
+        case .HoldInterval:
+            if _holdDelay > 0.0 {
+                selectedTube?.currentState = .Selected
+                _currentState = .Selected
+            } else {
+                unSelect()
+            }
+        case .Moving:
+            unSelect()
+        default:
+            print("nothing to do")
+        }
+    }
     
     override func update(deltaTime : Float) {
         super.update(deltaTime: deltaTime)

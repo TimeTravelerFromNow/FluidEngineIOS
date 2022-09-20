@@ -3,6 +3,8 @@ import MetalKit
 class Renderer: NSObject {
     
     public static var ScreenSize = float2(0,0)
+    public static var Bounds = float2(0,0)
+
     public static var AspectRatio: Float { return ScreenSize.x / ScreenSize.y }
     
     private var _baseRenderPassDescriptor: MTLRenderPassDescriptor!
@@ -66,6 +68,7 @@ extension Renderer: MTKViewDelegate{
     
     public func updateScreenSize(view: MTKView){
         Renderer.ScreenSize = float2(Float(view.drawableSize.width), Float(view.drawableSize.height))
+        Renderer.Bounds  = float2(Float(view.bounds.width), Float(view.bounds.height))
         print("SCreensize : \(Renderer.ScreenSize)")
         SceneManager.currentScene?.sceneSizeWillChange()
     }
@@ -110,4 +113,21 @@ extension Renderer: MTKViewDelegate{
         self._baseRenderPassDescriptor.depthAttachment.loadAction = .clear
     }
     
+}
+
+extension GameView {
+    override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
+        super.touchesBegan(touches, with: event)
+        Touches.touchesBegan(touches, with: event, self)
+        SceneManager.currentScene.touchesBegan()
+    }
+    override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
+        super.touchesBegan(touches, with: event)
+        Touches.touchesEnded(touches, with: event)
+        SceneManager.currentScene.touchesEnded()
+    }
+    override func touchesMoved(_ touches: Set<UITouch>, with event: UIEvent?) {
+        super.touchesBegan(touches, with: event)
+        Touches.touchesMoved(touches, with: event, self)
+    }
 }

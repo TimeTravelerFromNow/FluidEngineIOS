@@ -93,7 +93,42 @@ class MenuScene : Scene {
     }
     
     
-   
+    override func touchesBegan() {
+        switch boxButtonHitTest(boxPos: Touches.GetBoxPos()) {
+        case .None:
+            print("hit a test button")
+        case .Clear:
+            print("hit the clear button")
+        case .NewGame:
+            print("hit the new game button")
+        case nil:
+            print("clicked no button")
+        default:
+            print("clicked a button")
+        }
+        fluidObject.debugParticleDraw(atPosition: Touches.GetBoxPos())
+    }
+    
+    override func touchesEnded() {
+        switch boxButtonHitTest(boxPos: Touches.GetBoxPos()) {
+        case .None:
+            print("let go of a button")
+        case .Clear:
+            print("clear action now")
+        case .NewGame:
+            SceneManager.sceneSwitchingTo = .TestTubes
+            print("start a new game now!")
+        case .ToBeach:
+            SceneManager.sceneSwitchingTo = .Beach
+        case .ToMenu:
+            print("pressed to menu button in the menu?")
+        case nil:
+            print("let go of no button")
+        }
+        for b in buttons {
+            b.deSelect()
+        }
+    }
 
 }
 

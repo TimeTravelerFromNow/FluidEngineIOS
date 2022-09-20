@@ -105,7 +105,6 @@
 		92A9E3A828DA6D1F0000A77F /* TestTubeScene.swift in Sources */ = {isa = PBXBuildFile; fileRef = 92A9E3A128DA6D1F0000A77F /* TestTubeScene.swift */; };
 		92A9E3A928DA6D1F0000A77F /* Matrix.swift in Sources */ = {isa = PBXBuildFile; fileRef = 92A9E3A228DA6D1F0000A77F /* Matrix.swift */; };
 		92A9E3AA28DA6D1F0000A77F /* BeachScene.swift in Sources */ = {isa = PBXBuildFile; fileRef = 92A9E3A328DA6D1F0000A77F /* BeachScene.swift */; };
-		92A9E3AB28DA6D1F0000A77F /* DeveloperScene.swift in Sources */ = {isa = PBXBuildFile; fileRef = 92A9E3A428DA6D1F0000A77F /* DeveloperScene.swift */; };
 		92A9E3AC28DA6D1F0000A77F /* MenuScene.swift in Sources */ = {isa = PBXBuildFile; fileRef = 92A9E3A528DA6D1F0000A77F /* MenuScene.swift */; };
 		92A9E3AD28DA6D1F0000A77F /* Node.swift in Sources */ = {isa = PBXBuildFile; fileRef = 92A9E3A628DA6D1F0000A77F /* Node.swift */; };
 		92A9E3B328DA6D3E0000A77F /* Math.swift in Sources */ = {isa = PBXBuildFile; fileRef = 92A9E3AF28DA6D3E0000A77F /* Math.swift */; };
@@ -317,7 +316,6 @@
 		92A9E3A128DA6D1F0000A77F /* TestTubeScene.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TestTubeScene.swift; sourceTree = "<group>"; };
 		92A9E3A228DA6D1F0000A77F /* Matrix.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Matrix.swift; sourceTree = "<group>"; };
 		92A9E3A328DA6D1F0000A77F /* BeachScene.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BeachScene.swift; sourceTree = "<group>"; };
-		92A9E3A428DA6D1F0000A77F /* DeveloperScene.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DeveloperScene.swift; sourceTree = "<group>"; };
 		92A9E3A528DA6D1F0000A77F /* MenuScene.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MenuScene.swift; sourceTree = "<group>"; };
 		92A9E3A628DA6D1F0000A77F /* Node.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Node.swift; sourceTree = "<group>"; };
 		92A9E3AF28DA6D3E0000A77F /* Math.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Math.swift; sourceTree = "<group>"; };
@@ -734,7 +732,6 @@
 				92A9E3A128DA6D1F0000A77F /* TestTubeScene.swift */,
 				92A9E3A228DA6D1F0000A77F /* Matrix.swift */,
 				92A9E3A328DA6D1F0000A77F /* BeachScene.swift */,
-				92A9E3A428DA6D1F0000A77F /* DeveloperScene.swift */,
 				92A9E3A528DA6D1F0000A77F /* MenuScene.swift */,
 				92A9E3A628DA6D1F0000A77F /* Node.swift */,
 			);
@@ -1009,7 +1006,6 @@
 				92489BB62799DA0400639B52 /* b2BlockAllocator.cpp in Sources */,
 				92A9E39428DA6CEB0000A77F /* SkyBackground.swift in Sources */,
 				923F2B4627A0FC5A00443936 /* Renderer.swift in Sources */,
-				92A9E3AB28DA6D1F0000A77F /* DeveloperScene.swift in Sources */,
 				92489B9D2799DA0400639B52 /* b2PolygonContact.cpp in Sources */,
 				92489B4E2799DA0400639B52 /* GameView.swift in Sources */,
 				923F2B6327A0FCE200443936 /* GameSettings.swift in Sources */,
