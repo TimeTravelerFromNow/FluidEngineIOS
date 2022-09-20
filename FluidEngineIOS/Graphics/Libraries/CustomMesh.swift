@@ -35,6 +35,11 @@ class CustomMesh {
         buildBuffers()
     }
     
+    func updateVertexColor(_ color: float4, atIndex: Int) {
+        if atIndex > _vertices.count - 1 { print("warning tried to update index out of range"); return}
+        _vertices[ atIndex ].color = color
+    }
+    
     internal func addVertex(position: float3,
                            color: float4,
                            textureCoordinate: float2 = float2(0,0)) {
@@ -60,7 +65,7 @@ class CustomMesh {
                                                  options: [])
         
         _indexBuffer = Engine.Device.makeBuffer(bytes: _indices,
-                                                length: uint32.stride(self._indices.count),
+                                                length: UInt32.stride(self._indices.count),
                                                 options: [])
     }
     
@@ -77,10 +82,10 @@ class CustomMesh {
 
 class SkyQuad: CustomMesh {
     override func buildMesh() {
-        addVertex(position: float3( 0.5, 0.5, 0.0),color: float4(0.05,0.6,0.9,1.0), textureCoordinate: float2(1,0)) // Top Right,
-        addVertex(position: float3(-0.5, 0.5, 0.0),color: float4(0.05,0.6,0.9,1.0), textureCoordinate: float2(0,0)) // Top Left,
-        addVertex(position: float3(-0.5,-0.5, 0.0),color: float4(0.1,0.6,1.0,1.0), textureCoordinate: float2(0,1)) // Bottom Left,
-        addVertex(position: float3( 0.5,-0.5, 0.0),color: float4(0.1,0.6,1.0,1.0), textureCoordinate: float2(1,1)) // Bottom Right
+        addVertex(position: float3( 0.5, 0.5, 0.0),color: float4(0.3,0.8,0.8,1.0), textureCoordinate: float2(1,0)) // Top Right,
+        addVertex(position: float3(-0.5, 0.5, 0.0),color: float4(0.9,0.4,0.9,1.0), textureCoordinate: float2(0,0)) // Top Left,
+        addVertex(position: float3(-0.5,-0.5, 0.0),color: float4(0.9,0.8,1.0,1.0), textureCoordinate: float2(0,1)) // Bottom Left,
+        addVertex(position: float3( 0.5,-0.5, 0.0),color: float4(0.4,0.6,1.0,1.0), textureCoordinate: float2(1,1)) // Bottom Right
         
         setIndices( [ 0, 1, 2,    0, 2, 3 ])
     }

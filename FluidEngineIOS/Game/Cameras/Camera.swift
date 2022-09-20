@@ -27,8 +27,8 @@ class OrthoCamera: Camera {
     func getFrameSize() -> Float { return frameSize }
     func scaleFrame(_ by: Float) { frameSize += by }
     
-    var rect : Rectangle { return Rectangle(left: -frameSize * aspect,
-                         right: frameSize * aspect,
+    var rect : Rectangle { return Rectangle(left: frameSize * aspect,
+                                            right: -frameSize * aspect,
                          top: frameSize,
                          bottom: -frameSize)}
     override var projectionMatrix: matrix_float4x4 {

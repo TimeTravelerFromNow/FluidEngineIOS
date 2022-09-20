@@ -1,11 +1,10 @@
 #import "LiquidFun.h"
 #import "Box2D.h"
 #import "Tube.h"
-#import "CustomContactListener.h"
-#import "JointTest.h"
+#import "BoxButton.h"
+#import "PolygonObject.h"
 
 static b2World *world;
-MyContactListener contactListener;
 
 @implementation LiquidFun
 
@@ -43,7 +42,6 @@ MyContactListener contactListener;
 // world access
 + (void)createWorldWithGravity:(Vector2D)gravity {
     world = new b2World(b2Vec2(gravity.x, gravity.y));
-    world->SetContactListener(&contactListener);
     world->SetDebugDraw(&metalDebugDraw);
 }
 
@@ -79,7 +77,7 @@ MyContactListener contactListener;
     
     b2ParticleSystem *particleSystem = world->CreateParticleSystem(&particleSystemDef);
     
-    particleSystem->SetFlagsBuffer(flagBuffer, flagCount);
+   // particleSystem->SetFlagsBuffer(flagBuffer, flagCount);
     return particleSystem;
 }
 // freezing
@@ -108,7 +106,7 @@ MyContactListener contactListener;
     shape.SetAsBox(size.width * 0.5f, size.height * 0.5f);
     
     b2ParticleGroupDef particleGroupDef;
-    particleGroupDef.flags = b2_waterParticle;
+    particleGroupDef.flags = b2_waterParticle | b2_fixtureContactFilterParticle;
     particleGroupDef.position.Set(position.x, position.y);
     particleGroupDef.shape = &shape;
     b2ParticleColor pColor;
@@ -117,6 +115,7 @@ MyContactListener contactListener;
     particleGroupDef.color = pColor;
     ((b2ParticleSystem *)particleSystem)->CreateParticleGroup(particleGroupDef);
 }
+
 
 + (int)particleCountForSystem:(void *)particleSystem {
   return ((b2ParticleSystem *)particleSystem)->GetParticleCount();
@@ -165,197 +164,7 @@ MyContactListener contactListener;
    // ((b2ParticleSystem *)particleSystem)->SetColorBuffer(<#b2ParticleColor *buffer#>, <#int32 capacity#>)
 }
 
-// for managing transferring particles leaving to new tubes
-+ (int)leavingParticleSystem:(void *)particleSystem newSystem:(void *)newSystem a:(Vector2D)a b:(Vector2D)b isLeft:(bool)isLeft {
-    b2ParticleGroupDef newGroupDef;
-    
-    b2Vec2* positionBuffer = ((b2ParticleSystem *)particleSystem)->GetPositionBuffer();
-    int oldPositionsCount = ((b2ParticleSystem *)particleSystem)->GetParticleCount();
-    b2Vec2* velocityBuffer = ((b2ParticleSystem *)particleSystem)->GetVelocityBuffer();
-    int newPositionsCount = 0;
-    for(int i = 0; i<oldPositionsCount; i++) {
-        b2Vec2 c = positionBuffer[i];
-        if( ((b.x - a.x)*(c.y - a.y) - (b.y - a.y)*(c.x - a.x)) > 0 ) {
-            newPositionsCount++;
-        }
-    }
-    b2Vec2 newPositions[newPositionsCount];
-    b2Vec2 newVelocities[newPositionsCount];
-    int newPositionIndex = 0;
-    float avVelocityX = 0.0;
-    float avVelocityY = 0.0;
-    
-    for(int i = 0; i<oldPositionsCount; i++) {
-        b2Vec2 c = positionBuffer[i];
-        if(((b.x - a.x)*(c.y - a.y) - (b.y - a.y)*(c.x - a.x)) > 0 ) {
-            newPositions[newPositionIndex] = positionBuffer[i];
-            newVelocities[newPositionIndex] = velocityBuffer[i];
-            avVelocityX += newVelocities[newPositionIndex].x;
-            avVelocityY += newVelocities[newPositionIndex].y;
-            newPositionIndex++;
-            ((b2ParticleSystem *)particleSystem)->DestroyParticle(i, false);
-        }
-    }
-    avVelocityX = avVelocityX / float(newPositionsCount);
-    avVelocityY = avVelocityY / float(newPositionsCount);
-    newGroupDef.positionData = newPositions;
-    newGroupDef.linearVelocity = b2Vec2(avVelocityX, avVelocityY);
-    newGroupDef.particleCount = newPositionsCount;
-    newGroupDef.flags = b2_waterParticle;
-    
-    ((b2ParticleSystem *)newSystem)->CreateParticleGroup(newGroupDef);
-    return newPositionsCount;
-}
-+ (int)leavingTube:(void *)particleSystem newSystem:(void *)newSystem width:(float)width height:(float)height rotation:(float)rotation position:(Vector2D)position {
-    b2ParticleGroupDef newGroupDef;
-   
-//    b2BodyDef bodyDef;        // for seeing the box as a debug square
-//    bodyDef.position.Set(position.x, position.y);
-//    b2Body *body = world->CreateBody(&bodyDef);
-    b2PolygonShape hitBox;
-    hitBox.SetAsBox(width , height);
-    b2Transform boxTransform;
-    boxTransform.Set( b2Vec2( position.x, position.y), rotation);
-//    b2FixtureDef boxDef;
-//    boxDef.shape = &hitBox;
-//    body->SetActive(false);
-//    body->CreateFixture(&boxDef);
-    
-    b2Vec2* positionBuffer = ((b2ParticleSystem *)particleSystem)->GetPositionBuffer();
-    int oldPositionsCount = ((b2ParticleSystem *)particleSystem)->GetParticleCount();
-    b2Vec2* velocityBuffer = ((b2ParticleSystem *)particleSystem)->GetVelocityBuffer();
-    int newPositionsCount = 0;
-    for(int i = 0; i<oldPositionsCount; i++) {
-        b2Vec2 c = positionBuffer[i];
-        if( !( hitBox.TestPoint(boxTransform, c  ) ) ) {
-            newPositionsCount++;
-        }
-    }
-    b2Vec2 newPositions[newPositionsCount];
-    int newPositionIndex = 0;
-    float avVelocityX = 0.0;
-    float avVelocityY = 0.0;
-    
-    for(int i = 0; i<oldPositionsCount; i++) {
-        b2Vec2 c = positionBuffer[i];
-        if( ! ( hitBox.TestPoint(boxTransform, c )) ) {
-            newPositions[newPositionIndex] = positionBuffer[i];
-            avVelocityX += velocityBuffer[newPositionIndex].x;
-            avVelocityY += velocityBuffer[newPositionIndex].y;
-            newPositionIndex++;
-            ((b2ParticleSystem *)particleSystem)->DestroyParticle(i, false);
-        }
-    }
-    avVelocityX = avVelocityX / float(newPositionsCount);
-    avVelocityY = avVelocityY / float(newPositionsCount);
-    newGroupDef.positionData = newPositions;
-    newGroupDef.linearVelocity = b2Vec2(avVelocityX, avVelocityY);
-    newGroupDef.particleCount = newPositionsCount;
-    newGroupDef.flags = b2_waterParticle;
-    
-    ((b2ParticleSystem *)newSystem)->CreateParticleGroup(newGroupDef);
-    return newPositionsCount;
-}
-+ (int)backwashingTube:(void *)particleSystem backSystem:(void *)newSystem width:(float)width height:(float)height rotation:(float)rotation position:(Vector2D)position color:(void *)color {
-    b2ParticleGroupDef newGroupDef;
-   
-    b2PolygonShape hitBox;
-    hitBox.SetAsBox(width , height);
-    b2Transform boxTransform;
-    boxTransform.Set( b2Vec2( position.x, position.y), rotation);
 
-    b2Vec2* positionBuffer = ((b2ParticleSystem *)particleSystem)->GetPositionBuffer();
-    int oldPositionsCount = ((b2ParticleSystem *)particleSystem)->GetParticleCount();
-    b2Vec2* velocityBuffer = ((b2ParticleSystem *)particleSystem)->GetVelocityBuffer();
-    int newPositionsCount = 0;
-    for(int i = 0; i<oldPositionsCount; i++) {
-        b2Vec2 c = positionBuffer[i];
-        if(  hitBox.TestPoint(boxTransform, c  ) ) {   
-            newPositionsCount++;
-        }
-    }
-    b2Vec2 newPositions[newPositionsCount];
-    int newPositionIndex = 0;
-    float avVelocityX = 0.0;
-    float avVelocityY = 0.0;
-    
-    for(int i = 0; i<oldPositionsCount; i++) {  // transfer if inside
-        b2Vec2 c = positionBuffer[i];
-        if(  hitBox.TestPoint(boxTransform, c ) ) {
-            newPositions[newPositionIndex] = positionBuffer[i];
-            avVelocityX += velocityBuffer[newPositionIndex].x;
-            avVelocityY += velocityBuffer[newPositionIndex].y;
-            newPositionIndex++;
-            ((b2ParticleSystem *)particleSystem)->DestroyParticle(i, false);
-        }
-    }
-    avVelocityX = avVelocityX / float(newPositionsCount);
-    avVelocityY = avVelocityY / float(newPositionsCount);
-    newGroupDef.positionData = newPositions;
-    newGroupDef.linearVelocity = b2Vec2(avVelocityX, avVelocityY);
-    newGroupDef.particleCount = newPositionsCount;
-    b2ParticleColor pColor;
-    Color* inColor = (Color*)color;
-    pColor.Set(uint8( inColor->r * 255 ), uint8(inColor->g * 255), uint8(inColor->b * 255), uint8( inColor->a * 255 ));
-    newGroupDef.color = pColor;
-    newGroupDef.flags = b2_waterParticle;
-    
-    ((b2ParticleSystem *)newSystem)->CreateParticleGroup(newGroupDef);
-    return newPositionsCount;
-}
-+ (int)deleteParticlesOutside:(void *)particleSystem width:(float)width height:(float)height rotation:(float)rotation position:(Vector2D)position {
-    b2PolygonShape hitBox;
-    hitBox.SetAsBox(width , height);
-    b2Transform boxTransform;
-    boxTransform.Set( b2Vec2( position.x, position.y), rotation);
-
-    b2Vec2* positionBuffer = ((b2ParticleSystem *)particleSystem)->GetPositionBuffer();
-    int oldPositionsCount = ((b2ParticleSystem *)particleSystem)->GetParticleCount();
-    int numDestroyed = 0;
-    for(int i = 0; i<oldPositionsCount; i++) {
-        b2Vec2 c = positionBuffer[i];
-        if(  !( hitBox.TestPoint(boxTransform, c)  ) ) {
-            ((b2ParticleSystem *)particleSystem)->DestroyParticle(i, false);
-            numDestroyed++;
-        }
-    }
-    return numDestroyed;
-}
-+ (void)transferTopMostGroupInParticleSystem:(void *)particleSystem newSystem:(void *)newSystem color:(void *)color aboveYPosition:(float)aboveYPosition {
-    b2ParticleGroupDef newGroupDef;
-  
-    b2Vec2* positionBuffer = ((b2ParticleSystem *)particleSystem)->GetPositionBuffer();
-    int oldPositionsCount = ((b2ParticleSystem *)particleSystem)->GetParticleCount();
-    int newPositionsCount = 0;
-    for(int i = 0; i<oldPositionsCount; i++) {
-        if(positionBuffer[i].y > aboveYPosition) {
-            newPositionsCount++;
-        }
-    }
-    b2Vec2 newPositions[newPositionsCount];
-    int newPositionIndex = 0;
-    for(int i = 0; i<oldPositionsCount; i++) {
-        if(positionBuffer[i].y > aboveYPosition) {
-            newPositions[newPositionIndex] = positionBuffer[i];
-            newPositionIndex++;
-            ((b2ParticleSystem *)particleSystem)->DestroyParticle(i, false);
-        }
-    }
-    newGroupDef.positionData = newPositions;
-    newGroupDef.particleCount = newPositionsCount;
-    newGroupDef.flags = b2_waterParticle;
-
-    b2ParticleColor pColor;
-    Color* inColor = (Color*)color;
-    pColor.Set(uint8( inColor->r * 255 ), uint8(inColor->g * 255), uint8(inColor->b * 255), uint8( inColor->a * 255 ));
-    newGroupDef.color = pColor;
-    b2ParticleGroup* oldGroup = ((b2ParticleSystem *)newSystem)->GetParticleGroupList();
-    ((b2ParticleSystem *)newSystem)->CreateParticleGroup(newGroupDef);
-    b2ParticleGroup* newGroup = ((b2ParticleSystem *)newSystem)->GetParticleGroupList();
-    if(oldGroup) { //merge if there was a group there before at the top.
-        ((b2ParticleSystem *)newSystem)->JoinParticleGroups(oldGroup,newGroup);
-    }
-}
 // for cropping the overflows, and returns how many deleted
 + (int)deleteParticlesInParticleSystem:(void *)particleSystem aboveYPosition:(float)aboveYPosition {
     b2Vec2* positionBuffer = ((b2ParticleSystem *)particleSystem)->GetPositionBuffer();
@@ -370,6 +179,7 @@ MyContactListener contactListener;
     }
     return abovePositionsCount;
 }
+
 
 + (int)deleteBelowInParticleSystem:(void *)particleSystem belowYPosition:(float)belowYPosition {
 b2Vec2* positionBuffer = ((b2ParticleSystem *)particleSystem)->GetPositionBuffer();
@@ -398,9 +208,7 @@ return belowPositionsCount;
   positionIterations:(int)positionIterations {
   world->Step(timeStep, velocityIterations, positionIterations);
     world->DrawDebugData();
-    for(int i = 0; i < tubes.size(); i++) {
-        tubes.at(i)->PostSolve();
-    }
+
 }
 + (void *)createEdgeBoxWithOrigin:(Vector2D)origin size:(Size2D)size {
   // create the body
@@ -427,16 +235,35 @@ return belowPositionsCount;
 }
 
 + (void *)createGroundBoxWithOrigin:(Vector2D)origin size:(Size2D)size {
-  // create the body
-  b2BodyDef bodyDef;
+    // create the body
+    b2BodyDef bodyDef;
     bodyDef.type = b2_dynamicBody;
-  bodyDef.position.Set(origin.x, origin.y);
-  b2Body *body = world->CreateBody(&bodyDef);
-
-b2PolygonShape shape;
+    bodyDef.position.Set(origin.x, origin.y);
+    b2Body *body = world->CreateBody(&bodyDef);
+    
+    b2PolygonShape shape;
     shape.SetAsBox(size.height, size.width);
     body->CreateFixture(&shape, 0.0f);
-  return body;
+    return body;
+}
+
++ (void *)b2BoundingBoxFromScreen:(Vector2D)bottomLeftCorner topRightCorner:(Vector2D)topRightCorner {
+    b2BodyDef bodyDef;
+    b2Body *body = world->CreateBody(&bodyDef);
+    b2EdgeShape shape;
+    // bottom
+    shape.Set(b2Vec2(bottomLeftCorner.x, bottomLeftCorner.y), b2Vec2(topRightCorner.x, bottomLeftCorner.y));
+    body->CreateFixture(&shape, 0);
+    // top
+    shape.Set(b2Vec2(topRightCorner.x, topRightCorner.y), b2Vec2(bottomLeftCorner.x, topRightCorner.y));
+    body->CreateFixture(&shape, 0);
+    // left
+    shape.Set(b2Vec2(bottomLeftCorner.x, topRightCorner.y), b2Vec2(bottomLeftCorner.x, bottomLeftCorner.y));
+    body->CreateFixture(&shape, 0);
+    // right
+    shape.Set(b2Vec2(topRightCorner.x, bottomLeftCorner.y), b2Vec2(topRightCorner.x, topRightCorner.y));
+    body->CreateFixture(&shape, 0);
+    return body;
 }
 
 + (void)setGravity:(Vector2D)gravity {
@@ -449,8 +276,8 @@ b2PolygonShape shape;
 + (void)destroyWorld {
     world->SetAllowSleeping(true);
     world->SetSubStepping(false);
-//  delete world;
-//  world = NULL;
+    delete world;
+    world = NULL;
 }
 
 + (void *)makeLineFixtureOnBody:(void *)bodyRef vertices:(void *)vertices {
@@ -491,6 +318,71 @@ b2PolygonShape shape;
     } return nil;
 }
 
+// for managing transferring particles leaving to new tubes
++ (int)leavingParticleSystem:(void *)particleSystem newSystem:(void *)newSystem a:(Vector2D)a b:(Vector2D)b isLeft:(bool)isLeft {
+    b2ParticleGroupDef newGroupDef;
+    
+    b2Vec2* positionBuffer = ((b2ParticleSystem *)particleSystem)->GetPositionBuffer();
+    int oldPositionsCount = ((b2ParticleSystem *)particleSystem)->GetParticleCount();
+    b2Vec2* velocityBuffer = ((b2ParticleSystem *)particleSystem)->GetVelocityBuffer();
+    int newPositionsCount = 0;
+    for(int i = 0; i<oldPositionsCount; i++) {
+        b2Vec2 c = positionBuffer[i];
+        if( ((b.x - a.x)*(c.y - a.y) - (b.y - a.y)*(c.x - a.x)) > 0 ) {
+            newPositionsCount++;
+        }
+    }
+    b2Vec2 newPositions[newPositionsCount];
+    b2Vec2 newVelocities[newPositionsCount];
+    int newPositionIndex = 0;
+    float avVelocityX = 0.0;
+    float avVelocityY = 0.0;
+    
+    for(int i = 0; i<oldPositionsCount; i++) {
+        b2Vec2 c = positionBuffer[i];
+        if(((b.x - a.x)*(c.y - a.y) - (b.y - a.y)*(c.x - a.x)) > 0 ) {
+            newPositions[newPositionIndex] = positionBuffer[i];
+            newVelocities[newPositionIndex] = velocityBuffer[i];
+            avVelocityX += newVelocities[newPositionIndex].x;
+            avVelocityY += newVelocities[newPositionIndex].y;
+            newPositionIndex++;
+            ((b2ParticleSystem *)particleSystem)->DestroyParticle(i, false);
+        }
+    }
+    avVelocityX = avVelocityX / float(newPositionsCount);
+    avVelocityY = avVelocityY / float(newPositionsCount);
+    newGroupDef.positionData = newPositions;
+    newGroupDef.linearVelocity = b2Vec2(avVelocityX, avVelocityY);
+    newGroupDef.particleCount = newPositionsCount;
+    newGroupDef.flags = b2_waterParticle | b2_fixtureContactFilterParticle;
+
+    ((b2ParticleSystem *)newSystem)->CreateParticleGroup(newGroupDef);
+    return newPositionsCount;
+}
++ (int)deleteParticlesOutside:(void *)particleSystem width:(float)width height:(float)height rotation:(float)rotation position:(Vector2D)position {
+    b2PolygonShape hitBox;
+    hitBox.SetAsBox(width , height);
+    b2Transform boxTransform;
+    boxTransform.Set( b2Vec2( position.x, position.y), rotation);
+
+    b2Vec2* positionBuffer = ((b2ParticleSystem *)particleSystem)->GetPositionBuffer();
+    int oldPositionsCount = ((b2ParticleSystem *)particleSystem)->GetParticleCount();
+    int numDestroyed = 0;
+    for(int i = 0; i<oldPositionsCount; i++) {
+        b2Vec2 c = positionBuffer[i];
+        if(  !( hitBox.TestPoint(boxTransform, c)  ) ) {
+            ((b2ParticleSystem *)particleSystem)->DestroyParticle(i, false);
+            numDestroyed++;
+        }
+    }
+    return numDestroyed;
+}
+
++ (int)engulfParticles:(void *)inTube originalParticleSystem:(void *)originalParticleSystem {
+    return ( (Tube *) inTube )->EngulfParticles( ( (b2ParticleSystem *)originalParticleSystem ) );
+}
+
+
 //movement and rotation
 + (void)moveKinematic:(void *)kinematicRef pushDirection:(Vector2D)pushDirection {
     ((b2Body *) kinematicRef)->SetLinearVelocity(b2Vec2(pushDirection.x,pushDirection.y));
@@ -517,45 +409,32 @@ b2PolygonShape shape;
     return ((b2Body *)bodyRef)->GetAngle();
 }
 
-//joint tests
-+ (void *)makeJointTest:(Vector2D)location
-            box1Vertices:(void *)box1Vertices box1Count:(UInt32)box1Count
-            box2Vertices:(void *)box2Vertices box2Count:(UInt32)box2Count {
-    return new JointTest(world, b2Vec2(location.x,location.y),
-                  (b2Vec2*)box1Vertices, (unsigned int)box1Count,
-                  (b2Vec2*)box2Vertices, (unsigned int)box2Count);
-}
-+ (void)moveJointTest:(void *)jointTest velocity:(Vector2D)velocity {
-    ((JointTest *)jointTest)->Move(b2Vec2(velocity.x,velocity.y));
-}
-// Tube class refactor
+// Tube class refactor ( now the tube is constructed in C++ and game scene communication occurs in TestTube.Swift )
 + (void *)makeTube:(void *)particleSysRef
           location:(Vector2D)location
           vertices:(void *) vertices vertexCount:(UInt32)vertexCount
           hitBoxVertices:(void *)hitBoxVertices hitBoxCount:(UInt32)hitBoxCount
           sensorVertices:(void *)sensorVertices sensorCount:(UInt32)sensorCount
-          row:(int)row
-          col:(int)col
-          gridId:(int)gridId{
+          tubeWidth:(float32)tubeWidth
+          tubeHeight:(float32)tubeHeight
+          gridId:(long)gridId {
     Tube* newTube = new Tube(world,
                              (b2ParticleSystem*) particleSysRef,
                              b2Vec2(location.x,location.y),
                              (b2Vec2*)vertices, (unsigned int)vertexCount,
                              (b2Vec2*)hitBoxVertices, (unsigned int)hitBoxCount,
                              (b2Vec2*)sensorVertices, (unsigned int)sensorCount,
-                             row,
-                             col,
+                             tubeWidth,
+                             tubeHeight,
                              gridId);
     tubes.push_back(newTube);
     return newTube;
 }
-+ (void)destroyTube:(void *)tube {
-    ((Tube *)tube)->~Tube();
+//hover candidate testing
++ (long)hoverCandidate:(void *)tube {
+    return ((Tube *)tube)->GetHoverCandidateGridId();
 }
-//collision
-+ (bool)isColliding:(void *)tube {
-    return ((Tube *)tube)->isFrozen;
-}
+
 //pour Guides
 + (void)addGuides:(void *)tube vertices:(void *)vertices {
     ((Tube *)tube)->AddGuides((b2Vec2 *) vertices);
@@ -563,46 +442,13 @@ b2PolygonShape shape;
 + (void)removeGuides:(void *)tube {
     ((Tube *)tube)->RemoveGuides();
 }
-// top cap management
-+ (void)capTop:(void *)tube vertices:(void *)vertices {
-    ((Tube *)tube)->CapTop((b2Vec2 *) vertices);
++ (void *)addDivider:(void *)tube vertices:(void *)vertices {
+    return ((Tube *)tube)->addDivider((b2Vec2 *) vertices);
 }
-+ (void)popCap:(void *)tube {
-    ((Tube *)tube)->PopCap();
-}
-//collision heirarchy
-+ (void)YieldToFill:(void *)tube{
-    ((Tube *)tube)->YieldToFill();
-}
-+(void)UnYieldToFill:(void *)tube {
-    ((Tube *)tube)->UnYieldToFill();
-}
-+ (void)PickUp:(void *)tube {
-    ((Tube *)tube)->StartPickup();
-}
-+ (void)Drop:(void *)tube {
-    ((Tube *)tube)->EndPickup();
-}
-+ (void)StartReturnTube:(void *)tube {
-    ((Tube *)tube)->StartReturn();
-}
-+ (void)RestTube:(void *)tube {
-    ((Tube *)tube)->EndReturn();
++ (void)removeDivider:(void *)tube divider:(void *)divider {
+    ((Tube *)tube)->removeDivider((b2Fixture*)divider);
 }
 
-+(void)PourTube:(void *)tube {
-    ((Tube *)tube)->pouring = true;
-}
-+(void)EndPourTube:(void *)tube {
-    ((Tube *)tube)->pouring = false;
-}
-// freezing
-//+ (void)freezeTube:(void *)tube {
-//    ((Tube *) tube)->Freeze();
-//}
-//+ (void)unFreezeTube:(void *)tube {
-//   ((Tube *) tube)->UnFreeze();
-//}
 //movement and rotation
 + (void)moveTube:(void *)tube pushDirection:(Vector2D)pushDirection {
     ((Tube *) tube)->Move(b2Vec2(pushDirection.x,pushDirection.y));
@@ -620,10 +466,97 @@ b2PolygonShape shape;
     return sharedPosition;
 }
 
++ (void *)getTubeAtPosition:(Vector2D)position {
+    b2Vec2 pos = b2Vec2(position.x, position.y);
+    unsigned long tubeCount = tubes.size();
+    for( int i = 0; i < tubeCount; i++ ){
+        if ( tubes[i]->IsAtPosition(pos) ) {
+            return tubes[i];
+        };
+    };
+    return nil;
+}
+
 + (float)getTubeRotation:(void *)tube{
     return ((Tube *)tube)->GetRotation();
 }
 
+//pour filtering
+
++ (void) SetPourBits:(void *)ofTube {
+    ((Tube *)ofTube)->SetPourBits();
+}
+    
++ (void) ClearPourBits:(void *)ofTube {
+    ((Tube *)ofTube)->ClearPourBits();
+}
+
+// making buttons
+
++ (void *) makeBoxButton:( Vector2D* )withVertices location:(Vector2D)location {
+    BoxButton* button = new BoxButton(world, (b2Vec2*)withVertices, b2Vec2(location.x, location.y));
+    return button;
+}
+
++ (bool) boxIsAtPosition:( Vector2D )boxPosition boxRef:(void *)boxRef {
+    return ((BoxButton *)boxRef)->IsAtPosition(b2Vec2(boxPosition.x, boxPosition.y));
+}
+
++ (Vector2D)getBoxButtonPosition:(void *)boxRef {
+    Vector2D sharedPosition;
+    b2Vec2 b2Pos = ((BoxButton*)boxRef)->GetPosition();
+    sharedPosition.x = b2Pos.x;
+    sharedPosition.y = b2Pos.y;
+    return sharedPosition;
+}
+
++ (float) getBoxButtonRotation:(void *)boxRef {
+    return ((BoxButton *)boxRef)->GetRotation();
+}
+
++ (void) updateBoxButton:(void *)boxRef {
+    ((BoxButton *)boxRef)->Update();
+}
++ (void) freezeButton:(void *)boxRef {
+    ((BoxButton *)boxRef)->Freeze();
+}
++ (void) unFreezeButton:(void *)boxRef {
+    ((BoxButton *)boxRef)->UnFreeze();
+}
+
+// custom polygons
++ (void *)makePolygon:( Vector2D* )withVertices vertexCount:( int32 )vertexCount location:(Vector2D)location {
+    PolygonObject* polygonObject = new PolygonObject(world, (b2Vec2*)withVertices, vertexCount, b2Vec2(location.x, location.y));
+    return polygonObject;
+}
++ (Vector2D)getPolygonPosition:(void *)polygonRef {
+    Vector2D sharedPosition;
+    b2Vec2 b2Pos = ((PolygonObject*)polygonRef)->GetPosition();
+    sharedPosition.x = b2Pos.x;
+    sharedPosition.y = b2Pos.y;
+    return sharedPosition;
+}
+
++ (float) getPolygonRotation:(void *)polygonRef {
+    return ((PolygonObject *)polygonRef)->GetRotation();
+}
+
++ (void) setPolygonVelocity:(void *)polygonRef velocity:(Vector2D)velocity {
+    ((PolygonObject *)polygonRef)->SetVelocity(b2Vec2(velocity.x, velocity.y));
+}
+
+//move a particle system
+
++ (void) moveParticleSystem:(void *)particleSys byVelocity:(Vector2D)byVelocity {
+    b2ParticleSystem* system = ((b2ParticleSystem *)particleSys);
+    int particleCount = system->GetParticleCount();
+    b2Vec2* vBuffer = system->GetVelocityBuffer();
+    b2Vec2 velocityChange = b2Vec2(byVelocity.x, byVelocity.y);
+    
+    for( int i = 0; i < particleCount; i++ ) {
+        vBuffer[i] += velocityChange;
+    }
+}
 @end
 
 

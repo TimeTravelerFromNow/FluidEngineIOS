@@ -37,48 +37,40 @@ class TubeLevel: GameLevel {
             print("only \(MyGameLevels.count) levels programmed, asked for \(levelNo).")
             return
         }
-        self.startingLevel = levelMatFromArray( MyGameLevels[level] )
-        self.colorStates = levelMatFromArray( MyGameLevels[level] )
+        self.startingLevel = MyGameLevels[level]
+        self.colorStates = MyGameLevels[level]
     }
     
     let numTubes: Int8 = 0
     private var _moves: Int = 0
     var levelNo : Int = 0
-    var startingLevel : TubeLevelMatrix!
+    var startingLevel : [ [ TubeColors ] ] = [] // [ [TubeData] for each tube ]
     var maxHistory:Int = 5
     
-    var colorStates:  TubeLevelMatrix!
-    private var _previousColorStates: [ TubeLevelMatrix ] = []// history
-    private var _futureColorStates:   [ TubeLevelMatrix ] = [] //for undoing an undo (called future as a joke)
+    var colorStates:  [ [TubeColors] ] = []
+    private var _previousColorStates: [ [[TubeColors]] ] = []// history
+    private var _futureColorStates:   [ [[TubeColors]] ] = [] //for undoing an undo (called future as a joke)
         
-    func levelMatFromArray(_ state: StartingColorState   ) -> TubeLevelMatrix  {
-        var levelMat: TubeLevelMatrix = TubeLevelMatrix.init(rows: state.rows, columns: state.columns, defaultValue: [TubeColors].init(repeating: .Empty, count: 4))
-        var linOff = 0
-        for y in 0..<state.rows {
-            for x in 0..<state.columns {
-                levelMat[y,x] = state.linearColors[linOff]
-                linOff += 1
-            }
-        }
-        return levelMat
-    }
-    func pourTube(pourPos: long2, candPos: long2) -> ([TubeColors],[TubeColors]) {
-        
-        var pourColors = colorStates[pourPos.x, pourPos.y]
-        var candColors = colorStates[candPos.x, candPos.y]
+    func pourTube(pouringTubeIndex: Int, pourCandidateIndex: Int) -> ([TubeColors],[TubeColors]) {
+        if pouringTubeIndex > colorStates.count { print("Pouring Tube Index \(pouringTubeIndex), out of range")
+            return ([],[])}
+        if pourCandidateIndex > colorStates.count { print("Pouring Candidate Index \(pourCandidateIndex), out of range")
+            return ([],[])}
+        var pouringTubeColors = colorStates[pouringTubeIndex]
+        var candidateTubeColors = colorStates[pourCandidateIndex]
         // save state before overriding
         if _previousColorStates.count > maxHistory {
             _previousColorStates.removeFirst()
         }
         _previousColorStates.append(colorStates)
         print("Before")
-        print(pourColors, candColors)
-        (pourColors, candColors) = getExchangeColors(pourColors: pourColors, candidateColors: candColors)
-        colorStates[pourPos.x, pourPos.y] = pourColors
-        colorStates[candPos.x, candPos.y] = candColors
+        print(pouringTubeColors, candidateTubeColors)
+        (pouringTubeColors, candidateTubeColors) = getExchangeColors(pourColors: pouringTubeColors, candidateColors: candidateTubeColors)
+        colorStates[pouringTubeIndex] = pouringTubeColors
+        colorStates[pourCandidateIndex] = candidateTubeColors
         print("after")
-        print(pourColors, candColors)
-        return (pourColors, candColors)
+        print(pouringTubeColors, candidateTubeColors)
+        return (pouringTubeColors, candidateTubeColors)
     }
     
     func getExchangeColors(pourColors: [TubeColors], candidateColors: [TubeColors]) -> ([TubeColors],[TubeColors]) {
@@ -121,24 +113,24 @@ class TubeLevel: GameLevel {
         return topIndex
     }
     
-    func pourConflict(pourPos: long2, candPos: long2) -> Bool {
-        let pourColors = colorStates[pourPos.x,pourPos.y]
-        let candColors = colorStates[candPos.x, candPos.y]
+    func pourConflict(pouringTubeIndex: Int, pouringCandidateIndex: Int) -> Bool {
+        let pouringTypes   = colorStates[pouringTubeIndex]
+        let candidateTypes = colorStates[pouringCandidateIndex]
         var conflict = false
         
-        let nonEmptyTopIndex = getTopMostNonEmptyIndex(pourColors)
+        let nonEmptyTopIndex = getTopMostNonEmptyIndex(pouringTypes)
         if(nonEmptyTopIndex == -1) { return true } // empty (nothing to pour!)
         
-        let top_type = pourColors[nonEmptyTopIndex]
+        let top_type = pouringTypes[nonEmptyTopIndex]
 
-        let nonEmptyCandidateTopIndex = getTopMostNonEmptyIndex(candColors)
+        let nonEmptyCandidateTopIndex = getTopMostNonEmptyIndex(candidateTypes)
         if(nonEmptyCandidateTopIndex != -1)
         {
-            if candColors[nonEmptyCandidateTopIndex] != top_type {
+            if candidateTypes[nonEmptyCandidateTopIndex] != top_type {
                 conflict = true // not empty, and the top candidate doesnt match pouring color.
             }
         }      // else all ok, we can pour into something empty, but we cannot pour into something full.
-        if( candColors.last != .Empty ){
+        if( candidateTypes.last != .Empty ){
             conflict = true
         }
         print(conflict)

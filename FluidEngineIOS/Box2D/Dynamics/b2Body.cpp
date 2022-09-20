@@ -460,7 +460,7 @@ void b2Body::SynchronizeFixtures()
 
 void b2Body::SetActive(bool flag)
 {
-	b2Assert(m_world->IsLocked() == false);
+	b2Assert(m_world->IsLocked() == false); // triggers when you modify during time step.
 
 	if (flag == IsActive())
 	{

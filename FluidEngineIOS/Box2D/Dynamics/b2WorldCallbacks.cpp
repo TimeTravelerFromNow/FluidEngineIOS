@@ -18,6 +18,8 @@
 
 #include <Box2D/Dynamics/b2WorldCallbacks.h>
 #include <Box2D/Dynamics/b2Fixture.h>
+#include <Box2D/Particle/b2ParticleSystem.h>
+#include <Bridging/Tube.h>
 
 // Return true if contact calculations should be performed between these two shapes.
 // If you implement your own collision filter you may want to build from this implementation.
@@ -33,4 +35,21 @@ bool b2ContactFilter::ShouldCollide(b2Fixture* fixtureA, b2Fixture* fixtureB)
 
 	bool collide = (filterA.maskBits & filterB.categoryBits) != 0 && (filterA.categoryBits & filterB.maskBits) != 0;
 	return collide;
+}
+// custom ShouldCollide by Sebastian D for particle–fixture interactions for liquid puzzle game
+// collide if the groupIndex is shared by the tube and particle System ( this will ensure systems only interact with respective tubes )
+bool b2ContactFilter::ShouldCollide(b2Fixture *fixture, b2ParticleSystem *particleSystem, int32 particleIndex)
+{
+    const b2Filter& fixtureFilter = fixture->GetFilterData();
+    const b2Filter& particleSystemFilter = particleSystem->filter;
+    
+    if( fixtureFilter.groupIndex == particleSystemFilter.groupIndex ) {
+        return true;
+    }
+    
+    if ( (fixtureFilter.categoryBits & tube_isPouring) && (particleSystemFilter.categoryBits & tube_isPouring) ) {
+        return true;
+    }
+    
+    return false;
 }

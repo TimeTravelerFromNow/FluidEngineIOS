@@ -4,20 +4,21 @@ enum TextureTypes {
     case BaseColorRender_0
     case BaseColorRender_1
     case BaseDepthRender
-    
-    case Snake
-    case SnakeDead
-    case Apple
-    
+
     case Cloud0
     case Cloud1
     case Cloud2
     case Cloud3
     
-    case Jug
-    case Cruiser
-    case TT3D
     case ttFlat
+    
+    case ClearButton
+    case TestButton
+    case Cliff
+    case PineTree
+    case Menu
+    case BeachButton
+    case Sand
     
     case None // special, no texture at all, not even in library
 }
@@ -27,15 +28,23 @@ class Textures {
     private static var _library: [TextureTypes: MTLTexture] = [:]
     
     public static func Initialize() {
-        _library.updateValue(Texture("apple").texture, forKey: .Apple)
-        _library.updateValue(Texture("snake").texture, forKey: .Snake)
-        _library.updateValue(Texture("snakedead").texture, forKey: .SnakeDead)
-        
         _library.updateValue(Texture("Cloud0").texture, forKey: .Cloud0)
-        
-        _library.updateValue(Texture("Jug").texture, forKey: .Jug)
-        _library.updateValue(Texture("cruiser",ext: "bmp").texture, forKey: .Cruiser)
+        _library.updateValue(Texture("cloud1").texture, forKey: .Cloud1)
+        _library.updateValue(Texture("cloud2").texture, forKey: .Cloud2)
+        _library.updateValue(Texture("cloud3").texture, forKey: .Cloud3)
+
         _library.updateValue(Texture("testflat", ext: "png").texture, forKey: .ttFlat)
+        
+        _library.updateValue(Texture("clearButton", ext: "png").texture, forKey: .ClearButton)
+        _library.updateValue(Texture("testButton", ext: "png").texture, forKey: .TestButton)
+        _library.updateValue(Texture("cliff", ext: "png").texture, forKey: .Cliff)
+        _library.updateValue(Texture("menuButton", ext: "png").texture, forKey: .Menu)
+        _library.updateValue(Texture("beachButton", ext: "png").texture, forKey: .BeachButton)
+
+        _library.updateValue(Texture("beach", ext: "png").texture, forKey: .Sand)
+
+        _library.updateValue(Texture("pineTree", ext: "png").texture, forKey: .PineTree)
+
     }
     
     public static func Get(_ type: TextureTypes)->MTLTexture {

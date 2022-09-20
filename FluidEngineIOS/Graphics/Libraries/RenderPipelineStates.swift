@@ -4,8 +4,9 @@ import MetalKit
 enum RenderPipelineStateTypes {
     case Final
     case Instanced
+    case Basic // Like instanced, will render .obj with texture, but not instanced.
+    
     case Custom
-    case Fluid
     case ColorFluid
     case ColorBG
     
@@ -90,6 +91,7 @@ class RenderPipelineStates {
         generateColorFluidRenderPipelineState()
         generateFinalRenderPipelineState()
         CustomBGPipelineState()
+        generateBasicRenderPipelineState()
         
         _descriptorLibrary.updateValue(VertexDescriptor, forKey: .Basic)
         _descriptorLibrary.updateValue(CustomVertexDescriptor, forKey: .Custom)
@@ -289,6 +291,30 @@ class RenderPipelineStates {
         }
         
         _library.updateValue(renderPipelineState, forKey: .Final)
+    }
+    
+    private static func generateBasicRenderPipelineState() { // non instanced – for objs
+        let vertexFunction = Engine.DefaultLibrary.makeFunction(name: "basic_color_vertex_shader")
+        let fragmentFunction = Engine.DefaultLibrary.makeFunction(name: "basic_fragment_shader")
+        
+        let renderPipelineDescriptor = MTLRenderPipelineDescriptor()
+        renderPipelineDescriptor.colorAttachments[0].pixelFormat = Preferences.MainPixelFormat
+        renderPipelineDescriptor.colorAttachments[1].pixelFormat = Preferences.MainPixelFormat
+
+        renderPipelineDescriptor.depthAttachmentPixelFormat =  Preferences.MainDepthPixelFormat
+
+        renderPipelineDescriptor.vertexDescriptor = VertexDescriptor
+        renderPipelineDescriptor.vertexFunction = vertexFunction
+        renderPipelineDescriptor.fragmentFunction = fragmentFunction
+        
+        var renderPipelineState: MTLRenderPipelineState!
+        do {
+            renderPipelineState = try Engine.Device.makeRenderPipelineState(descriptor: renderPipelineDescriptor)
+        } catch {
+            print("ERROR::RENDERPIPELINESTATE::\(error)")
+        }
+        
+        _library.updateValue(renderPipelineState, forKey: .Basic)
     }
     
     public static func Get(_ type: RenderPipelineStateTypes)->MTLRenderPipelineState {

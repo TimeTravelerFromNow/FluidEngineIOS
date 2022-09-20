@@ -28,6 +28,13 @@ class Node {
     public func removeChildren() {
         self.children = []
     }
+    public func removeChild(_ child: Node) {
+        for (i,node) in children.enumerated() {
+            if node.id == child.id {
+                children.remove(at: i)
+            }
+        }
+    }
     
     func doUpdate() { }
     

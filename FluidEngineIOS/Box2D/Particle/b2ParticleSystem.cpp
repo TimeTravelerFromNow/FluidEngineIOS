@@ -2191,7 +2191,8 @@ void b2ParticleSystem::FilterContacts(
 {
 	// Optionally filter the contact.
 	b2ContactFilter* const contactFilter = GetParticleContactFilter();
-	if (contactFilter == NULL)
+    
+	if (contactFilter == NULL ) //&& fixtureContactFilter == NULL)
 		return;
 
 	contacts.RemoveIf(b2ParticleContactRemovePredicate(this, contactFilter));
@@ -2771,14 +2772,34 @@ void b2ParticleSystem::SolveCollision(const b2TimeStep& step)
 	}
 	class SolveCollisionCallback : public b2FixtureParticleQueryCallback
 	{
+        inline bool ShouldCollide(b2Fixture * const fixture,
+                                  int32 particleIndex)
+        {
+            if (m_contactFilter)
+            {
+                const uint32* const flags = m_system->GetFlagsBuffer();
+                if (flags[particleIndex] & b2_fixtureContactFilterParticle)
+                {
+                    return m_contactFilter->ShouldCollide(fixture, m_system,
+                                                          particleIndex);
+                }
+            }
+            return true;
+        }
+        
 		void ReportFixtureAndParticle(
 								b2Fixture* fixture, int32 childIndex, int32 a)
 		{
-			b2Body* body = fixture->GetBody();
+            if (ShouldCollide(fixture, childIndex)) {
+             
+            } else { return; }
+            
+            b2Body* body = fixture->GetBody();
 			b2Vec2 ap = m_system->m_positionBuffer.data[a];
 			b2Vec2 av = m_system->m_velocityBuffer.data[a];
 			b2RayCastOutput output;
 			b2RayCastInput input;
+            
 			if (m_system->m_iterationIndex == 0)
 			{
 				// Put 'ap' in the local space of the previous frame
@@ -2820,15 +2841,17 @@ void b2ParticleSystem::SolveCollision(const b2TimeStep& step)
 		}
 
 		b2TimeStep m_step;
+        b2ContactFilter* m_contactFilter;
 
 	public:
 		SolveCollisionCallback(
-			b2ParticleSystem* system, const b2TimeStep& step):
+			b2ParticleSystem* system, const b2TimeStep& step, b2ContactFilter* contactFilter):
 			b2FixtureParticleQueryCallback(system)
 		{
 			m_step = step;
+            m_contactFilter = contactFilter;
 		}
-	} callback(this, step);
+	} callback(this, step, GetFixtureContactFilter());
 	m_world->QueryAABB(&callback, aabb);
 }
 
@@ -4415,6 +4438,8 @@ void b2ParticleSystem::SetGroupFlags(
 	}
 	*oldFlags = newFlags;
 }
+
+void b2ParticleSystem::SetFilter(b2Filter f) { filter = f; }
 
 static inline bool IsSignificantForce(const b2Vec2& force)
 {

@@ -22,6 +22,7 @@
 #include <Box2D/Common/b2GrowableBuffer.h>
 #include <Box2D/Particle/b2Particle.h>
 #include <Box2D/Dynamics/b2TimeStep.h>
+#include <Box2D/Dynamics/b2Fixture.h>
 
 #if LIQUIDFUN_UNIT_TESTS
 #include <gtest/gtest.h>
@@ -84,7 +85,7 @@ public:
 	void SetWeight(float32 w) { weight = w; }
 	void SetNormal(const b2Vec2& n) { normal = n; }
 	void SetFlags(uint32 f) { flags = f; }
-
+    
 	int32 GetIndexA() const { return indexA; }
 	int32 GetIndexB() const { return indexB; }
 	float32 GetWeight() const { return weight; }
@@ -514,7 +515,8 @@ public:
 	void SetVelocityBuffer(b2Vec2* buffer, int32 capacity);
 	void SetColorBuffer(b2ParticleColor* buffer, int32 capacity);
 	void SetUserDataBuffer(void** buffer, int32 capacity);
-
+    void SetFilter(b2Filter f);
+    
 	/// Get contacts between particles
 	/// Contact data can be used for many reasons, for example to trigger
 	/// rendering or audio effects.
@@ -1146,6 +1148,8 @@ private:
 	b2World* m_world;
 	b2ParticleSystem* m_prev;
 	b2ParticleSystem* m_next;
+public:
+    b2Filter filter;
 };
 
 inline void b2ParticleContact::SetIndices(int32 a, int32 b)

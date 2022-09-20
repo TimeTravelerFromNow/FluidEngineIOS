@@ -14,9 +14,10 @@ class CloudsBackground: Node {
         }
         for cGrp in clouds {
             addChild(cGrp)
-            cGrp.setPositionZ(-0.1)
+            cGrp.setPositionZ(0.1)
             cGrp.setScale(0.01)
         }
+        skyBG.setScale(10)
         addChild(skyBG)
     }
     
@@ -32,8 +33,8 @@ class Clouds: InstancedObject {
     let scale: Float = 0.02
     private var _speedBuffer: [Float] = []
     
-    var vRange: [Float] { return [Renderer.ScreenSize.y * scale * 0.5, 0.9 * Renderer.ScreenSize.y * scale] }
-    var hRange: [Float] { return  [-Renderer.ScreenSize.x * scale * 2 * GameSettings.pxPtsR, Renderer.ScreenSize.x * scale] }
+    var vRange: [Float] { return [Renderer.ScreenSize.y * scale * 0.5 - 10, 0.9 * Renderer.ScreenSize.y * scale - 10] }
+    var hRange: [Float] { return  [-Renderer.ScreenSize.x * scale  , 1.6 * Renderer.ScreenSize.x * scale ] }
     init(instanceCount: Int, meshType: MeshTypes) {
         super.init(meshType: meshType, instanceCount: instanceCount )
         randomizeStart()

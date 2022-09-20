@@ -85,13 +85,7 @@ public:
 	/// b2_fixtureContactListenerParticle flag is set on the particle.
 	virtual bool ShouldCollide(b2Fixture* fixture,
 							   b2ParticleSystem* particleSystem,
-							   int32 particleIndex)
-	{
-		B2_NOT_USED(fixture);
-		B2_NOT_USED(particleIndex);
-		B2_NOT_USED(particleSystem);
-		return true;
-	}
+                               int32 particleIndex);
 
 	/// Return true if contact calculations should be performed between two
 	/// particles.  This is only called if the

@@ -1,7 +1,7 @@
 import MetalKit
 
 class GameObject: Node {
-    var renderPipelineStateType: RenderPipelineStateTypes { return .Custom }
+    var renderPipelineStateType: RenderPipelineStateTypes = .Custom 
     var modelConstants = ModelConstants()
     var mesh: Mesh!
     var texture: MTLTexture!
@@ -20,6 +20,10 @@ class GameObject: Node {
     override func update() {
         modelConstants.modelMatrix = modelMatrix
         super.update()
+    }
+    
+    func getBoxVertices( _ scale: Float ) -> [Vector2D] {
+        mesh.getBoxVertices( scale )
     }
     
     override func render(_ renderCommandEncoder: MTLRenderCommandEncoder) {

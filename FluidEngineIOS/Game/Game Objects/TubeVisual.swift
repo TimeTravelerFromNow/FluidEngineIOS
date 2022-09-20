@@ -1,27 +1,39 @@
 import MetalKit
-// make it possible to be empty for matrix representation.
-class TubeRep: Node {
+
+enum TubeSelectColors {
+    case NoSelection
+    case Selected
+    case Reject
+    case Finished
+}
+
+class TubeVisual: Node {
 
     private var _selectColors : [TubeSelectColors:float3] =  [ .Selected: float3(1.0,1.0,1.0),
                                                              .Reject  : float3(1.0,0.0,0.0),
                                                              .Finished: float3(1.0,1.0,0.0) ]
-    
     private var _currentSelect: TubeSelectColors = .NoSelection
         
     var shouldUpdate = false
-    init(_ ttHeight: Float ) {
-        super.init()
-        self.setPositionZ(1.1)
-        self.setScale( ttHeight * GameSettings.stmRatio * 0.14)
-        self.setTexture(.ttFlat)
-        self.mesh = MeshLibrary.Get(.ttFlat)
-
-    }
+    
     var modelConstants = ModelConstants()
     var mesh: Mesh!
     var texture: MTLTexture!
     var material = CustomMaterial()
-
+    
+    var previousSelectState: TubeSelectColors = .NoSelection
+    
+    private var _selectCountdown: Float = 1.0
+    let defaultSelectCountdown: Float =  1.0
+    
+    init(_ ttHeight: Float ) {
+        super.init()
+        self.setPositionZ(0.15)
+        self.setScale( ttHeight * GameSettings.stmRatio * 0.14)
+        self.setTexture(.ttFlat)
+        self.mesh = MeshLibrary.Get(.ttFlat)
+    }
+    
     func setTexture(_ texture: TextureTypes){
         self.texture = Textures.Get(texture)
         self.material.useTexture = true
@@ -43,7 +55,6 @@ class TubeRep: Node {
         }
     }
     
-    var previousSelectState: TubeSelectColors = .NoSelection
     func conflict() {
         _selectCountdown = defaultSelectCountdown
         if _currentSelect != .Reject {
@@ -51,8 +62,6 @@ class TubeRep: Node {
         }
         _currentSelect = .Reject
     }
-    private var _selectCountdown: Float = 1.0
-    let defaultSelectCountdown: Float =  1.0
     func rejectStep(_ deltaTime: Float) {
         if _selectCountdown > 0.0 {
         _selectCountdown -= deltaTime
@@ -74,7 +83,7 @@ class TubeRep: Node {
     
 }
 
-extension TubeRep: Renderable {
+extension TubeVisual: Renderable {
     func doRender(_ renderCommandEncoder: MTLRenderCommandEncoder) {
         switch _currentSelect {
         case .NoSelection:
@@ -99,11 +108,4 @@ extension TubeRep: Renderable {
             mesh.drawPrimitives(renderCommandEncoder)
         }
     }
-}
-
-enum TubeSelectColors {
-    case NoSelection
-    case Selected
-    case Reject
-    case Finished
 }

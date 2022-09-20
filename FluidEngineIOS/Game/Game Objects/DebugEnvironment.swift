@@ -33,11 +33,15 @@ class DebugEnvironment : Node {
     
     private var _gravity: float2 = [0,-9.80665]
     var particleSystem: UnsafeMutableRawPointer!
+    private var _worldBoundingBox: UnsafeMutableRawPointer!
+    
     var modelConstants = ModelConstants()
     
     var mesh: Mesh!
     var texture: MTLTexture!
 
+    var debugColor: float4 = float4(1,0,0,1)
+    
     override init() {
         super.init()
         self.ptmRatio = GameSettings.ptmRatio
@@ -105,39 +109,37 @@ class DebugEnvironment : Node {
             _trianglesBuffer = Engine.Device.makeBuffer(bytes: triangleVertices!, length: trianglesBufferSize, options: [])
         }
     }
-    
+    let bbSF : Float = 0.8
     private func MakeWorld() {
         LiquidFun.createWorld(withGravity: Vector2D(x: _gravity.x, y: _gravity.y))
-        let simulationFrame: float2 = Renderer.ScreenSize
-        let screenWidth = simulationFrame.x
-        let screenHeight = simulationFrame.y
-
-        LiquidFun.createEdgeBox(withOrigin: Vector2D(x: -1.5, y: 0),
-                                size: Size2D(width: screenWidth * 2 / ptmRatio, height: screenHeight * 2 / ptmRatio)) // square
-        var sensorVertices : [Vector2D] = [
-            Vector2D(x: 1, y: 1),
-            Vector2D(x: -1, y: 1),
-            Vector2D(x: -1, y: -1),
-            Vector2D(x: 1, y: -1)
-        ]
-        var hitBoxVertices : [Vector2D] = [
-            Vector2D(x: -1, y: -1),
-            Vector2D(x: -1, y: -2),
-            Vector2D(x: 1, y: -2),
-            Vector2D(x: 1, y: -1)
-        ]
-//        jointTest = LiquidFun.makeJointTest(Vector2D(x:2,y:2),
-//                                box1Vertices: &sensorVertices, box1Count: 4,
-//                                box2Vertices: &hitBoxVertices, box2Count: 4)
-        // making lines to smooth edge behavior
-        var edgeVertices = [Vector2D(x:screenWidth*0.25/ptmRatio - 2.5,y:-1), Vector2D(x:screenWidth*0.25/ptmRatio,y:1.5)]
-        var edge2 = [Vector2D(x: 1.5,y:-1), Vector2D(x:-0.5,y:1.0)]
-        LiquidFun.createGroundBox(withOrigin: Vector2D(x: -1, y: -1), size: Size2D(width: 0.1, height: 0.1))
-        // "Meter Stick"
-        LiquidFun.createEdgeBox(withOrigin: Vector2D(x:0,y:screenHeight/2), size: Size2D(width: 1, height: 1))
+        particleSystem = LiquidFun.createParticleSystem(withRadius: GameSettings.particleRadius / ptmRatio,
+                                                        dampingStrength: GameSettings.DampingStrength,
+                                                        gravityScale: 1, density: GameSettings.Density)
     }
-    func movePointTest(velocity: float2) {
-        LiquidFun.moveJointTest(jointTest, velocity: Vector2D(x:velocity.x,y:velocity.y))
+    
+    func makeBoundingBox(center: float2, size: Size2D) {
+        if _worldBoundingBox == nil {
+        let boxCenter = Vector2D(x: center.x, y: center.y )
+        _worldBoundingBox = LiquidFun.createEdgeBox(withOrigin: boxCenter, size: size)
+        } else { print("bounding box already made.")}
+    }
+    
+    func destroyBoundingBox() {
+        if _worldBoundingBox != nil {
+            LiquidFun.destroyBody(_worldBoundingBox)
+            _worldBoundingBox = nil
+        } else { print("bounding box already destroyed")}
+    }
+    
+    func debugParticleDraw(atPosition: float2) {
+        if particleSystem != nil {
+            print("debugParticleDraw at: x: \(atPosition.x), \(atPosition.y)")
+        LiquidFun.createParticleBox(forSystem: particleSystem,
+                                    position: Vector2D(x: atPosition.x, y: atPosition.y),
+                                    size: Size2D(width: 0.1, height: 0.1),
+                                    color: &debugColor)
+            LiquidFun.deleteBelow(inParticleSystem: particleSystem, belowYPosition: 1.0)
+        } else { print("trying to debug draw particle at (x: \(atPosition.x), y: \(atPosition.y)) without having initialized the particle system")}
     }
 }
 
@@ -204,7 +206,7 @@ extension DebugEnvironment: Renderable {
     
     func fluidSystemRender( _ renderCommandEncoder: MTLRenderCommandEncoder ) {
         if particleCount > 0{
-            renderCommandEncoder.setRenderPipelineState(RenderPipelineStates.Get(.Fluid))
+            renderCommandEncoder.setRenderPipelineState(RenderPipelineStates.Get(.ColorFluid))
             renderCommandEncoder.setDepthStencilState(DepthStencilStates.Get(.Less))
             
             renderCommandEncoder.setVertexBuffer(_vertexBuffer,
@@ -214,13 +216,14 @@ extension DebugEnvironment: Renderable {
                                                 length: ModelConstants.stride,
                                                 index: 2)
             renderCommandEncoder.setVertexBuffer(_fluidBuffer,
-                                                       offset: 0,
-                                                       index: 3)
+                                                 offset: 0,
+                                                 index: 3)
+            renderCommandEncoder.setVertexBytes(&waterColor, length: float4.stride, index: 4)
             renderCommandEncoder.setFragmentBytes(&waterColor, length: float4.stride, index: 0)
             renderCommandEncoder.drawPrimitives(type: .point,
                                                 vertexStart: 0,
                                                 vertexCount: particleCount)
-    }
+        }
     }
     
     func pointsRender( _ renderCommandEncoder: MTLRenderCommandEncoder ){

@@ -4,11 +4,22 @@ enum MeshTypes {
  
     case TestTube
     case ttFlat
+    
     case Quad
+    
     case Cloud0
     case Cloud1
     case Cloud2
     case Cloud3
+    
+    case ClearButton
+    case TestButton
+    case Cliff
+    
+    case PineTree
+    case Menu
+    case BeachButton
+    case Sand
     
     case NoMesh
 }
@@ -46,7 +57,16 @@ class MeshLibrary: Library<MeshTypes, Mesh> {
         meshes.updateValue(Mesh(modelName: "cloud1"), forKey: .Cloud1)
         meshes.updateValue(Mesh(modelName: "cloud2"), forKey: .Cloud2)
         meshes.updateValue(Mesh(modelName: "cloud3"), forKey: .Cloud3)
+        
+        meshes.updateValue(Mesh(modelName: "clearButton"), forKey: .ClearButton)
+        meshes.updateValue(Mesh(modelName: "testButton"), forKey: .TestButton)
+        meshes.updateValue(Mesh(modelName: "cliff"), forKey: .Cliff)
+        meshes.updateValue(Mesh(modelName: "pineTree"), forKey: .PineTree)
+        meshes.updateValue(Mesh(modelName: "menuButton"), forKey: .Menu)
+        meshes.updateValue(Mesh(modelName: "beachButton"), forKey: .BeachButton)
 
+        meshes.updateValue(Mesh(modelName: "beach"), forKey: .Sand)
+        
         meshes.updateValue(NoMesh(), forKey: .NoMesh)
     }
     
@@ -62,6 +82,7 @@ class Mesh {
     private var _vertexBuffer: MTLBuffer! = nil
     private var _instanceCount: Int = 1
     private var _submeshes: [Submesh] = []
+    private var _modelName: String = ""
     
     init() {
         createMesh()
@@ -74,7 +95,32 @@ class Mesh {
         }
     }
     
-    // this function gets 2D vertex data for the creation of Box2D physical world objects from vertex positions made in Blender, also returns height.
+    func getBoxVertices(_ scale: Float) -> [Vector2D] {
+        var boxVertices : [Vector2D] =    [Vector2D(x: 1.2, y:1.0),
+                                                 Vector2D(x: 1.2, y: -1.0),
+                                                 Vector2D(x: -1.2, y: -1.0),
+                                                 Vector2D(x: -1.2, y: 1.0) ] // default box so it doesnt crash
+        guard let assetURL = Bundle.main.url(forResource: _modelName, withExtension: "obj") else {
+            print("Asset \(_modelName) does not exist.")
+            return boxVertices
+        }
+        
+        let objLoader = OBJLoader(url: assetURL)
+        objLoader.parse()
+        let vertexData = objLoader.vertices
+        let vertexCount = objLoader.vertexCount
+
+        if boxVertices.count != vertexCount  { // resize array.
+            boxVertices = [Vector2D].init(repeating: Vector2D(x:0, y:0), count: vertexCount)
+        }
+        for i in 0..<vertexCount {
+            boxVertices[i] = Vector2D(x:vertexData[i].x / scale, y: vertexData[i].y / scale)
+        }
+        
+        return boxVertices
+    }
+    
+    // this function gets 2D vertex data for the creation of Box2D physical world objects from vertex positions made in Blender, also returns height. (it's counter clockwise starting from the top left.)
     func getFlatVertices(modelName: String, scale: Float) -> ([Vector2D], Float) {
         var output2DPositions : [Vector2D] = [Vector2D(x: 3, y: 3), Vector2D(x:-3,y:-3), Vector2D(x:-1,y:-1)] // just a line so it doesnt crash
         var outputHeight: Float  = 0.0
@@ -144,6 +190,7 @@ class Mesh {
     }
     
     private func createMeshFromModel(_ modelName: String, ext: String = "obj") {
+        _modelName = modelName
         guard let assetURL = Bundle.main.url(forResource: modelName, withExtension: ext) else {
             fatalError("Asset \(modelName) does not exist.")
         }
@@ -175,12 +222,9 @@ class Mesh {
         
         var mtkMeshes: [MTKMesh] = []
         for mdlMesh in mdlMeshes {
-            // originally, (a little different than MacOS)
-//            mdlMesh.addTangentBasis(forTextureCoordinateAttributeNamed: MDLVertexAttributeTextureCoordinate,
-//                                    tangentAttributeNamed: MDLVertexAttributeTangent,
-//                                    bitangentAttributeNamed: MDLVertexAttributeBitangent)
-            mdlMesh.addAttribute(withName: MDLVertexAttributeTextureCoordinate, format: MDLVertexFormat.float2   )
-            mdlMesh.addAttribute(withName: MDLVertexAttributeTangent, format: MDLVertexFormat.float2)
+            mdlMesh.addTangentBasis(forTextureCoordinateAttributeNamed: MDLVertexAttributeTextureCoordinate,
+                                    tangentAttributeNamed: MDLVertexAttributeTangent,
+                                    bitangentAttributeNamed: MDLVertexAttributeBitangent)
             mdlMesh.vertexDescriptor = descriptor
             do{
                 let mtkMesh = try MTKMesh(mesh: mdlMesh, device: Engine.Device)
@@ -192,6 +236,7 @@ class Mesh {
         
         let mtkMesh = mtkMeshes[0]
         let mdlMesh = mdlMeshes[0]
+     
         self._vertexBuffer = mtkMesh.vertexBuffers[0].buffer
         self._vertexCount = mtkMesh.vertexCount
         for i in 0..<mtkMesh.submeshes.count {

@@ -28,6 +28,9 @@ class Engine {
         
         CustomMeshes.Initialize()
         
+        FluidEnvironment.Initialize()
+        
+        SharedBackground.Initialize()
     }
     
 }

@@ -17,7 +17,7 @@ class SkyBackground: Node {
     
     override func render(_ renderCommandEncoder: MTLRenderCommandEncoder) {
         renderCommandEncoder.setRenderPipelineState(RenderPipelineStates.Get(.ColorBG))
-        var totalGameTime = GameTime.TotalGameTime
+        var totalGameTime: Float = 0.1
 
         renderCommandEncoder.setRenderPipelineState(RenderPipelineStates.Get(.ColorBG))
         renderCommandEncoder.setDepthStencilState(DepthStencilStates.Get(.Less))

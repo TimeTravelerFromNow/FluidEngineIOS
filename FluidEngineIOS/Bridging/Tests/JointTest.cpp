@@ -1,9 +1,3 @@
-//
-//  Tube.c
-//  FluidEngine
-//
-//  Created by sebi d on 1/23/22.
-//
 
 #include "JointTest.h"
 

@@ -1,10 +1,3 @@
-//
-//  Tube.c
-//  FluidEngine
-//
-//  Created by sebi d on 1/23/22.
-//
-
 #include "Tube.h"
 
 Tube::Tube(b2World* worldRef,
@@ -13,14 +6,18 @@ Tube::Tube(b2World* worldRef,
            b2Vec2* vertices, unsigned int count,
            b2Vec2* hitBoxVertices, unsigned int hitBoxCount,
            b2Vec2* sensorVertices, unsigned int sensorCount,
-           int row,
-           int col,
-           int gridId) {
-    m_world = worldRef;
-    gridId = gridId;
-    row = row;
-    col = col;
+           float32 tubeWidth,
+           float32 tubeHeight,
+           long gridId) {
+    bool debugging = false;
+    width = tubeWidth;
+    height = tubeHeight;
+    id = gridId;
     m_particleSys = particleSysRef;
+    m_filter = b2Filter();
+    m_filter.groupIndex = gridId;
+    m_particleSys->filter = m_filter;
+    
     b2BodyDef body1Def;
     body1Def.type = b2_kinematicBody;
     body1Def.active = true;
@@ -32,157 +29,56 @@ Tube::Tube(b2World* worldRef,
     b2FixtureDef fixtureDef;
     shape.CreateChain(vertices, count);
     fixtureDef.shape = &shape;
-    body1->CreateFixture(&fixtureDef);
+    fixtureDef.filter = m_filter;
+    
+    m_tubeFixture = body1->CreateFixture(&fixtureDef);
     m_body = body1;
     //sensor Body (must stay active to continue registering collision when the hitboxes and frame freeze.)
-    b2BodyDef sensorBodyDef;
-    sensorBodyDef.type = b2_dynamicBody;
-    sensorBodyDef.active = true;
-    sensorBodyDef.bullet = true;
-    sensorBodyDef.position.Set(location.x, location.y);
-    sensorBodyDef.gravityScale = 0.0;
-    b2Body *sensorBody = worldRef->CreateBody(&sensorBodyDef);
-    b2PolygonShape shape1; // sensor
-    b2FixtureDef sensorFixture;
-    sensorFixture.isSensor = true;
-    shape1.Set(sensorVertices, sensorCount);
-    sensorFixture.shape = &shape1;
-    sensorFixture.density = 1.0f;
-    sensorBody->CreateFixture(&sensorFixture);
-    b2WeldJointDef sensorWeldDef;
-    sensorWeldDef.bodyA = body1;
-    sensorWeldDef.bodyB = sensorBody;
-    sensorWeldDef.collideConnected = false;
-    worldRef->CreateJoint(&sensorWeldDef); // weld the sensor
-    m_sensorBody = sensorBody;
-   //hitboxes
-    b2BodyDef hboxBodyDef;
-    hboxBodyDef.type = b2_dynamicBody;
-    hboxBodyDef.active = true;
-    hboxBodyDef.gravityScale = 0.0;
-    hboxBodyDef.position.Set(location.x, location.y);
-    b2Body *body2 = worldRef->CreateBody(&hboxBodyDef);
-    
-    int currIndex = 0;
-    b2Vec2 boxVertices[4];
-    for( int i = 0; i < hitBoxCount; i++) {
-        boxVertices[currIndex] = hitBoxVertices[i];
-        if ( currIndex == 3) {
-            b2PolygonShape shape2;
-            b2FixtureDef fixtureDef2;
-            shape2.Set(boxVertices, 4);
-            fixtureDef2.shape = &shape2;
-            fixtureDef2.density = 2.0f;
-            body2->CreateFixture(&fixtureDef2);
-            currIndex = 0;
-        } else {
-        currIndex++;
-        }
-    }
-
-    m_hboxBody = body2;
-
-    b2WeldJointDef weldJointDef;
-      weldJointDef.bodyA = sensorBody;
-      weldJointDef.bodyB = body2;
-      weldJointDef.collideConnected = false;
-    
-    worldRef->CreateJoint(&weldJointDef);
-    
-    m_body->SetUserData(this);
-    m_hboxBody->SetUserData(this);
-    m_sensorBody->SetUserData(this);
-    returningToOrigin = false;
-    pickedUp = false;
-    pouring = false;
-    yieldToFill = true;
-    isFrozen = false;
-    Freeze();
+    if (debugging) {
+        b2BodyDef sensorBodyDef;
+        sensorBodyDef.type = b2_dynamicBody;
+        sensorBodyDef.active = false;
+        sensorBodyDef.bullet = true;
+        sensorBodyDef.position.Set(location.x, location.y);
+        sensorBodyDef.gravityScale = 0.0;
+        b2Body *sensorBody = worldRef->CreateBody(&sensorBodyDef);
+        b2PolygonShape shape1; // sensor
+        shape1.Set(sensorVertices, sensorCount);
+        b2FixtureDef sensorFixture;
+        sensorFixture.shape = &shape1;
+        sensorBody->CreateFixture(&sensorFixture);
+        m_sensorBody = sensorBody;
+    };
 }
 Tube::~Tube() {
-    m_world->DestroyBody(m_body);
-    m_world->DestroyBody(m_hboxBody);
-    m_world->DestroyBody(m_sensorBody);
 }
 //collision
-void Tube::YieldToFill() {
-    yieldToFill = true;
+
+long Tube::GetHoverCandidateGridId() {
+    
+    return 0; // MARK: if I want to do the hover logic in C++ I can, but it's up to me
 }
-void Tube::UnYieldToFill() {
-    yieldToFill = false;
-}
-void Tube::StartReturn() {
-    returningToOrigin = true;
-}
-void Tube::EndReturn() {
-    returningToOrigin = false;
-}
-void Tube::StartPickup() {
-    pickedUp = true;
-}
-void Tube::EndPickup() {
-    pickedUp = false;
-}
-void Tube::BeganCollide(Tube* tube) {
-    tubesColliding.push_back( tube ); // do not do modifications to Tube activity during began Collide.
-}
-void Tube::EndCollide(Tube* tube) {
-     tubesColliding.erase( std::find(tubesColliding.begin(), tubesColliding.end(), tube ) );
-}
-void Tube::PostSolve() {
-    if( yieldToFill ) {
-        Freeze();
-    } else {
-    unsigned long collidingNum = tubesColliding.size();
-    if (collidingNum > 0) {
-    bool freeze = false;
-        if(returningToOrigin) {
-            for(int i = 0; i<collidingNum; i++) {
-                if (tubesColliding[i]->pickedUp)  {
-                    freeze = true;
-                } else if ( tubesColliding[i]->returningToOrigin ) {
-                    if( tubesColliding[i]->gridId > gridId) { // choose arbitrary to unfreeze if both returning
-                        freeze = true;
-                    }
-                }
-            }
-        } else if (pouring) {//pouring not as important as returning
-            for(int i = 0; i<collidingNum; i++) {
-                if (tubesColliding[i]->returningToOrigin)  {
-                    freeze = true;
-                } else if ( tubesColliding[i]->pouring ) {
-                    // dont freeze
-                }
-            }
-        } else if (!pickedUp) { // at rest, yield to collision
-            freeze = true;
-        }
-        if( freeze ){
-            Freeze();
-        } else {
-            UnFreeze();
-        }
-    } else {
-        UnFreeze();
-    }
-    }
-}
-//top cap
-void Tube::CapTop(b2Vec2* capVertices) {
+
+b2Fixture* Tube::addDivider(b2Vec2* dividerVertices) {
     b2FixtureDef fixtureDef;
+    fixtureDef.filter = m_filter;
     b2EdgeShape line;
-    line.Set(((b2Vec2 *)capVertices)[0], ((b2Vec2 *)capVertices)[1]);
+    line.Set(((b2Vec2 *)dividerVertices)[0], ((b2Vec2 *)dividerVertices)[1]);
     fixtureDef.shape = &line;
     b2Fixture* lineFixture = m_body->CreateFixture(&fixtureDef);
-    m_topCap = lineFixture;
+    return lineFixture;
 }
-void Tube::PopCap() {
-    m_body->DestroyFixture(m_topCap);
+
+void Tube::removeDivider(b2Fixture* dividerRef) {
+    m_body->DestroyFixture(dividerRef);
 }
+
 //pour guides
 void Tube::AddGuides(b2Vec2* guidesVertices) {
     b2FixtureDef fixtureDef0;
     b2FixtureDef fixtureDef1;
+    fixtureDef0.filter = m_filter;
+    fixtureDef1.filter = m_filter;
     b2EdgeShape line0;
     b2EdgeShape line1;
     line0.Set(((b2Vec2 *)guidesVertices)[0], ((b2Vec2 *)guidesVertices)[1]);
@@ -211,21 +107,90 @@ b2Vec2 Tube::GetPosition() {
 float Tube::GetRotation() {
     return m_body->GetAngle();
 }
-// activeness
-void Tube::Freeze() {
-    if( !isFrozen  ) {
-        m_body->SetActive(false);
-        m_sensorBody->SetLinearVelocity(b2Vec2()); // stop it from leaving current freeze location.
-        m_hboxBody->SetActive(false);
-        m_particleSys->SetPaused(true);
-        isFrozen = true;
-    }
+
+bool Tube::IsAtPosition(b2Vec2 position) {
+    bool inBox = true;
+    b2Vec2 currentPosition = m_body->GetPosition();
+    float32 left   = currentPosition.x - width;
+    float32 right  = currentPosition.x + width;
+    float32 top    = currentPosition.y + height;
+    float32 bottom = currentPosition.y - height;
+    
+    if ( position.x < right && position.x > left ) {
+        
+    } else { inBox = false; }
+    if ( position.y < top && position.y > bottom ) {
+        
+    } else { inBox = false; }
+    return inBox;
 }
-void Tube::UnFreeze() {
-    if( isFrozen ){
-        m_body->SetActive(true);
-        m_hboxBody->SetActive(true);
-        m_particleSys->SetPaused(false);
-        isFrozen = false;
-    }
+
+void Tube::SetPourBits() {
+    b2Fixture* fixtures = m_body->GetFixtureList();
+    int32 fixtureCount = m_body->GetFixtureCount();
+    
+    m_filter.categoryBits = tube_isPouring;
+    while( fixtures ) {
+        fixtures->SetFilterData( m_filter );
+        fixtures = fixtures->GetNext();
+    };
+    m_tubeFixture->SetFilterData( m_filter );
+    m_particleSys->filter = m_filter;
 }
+
+void Tube::ClearPourBits() {
+    b2Fixture* fixtures = m_body->GetFixtureList();
+    
+    m_filter.categoryBits = tube_isNotPouring;
+    while(fixtures) {
+        fixtures->SetFilterData( m_filter );
+        fixtures = fixtures->GetNext();
+    };
+    m_tubeFixture->SetFilterData( m_filter );
+    m_particleSys->filter = m_filter;
+}
+
+int Tube::EngulfParticles( b2ParticleSystem* originalSystem ) {
+    b2ParticleGroupDef newGroupDef;
+    
+    b2Vec2* positionBuffer = originalSystem->GetPositionBuffer();
+    int oldPositionsCount = originalSystem->GetParticleCount();
+    b2Vec2* velocityBuffer = originalSystem->GetVelocityBuffer();
+    b2ParticleColor* oldColors = originalSystem->GetColorBuffer();
+    int newPositionsCount = 0;
+    // determine how many particles are inside the new tube's bounds
+    for(int i = 0; i<oldPositionsCount; i++) {
+        b2Vec2 c = positionBuffer[i];
+        if( IsAtPosition( c ) ) {
+        newPositionsCount++;
+        }
+    }
+    b2Vec2 newPositions[newPositionsCount];
+    b2Vec2 newVelocities[newPositionsCount];
+    int newPositionIndex = 0;
+    float avVelocityX = 0.0;
+    float avVelocityY = 0.0;
+    
+    for(int i = 0; i<oldPositionsCount; i++) {
+        b2Vec2 c = positionBuffer[i];
+        if ( IsAtPosition( c ) ) {
+            newPositions[newPositionIndex] = positionBuffer[i];
+            newVelocities[newPositionIndex] = velocityBuffer[i];
+            avVelocityX += newVelocities[newPositionIndex].x;
+            avVelocityY += newVelocities[newPositionIndex].y;
+            newPositionIndex++;
+            originalSystem->DestroyParticle(i, false);
+        }
+    }
+    avVelocityX = avVelocityX / float(newPositionsCount);
+    avVelocityY = avVelocityY / float(newPositionsCount);
+    newGroupDef.positionData = newPositions;
+    newGroupDef.linearVelocity = b2Vec2(avVelocityX, avVelocityY);
+    newGroupDef.particleCount = newPositionsCount;
+    newGroupDef.flags = b2_waterParticle | b2_fixtureContactFilterParticle;
+    newGroupDef.color = oldColors[0];
+    
+    m_particleSys->CreateParticleGroup(newGroupDef);
+    return newPositionsCount;
+}
+
