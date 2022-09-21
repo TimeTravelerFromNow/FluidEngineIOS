@@ -8,7 +8,7 @@ enum SceneTypes {
     case None
 }
 
-let SceneOrigins: [SceneTypes: float2] = [.TestTubes:float2(-5.0, -5.0),
+let SceneOrigins: [SceneTypes: float2] = [.TestTubes:float2(-5.0, -10.0),
                                           .Menu:float2(-5.0, 5.0),
                                           .Beach:float2(10.0, 0.0)]
 

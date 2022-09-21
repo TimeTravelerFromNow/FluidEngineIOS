@@ -18,7 +18,7 @@ class BeachScene : Scene {
     private var _emptyKF = 0
     
     private func addTestButtons() {
-        let menuButton = BoxButton(.Menu,.Menu, .ToMenu, center: box2DOrigin + float2(3.0, 3.0))
+        let menuButton = BoxButton(.Menu,.Menu, .ToMenu, center: box2DOrigin + float2(0.0, 3.0))
         
         buttons.append(menuButton)
         addChild(menuButton)
@@ -109,13 +109,45 @@ class BeachScene : Scene {
         SceneManager.currentScene.sceneSizeWillChange()
 
     }
-    
-    
-     
+
     override func update(deltaTime: Float) {
         super.update(deltaTime: deltaTime)
         if panVelocity != float2(0.0,0.0) {
             moveOrthoCamera(deltaTime: deltaTime)
+        }
+    }
+    
+    override func touchesBegan() {
+        switch boxButtonHitTest(boxPos: Touches.GetBoxPos()) {
+        case .None:
+            print("hit a test button")
+        case .Clear:
+            print("hit the clear button")
+        case .NewGame:
+            print("hit the new game button")
+        case nil:
+            print("clicked no button")
+        default:
+            print("clicked a button")
+        }
+        fluidObject.debugParticleDraw(atPosition: Touches.GetBoxPos())
+    
+    }
+    
+    override func touchesEnded() {
+        switch boxButtonHitTest(boxPos: Touches.GetBoxPos()) {
+        case .None:
+            print("let go of a button")
+        case .ToMenu:
+            SceneManager.sceneSwitchingTo = .Menu
+        case nil:
+            print("let go of no button")
+        default:
+            print("button action not defined in beach scene")
+            break
+        }
+        for b in buttons {
+            b.deSelect()
         }
     }
 }

@@ -30,8 +30,8 @@ class MenuScene : Scene {
     private var _emptyKF = 0
     
     private func addTestButtons() {
-        let newGameButton = BoxButton(.TestButton, .TestButton, .NewGame, center: box2DOrigin + float2(x: 0.0, y: 1.0))
-        let beachButton = BoxButton(.BeachButton, .BeachButton, .ToBeach, center: box2DOrigin + float2(x: 0.0, y: 0.0))
+        let newGameButton   = BoxButton(.TestButton, .TestButton, .NewGame, center: box2DOrigin + float2(x: 0.5, y: 1.0))
+        let beachButton     = BoxButton(.BeachButton, .BeachButton, .ToBeach, center: box2DOrigin + float2(x: 0.3, y: 0.0))
 
         buttons.append(newGameButton)
         addChild(newGameButton)
@@ -49,7 +49,7 @@ class MenuScene : Scene {
         
         addTestButtons()
         
-        waterFall = WaterFallObject(center: float2(x:-3.15, y: -1.0) + box2DOrigin)
+        waterFall = WaterFallObject(center: float2(x:-2.5, y: -1.0) + box2DOrigin)
         
         fluidObject = FluidEnvironment.Environment
         fluidObject.isDebugging = false
@@ -61,6 +61,7 @@ class MenuScene : Scene {
         for pine in waterFall.getPines() {
             addChild(pine)
         }
+        sceneSizeWillChange()
     }
     
     override func freeze() {
@@ -88,7 +89,6 @@ class MenuScene : Scene {
         }
         return nil
     }
-    
     
     override func touchesBegan() {
         switch boxButtonHitTest(boxPos: Touches.GetBoxPos()) {

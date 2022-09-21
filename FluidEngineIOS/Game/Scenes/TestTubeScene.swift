@@ -89,7 +89,7 @@ class TestTubeScene : Scene {
         let xSep : Float = 1.0
         let ySep : Float = 2.0
         var y : Float = height + box2DOrigin.y
-        var x : Float = 0.5 + box2DOrigin.x
+        var x : Float = box2DOrigin.x - 2.0
         let rowNum = Int(width / xSep)
         let maxColNum = Int(height / ySep)
         if tubeLevel.startingLevel.count > (rowNum * maxColNum ){
