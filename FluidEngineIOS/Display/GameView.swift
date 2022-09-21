@@ -21,10 +21,7 @@ class GameView: MTKView {
         self.framebufferOnly = false // needed for blit encoding
 
         self.delegate = renderer
-        
     }
-    
-   
 }
 
 extension GameView {

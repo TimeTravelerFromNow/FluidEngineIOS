@@ -56,21 +56,18 @@ class TestTubeScene : Scene {
     private var _emptyKF = 0
     
     func addTestButton() {
-        let testButton = BoxButton(.ClearButton,.ClearButton, .Clear, center: box2DOrigin)
-        let menuButton = BoxButton(.Menu,.Menu, .ToMenu, center: box2DOrigin + float2(-3.0,0.0))
+        let testButton = BoxButton(.ClearButton,.ClearButton, .Clear, center: box2DOrigin + float2(1.0,-3.0) )
+        let menuButton = BoxButton(.Menu,.Menu, .ToMenu, center: box2DOrigin + float2(-1.0,-3.0))
 
         buttons.append(testButton)
         buttons.append(menuButton)
         addChild(testButton)
         addChild(menuButton)
-
     }
     
     override func buildScene(){
         tubeLevel = TubeLevel()
         fluidObject = FluidEnvironment.Environment
-        fluidObject.setScale(2 / (GameSettings.ptmRatio * 10) )
-        fluidObject.setPositionZ(0.1)
         
         backGroundObject = SharedBackground.Background
                 
