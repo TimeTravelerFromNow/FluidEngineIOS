@@ -112,5 +112,5 @@ extension Renderer: MTKViewDelegate{
         self._baseRenderPassDescriptor.depthAttachment.storeAction = .store
         self._baseRenderPassDescriptor.depthAttachment.loadAction = .clear
     }
-    
+
 }
