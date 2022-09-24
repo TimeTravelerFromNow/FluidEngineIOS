@@ -7,6 +7,12 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		92376BE828DE6E9F007C93DB /* MBEMesh.m in Sources */ = {isa = PBXBuildFile; fileRef = 92376BCD28DE6E9F007C93DB /* MBEMesh.m */; };
+		92376BE928DE6E9F007C93DB /* MBEFontAtlas.m in Sources */ = {isa = PBXBuildFile; fileRef = 92376BCE28DE6E9F007C93DB /* MBEFontAtlas.m */; };
+		92376BEB28DE6E9F007C93DB /* MBEShaders.metal in Sources */ = {isa = PBXBuildFile; fileRef = 92376BD428DE6E9F007C93DB /* MBEShaders.metal */; };
+		92376BEC28DE6E9F007C93DB /* MBETextureLoader.m in Sources */ = {isa = PBXBuildFile; fileRef = 92376BD528DE6E9F007C93DB /* MBETextureLoader.m */; };
+		92376BF428DE6E9F007C93DB /* MBETextMesh.m in Sources */ = {isa = PBXBuildFile; fileRef = 92376BE328DE6E9F007C93DB /* MBETextMesh.m */; };
+		92376BF628DE6E9F007C93DB /* MBEMathUtilities.m in Sources */ = {isa = PBXBuildFile; fileRef = 92376BE728DE6E9F007C93DB /* MBEMathUtilities.m */; };
 		923F2B4627A0FC5A00443936 /* Renderer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 923F2B4527A0FC5A00443936 /* Renderer.swift */; };
 		923F2B5D27A0FCE200443936 /* Engine.swift in Sources */ = {isa = PBXBuildFile; fileRef = 923F2B5527A0FCE200443936 /* Engine.swift */; };
 		923F2B6127A0FCE200443936 /* Preferences.swift in Sources */ = {isa = PBXBuildFile; fileRef = 923F2B5A27A0FCE200443936 /* Preferences.swift */; };
@@ -158,6 +164,18 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		92376BCD28DE6E9F007C93DB /* MBEMesh.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MBEMesh.m; sourceTree = "<group>"; };
+		92376BCE28DE6E9F007C93DB /* MBEFontAtlas.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MBEFontAtlas.m; sourceTree = "<group>"; };
+		92376BD128DE6E9F007C93DB /* MBETextMesh.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MBETextMesh.h; sourceTree = "<group>"; };
+		92376BD328DE6E9F007C93DB /* MBEMathUtilities.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MBEMathUtilities.h; sourceTree = "<group>"; };
+		92376BD428DE6E9F007C93DB /* MBEShaders.metal */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.metal; path = MBEShaders.metal; sourceTree = "<group>"; };
+		92376BD528DE6E9F007C93DB /* MBETextureLoader.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MBETextureLoader.m; sourceTree = "<group>"; };
+		92376BDC28DE6E9F007C93DB /* MBEFontAtlas.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MBEFontAtlas.h; sourceTree = "<group>"; };
+		92376BDE28DE6E9F007C93DB /* MBEMesh.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MBEMesh.h; sourceTree = "<group>"; };
+		92376BE228DE6E9F007C93DB /* MBETypes.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MBETypes.h; sourceTree = "<group>"; };
+		92376BE328DE6E9F007C93DB /* MBETextMesh.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MBETextMesh.m; sourceTree = "<group>"; };
+		92376BE528DE6E9F007C93DB /* MBETextureLoader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MBETextureLoader.h; sourceTree = "<group>"; };
+		92376BE728DE6E9F007C93DB /* MBEMathUtilities.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MBEMathUtilities.m; sourceTree = "<group>"; };
 		923F2B4527A0FC5A00443936 /* Renderer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Renderer.swift; sourceTree = "<group>"; };
 		923F2B5527A0FCE200443936 /* Engine.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Engine.swift; sourceTree = "<group>"; };
 		923F2B5A27A0FCE200443936 /* Preferences.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Preferences.swift; sourceTree = "<group>"; };
@@ -385,6 +403,25 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		92376BCC28DE6E9F007C93DB /* TextRendering */ = {
+			isa = PBXGroup;
+			children = (
+				92376BCD28DE6E9F007C93DB /* MBEMesh.m */,
+				92376BDE28DE6E9F007C93DB /* MBEMesh.h */,
+				92376BCE28DE6E9F007C93DB /* MBEFontAtlas.m */,
+				92376BD128DE6E9F007C93DB /* MBETextMesh.h */,
+				92376BD328DE6E9F007C93DB /* MBEMathUtilities.h */,
+				92376BD428DE6E9F007C93DB /* MBEShaders.metal */,
+				92376BD528DE6E9F007C93DB /* MBETextureLoader.m */,
+				92376BDC28DE6E9F007C93DB /* MBEFontAtlas.h */,
+				92376BE228DE6E9F007C93DB /* MBETypes.h */,
+				92376BE328DE6E9F007C93DB /* MBETextMesh.m */,
+				92376BE528DE6E9F007C93DB /* MBETextureLoader.h */,
+				92376BE728DE6E9F007C93DB /* MBEMathUtilities.m */,
+			);
+			path = TextRendering;
+			sourceTree = "<group>";
+		};
 		923F2B5427A0FCE200443936 /* Core */ = {
 			isa = PBXGroup;
 			children = (
@@ -463,6 +500,7 @@
 		92489A092799D9BD00639B52 /* FluidEngineIOS */ = {
 			isa = PBXGroup;
 			children = (
+				92376BCC28DE6E9F007C93DB /* TextRendering */,
 				92A9E41828DA6F410000A77F /* Bridging */,
 				92489A3A2799DA0300639B52 /* Box2D */,
 				923F2B5427A0FCE200443936 /* Core */,
@@ -1011,6 +1049,7 @@
 				923F2B6327A0FCE200443936 /* GameSettings.swift in Sources */,
 				92489BA72799DA0400639B52 /* b2WheelJoint.cpp in Sources */,
 				92489BCB2799DA0400639B52 /* b2CircleShape.cpp in Sources */,
+				92376BE928DE6E9F007C93DB /* MBEFontAtlas.m in Sources */,
 				92A9E3B628DA6D3E0000A77F /* ColorUtil.swift in Sources */,
 				92489BC92799DA0400639B52 /* b2ChainShape.cpp in Sources */,
 				92489BCC2799DA0400639B52 /* b2PolygonShape.cpp in Sources */,
@@ -1019,6 +1058,7 @@
 				92489BBF2799DA0400639B52 /* b2ParticleGroup.cpp in Sources */,
 				923F2B6227A0FCE200443936 /* GameTime.swift in Sources */,
 				92489BB22799DA0400639B52 /* b2Rope.cpp in Sources */,
+				92376BE828DE6E9F007C93DB /* MBEMesh.m in Sources */,
 				92A9E39B28DA6CEB0000A77F /* WaterFallObject.swift in Sources */,
 				923F2BD727A0FD7300443936 /* BasicShaders.metal in Sources */,
 				92489BCD2799DA0400639B52 /* b2TimeOfImpact.cpp in Sources */,
@@ -1050,6 +1090,7 @@
 				92489BD02799DA0400639B52 /* b2Collision.cpp in Sources */,
 				92489BC82799DA0400639B52 /* b2DynamicTree.cpp in Sources */,
 				92A9E39528DA6CEB0000A77F /* TestTube.swift in Sources */,
+				92376BEB28DE6E9F007C93DB /* MBEShaders.metal in Sources */,
 				92A9E39628DA6CEB0000A77F /* CloudsBackground.swift in Sources */,
 				92A9E38E28DA6CEB0000A77F /* Renderable.swift in Sources */,
 				92A9E39D28DA6CEB0000A77F /* DebugEnvironment.swift in Sources */,
@@ -1063,6 +1104,7 @@
 				92489BA32799DA0400639B52 /* b2WeldJoint.cpp in Sources */,
 				92A9E3A828DA6D1F0000A77F /* TestTubeScene.swift in Sources */,
 				92A9E3B428DA6D3E0000A77F /* TextureLoader.swift in Sources */,
+				92376BEC28DE6E9F007C93DB /* MBETextureLoader.m in Sources */,
 				923F2B6127A0FCE200443936 /* Preferences.swift in Sources */,
 				92489BBC2799DA0400639B52 /* b2Math.cpp in Sources */,
 				92489BB92799DA0400639B52 /* b2Stat.cpp in Sources */,
@@ -1071,6 +1113,7 @@
 				92489BC02799DA0400639B52 /* b2VoronoiDiagram.cpp in Sources */,
 				92489BC12799DA0400639B52 /* b2ParticleSystem.cpp in Sources */,
 				923F2BD627A0FD7300443936 /* RenderPipelineStates.swift in Sources */,
+				92376BF628DE6E9F007C93DB /* MBEMathUtilities.m in Sources */,
 				92489BAC2799DA0400639B52 /* b2PrismaticJoint.cpp in Sources */,
 				92A9E42728DA6F410000A77F /* JointTest.cpp in Sources */,
 				92A9E3A928DA6D1F0000A77F /* Matrix.swift in Sources */,
@@ -1083,6 +1126,7 @@
 				92A9E39E28DA6CEB0000A77F /* SurfObject.swift in Sources */,
 				92489BA12799DA0400639B52 /* b2Contact.cpp in Sources */,
 				92489BA52799DA0400639B52 /* b2FrictionJoint.cpp in Sources */,
+				92376BF428DE6E9F007C93DB /* MBETextMesh.m in Sources */,
 				92489BC52799DA0400639B52 /* b2Distance.cpp in Sources */,
 				92A9E3A728DA6D1F0000A77F /* Scene.swift in Sources */,
 			);
