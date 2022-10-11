@@ -155,6 +155,8 @@
 		92A9E44028DA72910000A77F /* clearButton.obj in Resources */ = {isa = PBXBuildFile; fileRef = 92A9E43428DA72910000A77F /* clearButton.obj */; };
 		92A9E44128DA72910000A77F /* beachButton.obj in Resources */ = {isa = PBXBuildFile; fileRef = 92A9E43528DA72910000A77F /* beachButton.obj */; };
 		92A9E44228DA72910000A77F /* testButton.obj in Resources */ = {isa = PBXBuildFile; fileRef = 92A9E43628DA72910000A77F /* testButton.obj */; };
+		92CC086A28F1F0DA00F99D00 /* MBETextMesh.swift in Sources */ = {isa = PBXBuildFile; fileRef = 92CC086928F1F0DA00F99D00 /* MBETextMesh.swift */; };
+		92CC086C28F1F0FA00F99D00 /* MBEFontAtlas.swift in Sources */ = {isa = PBXBuildFile; fileRef = 92CC086B28F1F0FA00F99D00 /* MBEFontAtlas.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -372,6 +374,8 @@
 		92A9E43428DA72910000A77F /* clearButton.obj */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = clearButton.obj; sourceTree = "<group>"; };
 		92A9E43528DA72910000A77F /* beachButton.obj */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = beachButton.obj; sourceTree = "<group>"; };
 		92A9E43628DA72910000A77F /* testButton.obj */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = testButton.obj; sourceTree = "<group>"; };
+		92CC086928F1F0DA00F99D00 /* MBETextMesh.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MBETextMesh.swift; sourceTree = "<group>"; };
+		92CC086B28F1F0FA00F99D00 /* MBEFontAtlas.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MBEFontAtlas.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -463,6 +467,7 @@
 		92489A092799D9BD00639B52 /* FluidEngineIOS */ = {
 			isa = PBXGroup;
 			children = (
+				92CC086828F1EF6D00F99D00 /* MBEText */,
 				92A9E41828DA6F410000A77F /* Bridging */,
 				92489A3A2799DA0300639B52 /* Box2D */,
 				923F2B5427A0FCE200443936 /* Core */,
@@ -870,6 +875,15 @@
 			path = BoxButtons;
 			sourceTree = "<group>";
 		};
+		92CC086828F1EF6D00F99D00 /* MBEText */ = {
+			isa = PBXGroup;
+			children = (
+				92CC086928F1F0DA00F99D00 /* MBETextMesh.swift */,
+				92CC086B28F1F0FA00F99D00 /* MBEFontAtlas.swift */,
+			);
+			path = MBEText;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -1005,6 +1019,7 @@
 				92489B9C2799DA0400639B52 /* b2PolygonAndCircleContact.cpp in Sources */,
 				92489BB62799DA0400639B52 /* b2BlockAllocator.cpp in Sources */,
 				92A9E39428DA6CEB0000A77F /* SkyBackground.swift in Sources */,
+				92CC086A28F1F0DA00F99D00 /* MBETextMesh.swift in Sources */,
 				923F2B4627A0FC5A00443936 /* Renderer.swift in Sources */,
 				92489B9D2799DA0400639B52 /* b2PolygonContact.cpp in Sources */,
 				92489B4E2799DA0400639B52 /* GameView.swift in Sources */,
@@ -1059,6 +1074,7 @@
 				92489BAB2799DA0400639B52 /* b2Joint.cpp in Sources */,
 				92489B9A2799DA0400639B52 /* b2EdgeAndPolygonContact.cpp in Sources */,
 				92489BA42799DA0400639B52 /* b2MouseJoint.cpp in Sources */,
+				92CC086C28F1F0FA00F99D00 /* MBEFontAtlas.swift in Sources */,
 				92489A0D2799D9BD00639B52 /* SceneDelegate.swift in Sources */,
 				92489BA32799DA0400639B52 /* b2WeldJoint.cpp in Sources */,
 				92A9E3A828DA6D1F0000A77F /* TestTubeScene.swift in Sources */,
