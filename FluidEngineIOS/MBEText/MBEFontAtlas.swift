@@ -52,6 +52,11 @@ class MBEFontAtlas {
         let atlasData: [UInt8] = self.createAtlas(self._parentFont,
                                                   width: MBEFontAtlasSize,
                                                   height: MBEFontAtlasSize)
+        
+        let scaleFactor: CGFloat = CGFloat(MBEFontAtlasSize / self._textureSize)
+        
+        var distanceField = createSignedDistanceField(atlasData, width: MBEFontAtlasSize, height: MBEFontAtlasSize)
+        //MARK: continue porting line 503
     }
     
     func createAtlas(_ forFont: UIFont, width: Int, height: Int) -> [UInt8] {
@@ -117,12 +122,12 @@ class MBEFontAtlas {
                 maxYCoordForLine = origin.y + boundingRect.maxY
             }
             
-            var glyphOriginY: CGFloat = origin.x - boundingRect.origin.x + (glyphMargin * 0.5)
-            var glyphOriginX: CGFloat = origin.y + (glyphMargin * 0.5)
+            let glyphOriginY: CGFloat = origin.x - boundingRect.origin.x + (glyphMargin * 0.5)
+            let glyphOriginX: CGFloat = origin.y + (glyphMargin * 0.5)
             
             var glyphTransform: CGAffineTransform = __CGAffineTransformMake(1, 0, 0, -1, glyphOriginX, glyphOriginY)
             
-            guard var path: CGPath = CTFontCreatePathForGlyph(ctFont, glyph, &glyphTransform) else {
+            guard let path: CGPath = CTFontCreatePathForGlyph(ctFont, glyph, &glyphTransform) else {
                 fatalError("CTFontPathForGlyph ERROR::could not make path from ctFont \(forFont.fontName), at glyph index \(glyph). ")
             }
             context.addPath( path )
@@ -144,7 +149,7 @@ class MBEFontAtlas {
             
             let topLeftTexCoord = CGPoint(x: texCoordLeft, y: texCoordTop)
             let bottomRightTexCoord = CGPoint(x: texCoordRight, y: texCoordBottom)
-            var descriptor = MBEGlyphDescriptor(glyphIndex: glyph,
+            let descriptor = MBEGlyphDescriptor(glyphIndex: glyph,
                                                 topLeftTexCoord: topLeftTexCoord,
                                                 bottomRightTexCoord: bottomRightTexCoord)
             mutableGlyphs.append(descriptor)
@@ -152,13 +157,13 @@ class MBEFontAtlas {
             origin.x += boundingRect.width + glyphMargin
         }
         
-#if MBE_GENERATE_DEBUG_ATLAS_IMAGE
-    CGImageRef contextImage = CGBitmapContextCreateImage(context);
-    // Break here to view the generated font atlas bitmap
-    UIImage *fontImage = [UIImage imageWithCGImage:contextImage];
-    fontImage = nil;
-    CGImageRelease(contextImage);
-#endif
+//#if MBE_GENERATE_DEBUG_ATLAS_IMAGE
+//    CGImageRef contextImage = CGBitmapContextCreateImage(context);
+//    // Break here to view the generated font atlas bitmap
+//    UIImage *fontImage = [UIImage imageWithCGImage:contextImage];
+//    fontImage = nil;
+//    CGImageRelease(contextImage);
+//#endif
         
         return imageData
     }
@@ -190,6 +195,108 @@ class MBEFontAtlas {
         
         let fits: Bool = ( estimatedGlyphTotalArea < textureArea )
         return fits
+    }
+    
+    func createSignedDistanceField(_ imageData: [UInt8]?, width: Int, height: Int) -> CustomMatrix<Float>? {
+        if (imageData == nil || width == 0 || height == 0) {
+            return nil
+        }
+        let maxDist: Float = hypot(Float(width), Float(height))
+        let distUnit: Float = 1
+        let distDiag: Float = sqrt(2)
+        
+        // Initialization phase: set all distances to "infinity"; zero out nearest boundary point map
+        var distanceMap = CustomMatrix<Float>.init(rows: height,
+                                                                        columns: width,
+                                                                        defaultValue: maxDist) // distance to nearest boundary point map
+        
+        var boundaryPointMap = CustomMatrix<uint2>.init(rows: height,
+                                                        columns: width,
+                                                        defaultValue: uint2(0) ) // nearest boundary point map
+        
+        // Some helpers for manipulating the above arrays
+        func image(_ x: Int, _ y: Int) -> Bool { return  imageData?[y * width + x] ?? 0x00 > 0x7f }
+        
+        // Immediate interior/exterior phase: mark all points along the boundary as such
+        for y in 0..<height {
+            for x in 0..<width {
+                let inside: Bool = image(x, y);
+                if (image(x - 1, y) != inside ||
+                    image(x + 1, y) != inside ||
+                    image(x, y - 1) != inside ||
+                    image(x, y + 1) != inside)
+                {
+                    distanceMap[x, y] = 0;
+                    boundaryPointMap[x, y] = uint2( UInt32(x), UInt32(y) );
+                }
+            }
+        }
+        //MARK: for porting: image(x,y) is imageData[x,y]   distance(x,y) is distanceMap[x,y]   and nearestpt(x,y) is boundaryPointMap[x,y]
+        
+        // Forward dead-reckoning pass
+        for y in 1..<height - 1 {
+            for x in 1..<width - 1 {
+                if (distanceMap[(x - 1), (y - 1)] + distDiag < distanceMap[x, y])
+                {
+                    boundaryPointMap[x, y] = boundaryPointMap[x - 1, y - 1];
+                    distanceMap[x, y] = hypot(Float(UInt32(x) - boundaryPointMap[x, y].x), Float(UInt32(y) - boundaryPointMap[x, y].y));
+                }
+                if (distanceMap[x, y - 1] + distUnit < distanceMap[x, y])
+                {
+                    boundaryPointMap[x, y] = boundaryPointMap[x, y - 1];
+                    distanceMap[x, y] = hypot(Float(UInt32(x) - boundaryPointMap[x, y].x), Float(UInt32(y) - boundaryPointMap[x, y].y));
+                }
+                if (distanceMap[x + 1, y - 1] + distDiag < distanceMap[x, y])
+                {
+                    boundaryPointMap[x, y] = boundaryPointMap[x + 1, y - 1];
+                    distanceMap[x, y] = hypot(Float(UInt32(x) - boundaryPointMap[x, y].x), Float(UInt32(y) - boundaryPointMap[x, y].y));
+                }
+                if (distanceMap[x - 1, y] + distUnit < distanceMap[x, y])
+                {
+                    boundaryPointMap[x, y] = boundaryPointMap[x - 1, y];
+                    distanceMap[x, y] = hypot(Float(UInt32(x) - boundaryPointMap[x, y].x), Float(UInt32(y) - boundaryPointMap[x, y].y));
+                }
+            }
+        }
+        
+        // Backward dead-reckoning pass
+        for y in (1..<height - 1).reversed() {
+            for x in (1..<width - 1).reversed() {
+                if (distanceMap[x + 1, y] + distUnit < distanceMap[x, y])
+                {
+                    boundaryPointMap[x, y] = boundaryPointMap[x + 1, y];
+                    distanceMap[x, y] = hypot(Float(UInt32(x) - boundaryPointMap[x, y].x), Float(UInt32(y) - boundaryPointMap[x, y].y));
+                }
+                if (distanceMap[x - 1, y + 1] + distDiag < distanceMap[x, y])
+                {
+                    boundaryPointMap[x, y] = boundaryPointMap[x - 1, y + 1];
+                    distanceMap[x, y] = hypot(Float(UInt32(x) - boundaryPointMap[x, y].x), Float(UInt32(y) - boundaryPointMap[x, y].y));
+                }
+                if (distanceMap[x, y + 1] + distUnit < distanceMap[x, y])
+                {
+                    boundaryPointMap[x, y] = boundaryPointMap[x, y + 1];
+                    distanceMap[x, y] = hypot(Float(UInt32(x) - boundaryPointMap[x, y].x), Float(UInt32(y) - boundaryPointMap[x, y].y));
+                }
+                if (distanceMap[x + 1, y + 1] + distDiag < distanceMap[x, y])
+                {
+                    boundaryPointMap[x, y] = boundaryPointMap[x + 1, y + 1];
+                    distanceMap[x, y] = hypot(Float(UInt32(x) - boundaryPointMap[x, y].x), Float(UInt32(y) - boundaryPointMap[x, y].y));
+                }
+            }
+        }
+        
+        // Interior distance negation pass; distances outside the figure are considered negative
+        for y in 0..<height
+        {
+            for x in 0..<width
+            {
+                if (!image(x, y)) {
+                    distanceMap[x, y] = -distanceMap[x, y];
+                }
+            }
+        }
+        
+        return distanceMap
     }
 }
 
