@@ -4,7 +4,7 @@ import CoreText
 import Foundation
 
 class MBEFontAtlas {
-    private var _parentFont: UIFont!
+    var parentFont: UIFont!
     private var _fontPointSize: CGFloat!
     private var _spread: CGFloat!
     private var _glyphDescriptors: [MBEGlyphDescriptor] = []
@@ -26,7 +26,7 @@ class MBEFontAtlas {
     public let MBEGlyphDescriptorsKey = "glyphDescriptors";
     
     init(font: UIFont, textureSize: Int) {
-        _parentFont = font
+        parentFont = font
         _fontPointSize = font.pointSize
         _spread = self.estimatedLineWidth(font) * 0.5
         _textureSize = textureSize
@@ -55,9 +55,9 @@ class MBEFontAtlas {
 
         for y in 0..<height {
             for x in 0..<width {
-                var dist = inData[x, y]
-                var clampDist = fmax(-normalizationFactor, fmin(dist, normalizationFactor))
-                var scaledDist = clampDist / normalizationFactor
+                let dist = inData[x, y]
+                let clampDist = fmax(-normalizationFactor, fmin(dist, normalizationFactor))
+                let scaledDist = clampDist / normalizationFactor
                 let value: UInt8 = UInt8((scaledDist + 1) / 2) * UInt8.max
                 outData[x, y] = value
             }
@@ -69,7 +69,7 @@ class MBEFontAtlas {
     func createTextureData() {
         assert(MBEFontAtlasSize >= self._textureSize )
         assert(MBEFontAtlasSize % self._textureSize == 0)
-        let atlasData: [UInt8] = self.createAtlas(self._parentFont,
+        let atlasData: [UInt8] = self.createAtlas(self.parentFont,
                                                   width: MBEFontAtlasSize,
                                                   height: MBEFontAtlasSize)
         
@@ -81,7 +81,7 @@ class MBEFontAtlas {
         let scaledField = createResampledData(distanceField,
                                                  width:MBEFontAtlasSize,
                                               height:MBEFontAtlasSize, scaleFactor: scaleFactor)
-        let spread: CGFloat = estimatedLineWidth(self._parentFont) * 0.5
+        let spread: CGFloat = estimatedLineWidth(self.parentFont) * 0.5
         
         // Quantize the downsampled distance field into an 8-bit grayscale array suitable for use as a texture
         let texture = createQuantizedDistanceField(scaledField, width: _textureSize, height: _textureSize, normalizationFactor: Float(spread))
@@ -142,11 +142,11 @@ class MBEFontAtlas {
         let ctFont: CTFont =  CTFontCreateWithName((forFont.fontName as CFString),
                                                  _fontPointSize, nil)
         
-        _parentFont = UIFont(name: forFont.fontName, size: _fontPointSize)
+        parentFont = UIFont(name: forFont.fontName, size: _fontPointSize)
         
         let fontGlyphCount: CFIndex = CTFontGetGlyphCount(ctFont)
         
-        let glyphMargin: CGFloat = estimatedLineWidth( _parentFont )
+        let glyphMargin: CGFloat = estimatedLineWidth( parentFont )
         
         // Set fill color so that glyphs are solid white
         context.setFillColor(red: 1, green: 1, blue: 1, alpha: 1);
