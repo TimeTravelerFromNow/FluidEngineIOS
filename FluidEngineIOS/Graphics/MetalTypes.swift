@@ -25,6 +25,7 @@ typealias float2 = SIMD2<Float>
 typealias float3 = SIMD3<Float>
 typealias float4 = SIMD4<Float>
 typealias int2 = SIMD2<Int32>
+typealias ushort2 = SIMD2<UInt16>
 typealias long2 = SIMD2<Int>
 
 

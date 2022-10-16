@@ -1,4 +1,5 @@
 import MetalKit
+import UIKit
 
 enum ButtonActions {
     case Clear
@@ -40,7 +41,20 @@ class MenuScene : Scene {
         addChild(beachButton)
     }
     
-    override func buildScene(){        
+    let MBEFontName = "HoeflerText-Regular";
+    let MBEFontDisplaySize: Float = 72;
+    let MBESampleText = "It was the best of times, it was the worst of times, " +
+                                            "it was the age of wisdom, it was the age of foolishness...\n\n" +
+                                            "Все счастливые семьи похожи друг на друга, " +
+                                            "каждая несчастливая семья несчастлива по-своему.";
+    let MBETextColor: float4  = float4( 0.1, 0.1, 0.1, 1 );
+    let MBEFontAtlasSize: Int = 2048;
+    
+    override func buildScene(){
+        let font = UIFont(name: MBEFontName, size: 32)
+        let testText = MBEFontAtlas.init(font: font!, textureSize: MBEFontAtlasSize)
+        
+        
         fluidObject = FluidEnvironment.Environment
         backGroundObject = SharedBackground.Background
         
