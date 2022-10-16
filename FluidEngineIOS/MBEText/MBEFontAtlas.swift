@@ -255,11 +255,11 @@ class MBEFontAtlas {
         return fits
     }
     
-    func createSignedDistanceField(_ imageData: [UInt8]?, width: Int, height: Int) -> CustomMatrix<Float>? {
+    func createSignedDistanceField(_ imageData: [UInt8]?, width: Int, height: Int) -> CustomMatrix<Float32>? {
         if (imageData == nil || width == 0 || height == 0) {
             return nil
         }
-        let maxDist: Float32 = hypot(Float(width), Float(height))
+        let maxDist: Float32 = hypot(Float32(width), Float32(height))
         let distUnit: Float32 = 1
         let distDiag: Float32 = sqrt(2)
         
@@ -297,22 +297,22 @@ class MBEFontAtlas {
                 if (distanceMap[(x - 1), (y - 1)] + distDiag < distanceMap[x, y])
                 {
                     boundaryPointMap[x, y] = boundaryPointMap[x - 1, y - 1];
-                    distanceMap[x, y] = hypot(Float(x) - Float(boundaryPointMap[x, y].x), Float(y) - Float(boundaryPointMap[x, y].y));
+                    distanceMap[x, y] = hypot(Float32(x) - Float32(boundaryPointMap[x, y].x), Float32(y) - Float32(boundaryPointMap[x, y].y));
                 }
                 if (distanceMap[x, y - 1] + distUnit < distanceMap[x, y])
                 {
                     boundaryPointMap[x, y] = boundaryPointMap[x, y - 1];
-                    distanceMap[x, y] = hypot(Float(x) - Float(boundaryPointMap[x, y].x), Float(y) - Float(boundaryPointMap[x, y].y));
+                    distanceMap[x, y] = hypot(Float32(x) - Float32(boundaryPointMap[x, y].x), Float32(y) - Float32(boundaryPointMap[x, y].y));
                 }
                 if (distanceMap[x + 1, y - 1] + distDiag < distanceMap[x, y])
                 {
                     boundaryPointMap[x, y] = boundaryPointMap[x + 1, y - 1];
-                    distanceMap[x, y] = hypot(Float(x) - Float(boundaryPointMap[x, y].x), Float(y) - Float(boundaryPointMap[x, y].y));
+                    distanceMap[x, y] = hypot(Float32(x) - Float32(boundaryPointMap[x, y].x), Float32(y) - Float32(boundaryPointMap[x, y].y));
                 }
                 if (distanceMap[x - 1, y] + distUnit < distanceMap[x, y])
                 {
                     boundaryPointMap[x, y] = boundaryPointMap[x - 1, y];
-                    distanceMap[x, y] = hypot(Float(x) - Float(boundaryPointMap[x, y].x), Float(y) - Float(boundaryPointMap[x, y].y));
+                    distanceMap[x, y] = hypot(Float32(x) - Float32(boundaryPointMap[x, y].x), Float32(y) - Float32(boundaryPointMap[x, y].y));
                 }
             }
         }
@@ -323,22 +323,22 @@ class MBEFontAtlas {
                 if (distanceMap[x + 1, y] + distUnit < distanceMap[x, y])
                 {
                     boundaryPointMap[x, y] = boundaryPointMap[x + 1, y];
-                    distanceMap[x, y] = hypot(Float(x) - Float(boundaryPointMap[x, y].x), Float(y) - Float(boundaryPointMap[x, y].y));
+                    distanceMap[x, y] = hypot(Float32(x) - Float32(boundaryPointMap[x, y].x), Float32(y) - Float32(boundaryPointMap[x, y].y));
                 }
                 if (distanceMap[x - 1, y + 1] + distDiag < distanceMap[x, y])
                 {
                     boundaryPointMap[x, y] = boundaryPointMap[x - 1, y + 1];
-                    distanceMap[x, y] = hypot(Float(x) - Float(boundaryPointMap[x, y].x), Float(y) - Float(boundaryPointMap[x, y].y));
+                    distanceMap[x, y] = hypot(Float32(x) - Float32(boundaryPointMap[x, y].x), Float32(y) - Float32(boundaryPointMap[x, y].y));
                 }
                 if (distanceMap[x, y + 1] + distUnit < distanceMap[x, y])
                 {
                     boundaryPointMap[x, y] = boundaryPointMap[x, y + 1];
-                    distanceMap[x, y] = hypot(Float(x) - Float(boundaryPointMap[x, y].x), Float(y) - Float(boundaryPointMap[x, y].y));
+                    distanceMap[x, y] = hypot(Float32(x) - Float32(boundaryPointMap[x, y].x), Float32(y) - Float32(boundaryPointMap[x, y].y));
                 }
                 if (distanceMap[x + 1, y + 1] + distDiag < distanceMap[x, y])
                 {
                     boundaryPointMap[x, y] = boundaryPointMap[x + 1, y + 1];
-                    distanceMap[x, y] = hypot(Float(x) - Float(boundaryPointMap[x, y].x), Float(y) - Float(boundaryPointMap[x, y].y));
+                    distanceMap[x, y] = hypot(Float32(x) - Float32(boundaryPointMap[x, y].x), Float32(y) - Float32(boundaryPointMap[x, y].y));
                 }
             }
         }
