@@ -82,3 +82,8 @@ struct FinalRasterizerData {
     float4 position [[ position ]];
     float2 textureCoordinate;
 };
+
+struct MBEVertex {
+    packed_float4 position [[ position ]];
+    packed_float2 texCoords;
+};

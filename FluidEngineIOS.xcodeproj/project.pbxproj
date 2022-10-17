@@ -155,6 +155,7 @@
 		92A9E44028DA72910000A77F /* clearButton.obj in Resources */ = {isa = PBXBuildFile; fileRef = 92A9E43428DA72910000A77F /* clearButton.obj */; };
 		92A9E44128DA72910000A77F /* beachButton.obj in Resources */ = {isa = PBXBuildFile; fileRef = 92A9E43528DA72910000A77F /* beachButton.obj */; };
 		92A9E44228DA72910000A77F /* testButton.obj in Resources */ = {isa = PBXBuildFile; fileRef = 92A9E43628DA72910000A77F /* testButton.obj */; };
+		92C8BB6F28FD104600705808 /* MBETextObject.swift in Sources */ = {isa = PBXBuildFile; fileRef = 92C8BB6E28FD104600705808 /* MBETextObject.swift */; };
 		92CC086A28F1F0DA00F99D00 /* MBETextMesh.swift in Sources */ = {isa = PBXBuildFile; fileRef = 92CC086928F1F0DA00F99D00 /* MBETextMesh.swift */; };
 		92CC086C28F1F0FA00F99D00 /* MBEFontAtlas.swift in Sources */ = {isa = PBXBuildFile; fileRef = 92CC086B28F1F0FA00F99D00 /* MBEFontAtlas.swift */; };
 /* End PBXBuildFile section */
@@ -374,6 +375,7 @@
 		92A9E43428DA72910000A77F /* clearButton.obj */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = clearButton.obj; sourceTree = "<group>"; };
 		92A9E43528DA72910000A77F /* beachButton.obj */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = beachButton.obj; sourceTree = "<group>"; };
 		92A9E43628DA72910000A77F /* testButton.obj */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = testButton.obj; sourceTree = "<group>"; };
+		92C8BB6E28FD104600705808 /* MBETextObject.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MBETextObject.swift; sourceTree = "<group>"; };
 		92CC086928F1F0DA00F99D00 /* MBETextMesh.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MBETextMesh.swift; sourceTree = "<group>"; };
 		92CC086B28F1F0FA00F99D00 /* MBEFontAtlas.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MBEFontAtlas.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -880,6 +882,7 @@
 			children = (
 				92CC086928F1F0DA00F99D00 /* MBETextMesh.swift */,
 				92CC086B28F1F0FA00F99D00 /* MBEFontAtlas.swift */,
+				92C8BB6E28FD104600705808 /* MBETextObject.swift */,
 			);
 			path = MBEText;
 			sourceTree = "<group>";
@@ -1090,6 +1093,7 @@
 				92489BAC2799DA0400639B52 /* b2PrismaticJoint.cpp in Sources */,
 				92A9E42728DA6F410000A77F /* JointTest.cpp in Sources */,
 				92A9E3A928DA6D1F0000A77F /* Matrix.swift in Sources */,
+				92C8BB6F28FD104600705808 /* MBETextObject.swift in Sources */,
 				92489BBA2799DA0400639B52 /* b2FreeList.cpp in Sources */,
 				92A9E3AA28DA6D1F0000A77F /* BeachScene.swift in Sources */,
 				923F2BD327A0FD7300443936 /* DepthStencilStates.swift in Sources */,

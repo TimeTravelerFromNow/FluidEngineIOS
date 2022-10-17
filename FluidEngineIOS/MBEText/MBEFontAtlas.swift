@@ -9,7 +9,7 @@ class MBEFontAtlas {
     private var _spread: CGFloat!
     var glyphDescriptors: [MBEGlyphDescriptor] = []
     private var _textureSize: Int!
-    private var _textureData: Data!
+    var textureData: Data!
     public let MBEFontAtlasSize: Int = 4096;
 
     public let MBEGlyphIndexKey = "glyphIndex";
@@ -87,7 +87,7 @@ class MBEFontAtlas {
         let texture = createQuantizedDistanceField(scaledField, width: _textureSize, height: _textureSize, normalizationFactor: Float(spread))
         
         let textureByteCount = _textureSize * _textureSize
-        _textureData = Data.init(bytes: texture.grid, count: textureByteCount)
+        textureData = Data.init(bytes: texture.grid, count: textureByteCount)
     }
     
     func createResampledData(_ inData: CustomMatrix<Float32>, width: Int, height: Int, scaleFactor: Int) -> CustomMatrix<Float32> {

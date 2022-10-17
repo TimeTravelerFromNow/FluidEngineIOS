@@ -43,3 +43,23 @@ fragment float4 bg_color_fragment(const ColorRasterizerData rd [[ stage_in ]],
 
 // this is for basic obj rendering, like a quad with a texture, (non instanced).
 //fragment float4 basic_fragment_shader
+
+vertex ColorRasterizerData text_vertex_shader(const MBEVertex vIn [[ stage_in ]],
+                                          constant SceneConstants &sceneConstants [[ buffer(1) ]],
+                                          constant ModelConstants &modelConstants [[ buffer(2) ]]) {
+    ColorRasterizerData rd;
+    
+    rd.position = sceneConstants.projectionMatrix * sceneConstants.viewMatrix * modelConstants.modelMatrix * float4(vIn.position, 1);
+    rd.color = vIn.color;
+    rd.textureCoordinate = vIn.textureCoordinate;
+    
+    return rd;
+}
+
+// pixel wise stage_in
+// THese are for beautiful custom time dependent shading of the sky background
+fragment half4 color_fragment_shader(ColorRasterizerData rd [[ stage_in ]],
+                                     constant Material &material [[ buffer(1) ]]) {
+    float4 color = material.useMaterialColor ? material.color : rd.color;
+    return half4(color.r, color.g, color.b, color.a);
+}

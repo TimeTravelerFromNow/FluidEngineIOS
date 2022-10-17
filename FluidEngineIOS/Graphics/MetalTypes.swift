@@ -90,3 +90,7 @@ struct FluidConstants: sizeable {
     var pointSize: Float
 }
 
+struct MBEVertex {
+    var position: packed_float4 = packed_float4(0)
+    var texCoords: packed_float2 = packed_float2(0)
+}
