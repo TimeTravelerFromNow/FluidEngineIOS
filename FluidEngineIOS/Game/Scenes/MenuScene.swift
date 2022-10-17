@@ -52,9 +52,10 @@ class MenuScene : Scene {
     
     override func buildScene(){
         let font = UIFont(name: MBEFontName, size: 32)
-        let testText = MBEFontAtlas.init(font: font!, textureSize: MBEFontAtlasSize)
-        
-        
+        let testAtlas = MBEFontAtlas.init(font: font!, textureSize: MBEFontAtlasSize)
+        let insetRect = UIScreen.main.nativeBounds.insetBy(dx: 10, dy: 10)
+        let textTextMesh = MBETextMesh(MBESampleText, inRect: insetRect, fontAtlas: testAtlas, atSize: CGFloat(MBEFontDisplaySize))
+
         fluidObject = FluidEnvironment.Environment
         backGroundObject = SharedBackground.Background
         

@@ -7,7 +7,7 @@ class MBEFontAtlas {
     var parentFont: UIFont!
     private var _fontPointSize: CGFloat!
     private var _spread: CGFloat!
-    private var _glyphDescriptors: [MBEGlyphDescriptor] = []
+    var glyphDescriptors: [MBEGlyphDescriptor] = []
     private var _textureSize: Int!
     private var _textureData: Data!
     public let MBEFontAtlasSize: Int = 4096;
@@ -90,20 +90,21 @@ class MBEFontAtlas {
         _textureData = Data.init(bytes: texture.grid, count: textureByteCount)
     }
     
-    func createResampledData(_ inData: CustomMatrix<Float>, width: Int, height: Int, scaleFactor: Int) -> CustomMatrix<Float> {
+    func createResampledData(_ inData: CustomMatrix<Float32>, width: Int, height: Int, scaleFactor: Int) -> CustomMatrix<Float32> {
         assert( width % scaleFactor == 0 && height % scaleFactor == 0 )
         let scaledWidth: Int = width / scaleFactor
         let scaledHeight: Int = height / scaleFactor
-        var outData = CustomMatrix<Float>.init(rows: scaledHeight, columns: scaledWidth, defaultValue: 0.0)
+        var outData = CustomMatrix<Float32>.init(rows: scaledHeight, columns: scaledWidth, defaultValue: 0.0)
+        let divideBy = Float32(scaleFactor * scaleFactor)
         for y in stride(from: 0, to: height, by: scaleFactor) {
             for x in stride(from: 0, to: width, by: scaleFactor) {
-                var accum: Float = 0.0
+                var accum: Float32 = 0.0
                 for ky in 0..<scaleFactor {
                     for kx in 0..<scaleFactor {
                         accum += inData[(x + kx), (y + ky)]
                     }
                 }
-                accum = accum / Float(scaleFactor * scaleFactor)
+                accum = accum / divideBy
                 
                 outData[(x / scaleFactor), (y / scaleFactor)] = accum
             }
@@ -151,8 +152,8 @@ class MBEFontAtlas {
         // Set fill color so that glyphs are solid white
         context.setFillColor(red: 1, green: 1, blue: 1, alpha: 1);
         
-        var mutableGlyphs: [MBEGlyphDescriptor] = _glyphDescriptors
-        _glyphDescriptors.removeAll()
+        var mutableGlyphs: [MBEGlyphDescriptor] = glyphDescriptors
+        glyphDescriptors.removeAll()
         
         let fontAscent: CGFloat = CTFontGetAscent(ctFont);
         let fontDescent: CGFloat = CTFontGetDescent(ctFont);
@@ -222,7 +223,7 @@ class MBEFontAtlas {
 //    fontImage = nil;
 //    CGImageRelease(contextImage);
 //#endif
-        
+        self.glyphDescriptors = mutableGlyphs // wasn't in original code
         return imageData
     }
     
@@ -273,7 +274,7 @@ class MBEFontAtlas {
                                                         defaultValue: ushort2(0) ) // nearest boundary point map
         
         // Some helpers for manipulating the above arrays
-        func image(_ x: Int, _ y: Int) -> Bool { return imageData?[y * width + x] ?? 0x00 > 0x7f }
+        func image(_ x: Int, _ y: Int) -> Bool { return imageData![y * width + x] > 0x7f }
         
         // Immediate interior/exterior phase: mark all points along the boundary as such
         for y in 1..<( height - 1 ) {
