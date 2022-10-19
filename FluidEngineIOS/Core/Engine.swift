@@ -28,6 +28,8 @@ class Engine {
         
         CustomMeshes.Initialize()
         
+        FontRenderables.Initialize()
+        
         FluidEnvironment.Initialize()
         
         SharedBackground.Initialize()

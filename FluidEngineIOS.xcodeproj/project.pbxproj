@@ -90,6 +90,8 @@
 		92489BCF2799DA0400639B52 /* b2CollideEdge.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 92489B012799DA0400639B52 /* b2CollideEdge.cpp */; };
 		92489BD02799DA0400639B52 /* b2Collision.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 92489B022799DA0400639B52 /* b2Collision.cpp */; };
 		92489C032799DD0500639B52 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 92489C022799DD0500639B52 /* LaunchScreen.storyboard */; };
+		9270CD9C28E1084600A5CB05 /* FontRenderable.m in Sources */ = {isa = PBXBuildFile; fileRef = 9270CD9B28E1084600A5CB05 /* FontRenderable.m */; };
+		9295E4CD2900AFB300A33A0D /* FontRenderables.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9295E4CC2900AFB300A33A0D /* FontRenderables.swift */; };
 		92A9E38E28DA6CEB0000A77F /* Renderable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 92A9E37A28DA6CEB0000A77F /* Renderable.swift */; };
 		92A9E38F28DA6CEB0000A77F /* Camera.swift in Sources */ = {isa = PBXBuildFile; fileRef = 92A9E37C28DA6CEB0000A77F /* Camera.swift */; };
 		92A9E39028DA6CEB0000A77F /* Levels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 92A9E37E28DA6CEB0000A77F /* Levels.swift */; };
@@ -313,6 +315,9 @@
 		92489B012799DA0400639B52 /* b2CollideEdge.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = b2CollideEdge.cpp; sourceTree = "<group>"; };
 		92489B022799DA0400639B52 /* b2Collision.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = b2Collision.cpp; sourceTree = "<group>"; };
 		92489C022799DD0500639B52 /* LaunchScreen.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = LaunchScreen.storyboard; sourceTree = "<group>"; };
+		9270CD9B28E1084600A5CB05 /* FontRenderable.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = FontRenderable.m; sourceTree = "<group>"; };
+		9270CD9D28E10F4500A5CB05 /* FontRenderable.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = FontRenderable.h; sourceTree = "<group>"; };
+		9295E4CC2900AFB300A33A0D /* FontRenderables.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FontRenderables.swift; sourceTree = "<group>"; };
 		92A9E37A28DA6CEB0000A77F /* Renderable.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Renderable.swift; sourceTree = "<group>"; };
 		92A9E37C28DA6CEB0000A77F /* Camera.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Camera.swift; sourceTree = "<group>"; };
 		92A9E37E28DA6CEB0000A77F /* Levels.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Levels.swift; sourceTree = "<group>"; };
@@ -408,16 +413,18 @@
 			children = (
 				92376BCD28DE6E9F007C93DB /* MBEMesh.m */,
 				92376BDE28DE6E9F007C93DB /* MBEMesh.h */,
+				92376BDC28DE6E9F007C93DB /* MBEFontAtlas.h */,
 				92376BCE28DE6E9F007C93DB /* MBEFontAtlas.m */,
 				92376BD128DE6E9F007C93DB /* MBETextMesh.h */,
 				92376BD328DE6E9F007C93DB /* MBEMathUtilities.h */,
 				92376BD428DE6E9F007C93DB /* MBEShaders.metal */,
 				92376BD528DE6E9F007C93DB /* MBETextureLoader.m */,
-				92376BDC28DE6E9F007C93DB /* MBEFontAtlas.h */,
 				92376BE228DE6E9F007C93DB /* MBETypes.h */,
 				92376BE328DE6E9F007C93DB /* MBETextMesh.m */,
 				92376BE528DE6E9F007C93DB /* MBETextureLoader.h */,
 				92376BE728DE6E9F007C93DB /* MBEMathUtilities.m */,
+				9270CD9B28E1084600A5CB05 /* FontRenderable.m */,
+				9270CD9D28E10F4500A5CB05 /* FontRenderable.h */,
 			);
 			path = TextRendering;
 			sourceTree = "<group>";
@@ -451,6 +458,7 @@
 		923F2BC427A0FD7300443936 /* Libraries */ = {
 			isa = PBXGroup;
 			children = (
+				9295E4CC2900AFB300A33A0D /* FontRenderables.swift */,
 				923F2BC527A0FD7300443936 /* CustomMesh.swift */,
 				923F2BC627A0FD7300443936 /* TextureLibrary.swift */,
 				923F2BC727A0FD7300443936 /* DepthStencilStates.swift */,
@@ -1067,6 +1075,7 @@
 				92A9E39A28DA6CEB0000A77F /* InstancedObject.swift in Sources */,
 				92A9E3AC28DA6D1F0000A77F /* MenuScene.swift in Sources */,
 				92A9E39228DA6CEB0000A77F /* BoxPolygon.swift in Sources */,
+				9270CD9C28E1084600A5CB05 /* FontRenderable.m in Sources */,
 				923F2BDB27A0FD7300443936 /* InstancedShaders.metal in Sources */,
 				92A9E39C28DA6CEB0000A77F /* BoxButton.swift in Sources */,
 				92489BCE2799DA0400639B52 /* b2BroadPhase.cpp in Sources */,
@@ -1108,6 +1117,7 @@
 				923F2B6127A0FCE200443936 /* Preferences.swift in Sources */,
 				92489BBC2799DA0400639B52 /* b2Math.cpp in Sources */,
 				92489BB92799DA0400639B52 /* b2Stat.cpp in Sources */,
+				9295E4CD2900AFB300A33A0D /* FontRenderables.swift in Sources */,
 				923F2BDA27A0FD7300443936 /* FluidShaders.metal in Sources */,
 				92489BCA2799DA0400639B52 /* b2EdgeShape.cpp in Sources */,
 				92489BC02799DA0400639B52 /* b2VoronoiDiagram.cpp in Sources */,
