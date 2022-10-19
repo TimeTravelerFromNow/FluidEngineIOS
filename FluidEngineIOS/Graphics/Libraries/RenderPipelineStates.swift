@@ -84,6 +84,7 @@ class RenderPipelineStates {
         vertexDescriptor.layouts[0].stride = CustomVertex.stride
         return vertexDescriptor
     }
+    
     public static func Initialize() {
         generateSelectRenderPipelineState()
         generateInstancedRenderPipelineState()
@@ -332,7 +333,7 @@ class RenderPipelineStates {
         
         renderPipelineDescriptor.depthAttachmentPixelFormat = Preferences.MainDepthPixelFormat
         
-        renderPipelineDescriptor.vertexDescriptor = VertexDescriptor
+        renderPipelineDescriptor.vertexDescriptor = CustomVertexDescriptor
         renderPipelineDescriptor.vertexFunction = vertexFunction
         renderPipelineDescriptor.fragmentFunction = fragmentFunction
         

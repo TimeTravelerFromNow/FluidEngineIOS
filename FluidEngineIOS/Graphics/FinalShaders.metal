@@ -9,10 +9,6 @@
 #include "MetalTypes.metal"
 using namespace metal;
 
-constexpr sampler sampler2d(address::clamp_to_zero,
-                    filter::linear,
-                    compare_func::less);
-
 vertex FinalRasterizerData final_vertex_shader(const ColorVertex vIn [[ stage_in ]]) {
     FinalRasterizerData rd;
     

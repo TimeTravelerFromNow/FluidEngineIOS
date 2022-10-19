@@ -24,5 +24,6 @@
 - (id<MTLTexture>)getTexture;
 - (id<MTLBuffer>)getVertices;
 - (id<MTLBuffer>)getIndices;
+- (long)getIndexCount;
 
 @end

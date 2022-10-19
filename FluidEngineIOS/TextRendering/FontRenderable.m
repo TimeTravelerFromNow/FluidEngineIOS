@@ -97,4 +97,8 @@ static float MBEFontAtlasSize = 2048;
     return _textMesh.indexBuffer;
 }
 
+- (long) getIndexCount {
+    return [self.textMesh.indexBuffer length] / sizeof(MBEIndexType);
+}
+
 @end

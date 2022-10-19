@@ -93,6 +93,7 @@
 		9270CD9C28E1084600A5CB05 /* FontRenderable.m in Sources */ = {isa = PBXBuildFile; fileRef = 9270CD9B28E1084600A5CB05 /* FontRenderable.m */; };
 		9295E4CD2900AFB300A33A0D /* FontRenderables.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9295E4CC2900AFB300A33A0D /* FontRenderables.swift */; };
 		9295E4CF2900B84900A33A0D /* TestTextObject.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9295E4CE2900B84900A33A0D /* TestTextObject.swift */; };
+		9295E4D12900BB2900A33A0D /* TextShaders.metal in Sources */ = {isa = PBXBuildFile; fileRef = 9295E4D02900BB2900A33A0D /* TextShaders.metal */; };
 		92A9E38E28DA6CEB0000A77F /* Renderable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 92A9E37A28DA6CEB0000A77F /* Renderable.swift */; };
 		92A9E38F28DA6CEB0000A77F /* Camera.swift in Sources */ = {isa = PBXBuildFile; fileRef = 92A9E37C28DA6CEB0000A77F /* Camera.swift */; };
 		92A9E39028DA6CEB0000A77F /* Levels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 92A9E37E28DA6CEB0000A77F /* Levels.swift */; };
@@ -320,6 +321,7 @@
 		9270CD9D28E10F4500A5CB05 /* FontRenderable.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = FontRenderable.h; sourceTree = "<group>"; };
 		9295E4CC2900AFB300A33A0D /* FontRenderables.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FontRenderables.swift; sourceTree = "<group>"; };
 		9295E4CE2900B84900A33A0D /* TestTextObject.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestTextObject.swift; sourceTree = "<group>"; };
+		9295E4D02900BB2900A33A0D /* TextShaders.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = TextShaders.metal; sourceTree = "<group>"; };
 		92A9E37A28DA6CEB0000A77F /* Renderable.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Renderable.swift; sourceTree = "<group>"; };
 		92A9E37C28DA6CEB0000A77F /* Camera.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Camera.swift; sourceTree = "<group>"; };
 		92A9E37E28DA6CEB0000A77F /* Levels.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Levels.swift; sourceTree = "<group>"; };
@@ -448,8 +450,9 @@
 			children = (
 				923F2BC327A0FD7300443936 /* MetalTypes.swift */,
 				923F2BC427A0FD7300443936 /* Libraries */,
-				923F2BCB27A0FD7300443936 /* BasicShaders.metal */,
 				923F2BCC27A0FD7300443936 /* MetalTypes.metal */,
+				9295E4D02900BB2900A33A0D /* TextShaders.metal */,
+				923F2BCB27A0FD7300443936 /* BasicShaders.metal */,
 				923F2BCD27A0FD7300443936 /* FinalShaders.metal */,
 				923F2BCE27A0FD7300443936 /* FluidShaders.metal */,
 				923F2BCF27A0FD7300443936 /* InstancedShaders.metal */,
@@ -1117,6 +1120,7 @@
 				92A9E3A828DA6D1F0000A77F /* TestTubeScene.swift in Sources */,
 				92A9E3B428DA6D3E0000A77F /* TextureLoader.swift in Sources */,
 				92376BEC28DE6E9F007C93DB /* MBETextureLoader.m in Sources */,
+				9295E4D12900BB2900A33A0D /* TextShaders.metal in Sources */,
 				923F2B6127A0FCE200443936 /* Preferences.swift in Sources */,
 				92489BBC2799DA0400639B52 /* b2Math.cpp in Sources */,
 				9295E4CF2900B84900A33A0D /* TestTextObject.swift in Sources */,

@@ -558,8 +558,8 @@
             filePath = "FluidEngineIOS/Game/Scenes/MenuScene.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "95"
-            endingLineNumber = "95"
+            startingLineNumber = "111"
+            endingLineNumber = "111"
             landmarkName = "touchesBegan()"
             landmarkType = "7">
          </BreakpointContent>
@@ -590,8 +590,8 @@
             filePath = "FluidEngineIOS/Game/Scenes/MenuScene.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "45"
-            endingLineNumber = "45"
+            startingLineNumber = "60"
+            endingLineNumber = "60"
             landmarkName = "buildScene()"
             landmarkType = "7">
          </BreakpointContent>
@@ -609,6 +609,22 @@
             startingLineNumber = "33"
             endingLineNumber = "33"
             landmarkName = "Ignite(_:)"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "7429DE0E-C85A-4D9A-83BD-86737C40462F"
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "FluidEngineIOS/Game/Game Objects/TestTextObject.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "29"
+            endingLineNumber = "29"
+            landmarkName = "doRender(_:)"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>

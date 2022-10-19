@@ -21,6 +21,7 @@ class MenuScene : Scene {
     var backGroundObject: CloudsBackground!
     var fluidObject: DebugEnvironment!
     var waterFall: WaterFallObject!
+    var testTextObject: TestTextObject!
     
     var buttons: [ BoxButton ] = []
         
@@ -40,8 +41,22 @@ class MenuScene : Scene {
         addChild(beachButton)
     }
     
+    override func update(deltaTime: Float) {
+        super.update(deltaTime: deltaTime)
+        testTextObject.rotateZ(deltaTime)
+        testTextObject.setScale(((sin(GameTime.TotalGameTime) + 1.0 )  * 0.3 + 0.4 ) * 2 / (GameSettings.ptmRatio * 10)  )
+    }
+    
     override func buildScene(){
    
+        testTextObject = TestTextObject(.HoeflerDefault)
+        testTextObject.setPositionZ(0.2)
+        testTextObject.setRotationY(2 * .pi)
+        testTextObject.setRotationX(.pi)
+        testTextObject.setScale(2 / (GameSettings.ptmRatio * 10))
+        testTextObject.setPosition(box2DOrigin.x / 5 - 0.1, box2DOrigin.y / 5 + 0.1, 0.3)
+        
+        
         fluidObject = FluidEnvironment.Environment
         backGroundObject = SharedBackground.Background
         
@@ -58,7 +73,8 @@ class MenuScene : Scene {
         addChild(backGroundObject)
         addChild(waterFall)
         addChild(waterFall.getCliff())
-        
+        addChild(testTextObject)
+
         for pine in waterFall.getPines() {
             addChild(pine)
         }

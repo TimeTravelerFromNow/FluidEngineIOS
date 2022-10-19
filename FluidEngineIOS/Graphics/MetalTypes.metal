@@ -87,3 +87,13 @@ struct MBEVertex {
     packed_float4 position;
     packed_float2 texCoords;
 };
+
+struct TransformedVertex
+{
+    float4 position [[ position ]];
+    float2 texCoords;
+};
+
+constexpr sampler sampler2d(address::clamp_to_zero,
+                            filter::linear,
+                            compare_func::less);

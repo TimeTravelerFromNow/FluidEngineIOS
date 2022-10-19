@@ -20,10 +20,6 @@ class CloudsBackground: Node {
         skyBG.setScale(10)
         addChild(skyBG)
     }
-    
-    deinit {
-        LiquidFun.destroyWorld()
-    }
 }
 
 class Clouds: InstancedObject {
