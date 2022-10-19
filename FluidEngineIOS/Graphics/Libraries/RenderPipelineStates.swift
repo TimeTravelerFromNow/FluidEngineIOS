@@ -13,6 +13,8 @@ enum RenderPipelineStateTypes {
     case Points
     case Lines
     case Select
+    
+    case Text
 }
 
 enum VertexDescriptorTypes {
@@ -61,6 +63,7 @@ class RenderPipelineStates {
         vertexDescriptor.layouts[0].stride = Vertex.stride
         return vertexDescriptor
     }
+    
     private static var CustomVertexDescriptor: MTLVertexDescriptor {
         let vertexDescriptor = MTLVertexDescriptor()
         var offset: Int = 0
@@ -92,6 +95,8 @@ class RenderPipelineStates {
         generateFinalRenderPipelineState()
         CustomBGPipelineState()
         generateBasicRenderPipelineState()
+        
+        generateMBETextRenderPipelineState()
         
         _descriptorLibrary.updateValue(VertexDescriptor, forKey: .Basic)
         _descriptorLibrary.updateValue(CustomVertexDescriptor, forKey: .Custom)
@@ -315,6 +320,30 @@ class RenderPipelineStates {
         }
         
         _library.updateValue(renderPipelineState, forKey: .Basic)
+    }
+    
+    private static func generateMBETextRenderPipelineState() {
+        let vertexFunction = Engine.DefaultLibrary.makeFunction(name: "text_vertex_shader")
+        let fragmentFunction = Engine.DefaultLibrary.makeFunction(name: "text_fragment_shader")
+        
+        let renderPipelineDescriptor = MTLRenderPipelineDescriptor()
+        renderPipelineDescriptor.colorAttachments[0].pixelFormat = Preferences.MainPixelFormat
+        renderPipelineDescriptor.colorAttachments[1].pixelFormat = Preferences.MainPixelFormat
+        
+        renderPipelineDescriptor.depthAttachmentPixelFormat = Preferences.MainDepthPixelFormat
+        
+        renderPipelineDescriptor.vertexDescriptor = VertexDescriptor
+        renderPipelineDescriptor.vertexFunction = vertexFunction
+        renderPipelineDescriptor.fragmentFunction = fragmentFunction
+        
+        var renderPipelineState: MTLRenderPipelineState!
+        do {
+            renderPipelineState = try Engine.Device.makeRenderPipelineState(descriptor: renderPipelineDescriptor)
+        } catch {
+            print("ERROR::RenderpiplineState::\(error)")
+        }
+        
+        _library.updateValue(renderPipelineState, forKey: .Text)
     }
     
     public static func Get(_ type: RenderPipelineStateTypes)->MTLRenderPipelineState {
