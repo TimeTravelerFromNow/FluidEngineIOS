@@ -340,7 +340,7 @@ class RenderPipelineStates {
         do {
             renderPipelineState = try Engine.Device.makeRenderPipelineState(descriptor: renderPipelineDescriptor)
         } catch {
-            print("ERROR::REnderpiplineState::\(error)")
+            print("ERROR::RenderpiplineState::\(error)")
         }
         
         _library.updateValue(renderPipelineState, forKey: .Text)
