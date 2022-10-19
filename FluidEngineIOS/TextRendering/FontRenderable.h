@@ -21,4 +21,8 @@
 
 - (instancetype)initWithDevice:(id<MTLDevice>)device;
 
+- (id<MTLTexture>)getTexture;
+- (id<MTLBuffer>)getVertices;
+- (id<MTLBuffer>)getIndices;
+
 @end

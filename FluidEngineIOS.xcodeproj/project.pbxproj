@@ -92,6 +92,7 @@
 		92489C032799DD0500639B52 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 92489C022799DD0500639B52 /* LaunchScreen.storyboard */; };
 		9270CD9C28E1084600A5CB05 /* FontRenderable.m in Sources */ = {isa = PBXBuildFile; fileRef = 9270CD9B28E1084600A5CB05 /* FontRenderable.m */; };
 		9295E4CD2900AFB300A33A0D /* FontRenderables.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9295E4CC2900AFB300A33A0D /* FontRenderables.swift */; };
+		9295E4CF2900B84900A33A0D /* TestTextObject.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9295E4CE2900B84900A33A0D /* TestTextObject.swift */; };
 		92A9E38E28DA6CEB0000A77F /* Renderable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 92A9E37A28DA6CEB0000A77F /* Renderable.swift */; };
 		92A9E38F28DA6CEB0000A77F /* Camera.swift in Sources */ = {isa = PBXBuildFile; fileRef = 92A9E37C28DA6CEB0000A77F /* Camera.swift */; };
 		92A9E39028DA6CEB0000A77F /* Levels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 92A9E37E28DA6CEB0000A77F /* Levels.swift */; };
@@ -318,6 +319,7 @@
 		9270CD9B28E1084600A5CB05 /* FontRenderable.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = FontRenderable.m; sourceTree = "<group>"; };
 		9270CD9D28E10F4500A5CB05 /* FontRenderable.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = FontRenderable.h; sourceTree = "<group>"; };
 		9295E4CC2900AFB300A33A0D /* FontRenderables.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FontRenderables.swift; sourceTree = "<group>"; };
+		9295E4CE2900B84900A33A0D /* TestTextObject.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestTextObject.swift; sourceTree = "<group>"; };
 		92A9E37A28DA6CEB0000A77F /* Renderable.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Renderable.swift; sourceTree = "<group>"; };
 		92A9E37C28DA6CEB0000A77F /* Camera.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Camera.swift; sourceTree = "<group>"; };
 		92A9E37E28DA6CEB0000A77F /* Levels.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Levels.swift; sourceTree = "<group>"; };
@@ -754,6 +756,7 @@
 		92A9E38028DA6CEB0000A77F /* Game Objects */ = {
 			isa = PBXGroup;
 			children = (
+				9295E4CE2900B84900A33A0D /* TestTextObject.swift */,
 				92A9E38128DA6CEB0000A77F /* BoxPolygon.swift */,
 				92A9E38228DA6CEB0000A77F /* SharedBackground.swift */,
 				92A9E38328DA6CEB0000A77F /* SkyBackground.swift */,
@@ -1116,6 +1119,7 @@
 				92376BEC28DE6E9F007C93DB /* MBETextureLoader.m in Sources */,
 				923F2B6127A0FCE200443936 /* Preferences.swift in Sources */,
 				92489BBC2799DA0400639B52 /* b2Math.cpp in Sources */,
+				9295E4CF2900B84900A33A0D /* TestTextObject.swift in Sources */,
 				92489BB92799DA0400639B52 /* b2Stat.cpp in Sources */,
 				9295E4CD2900AFB300A33A0D /* FontRenderables.swift in Sources */,
 				923F2BDA27A0FD7300443936 /* FluidShaders.metal in Sources */,

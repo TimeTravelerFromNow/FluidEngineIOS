@@ -16,10 +16,8 @@ static float MBEFontAtlasSize = 2048;
 @interface FontRenderable ()
 @property (nonatomic, strong) id<MTLDevice> device;
 // Resources
-@property (nonatomic, strong) id<MTLTexture> depthTexture;
 @property (nonatomic, strong) MBEFontAtlas *fontAtlas;
 @property (nonatomic, strong) MBETextMesh *textMesh;
-@property (nonatomic, strong) id<MTLBuffer> uniformBuffer;
 @property (nonatomic, strong) id<MTLTexture> fontTexture;
 @end
 
@@ -84,6 +82,19 @@ static float MBEFontAtlasSize = 2048;
                                       withFontAtlas:_fontAtlas
                                              atSize:MBEFontDisplaySize
                                              device:_device];
+}
+
+
+- (id<MTLTexture>)getTexture {
+    return _fontTexture;
+}
+
+- (id<MTLBuffer>)getVertices {
+    return _textMesh.vertexBuffer;
+}
+
+- (id<MTLBuffer>)getIndices {
+    return _textMesh.indexBuffer;
 }
 
 @end

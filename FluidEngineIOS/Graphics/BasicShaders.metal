@@ -10,6 +10,8 @@
 using namespace metal;
 
 
+// this is for basic obj rendering, like a quad with a texture, (non instanced).
+//fragment float4 basic_fragment_shader
 
 
 vertex ColorRasterizerData basic_color_vertex_shader(const ColorVertex vIn [[ stage_in ]],
@@ -41,5 +43,3 @@ fragment float4 bg_color_fragment(const ColorRasterizerData rd [[ stage_in ]],
     return color;
 }
 
-// this is for basic obj rendering, like a quad with a texture, (non instanced).
-//fragment float4 basic_fragment_shader
