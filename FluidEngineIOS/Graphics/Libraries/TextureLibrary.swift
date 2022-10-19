@@ -68,7 +68,7 @@ class Texture: sizeable {
         setTexture(texture)
     }
     
-    init(_ withFont: MBEFontAtlas, _ mtlDebuglabel: String? = nil) {
+    init(_ withFont: MBEFontAtlas, _ mtlDebuglabel: String? = nil, textureData: UnsafeRawPointer!) {
         let textureDescriptor = MTLTextureDescriptor()
         textureDescriptor.pixelFormat = .r8Unorm
         textureDescriptor.width = withFont.MBEFontAtlasSize
@@ -83,14 +83,11 @@ class Texture: sizeable {
                                                 AtlasSize)
         
         texture = Engine.Device.makeTexture(descriptor: textureDescriptor)
-        if( mtlDebuglabel != nil ) {
-            texture.label = mtlDebuglabel
-        }
+//        if( mtlDebuglabel != nil ) {
+//            texture.label = mtlDebuglabel
+//        }
                 
-        texture.replace(region: region,
-                        mipmapLevel: 0,
-                        withBytes: &withFont.uint8TextureData,
-                        bytesPerRow: AtlasSize)
+
     }
     
     func setTexture(_ texture: MTLTexture){

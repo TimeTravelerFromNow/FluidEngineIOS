@@ -91,6 +91,16 @@ class MBEFontAtlas {
         
         uint8TextureData = texture.grid
         textureData = Data.init(bytes: texture.grid, count: textureByteCount)
+        let textureObject = Texture.init(self, "Font Atlas", textureData: &uint8TextureData)
+        let region: MTLRegion = MTLRegionMake2D(0,
+                                                0,
+                                                MBEFontAtlasSize,
+                                                MBEFontAtlasSize)
+        textureObject.texture.replace(region: region,
+                        mipmapLevel: 0,
+                        withBytes: &textureData,
+                        bytesPerRow: MBEFontAtlasSize)
+        Textures.Set(textureType: .FontAtlas, texture: textureObject.texture)
     }
     
     func createResampledData(_ inData: CustomMatrix<Float32>, width: Int, height: Int, scaleFactor: Int) -> CustomMatrix<Float32> {

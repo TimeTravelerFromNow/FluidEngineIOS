@@ -55,10 +55,10 @@ class MenuScene : Scene {
         let testAtlas = MBEFontAtlas.init(font: font!, textureSize: MBEFontAtlasSize)
         let insetRect = UIScreen.main.nativeBounds.insetBy(dx: 10, dy: 10)
         let atlasTextureData = testAtlas.textureData
-        let atlasTexture = Texture(testAtlas, "Font Atlas")
-        Textures.Set(textureType: .FontAtlas, texture: atlasTexture.texture)
-        let testTextObject = MBETextObject(MBESampleText, inRect: insetRect, fontAtlas: testAtlas, atSize: CGFloat(MBEFontDisplaySize))
-        addChild(testTextObject)
+//        let atlasTexture = Texture(testAtlas, "Font Atlas")
+//        Textures.Set(textureType: .FontAtlas, texture: atlasTexture.texture)
+//        let testTextObject = MBETextObject(MBESampleText, inRect: insetRect, fontAtlas: testAtlas, atSize: CGFloat(MBEFontDisplaySize))
+//        addChild(testTextObject)
         
         fluidObject = FluidEnvironment.Environment
         backGroundObject = SharedBackground.Background
