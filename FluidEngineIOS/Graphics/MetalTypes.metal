@@ -1,10 +1,3 @@
-//
-//  MetalTypes.metal
-//  FluidEngine
-//
-//  Created by sebi d on 1/9/22.
-//
-
 #include <metal_stdlib>
 using namespace metal;
 
@@ -84,6 +77,6 @@ struct FinalRasterizerData {
 };
 
 struct MBEVertex {
-    packed_float4 position [[ position ]];
+    packed_float4 position;
     packed_float2 texCoords;
 };

@@ -56,16 +56,26 @@ class MBETextMesh: Mesh {
             let maxS = Float(glyphInfo.bottomRightTexCoord.x)
             let minT = Float(glyphInfo.topLeftTexCoord.y)
             let maxT = Float(glyphInfo.bottomRightTexCoord.y)
-            vertices[Int(v.advanced(by: 1))] = MBEVertex(position: packed_float4(minX, maxY,0,1), texCoords: packed_float2(minS, maxT))
-            vertices[Int(v.advanced(by: 1))] = MBEVertex(position: packed_float4(minX, minY, 0, 1), texCoords: packed_float2(minS, minT))
-            vertices[Int(v.advanced(by: 1))] = MBEVertex(position: packed_float4(maxX, minY, 0, 1), texCoords: packed_float2(maxS, minT))
-            vertices[Int(v.advanced(by: 1))] = MBEVertex(position: packed_float4(maxX, minY, 0, 1), texCoords: packed_float2(maxS, maxT) )
-            indices[Int(i.advanced(by: 1))] = MBEIndexType(glyphIndex) * 4
-            indices[Int(i.advanced(by: 1))] = MBEIndexType(glyphIndex) * 4 + 1
-            indices[Int(i.advanced(by: 1))] = MBEIndexType(glyphIndex) * 4 + 2
-            indices[Int(i.advanced(by: 1))] = MBEIndexType(glyphIndex) * 4 + 2
-            indices[Int(i.advanced(by: 1))] = MBEIndexType(glyphIndex) * 4 + 3
-            indices[Int(i.advanced(by: 1))] = MBEIndexType(glyphIndex) * 4
+            vertices[Int(v)] = MBEVertex(position: packed_float4(minX, maxY,0,1), texCoords: packed_float2(minS, maxT))
+            v += 1
+            vertices[Int(v)] = MBEVertex(position: packed_float4(minX, minY, 0, 1), texCoords: packed_float2(minS, minT))
+            v += 1
+            vertices[Int(v)] = MBEVertex(position: packed_float4(maxX, minY, 0, 1), texCoords: packed_float2(maxS, minT))
+            v += 1
+            vertices[Int(v)] = MBEVertex(position: packed_float4(maxX, minY, 0, 1), texCoords: packed_float2(maxS, maxT) )
+            v += 1
+            indices[Int(i)] = MBEIndexType(glyphIndex) * 4
+            i += 1
+            indices[Int(i)] = MBEIndexType(glyphIndex) * 4 + 1
+            i += 1
+            indices[Int(i)] = MBEIndexType(glyphIndex) * 4 + 2
+            i += 1
+            indices[Int(i)] = MBEIndexType(glyphIndex) * 4 + 2
+            i += 1
+            indices[Int(i)] = MBEIndexType(glyphIndex) * 4 + 3
+            i += 1
+            indices[Int(i)] = MBEIndexType(glyphIndex) * 4
+            i += 1
         }
         
         _vertexBuffer = Engine.Device.makeBuffer(bytes: &vertices, length: MBEVertex.size( vertexCount) )
@@ -125,8 +135,9 @@ class MBETextMesh: Mesh {
 
 extension MBETextMesh: Renderable {
     func doRender(_ renderCommandEncoder: MTLRenderCommandEncoder) {
-        renderCommandEncoder.setVertexBytes(&_atlasTexture, length: _atlasTexture.count, index: 2)
+      
         renderCommandEncoder.setVertexBytes(&_vertexBuffer, length: _vertexCount, index: 3)
+        renderCommandEncoder.setFragmentTexture(Textures.Get(.FontAtlas), index: 0)
         renderCommandEncoder.drawIndexedPrimitives(type: .triangle,
                                                    indexCount: _indexCount,
                                                    indexType: .uint16, indexBuffer: _indexBuffer,

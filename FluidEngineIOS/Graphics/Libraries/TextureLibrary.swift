@@ -20,6 +20,8 @@ enum TextureTypes {
     case BeachButton
     case Sand
     
+    case FontAtlas
+    
     case None // special, no texture at all, not even in library
 }
 
@@ -64,6 +66,31 @@ class Texture: sizeable {
         let textureLoader = TextureLoader(textureName: textureName, textureExtension: ext, origin: origin)
         let texture: MTLTexture = textureLoader.loadTextureFromBundle()
         setTexture(texture)
+    }
+    
+    init(_ withFont: MBEFontAtlas, _ mtlDebuglabel: String? = nil) {
+        let textureDescriptor = MTLTextureDescriptor()
+        textureDescriptor.pixelFormat = .r8Unorm
+        textureDescriptor.width = withFont.MBEFontAtlasSize
+        textureDescriptor.height = withFont.MBEFontAtlasSize
+        print(textureDescriptor.textureType)
+
+        let AtlasSize = withFont.MBEFontAtlasSize
+        
+        let region: MTLRegion = MTLRegionMake2D(0,
+                                                0,
+                                                AtlasSize,
+                                                AtlasSize)
+        
+        texture = Engine.Device.makeTexture(descriptor: textureDescriptor)
+        if( mtlDebuglabel != nil ) {
+            texture.label = mtlDebuglabel
+        }
+                
+        texture.replace(region: region,
+                        mipmapLevel: 0,
+                        withBytes: &withFont.uint8TextureData,
+                        bytesPerRow: AtlasSize)
     }
     
     func setTexture(_ texture: MTLTexture){
