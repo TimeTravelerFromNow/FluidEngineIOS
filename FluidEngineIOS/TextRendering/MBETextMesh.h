@@ -18,4 +18,6 @@
                         atSize:(CGFloat)fontSize
                         device:(id<MTLDevice>)device;
 
+- (void) updateTextMeshWithString:(NSString *)text;
+
 @end

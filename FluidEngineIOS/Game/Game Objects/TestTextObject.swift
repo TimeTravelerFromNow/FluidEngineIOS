@@ -1,4 +1,5 @@
 import MetalKit
+import CoreText
 
 class TestTextObject: Node {
     
@@ -9,12 +10,33 @@ class TestTextObject: Node {
     private var _indexCount: Int!
     private var modelConstants = ModelConstants()
     
+    private var _fontType: FontRenderableTypes!
+    var currentText: String!
+    private var _fontRenderable: FontRenderable!
+    
     init(_ fontType: FontRenderableTypes){
-        let fontRenderable = FontRenderables.Get(fontType)
-        _texture = fontRenderable.getTexture()
-        _vertexBuffer = fontRenderable.getVertices()
-        _indexBuffer = fontRenderable.getIndices()
-        _indexCount = fontRenderable.getIndexCount()
+        super.init()
+        _fontType = fontType
+        _fontRenderable = FontRenderables.Get(_fontType)
+        currentText = _fontRenderable.getText()
+        refreshBuffers()
+    }
+    
+    func setText(_ text: String) {
+        currentText = text
+        _fontRenderable.setText(text)
+        refreshBuffers()
+    }
+    func getText() -> String {
+        if (_fontRenderable.getText() != currentText) { print("Text Object WARNING::Objective C text doesn't match swift class text")} //shouldnt
+        return currentText
+    }
+    
+    private func refreshBuffers() {
+        _texture = _fontRenderable.getTexture()
+        _vertexBuffer = _fontRenderable.getVertices()
+        _indexBuffer = _fontRenderable.getIndices()
+        _indexCount = _fontRenderable.getIndexCount()
     }
     
     override func update() {

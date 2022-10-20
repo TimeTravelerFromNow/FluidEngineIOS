@@ -3,7 +3,7 @@
 
 #define MBE_FORCE_REGENERATE_FONT_ATLAS 0
 
-static NSString *const MBEFontName = @"HoeflerText-Regular";
+static NSString *const MBEFontName = @"Gill Sans";
 static float MBEFontDisplaySize = 72;
 static NSString *const MBESampleText = @"It was the best of times, it was the worst of times, "
                                         "it was the age of wisdom, it was the age of foolishness...\n\n"
@@ -19,6 +19,8 @@ static float MBEFontAtlasSize = 2048;
 @property (nonatomic, strong) MBEFontAtlas *fontAtlas;
 @property (nonatomic, strong) MBETextMesh *textMesh;
 @property (nonatomic, strong) id<MTLTexture> fontTexture;
+// for getter
+@property (nonatomic, strong) NSString * currentText;
 @end
 
 @implementation FontRenderable
@@ -77,13 +79,13 @@ static float MBEFontAtlasSize = 2048;
 {
     CGRect textRect = CGRectInset([UIScreen mainScreen].nativeBounds, 10, 10);
 
+    _currentText = MBESampleText;
     _textMesh = [[MBETextMesh alloc] initWithString:MBESampleText
                                              inRect:textRect
                                       withFontAtlas:_fontAtlas
                                              atSize:MBEFontDisplaySize
                                              device:_device];
 }
-
 
 - (id<MTLTexture>)getTexture {
     return _fontTexture;
@@ -100,5 +102,15 @@ static float MBEFontAtlasSize = 2048;
 - (long) getIndexCount {
     return [self.textMesh.indexBuffer length] / sizeof(MBEIndexType);
 }
+
+- (NSString *)getText {
+    return _currentText;
+}
+
+- (void)setText:(NSString *)text {
+    _currentText = text;
+    [_textMesh updateTextMeshWithString:text];
+}
+
 
 @end

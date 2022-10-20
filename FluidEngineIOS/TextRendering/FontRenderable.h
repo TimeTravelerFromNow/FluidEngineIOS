@@ -26,4 +26,7 @@
 - (id<MTLBuffer>)getIndices;
 - (long)getIndexCount;
 
+- (NSString *)getText;
+- (void)setText:(NSString *)text;
+
 @end

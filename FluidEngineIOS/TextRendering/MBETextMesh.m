@@ -5,6 +5,7 @@
 //  Created by Warren Moore on 2/9/15.
 //  Copyright (c) 2015 Metal By Example. All rights reserved.
 //
+// modified by Sebastian Detering to update the text meshes. on 10/19/2022
 
 #import "MBETextMesh.h"
 #import "MBETypes.h"
@@ -18,6 +19,11 @@ typedef void (^MBEGlyphPositionEnumerationBlock)(CGGlyph glyph,
 
 @synthesize vertexBuffer=_vertexBuffer;
 @synthesize indexBuffer=_indexBuffer;
+
+@synthesize rect=_rect;
+@synthesize fontAtlasRef=_fontAtlasRef;
+@synthesize size=_size;
+@synthesize device=_device;
 
 - (instancetype)initWithString:(NSString *)string
                         inRect:(CGRect)rect
@@ -38,6 +44,10 @@ typedef void (^MBEGlyphPositionEnumerationBlock)(CGGlyph glyph,
                      atSize:(CGFloat)fontSize
                      device:(id<MTLDevice>)device
 {
+    _rect = rect;
+    _fontAtlasRef = fontAtlas;
+    _size = fontSize;
+    _device = device;
     UIFont *font = [fontAtlas.parentFont fontWithSize:fontSize];
     NSDictionary *attributes = @{ NSFontAttributeName : font };
     NSAttributedString *attrString = [[NSAttributedString alloc] initWithString:string attributes:attributes];
@@ -158,6 +168,10 @@ typedef void (^MBEGlyphPositionEnumerationBlock)(CGGlyph glyph,
     }];
     
     UIGraphicsEndImageContext();
+}
+
+- (void) updateTextMeshWithString:(NSString *)text {
+    [self buildMeshWithString:text inRect:_rect withFont:_fontAtlasRef atSize:_size device:_device];
 }
 
 @end
