@@ -1,11 +1,11 @@
 
 class FluidEnvironment: Node {
     
-    private static var fluidEnvironment: DebugEnvironment!
-    public static var Environment: DebugEnvironment! { return self.fluidEnvironment }
+    private static var FluidEnvironment: DebugEnvironment!
+    public static var Environment: DebugEnvironment! { return self.FluidEnvironment }
     
     static func Initialize() {
-        fluidEnvironment = DebugEnvironment()
+        FluidEnvironment = DebugEnvironment()
     }
     
 }

@@ -1,4 +1,5 @@
 import MetalKit
+import CoreHaptics
 
 enum States {
     case Moving
@@ -21,6 +22,8 @@ class TestTubeScene : Scene {
     var debugQuad: GameObject!
     
     var tubeLevel: TubeLevel!
+    
+    var buttonPressed: ButtonActions?
     
     // tube emptying
     var emptyingTubes: Bool = false
@@ -54,6 +57,20 @@ class TestTubeScene : Scene {
     
     private var _emptyKF = 0
     
+    let hapticDict = [
+        CHHapticPattern.Key.pattern: [
+            [CHHapticPattern.Key.event: [
+                CHHapticPattern.Key.eventType: CHHapticEvent.EventType.hapticTransient,
+                CHHapticPattern.Key.time: CHHapticTimeImmediate,
+                CHHapticPattern.Key.eventDuration: 1.0]
+            ]
+        ]
+    ]
+    
+    var pattern: CHHapticPattern?
+    var engine: CHHapticEngine!
+    var player: CHHapticPatternPlayer?
+    
     func addTestButton() {
         let testButton = BoxButton(.ClearButton,.ClearButton, .Clear, center: box2DOrigin + float2(1.0,-3.0) )
         let menuButton = BoxButton(.Menu,.Menu, .ToMenu, center: box2DOrigin + float2(-1.0,-3.0), label: .MenuLabel)
@@ -65,6 +82,24 @@ class TestTubeScene : Scene {
     }
     
     override func buildScene(){
+        do {
+            pattern = try CHHapticPattern(dictionary: hapticDict)
+        } catch { print("WARN:: no haptics")}
+
+        // Create and configure a haptic engine.
+        do {
+            engine = try CHHapticEngine()
+        } catch let error {
+            fatalError("Engine Creation Error: \(error)")
+        }
+        if let pattern = pattern {
+            do {
+            player = try engine.makePlayer(with: pattern)
+            } catch {
+                print("warn haptic not working")
+            }
+        }
+
         tubeLevel = TubeLevel()
         fluidObject = FluidEnvironment.Environment
                         
@@ -282,15 +317,16 @@ class TestTubeScene : Scene {
     }
     override func touchesBegan() {
         
-        switch boxButtonHitTest(boxPos: Touches.GetBoxPos()) {
-        case .None:
-            print("hit a test button")
-        case .Clear:
-            print("hit the clear button")
-        case nil:
-            print("clicked no button")
-        default:
-            break
+        buttonPressed = boxButtonHitTest(boxPos: Touches.GetBoxPos())
+        if buttonPressed != nil {
+            // Stop the engine after it completes the playback.
+            engine.notifyWhenPlayersFinished { error in
+                return .stopEngine
+            }
+            do {
+            try engine.start()
+            try player?.start(atTime: 0)
+            } catch { print("haptics not working")}
         }
         fluidObject.debugParticleDraw(atPosition: Touches.GetBoxPos())
     
@@ -347,7 +383,9 @@ class TestTubeScene : Scene {
     }
     
     override func touchesEnded() {
+        if( buttonPressed != nil ) {
         switch boxButtonHitTest(boxPos: Touches.GetBoxPos()) {
+          
         case .None:
             print("let go of a button")
         case .Clear:
@@ -361,6 +399,10 @@ class TestTubeScene : Scene {
         default:
             break
         }
+        }
+        
+        buttonPressed = nil
+        
         for b in buttons {
             b.deSelect()
         }
@@ -386,6 +428,14 @@ class TestTubeScene : Scene {
         EmptyTubesStep(deltaTime)
         }
         if (Touches.IsDragging) {
+            if buttonPressed != nil {
+                buttonPressed = boxButtonHitTest(boxPos: Touches.GetBoxPos())
+                if buttonPressed == nil {
+                    for b in buttons {
+                        b.deSelect()
+                    }
+                }
+            }
             switch _currentState {
             case .HoldInterval:
                 if _holdDelay == _defaultHoldTime {

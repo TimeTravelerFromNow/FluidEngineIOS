@@ -12,6 +12,13 @@ let SceneOrigins: [SceneTypes: float2] = [.TestTubes:float2(-5.0, -10.0),
                                           .Menu:float2(-5.0, 5.0),
                                           .Beach:float2(10.0, 0.0)]
 
+enum SmoothingStates {
+    case Leaving
+    case EnRoute
+    case Arriving
+    case Arrived
+}
+
 class Scene: Node {
     var sceneConstants = SceneConstants()
     var cameras: [Camera] = []
@@ -21,7 +28,8 @@ class Scene: Node {
     let box2DOrigin: float2!
     private var sharedNodes: [Node] = []
     private var isSharingNodes: Bool = false
-    private var _smoothInterval: Float = 0.3
+    private var _smoothInterval: Float = 1.0
+    private var _smoothStage: SmoothingStates = .Leaving
     let sceneType: SceneTypes!
     
     init(_ sceneType: SceneTypes) {
@@ -41,6 +49,8 @@ class Scene: Node {
     func moveOrthoCamera(deltaTime: Float) {
         orthoCamera.moveX(panVelocity.x * deltaTime)
         orthoCamera.moveY(panVelocity.y * deltaTime)
+        SceneManager.SkyBackground.moveX(panVelocity.x * deltaTime)
+        SceneManager.SkyBackground.moveY(panVelocity.y * deltaTime)
     }
     
     func buildScene() { }
@@ -55,12 +65,7 @@ class Scene: Node {
         let moveDirection = destination - camPos
         panVelocity = normalize( moveDirection ) * 4.0
         var change = panVelocity * deltaTime
-        
-        if(_smoothInterval > 0.0) {
-            panVelocity.x *= (1.0 - _smoothInterval)
-            panVelocity.y *= (1.0 - _smoothInterval)
-            _smoothInterval -= deltaTime
-        }
+    
         if length_squared( change - destination ) > 0.01 {
             while ( abs( change.x ) > abs( moveDirection.x ) ) {
                 panVelocity.x *= 0.9
@@ -72,22 +77,50 @@ class Scene: Node {
             }
         }
         if length_squared( destination - camPos ) < 0.1 {
-            if _smoothInterval < 0.0 { _smoothInterval = 0.8}
+            _smoothStage = .Arriving
+            _smoothInterval = 0.01
         }
         if length_squared( destination - camPos ) < 0.01 {
+            _smoothInterval = 1.0
+            _smoothStage = .Leaving
             panVelocity = float2(0)
             SceneManager.sceneSwitchingTo = .None
 
             SceneManager.Get( toScene ).sceneSizeWillChange()
             self.freeze()
             SceneManager.SetCurrentScene( toScene )
+            
+            SceneManager.Get( toScene ).orthoCamera.setPositionX( orthoCamera.getPositionX() )
+             SceneManager.Get( toScene ).orthoCamera.setPositionY( orthoCamera.getPositionY() )
+            SceneManager.Get( toScene ).panVelocity = float2(0)
             return
         }
-         SceneManager.Get( toScene ).orthoCamera.setPositionX( camPos.x )
-         SceneManager.Get( toScene ).orthoCamera.setPositionY( camPos.y )
+        switch _smoothStage {
+        case .Leaving:
+            panVelocity.x *= (1.0 - _smoothInterval)
+            panVelocity.y *= (1.0 - _smoothInterval)
+            if _smoothInterval < 0.0 {
+                _smoothStage = .Leaving
+            }
+            _smoothInterval -= deltaTime
+        case .EnRoute:
+            break
+        case .Arriving:
+            panVelocity.x *= (1.0 - _smoothInterval)
+            panVelocity.y *= (1.0 - _smoothInterval)
+            if _smoothInterval < 0.9 {
+                _smoothInterval += deltaTime * 0.1
+            } else {
+                
+            }
+        case .Arrived:
+            _smoothInterval = 1.0
+            _smoothStage = .Leaving
+        }
+        
         moveOrthoCamera(deltaTime: deltaTime)
-        SceneManager.SkyBackground.setPositionX( orthoCamera.getPositionX() )
-        SceneManager.SkyBackground.setPositionY( orthoCamera.getPositionY() )
+        SceneManager.Get( toScene ).orthoCamera.setPositionX( orthoCamera.getPositionX() )
+         SceneManager.Get( toScene ).orthoCamera.setPositionY( orthoCamera.getPositionY() )
     }
     
     override func update() {
@@ -125,6 +158,8 @@ class SceneManager: Library<SceneTypes, Scene> {
         currentScene = Get(startingScene)
         sceneSwitchingTo = .None
         SkyBackground = SharedBackground.Background
+        SkyBackground.setPositionX(currentScene.getPositionX())
+        SkyBackground.setPositionY(currentScene.getPositionY())
     }
     
     private static func createScenes() {

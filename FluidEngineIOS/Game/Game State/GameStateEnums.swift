@@ -133,7 +133,9 @@ class TubeLevel: GameLevel {
         if( candidateTypes.last != .Empty ){
             conflict = true
         }
-        print(conflict)
+        if( candidateTypes.first == .Empty) {
+            conflict = false // we can always pour into empty tubes
+        }
         return conflict
     }
     

@@ -2,7 +2,7 @@ import MetalKit
 
 class DebugEnvironment : Node {
     
-    var isDebugging = false
+    var isDebugging = true
     var particleCount: Int = 0
     var waterColor: float4 = float4(0.1,0.1,0.9,1.0)
     private var ptmRatio: Float!
