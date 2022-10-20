@@ -18,7 +18,7 @@ class BeachScene : Scene {
     private var _emptyKF = 0
     
     private func addTestButtons() {
-        let menuButton = BoxButton(.Menu,.Menu, .ToMenu, center: box2DOrigin + float2(0.0, 3.0))
+        let menuButton = BoxButton(.Menu,.Menu, .ToMenu, center: box2DOrigin + float2(0.0, 3.0), label: .MenuLabel)
         
         buttons.append(menuButton)
         addChild(menuButton)
@@ -37,8 +37,7 @@ class BeachScene : Scene {
         fluidObject.setPositionZ(0.1)
         
         backGroundObject = SharedBackground.Background
-                
-                
+        
         addTestButtons()
                 
         fluidObject = FluidEnvironment.Environment

@@ -34,7 +34,6 @@ class TestTube: Node {
     //pouring mechanics variables, consider refactoring into keyframing
     private var _pourDirection: Float = -1
     private var _pourSpeed: Float =  GameSettings.PourSpeed
-    private var _animationVelocity: float2 = float2(GameSettings.PourSpeed, GameSettings.PourSpeed)
     private let pourSpeedDefault: Float = GameSettings.PourSpeed
     var isPouring: Bool = false                     // is the one pouring
     var systemPouringInto: UnsafeMutableRawPointer!
@@ -86,7 +85,7 @@ class TestTube: Node {
     
     //pouring animation constants
     private let _pourAngles: [Float] = [ Float.pi / 1.7,Float.pi/1.8,Float.pi/1.9,Float.pi/2.0]
-    private var _pourPositions: [float2] { return [ float2(_pourDirection * 0.1, tubeHeight * 2.5), float2(_pourDirection * 0.1, tubeHeight * 2.5) ,float2(_pourDirection * 0.6,tubeHeight * 2.5) , float2(_pourDirection * 0.7,tubeHeight * 2.5)  ] }
+    private var _pourPositions: [float2] { return [ float2(_pourDirection * tubeWidth * 7, tubeHeight * 1.5), float2(_pourDirection * 0.1, tubeHeight * 1.5) ,float2(_pourDirection * 0.6,tubeHeight * 1.5) , float2(_pourDirection * 0.7,tubeHeight * 1.5)  ] }
 
     private var _amountToPour: Int = 0
     private var _pourDelay: Float = 0.7
@@ -177,8 +176,8 @@ class TestTube: Node {
         for incr in 0..<totalColors {
             let yPos = (_dividerIncrement * Float(incr)) - bottomFromOrigin
             print("before: \(_dividerPositions[incr]) ")
-            var dividerVertices = [Vector2D(x: -tubeWidth,y:yPos ),
-                                   Vector2D(x:  tubeWidth,y:yPos ) ]
+            var dividerVertices = [Vector2D(x: -tubeWidth * 1.3,y:yPos ),
+                                   Vector2D(x:  tubeWidth * 1.3,y:yPos ) ]
             _dividerPositions[incr] =  dividerVertices
             print("after: \(_dividerPositions[incr])")
             _dividerYs[incr] = yPos
@@ -551,12 +550,23 @@ class TestTube: Node {
                 nextPourKF()
             }
         case 1:
-            let pos0 =  candidatePosition + float2(_pourPositions[0].x * _pourDirection, _pourPositions[0].y)
-           
-           
-//            else {
+            let pos0 =  candidatePosition + float2(_pourPositions[0].x, _pourPositions[0].y)
+            var needsToSlow = false
+            let velX = self.getVelocityX()
+            let velY = self.getVelocityY()
+            if( abs( velX * deltaTime) > abs(pos0.x - currPos.x) )
+            {
+                self.setBoxVelocityX(velX * 0.98)
+                needsToSlow = true
+            }
+            if( abs(velY * deltaTime) > abs(pos0.y - currPos.y) )
+            {
+                self.setBoxVelocityY(velY * 0.98)
+                needsToSlow = true
+            }
+            if( !needsToSlow ) {
                 self.setBoxVelocity(vector(pos0 - currPos, mag: _pourSpeed) )
-//                }
+            }
             if( distance(currPos, pos0) < 0.1) {
                 nextPourKF()
             }
@@ -565,13 +575,8 @@ class TestTube: Node {
           
             nextPourKF()
         case 3:
-            let pos1 = candidatePosition + _pourPositions[ _newTopIndex + 1 ]
-            if( _pourDirection * self.getRotationZ() < _pourAngles[ _newTopIndex + 1 ] ) {//< 0.0 ){ //
-                _pourSpeed *= 0.99
-                self.rotateZ(_pourDirection * _pourSpeed * deltaTime * 20 * Float.pi)
-                if( distance(currPos, pos1) > 0.01 ) {
-                    setBoxVelocity( vector(pos1 - currPos, mag: _pourSpeed/14) )
-                } else  {}
+            if( _pourDirection * self.getRotationZ() < _pourAngles[ _newTopIndex + 1 ] ) {
+                self.rotateZ(_pourDirection * _pourSpeed * deltaTime * 62)
             } else {
                 candidateTube.refreshColorBuffer()
                 LiquidFun.setPourBits(_tube)
@@ -582,7 +587,6 @@ class TestTube: Node {
             // code out the logic here.  MARK: Refactor idea: (see notes 9/13 5:30pm)
             if _pourDelay > 0.0 {
                 _pourDelay -= deltaTime
-                
             } else {
                 candidateTube.refreshColorBuffer()
                 if _amountToPour > 0 {
@@ -855,6 +859,7 @@ class TestTube: Node {
         sceneRepresentation.moveY(delta)
     }
     override func rotateZ(_ value: Float) {
+        LiquidFun.setAngularVelocity(_tube, angularVelocity: value)
         self.sceneRepresentation.setRotationZ(self.getRotationZ())
     }
     func dampRotation( _ value: Float){
@@ -863,6 +868,15 @@ class TestTube: Node {
     func setBoxVelocity(_ velocity: float2 = float2()) {
         LiquidFun.setTubeVelocity(_tube, velocity: Vector2D(x: Float32(velocity.x), y: Float32(velocity.y)))
     }
+    func setBoxVelocityX(_ to: Float) {
+        let currV = LiquidFun.getTubeVelocity(_tube)
+        LiquidFun.setTubeVelocity(_tube, velocity: Vector2D(x: Float32(to), y: Float32(currV.y)))
+    }
+    func setBoxVelocityY(_ to: Float) {
+        let currV = LiquidFun.getTubeVelocity(_tube)
+        LiquidFun.setTubeVelocity(_tube, velocity: Vector2D(x: Float32(currV.x), y: Float32(to)))
+    }
+    
     func getBoxVelocity() -> float2 {
         float2(x: LiquidFun.getTubeVelocity(_tube).x, y: LiquidFun.getTubeVelocity(_tube).y)
     }
