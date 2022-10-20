@@ -229,8 +229,10 @@ class MenuScene : Scene {
         case .NewGame:
             SceneManager.sceneSwitchingTo = .TestTubes
             print("start a new game now!")
+            SceneManager.Get( .TestTubes ).unFreeze()
         case .ToBeach:
             SceneManager.sceneSwitchingTo = .Beach
+            SceneManager.Get( .Beach ).unFreeze()
         case .ToMenu:
             print("pressed to menu button in the menu?")
         case nil:

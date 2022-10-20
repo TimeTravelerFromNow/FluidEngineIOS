@@ -355,6 +355,7 @@ class TestTubeScene : Scene {
             print("clear action now")
         case .ToMenu:
             SceneManager.sceneSwitchingTo = .Menu
+            SceneManager.Get( .Menu ).unFreeze()
         case nil:
             print("let go of no button")
         default:

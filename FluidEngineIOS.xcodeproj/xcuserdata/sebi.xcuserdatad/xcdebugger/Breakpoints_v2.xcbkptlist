@@ -334,8 +334,8 @@
             filePath = "FluidEngineIOS/Game/Scenes/TestTubeScene.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "381"
-            endingLineNumber = "381"
+            startingLineNumber = "382"
+            endingLineNumber = "382"
             landmarkName = "update(deltaTime:)"
             landmarkType = "7">
          </BreakpointContent>
@@ -743,32 +743,155 @@
       <BreakpointProxy
          BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
          <BreakpointContent
-            uuid = "4198C281-4EFD-4AC3-9C1E-38E64A637597"
+            uuid = "1A7132C5-62FE-432F-8729-F343DEBE6928"
             shouldBeEnabled = "No"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "FluidEngineIOS/Game/Scenes/Scene.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "85"
-            endingLineNumber = "85"
-            landmarkName = "Scene"
+            startingLineNumber = "119"
+            endingLineNumber = "119"
+            landmarkName = "SceneManager"
             landmarkType = "3">
+            <Locations>
+               <Location
+                  uuid = "1A7132C5-62FE-432F-8729-F343DEBE6928 - 6f7cbd925b90deaa"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "static FluidEngineIOS.SceneManager.sceneSwitchingTo.setter : Swift.Optional&lt;FluidEngineIOS.SceneTypes&gt;"
+                  moduleName = "FluidEngineIOS"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/sebi/Dev/FluidEngineIOS/FluidEngineIOS/Game/Scenes/Scene.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "122"
+                  endingLineNumber = "122"
+                  offsetFromSymbolStart = "92">
+               </Location>
+               <Location
+                  uuid = "1A7132C5-62FE-432F-8729-F343DEBE6928 - 30a34f3120262232"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "one-time initialization function for sceneSwitchingTo"
+                  moduleName = "FluidEngineIOS"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/sebi/Dev/FluidEngineIOS/FluidEngineIOS/Game/Scenes/Scene.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "122"
+                  endingLineNumber = "122"
+                  offsetFromSymbolStart = "8">
+               </Location>
+               <Location
+                  uuid = "1A7132C5-62FE-432F-8729-F343DEBE6928 - f60fb09e26ff78ef"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "FluidEngineIOS.SceneManager.sceneSwitchingTo.unsafeMutableAddressor : Swift.Optional&lt;FluidEngineIOS.SceneTypes&gt;"
+                  moduleName = "FluidEngineIOS"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/sebi/Dev/FluidEngineIOS/FluidEngineIOS/Game/Scenes/Scene.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "122"
+                  endingLineNumber = "122"
+                  offsetFromSymbolStart = "16">
+               </Location>
+               <Location
+                  uuid = "1A7132C5-62FE-432F-8729-F343DEBE6928 - 53a5b341e16a780c"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "static FluidEngineIOS.SceneManager.sceneSwitchingTo.didset : Swift.Optional&lt;FluidEngineIOS.SceneTypes&gt;"
+                  moduleName = "FluidEngineIOS"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/sebi/Dev/FluidEngineIOS/FluidEngineIOS/Game/Scenes/Scene.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "122"
+                  endingLineNumber = "122"
+                  offsetFromSymbolStart = "60">
+               </Location>
+               <Location
+                  uuid = "1A7132C5-62FE-432F-8729-F343DEBE6928 - e1cb851279e025be"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "static FluidEngineIOS.SceneManager.sceneSwitchingTo.getter : Swift.Optional&lt;FluidEngineIOS.SceneTypes&gt;"
+                  moduleName = "FluidEngineIOS"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/sebi/Dev/FluidEngineIOS/FluidEngineIOS/Game/Scenes/Scene.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "122"
+                  endingLineNumber = "122"
+                  offsetFromSymbolStart = "76">
+               </Location>
+               <Location
+                  uuid = "1A7132C5-62FE-432F-8729-F343DEBE6928 - ce6c1db8b3bb2079"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "static FluidEngineIOS.SceneManager.sceneSwitchingTo.modify : Swift.Optional&lt;FluidEngineIOS.SceneTypes&gt;"
+                  moduleName = "FluidEngineIOS"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/sebi/Dev/FluidEngineIOS/FluidEngineIOS/Game/Scenes/Scene.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "122"
+                  endingLineNumber = "122"
+                  offsetFromSymbolStart = "0">
+               </Location>
+               <Location
+                  uuid = "1A7132C5-62FE-432F-8729-F343DEBE6928 - 735857b23e26d353"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "static FluidEngineIOS.SceneManager.sceneSwitchingTo.modify : Swift.Optional&lt;FluidEngineIOS.SceneTypes&gt; with unmangled suffix &quot;.resume.0&quot;"
+                  moduleName = "FluidEngineIOS"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/sebi/Dev/FluidEngineIOS/FluidEngineIOS/Game/Scenes/Scene.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "122"
+                  endingLineNumber = "122"
+                  offsetFromSymbolStart = "20">
+               </Location>
+            </Locations>
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy
          BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
          <BreakpointContent
-            uuid = "7D6DE1E2-D845-4326-99CA-8DD71F1F41A3"
+            uuid = "D2977EBC-03E5-4DFA-9CBC-D4F0FA10918A"
             shouldBeEnabled = "No"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "FluidEngineIOS/Game/Scenes/Scene.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "91"
-            endingLineNumber = "91"
-            landmarkName = "removeSharedNodes()"
+            startingLineNumber = "157"
+            endingLineNumber = "157"
+            landmarkName = "render(_:)"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "91DFA744-9334-4953-BFAB-E97CE8DE90E2"
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "FluidEngineIOS/Game/Scenes/Scene.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "154"
+            endingLineNumber = "154"
+            landmarkName = "render(_:)"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>

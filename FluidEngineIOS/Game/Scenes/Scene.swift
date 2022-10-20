@@ -19,7 +19,6 @@ class Scene: Node {
     var orthoCamera = OrthoCamera()
     var panVelocity = float2(0,0)
     let box2DOrigin: float2!
-    var skyBackground: CloudsBackground!
     private var sharedNodes: [Node] = []
     private var isSharingNodes: Bool = false
     private var _smoothInterval: Float = 0.3
@@ -36,9 +35,6 @@ class Scene: Node {
         orthoCamera.setPositionZ(1)
         orthoCamera.setPositionY(box2DOrigin.y / 5.0)
         orthoCamera.setPositionX(box2DOrigin.x / 5.0)
-        
-        skyBackground = SharedBackground.Background
-        addChild(skyBackground)
         buildScene()
     }
     
@@ -51,47 +47,6 @@ class Scene: Node {
     
     func freeze() { }
     func unFreeze() { }
-    func addSharedNodes(_ ofScene: SceneTypes) {
-        if( ofScene == .None ) { return }
-        if( ofScene == self.sceneType ) { return }
-        SceneManager.Get( ofScene ).unFreeze()
-
-        if isSharingNodes {
-            for node in sharedNodes {
-                self.removeChild(node)
-            }
-            self.sharedNodes = []
-            isSharingNodes = false
-        } else {
-            for node in SceneManager.Get( ofScene ).children {  // nodes ofScene get added
-                if node is Camera {
-                    // no cameras
-                }
-                else if node is DebugEnvironment {
-                    print("dont add the shared fluid env again") // no fluid environments
-                }
-                else if node is CloudsBackground {
-                    print("dont add shared background")
-                }
-                else {
-                    self.addChild(node)
-                    self.sharedNodes.append(node)
-                }
-            }
-            isSharingNodes = true
-        }
-    }
-    
-    func removeSharedNodes() {
-        for node in sharedNodes
-        {
-            if node is CloudsBackground {
-                
-            } else {
-                self.removeChild(node)
-            }
-        }
-    }
     
     func sceneSwitchStep(deltaTime: Float, toScene: SceneTypes) {
         if( toScene == .None ) { print("why are we switch stepping to .None scene?"); return}
@@ -121,17 +76,18 @@ class Scene: Node {
         }
         if length_squared( destination - camPos ) < 0.01 {
             panVelocity = float2(0)
-            removeSharedNodes()
             SceneManager.sceneSwitchingTo = .None
-            SceneManager.Get( toScene ).orthoCamera.setPositionX( camPos.x )
-            SceneManager.Get( toScene ).orthoCamera.setPositionY( camPos.y )
+
             SceneManager.Get( toScene ).sceneSizeWillChange()
             self.freeze()
             SceneManager.SetCurrentScene( toScene )
+            return
         }
+         SceneManager.Get( toScene ).orthoCamera.setPositionX( camPos.x )
+         SceneManager.Get( toScene ).orthoCamera.setPositionY( camPos.y )
         moveOrthoCamera(deltaTime: deltaTime)
-        skyBackground.setPositionX(orthoCamera.getPositionX())
-        skyBackground.setPositionY(orthoCamera.getPositionY())
+        SceneManager.SkyBackground.setPositionX( orthoCamera.getPositionX() )
+        SceneManager.SkyBackground.setPositionY( orthoCamera.getPositionY() )
     }
     
     override func update() {
@@ -160,12 +116,15 @@ class SceneManager: Library<SceneTypes, Scene> {
     
     public static var currentScene: Scene!
     
-    public static var sceneSwitchingTo: SceneTypes! { didSet { currentScene.addSharedNodes( sceneSwitchingTo ) } }
+    public static var sceneSwitchingTo: SceneTypes!
     
+    public static var SkyBackground: CloudsBackground!
+
     public static func Initialize(_ startingScene: SceneTypes ) {
         createScenes()
         currentScene = Get(startingScene)
         sceneSwitchingTo = .None
+        SkyBackground = SharedBackground.Background
     }
     
     private static func createScenes() {
@@ -184,14 +143,19 @@ class SceneManager: Library<SceneTypes, Scene> {
     
     public static func update(_ deltaTime: Float) {
         currentScene!.update(deltaTime: deltaTime)
-        currentScene!.skyBackground.update(deltaTime: deltaTime)
+        SkyBackground.update(deltaTime: deltaTime)
         if( sceneSwitchingTo != .None ) {
+            scenes[sceneSwitchingTo]!.update(deltaTime:deltaTime)
             currentScene.sceneSwitchStep(deltaTime: deltaTime, toScene: sceneSwitchingTo)
         }
     }
     
     public static func render(_ renderCommandEncoder: MTLRenderCommandEncoder) {
         currentScene!.render(renderCommandEncoder)
+        SkyBackground.render(renderCommandEncoder)
+        if( sceneSwitchingTo != .None) {
+            scenes[sceneSwitchingTo]!.render(renderCommandEncoder)
+        }
     }
 }
 
