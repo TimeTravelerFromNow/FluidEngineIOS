@@ -19,5 +19,5 @@
 @property (nonatomic, readonly) MBEFontAtlas * fontAtlasRef;
 @property (nonatomic, readonly) CGFloat size;
 @property (nonatomic, readonly) id<MTLDevice> device;
-
+@property (nonatomic, readonly) bool justifyCenter;
 @end

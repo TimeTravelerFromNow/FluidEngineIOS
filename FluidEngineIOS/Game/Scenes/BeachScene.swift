@@ -3,7 +3,6 @@ import MetalKit
 class BeachScene : Scene {
     
     var currentState: SceneSwitchStates!
-    var backGroundObject: CloudsBackground!
     var fluidObject: DebugEnvironment!
     var surfObject: SurfObject!
     
@@ -35,14 +34,11 @@ class BeachScene : Scene {
         fluidObject = FluidEnvironment.Environment
         fluidObject.setScale(2 / (GameSettings.ptmRatio * 10) )
         fluidObject.setPositionZ(0.1)
-        
-        backGroundObject = SharedBackground.Background
-        
+                
         addTestButtons()
                 
         fluidObject = FluidEnvironment.Environment
         addChild(fluidObject)
-        addChild(backGroundObject)
         freeze()
     }
     

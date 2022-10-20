@@ -13,12 +13,9 @@ class TextObject: Node {
     private var _fontType: FontRenderableTypes!
     var currentText: String!
     private var _fontRenderable: FontRenderable!
-    private var _offset: float2!
     
-    init(_ fontType: FontRenderableTypes, _ text: String? = nil, _ offset: float2? = nil){
+    init(_ fontType: FontRenderableTypes, _ text: String? = nil){
         super.init()
-        _offset = offset ?? float2(0)
-       
         self.setPositionZ(0.2)
         self.setRotationY(2 * .pi)
         self.setRotationX(.pi)
@@ -51,8 +48,8 @@ class TextObject: Node {
     }
     
     func setTransformation(_ position: float2, _ rotationZ: Float ) {
-        self.setPositionX(position.x + _offset.x)
-        self.setPositionY(position.y + _offset.y)
+        self.setPositionX(position.x)
+        self.setPositionY(position.y)
         self.setRotationZ(rotationZ)
     }
     

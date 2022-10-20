@@ -11,8 +11,7 @@ enum States {
 }
 
 class TestTubeScene : Scene {
-    
-    var backGroundObject: CloudsBackground!
+
     var fluidObject: DebugEnvironment!
     
     var tubeGrid: [ TestTube ] = []
@@ -68,9 +67,7 @@ class TestTubeScene : Scene {
     override func buildScene(){
         tubeLevel = TubeLevel()
         fluidObject = FluidEnvironment.Environment
-        
-        backGroundObject = SharedBackground.Background
-                
+                        
         InitializeGrid()
         
         addTestButton()
@@ -79,7 +76,6 @@ class TestTubeScene : Scene {
             addChild(tube)
         }
         addChild(fluidObject)
-        addChild(backGroundObject)
         freeze()
     }
     
@@ -89,12 +85,27 @@ class TestTubeScene : Scene {
         let xSep : Float = 1.0
         let ySep : Float = 2.0
         var y : Float = height + box2DOrigin.y
-        var x : Float = box2DOrigin.x - 2.0
+        var x : Float = box2DOrigin.x
         let rowNum = Int(width / xSep)
         let maxColNum = Int(height / ySep)
-        if tubeLevel.startingLevel.count > (rowNum * maxColNum ){
+        
+        let tubesCount = tubeLevel.startingLevel.count
+        
+        if tubesCount > (rowNum * maxColNum ){
             print("warning we will probably be out of bounds with this many tubes.")
         }
+        
+        if( tubesCount <= rowNum ) {
+            if( tubesCount % 2 == 0) { // center it
+                x -= xSep * Float(tubesCount) / 2
+            }
+            else { // center it on the center tube
+                x -= xSep * floor( Float(tubesCount) / 2)
+            }
+        } else { // center it on the center tube
+            x -= xSep * floor( Float(tubesCount) / 2)
+        }
+        
         for (i, tubeColors) in tubeLevel.startingLevel.enumerated() {
             if(x < width) {
                 let currentTube = TestTube(origin: float2(x:x,y:y), gridId: i)
@@ -369,7 +380,6 @@ class TestTubeScene : Scene {
     
     override func update(deltaTime : Float) {
         super.update(deltaTime: deltaTime)
-        backGroundObject.update(deltaTime: GameTime.DeltaTime)
         
         if _currentState ==  .Emptying {
         EmptyTubesStep(deltaTime)

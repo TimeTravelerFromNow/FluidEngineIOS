@@ -32,7 +32,6 @@ class FontRenderables: Library<FontRenderableTypes, FontRenderable> {
 }
 
 class ButtonLabels: Library<ButtonLabelTypes, TextObject> {
-    private static let _buttonLabelOffsets: [ButtonLabelTypes:float2] = [.NewGameLabel:float2(x: -0.16, y: 0.06), .MenuLabel:float2(x: -0.09, y: 0.06)]
 
     private static var textObjects : [ButtonLabelTypes : TextObject] = [:]
     
@@ -40,8 +39,8 @@ class ButtonLabels: Library<ButtonLabelTypes, TextObject> {
         createDefaultButtonLabels()
     }
     private static func createDefaultButtonLabels() {
-        textObjects.updateValue(TextObject(.MenuText, "menu" ,_buttonLabelOffsets[.MenuLabel]), forKey: .MenuLabel)
-        textObjects.updateValue(TextObject(.NewGameText, "new game" ,_buttonLabelOffsets[.NewGameLabel]), forKey: .NewGameLabel)
+        textObjects.updateValue(TextObject(.MenuText, "menu" ), forKey: .MenuLabel)
+        textObjects.updateValue(TextObject(.NewGameText, "new game"), forKey: .NewGameLabel)
     }
     
     public static func Get(_ labelType : ButtonLabelTypes) -> TextObject {

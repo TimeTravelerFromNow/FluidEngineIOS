@@ -18,6 +18,8 @@ class TestTube: Node {
     
     var particleCount: Int = 0
     var origin : float2!
+    
+    var scale: Float!
     //emptying
     private var _emptyIncrement: Float = 0.8
     private let _emptyDelay: Float = 0.8
@@ -67,8 +69,8 @@ class TestTube: Node {
     private var tubeOBJVertices: [Vector2D] = []
     private var tubeHeight: Float32 = 0.4
     private var tubeWidth : Float32 = 0.18
-    private let bottomOffset: Float = 0.17 // experimental, simulates uneven taper at bottom.
-    private var bottomFromOrigin: Float  { return tubeHeight / 2 - bottomOffset }
+    private let bottomOffset: Float = 0.3 // experimental, simulates uneven taper at bottom.
+    private var bottomFromOrigin: Float  { return tubeHeight / 2 - _dividerIncrement }
     private var _dividerIncrement: Float { return (tubeHeight) / Float(totalColors) }
     //game state related
     private var totalColors: Int = 4//no. cells dont change during game.
@@ -109,12 +111,13 @@ class TestTube: Node {
     
     var sceneRepresentation: TubeVisual!
     
-    init( origin: float2, gridId: Int ) {
+    init( origin: float2, gridId: Int, scale: Float = 50.0 ) {
         super.init()
         self.gridId = gridId
         self.ptmRatio = GameSettings.ptmRatio
         self.origin = origin
         self.tubeMesh = MeshLibrary.Get(.TestTube)
+        self.scale = scale
         self.makeContainer()
         self.sceneRepresentation = TubeVisual(tubeHeight + bottomOffset)
     }
@@ -122,7 +125,7 @@ class TestTube: Node {
     //initialization
     private func makeContainer() {
         guard let tubeCustomMesh = tubeMesh else { fatalError("mesh of this tube was nil") }
-        (self.tubeOBJVertices, self.tubeHeight) = tubeCustomMesh.getFlatVertices(modelName: "testtube", scale: 50.0)
+        (self.tubeOBJVertices, self.tubeHeight) = tubeCustomMesh.getFlatVertices(modelName: "testtube", scale: self.scale)
         self.tubeHeight = self.tubeHeight - bottomOffset
         let tubeVerticesPtr = LiquidFun.getVec2(&tubeOBJVertices, vertexCount: UInt32(tubeOBJVertices.count))
         var sensorVertices : [Vector2D] = [
@@ -176,8 +179,8 @@ class TestTube: Node {
         for incr in 0..<totalColors {
             let yPos = (_dividerIncrement * Float(incr)) - bottomFromOrigin
             print("before: \(_dividerPositions[incr]) ")
-            var dividerVertices = [Vector2D(x: -tubeWidth * 1.3,y:yPos ),
-                                   Vector2D(x:  tubeWidth * 1.3,y:yPos ) ]
+            var dividerVertices = [Vector2D(x: -tubeWidth * 1.6,y:yPos ),
+                                   Vector2D(x:  tubeWidth * 1.6,y:yPos ) ]
             _dividerPositions[incr] =  dividerVertices
             print("after: \(_dividerPositions[incr])")
             _dividerYs[incr] = yPos
@@ -471,7 +474,7 @@ class TestTube: Node {
     func updateYs(_ angle: Float) {
         for index in 0..<_dividerPositions.count {
             let originalVectors = _dividerPositions[index]
-            _dividerYs[index] = getOffsetPosition().y + (originalVectors[0].y ) * abs(cos(angle / 2)  ) - 0.1
+            _dividerYs[index] = getOffsetPosition().y + (originalVectors[0].y ) - 0.1
             
         }
     }
@@ -584,7 +587,6 @@ class TestTube: Node {
                 nextPourKF()
             }
         case 4:
-            // code out the logic here.  MARK: Refactor idea: (see notes 9/13 5:30pm)
             if _pourDelay > 0.0 {
                 _pourDelay -= deltaTime
             } else {

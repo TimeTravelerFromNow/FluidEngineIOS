@@ -24,16 +24,18 @@ typedef void (^MBEGlyphPositionEnumerationBlock)(CGGlyph glyph,
 @synthesize fontAtlasRef=_fontAtlasRef;
 @synthesize size=_size;
 @synthesize device=_device;
+@synthesize justifyCenter=_justifyCenter;
 
 - (instancetype)initWithString:(NSString *)string
                         inRect:(CGRect)rect
                       withFontAtlas:(MBEFontAtlas *)fontAtlas
                         atSize:(CGFloat)fontSize
                         device:(id<MTLDevice>)device
+//                 justifyCenter:(bool)justifyCenter
 {
     if ((self = [super init]))
     {
-        [self buildMeshWithString:string inRect:rect withFont:fontAtlas atSize:fontSize device:device];
+        [self buildMeshWithString:string inRect:rect withFont:fontAtlas atSize:fontSize device:device ];
     }
     return self;
 }
@@ -43,6 +45,7 @@ typedef void (^MBEGlyphPositionEnumerationBlock)(CGGlyph glyph,
                    withFont:(MBEFontAtlas *)fontAtlas
                      atSize:(CGFloat)fontSize
                      device:(id<MTLDevice>)device
+//              justifyCenter:(bool)justifyCenter
 {
     _rect = rect;
     _fontAtlasRef = fontAtlas;

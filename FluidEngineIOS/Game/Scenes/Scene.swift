@@ -19,8 +19,10 @@ class Scene: Node {
     var orthoCamera = OrthoCamera()
     var panVelocity = float2(0,0)
     let box2DOrigin: float2!
+    var skyBackground: CloudsBackground!
     private var sharedNodes: [Node] = []
     private var isSharingNodes: Bool = false
+    private var _smoothInterval: Float = 0.3
     let sceneType: SceneTypes!
     
     init(_ sceneType: SceneTypes) {
@@ -34,6 +36,9 @@ class Scene: Node {
         orthoCamera.setPositionZ(1)
         orthoCamera.setPositionY(box2DOrigin.y / 5.0)
         orthoCamera.setPositionX(box2DOrigin.x / 5.0)
+        
+        skyBackground = SharedBackground.Background
+        addChild(skyBackground)
         buildScene()
     }
     
@@ -77,7 +82,16 @@ class Scene: Node {
         }
     }
     
-    func removeSharedNodes() { for node in sharedNodes { self.removeChild(node) } }
+    func removeSharedNodes() {
+        for node in sharedNodes
+        {
+            if node is CloudsBackground {
+                
+            } else {
+                self.removeChild(node)
+            }
+        }
+    }
     
     func sceneSwitchStep(deltaTime: Float, toScene: SceneTypes) {
         if( toScene == .None ) { print("why are we switch stepping to .None scene?"); return}
@@ -86,6 +100,12 @@ class Scene: Node {
         let moveDirection = destination - camPos
         panVelocity = normalize( moveDirection ) * 4.0
         var change = panVelocity * deltaTime
+        
+        if(_smoothInterval > 0.0) {
+            panVelocity.x *= (1.0 - _smoothInterval)
+            panVelocity.y *= (1.0 - _smoothInterval)
+            _smoothInterval -= deltaTime
+        }
         if length_squared( change - destination ) > 0.01 {
             while ( abs( change.x ) > abs( moveDirection.x ) ) {
                 panVelocity.x *= 0.9
@@ -95,6 +115,9 @@ class Scene: Node {
                 panVelocity.y *= 0.9
                 change = panVelocity * deltaTime
             }
+        }
+        if length_squared( destination - camPos ) < 0.1 {
+            if _smoothInterval < 0.0 { _smoothInterval = 0.8}
         }
         if length_squared( destination - camPos ) < 0.01 {
             panVelocity = float2(0)
@@ -107,6 +130,8 @@ class Scene: Node {
             SceneManager.SetCurrentScene( toScene )
         }
         moveOrthoCamera(deltaTime: deltaTime)
+        skyBackground.setPositionX(orthoCamera.getPositionX())
+        skyBackground.setPositionY(orthoCamera.getPositionY())
     }
     
     override func update() {
@@ -159,6 +184,7 @@ class SceneManager: Library<SceneTypes, Scene> {
     
     public static func update(_ deltaTime: Float) {
         currentScene!.update(deltaTime: deltaTime)
+        currentScene!.skyBackground.update(deltaTime: deltaTime)
         if( sceneSwitchingTo != .None ) {
             currentScene.sceneSwitchStep(deltaTime: deltaTime, toScene: sceneSwitchingTo)
         }
