@@ -450,12 +450,12 @@ return belowPositionsCount;
 }
 
 //movement and rotation
-+ (void)moveTube:(void *)tube pushDirection:(Vector2D)pushDirection {
-    ((Tube *) tube)->Move(b2Vec2(pushDirection.x,pushDirection.y));
++ (void)setTubeVelocity:(void *)tube velocity:(Vector2D)velocity {
+    ((Tube *) tube)->SetVelocity(b2Vec2(velocity.x,velocity.y));
 }
 // rotation
-+ (void)rotateTube:(void *)tube amount:(float)amount{
-    ((Tube *) tube)->Rotate(amount);
++ (void)setAngularVelocity:(void *)ofTube angularVelocity:(float)angularVelocity{
+    ((Tube *) ofTube)->SetRotation(angularVelocity);
 }
 
 + (Vector2D)getTubePosition:(void *)tube {
@@ -479,6 +479,14 @@ return belowPositionsCount;
 
 + (float)getTubeRotation:(void *)tube{
     return ((Tube *)tube)->GetRotation();
+}
+
++ (Vector2D)getTubeVelocity:(void *)tube {
+    b2Vec2 v = ((Tube *)tube)->GetVelocity();
+    Vector2D sharedVelocity;
+    sharedVelocity.x = v.x;
+    sharedVelocity.y = v.y;
+    return sharedVelocity;
 }
 
 //pour filtering

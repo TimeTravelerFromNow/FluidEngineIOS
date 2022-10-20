@@ -38,13 +38,15 @@ public:
     b2Fixture* addDivider(b2Vec2* dividerVertices);
     void removeDivider(b2Fixture* dividerRef);
     
-    void Move(b2Vec2 velocity);
+    void SetVelocity(b2Vec2 velocity);
     
-    void Rotate(float angVelocity);
+    void SetRotation(float angVelocity);
     
     b2Vec2 GetPosition();
     float GetRotation();
 
+    b2Vec2 GetVelocity();
+    
     bool IsAtPosition(b2Vec2 position);
     
     void SetPourBits();

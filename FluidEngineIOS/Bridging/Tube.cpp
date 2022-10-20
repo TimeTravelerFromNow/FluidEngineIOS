@@ -95,10 +95,10 @@ void Tube::RemoveGuides() {
     m_body->DestroyFixture(m_guide1);
 }
 //movement
-void Tube::Move(b2Vec2 velocity) {
+void Tube::SetVelocity(b2Vec2 velocity) {
     m_body->SetLinearVelocity(velocity);
 }
-void Tube::Rotate(float angVelocity) {
+void Tube::SetRotation(float angVelocity) {
     m_body->SetAngularVelocity( angVelocity );
 }
 b2Vec2 Tube::GetPosition() {
@@ -106,6 +106,10 @@ b2Vec2 Tube::GetPosition() {
 }
 float Tube::GetRotation() {
     return m_body->GetAngle();
+}
+
+b2Vec2 Tube::GetVelocity() {
+    return m_body->GetLinearVelocity();
 }
 
 bool Tube::IsAtPosition(b2Vec2 position) {

@@ -22,8 +22,8 @@ class GameSettings {
     public static var DampingStrength: Float = 0.2// 0.2 originally
     public static var Density: Float = 1.2  // 1.2 originally
   
-    public static var GroupScaleY: Float = 4.0
-    public static var GroupScaleX: Float = 1.0
+    public static var GroupScaleY: Float = 6.0
+    public static var GroupScaleX: Float = 3.0
     public static var DropHeight: Float = 1.5
     public static var CapPlaceDelay: Float = 0.53
     public static var PourSpeed: Float =  4.0

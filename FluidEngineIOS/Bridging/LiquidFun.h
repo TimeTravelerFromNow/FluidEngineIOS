@@ -127,14 +127,16 @@ typedef struct VertexIn {
 + (void)removeDivider:(void *)tube divider:(void *)divider;
 //freezing is managed internally in Tube together with the contact listener.
 //movement and rotation
-+ (void)moveTube:(void *)tube pushDirection:(Vector2D)pushDirection;
++ (void)setTubeVelocity:(void *)tube velocity:(Vector2D)velocity;
 // rotation
-+ (void)rotateTube:(void *)tube amount:(float)amount;
++ (void)setAngularVelocity:(void *)ofTube angularVelocity:(float)angularVelocity;
 
 + (Vector2D)getTubePosition:(void *)tube;
 + (void *)getTubeAtPosition:(Vector2D)position;
 
 + (float)getTubeRotation:(void *)tube;
+
++ (Vector2D)getTubeVelocity:(void *)tube;
 
 //pour filter bits
 + (void) SetPourBits:(void *)ofTube;

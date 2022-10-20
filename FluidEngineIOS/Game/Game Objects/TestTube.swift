@@ -34,6 +34,7 @@ class TestTube: Node {
     //pouring mechanics variables, consider refactoring into keyframing
     private var _pourDirection: Float = -1
     private var _pourSpeed: Float =  GameSettings.PourSpeed
+    private var _animationVelocity: float2 = float2(GameSettings.PourSpeed, GameSettings.PourSpeed)
     private let pourSpeedDefault: Float = GameSettings.PourSpeed
     var isPouring: Bool = false                     // is the one pouring
     var systemPouringInto: UnsafeMutableRawPointer!
@@ -85,7 +86,7 @@ class TestTube: Node {
     
     //pouring animation constants
     private let _pourAngles: [Float] = [ Float.pi / 1.7,Float.pi/1.8,Float.pi/1.9,Float.pi/2.0]
-    private var _pourPositions: [float2] { return [ float2(_pourDirection * 0.1,1.6), float2(_pourDirection * 0.1,1.4) ,float2(_pourDirection * 0.6,1.2) , float2(_pourDirection * 0.7,1.0)  ] }
+    private var _pourPositions: [float2] { return [ float2(_pourDirection * 0.1, tubeHeight * 2.5), float2(_pourDirection * 0.1, tubeHeight * 2.5) ,float2(_pourDirection * 0.6,tubeHeight * 2.5) , float2(_pourDirection * 0.7,tubeHeight * 2.5)  ] }
 
     private var _amountToPour: Int = 0
     private var _pourDelay: Float = 0.7
@@ -144,10 +145,10 @@ class TestTube: Node {
             Vector2D(x: -(tubeWidth  + hBD) , y: -tubeHeight * 0.5),
             Vector2D(x: -(tubeWidth  + hBD) , y: tubeHeight * 0.5 ),
             
-            Vector2D(x: tubeWidth  + hBD ,      y: -tubeHeight * 0.8 + hBE),
-            Vector2D(x: -(tubeWidth + hBD),    y: -tubeHeight * 0.8 + hBE),
-            Vector2D(x: -(tubeWidth + hBD) ,     y: -tubeHeight * 0.8),
-            Vector2D(x: tubeWidth  + hBD ,      y: -tubeHeight * 0.8 )
+            Vector2D(x: tubeWidth  + hBD , y: -tubeHeight * 0.8 + hBE),
+            Vector2D(x: -(tubeWidth + hBD), y: -tubeHeight * 0.8 + hBE),
+            Vector2D(x: -(tubeWidth + hBD), y: -tubeHeight * 0.8),
+            Vector2D(x: tubeWidth  + hBD, y: -tubeHeight * 0.8 )
         ]
         // MARK: I thought sensors weren't needed anymore but we could still use them later for engulfing particle code.
         particleSystem = LiquidFun.createParticleSystem(withRadius: GameSettings.particleRadius / ptmRatio,
@@ -238,7 +239,7 @@ class TestTube: Node {
                     toBackground()
                     currentState = .CleanupValues
                     setFrozenDelay = _settleDelay
-                    boxMove() //bring to stop
+                    setBoxVelocity() //bring to stop
                     print("Tube \(gridId) Returned To Origin.")
                 }
             }
@@ -545,16 +546,18 @@ class TestTube: Node {
         case 0:
             let pos0 =  candidatePosition + float2(_pourDirection * 0.8,0.8)
             if( distance(currPos, pos0) > 1.0) {
-                boxMove( vector(pos0 - currPos, mag: _pourSpeed) )
+                setBoxVelocity( vector(pos0 - currPos, mag: _pourSpeed) )
             } else {
                 nextPourKF()
             }
         case 1:
-            let pos0 =  candidatePosition + float2(_pourDirection * 0.8,0.8)
-            if( distance(currPos, pos0) > 0.1) {
-                boxMove(vector(pos0 - currPos, mag: _pourSpeed) )
-                _pourSpeed *= 0.98
-            } else {
+            let pos0 =  candidatePosition + float2(_pourPositions[0].x * _pourDirection, _pourPositions[0].y)
+           
+           
+//            else {
+                self.setBoxVelocity(vector(pos0 - currPos, mag: _pourSpeed) )
+//                }
+            if( distance(currPos, pos0) < 0.1) {
                 nextPourKF()
             }
         case 2:
@@ -567,7 +570,7 @@ class TestTube: Node {
                 _pourSpeed *= 0.99
                 self.rotateZ(_pourDirection * _pourSpeed * deltaTime * 20 * Float.pi)
                 if( distance(currPos, pos1) > 0.01 ) {
-                    boxMove( vector(pos1 - currPos, mag: _pourSpeed/14) )
+                    setBoxVelocity( vector(pos1 - currPos, mag: _pourSpeed/14) )
                 } else  {}
             } else {
                 candidateTube.refreshColorBuffer()
@@ -626,7 +629,7 @@ class TestTube: Node {
                 let rotDirection = -self.getRotationZ() / abs(self.getRotationZ())
                 self.rotateZ( rotDirection )
             } else {
-                self.boxMove()
+                self.setBoxVelocity()
                 self.rotateZ(0)
                 settling = true }
         } else {
@@ -645,15 +648,15 @@ class TestTube: Node {
                 moveDirection = vector(moveDirection, mag: 0.3)
             }
             settling = false
-            boxMove(moveDirection)
+            setBoxVelocity(moveDirection)
         }
     }
     
     func selectStep(_ deltaTime: Float) {
         if (self.getBoxPositionY() < selectPos ) {
-            boxMove(float2(x:0,y:3))
+            setBoxVelocity(float2(x:0,y:3))
         } else {
-            boxMove()
+            setBoxVelocity()
             currentState = .AtRest
         }
     }
@@ -730,7 +733,7 @@ class TestTube: Node {
         _pourDelay = _defaultPourDelay
         _pourSpeed = pourSpeedDefault
         self.rotateZ(0)
-        boxMove()
+        setBoxVelocity()
         _pourKF += 1
     }
     
@@ -841,7 +844,7 @@ class TestTube: Node {
             self.currentState = .Moving
             let currPos = getBoxPosition()
             let moveDirection = float2(x:(boxPos.x - currPos.x) * 3,y: (boxPos.y - currPos.y) * 3)
-            boxMove(moveDirection)
+            setBoxVelocity(moveDirection)
         }
     }
     
@@ -852,15 +855,26 @@ class TestTube: Node {
         sceneRepresentation.moveY(delta)
     }
     override func rotateZ(_ value: Float) {
-        LiquidFun.rotateTube(_tube, amount: value)
         self.sceneRepresentation.setRotationZ(self.getRotationZ())
     }
     func dampRotation( _ value: Float){
         LiquidFun.dampRotation(ofBody: _tube, amount: value)
     }
-    func boxMove(_ velocity: float2 = float2()) {
-        LiquidFun.moveTube(_tube, pushDirection: Vector2D(x: Float32(velocity.x), y: Float32(velocity.y)))
+    func setBoxVelocity(_ velocity: float2 = float2()) {
+        LiquidFun.setTubeVelocity(_tube, velocity: Vector2D(x: Float32(velocity.x), y: Float32(velocity.y)))
     }
+    func getBoxVelocity() -> float2 {
+        float2(x: LiquidFun.getTubeVelocity(_tube).x, y: LiquidFun.getTubeVelocity(_tube).y)
+    }
+    
+    func getVelocityX() -> Float {
+        return getBoxVelocity().x
+    }
+    
+    func getVelocityY() -> Float {
+        return getBoxVelocity().y
+    }
+    
     func getBoxPosition() -> float2 {
         let boxPos = LiquidFun.getTubePosition(_tube)
         return float2(x: boxPos.x, y: boxPos.y)
