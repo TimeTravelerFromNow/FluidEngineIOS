@@ -11,13 +11,18 @@ class BoxButton: GameObject {
     
     var buttonAction: ButtonActions!
     
+    private var _textObject: TextObject?
     private var _selected: Bool = false
     
     init(_ meshType: MeshTypes,
          _ texture: TextureTypes,
          _ action: ButtonActions = .None,
-         center: float2) {
+         center: float2,
+         label: ButtonLabelTypes = .None) {
         super.init(meshType)
+        if( label != .None ) {
+            _textObject = ButtonLabels.Get(label)
+        }
         setTexture(texture)
         renderPipelineStateType = .Basic
         boxVertices = getBoxVertices(1.0)
@@ -28,7 +33,7 @@ class BoxButton: GameObject {
         buttonAction = action
     }
     
-    func boxHitTest( _ atPos: float2 ) -> ButtonActions? {
+    func boxHitTest( _ atPos: float2) -> ButtonActions? {
         if LiquidFun.boxIs(atPosition: Vector2D(x: atPos.x, y: atPos.y), boxRef: _boxRef) {
             self._selected = true
             return buttonAction
@@ -44,11 +49,21 @@ class BoxButton: GameObject {
     func unFreeze() { LiquidFun.unFreezeButton(_boxRef)}
     
     func updateModelConstants() {
-        modelConstants.modelMatrix = modelMatrix
         setPositionX(self.getBoxPositionX() * GameSettings.stmRatio)
         setPositionY(self.getBoxPositionY() * GameSettings.stmRatio)
         setRotationZ( getRotationZ() )
         LiquidFun.updateBoxButton(_boxRef)
+        if let textObject = _textObject {
+            textObject.setTransformation( float2(self.getPositionX(), self.getPositionY()), -self.getRotationZ())
+        }
+        modelConstants.modelMatrix = modelMatrix
+    }
+    
+    override func update(deltaTime: Float) {
+        super.update(deltaTime: deltaTime)
+        if let _textObject = _textObject {
+            _textObject.update(deltaTime: deltaTime)
+        }
     }
     
     func getBoxPositionX() -> Float {
@@ -61,7 +76,6 @@ class BoxButton: GameObject {
     override func getRotationZ() -> Float {
         return LiquidFun.getBoxButtonRotation(_boxRef)
     }
-
     
     override func render(_ renderCommandEncoder: MTLRenderCommandEncoder) {
         updateModelConstants()
@@ -89,6 +103,9 @@ class BoxButton: GameObject {
         }
         mesh.drawPrimitives(renderCommandEncoder)
         super.render(renderCommandEncoder)
+        }
+        if let textObject = _textObject {
+            textObject.doRender(renderCommandEncoder)
         }
     }
 }

@@ -34,7 +34,7 @@ void BoxButton::DriveBack() {
     b2Vec2 returnVector = origin - currentPosition;
     b2Vec2 clampedReturn = b2Clamp(returnVector, b2Vec2(-1.0,-1.0), b2Vec2(1.0,1.0));
     b2Vec2 vBefore = m_body->GetLinearVelocity();
-    b2Vec2 vAfter = b2Clamp(vBefore, b2Vec2(-1.0,-1.0), b2Vec2(1.0,1.0)) + clampedReturn;
+    b2Vec2 vAfter = b2Clamp(vBefore, b2Vec2(-0.1,-0.1), b2Vec2(0.1,0.1)) + clampedReturn;
     m_body->SetLinearVelocity(vAfter);
 }
 

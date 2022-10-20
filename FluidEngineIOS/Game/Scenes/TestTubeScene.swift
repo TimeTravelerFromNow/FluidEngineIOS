@@ -57,7 +57,7 @@ class TestTubeScene : Scene {
     
     func addTestButton() {
         let testButton = BoxButton(.ClearButton,.ClearButton, .Clear, center: box2DOrigin + float2(1.0,-3.0) )
-        let menuButton = BoxButton(.Menu,.Menu, .ToMenu, center: box2DOrigin + float2(-1.0,-3.0))
+        let menuButton = BoxButton(.Menu,.Menu, .ToMenu, center: box2DOrigin + float2(-1.0,-3.0), label: .MenuLabel)
 
         buttons.append(testButton)
         buttons.append(menuButton)

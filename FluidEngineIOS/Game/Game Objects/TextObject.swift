@@ -1,7 +1,7 @@
 import MetalKit
 import CoreText
 
-class TestTextObject: Node {
+class TextObject: Node {
     
     private var _texture: MTLTexture!
     private var _vertexBuffer: MTLBuffer!
@@ -13,11 +13,22 @@ class TestTextObject: Node {
     private var _fontType: FontRenderableTypes!
     var currentText: String!
     private var _fontRenderable: FontRenderable!
+    private var _offset: float2!
     
-    init(_ fontType: FontRenderableTypes){
+    init(_ fontType: FontRenderableTypes, _ text: String? = nil, _ offset: float2? = nil){
         super.init()
+        _offset = offset ?? float2(0)
+       
+        self.setPositionZ(0.2)
+        self.setRotationY(2 * .pi)
+        self.setRotationX(.pi)
+        self.setScale(2 / (GameSettings.ptmRatio * 10))
+        
         _fontType = fontType
         _fontRenderable = FontRenderables.Get(_fontType)
+        if let startingText = text {
+            _fontRenderable.setText(startingText)
+        }
         currentText = _fontRenderable.getText()
         refreshBuffers()
     }
@@ -39,6 +50,12 @@ class TestTextObject: Node {
         _indexCount = _fontRenderable.getIndexCount()
     }
     
+    func setTransformation(_ position: float2, _ rotationZ: Float ) {
+        self.setPositionX(position.x + _offset.x)
+        self.setPositionY(position.y + _offset.y)
+        self.setRotationZ(rotationZ)
+    }
+    
     override func update() {
         modelConstants.modelMatrix = modelMatrix
         super.update()
@@ -46,7 +63,7 @@ class TestTextObject: Node {
     
 }
 
-extension TestTextObject: Renderable {
+extension TextObject: Renderable {
     func doRender(_ renderCommandEncoder: MTLRenderCommandEncoder) {
         renderCommandEncoder.setRenderPipelineState(RenderPipelineStates.Get(.Text))
         renderCommandEncoder.setVertexBuffer(_vertexBuffer, offset: 0, index: 0)

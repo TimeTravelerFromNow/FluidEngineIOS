@@ -30,6 +30,8 @@ class Engine {
         
         FontRenderables.Initialize()
         
+        ButtonLabels.Initialize()
+        
         FluidEnvironment.Initialize()
         
         SharedBackground.Initialize()

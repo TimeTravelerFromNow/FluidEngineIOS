@@ -90,9 +90,10 @@
 		92489BD02799DA0400639B52 /* b2Collision.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 92489B022799DA0400639B52 /* b2Collision.cpp */; };
 		92489C032799DD0500639B52 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 92489C022799DD0500639B52 /* LaunchScreen.storyboard */; };
 		9270CD9C28E1084600A5CB05 /* FontRenderable.m in Sources */ = {isa = PBXBuildFile; fileRef = 9270CD9B28E1084600A5CB05 /* FontRenderable.m */; };
-		9295E4CD2900AFB300A33A0D /* FontRenderables.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9295E4CC2900AFB300A33A0D /* FontRenderables.swift */; };
-		9295E4CF2900B84900A33A0D /* TestTextObject.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9295E4CE2900B84900A33A0D /* TestTextObject.swift */; };
+		9295E4CD2900AFB300A33A0D /* TextLibraries.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9295E4CC2900AFB300A33A0D /* TextLibraries.swift */; };
+		9295E4CF2900B84900A33A0D /* TextObject.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9295E4CE2900B84900A33A0D /* TextObject.swift */; };
 		9295E4D12900BB2900A33A0D /* TextShaders.metal in Sources */ = {isa = PBXBuildFile; fileRef = 9295E4D02900BB2900A33A0D /* TextShaders.metal */; };
+		9295E4D5290111D800A33A0D /* testflat.obj in Resources */ = {isa = PBXBuildFile; fileRef = 9295E4D4290111D800A33A0D /* testflat.obj */; };
 		92A9E38E28DA6CEB0000A77F /* Renderable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 92A9E37A28DA6CEB0000A77F /* Renderable.swift */; };
 		92A9E38F28DA6CEB0000A77F /* Camera.swift in Sources */ = {isa = PBXBuildFile; fileRef = 92A9E37C28DA6CEB0000A77F /* Camera.swift */; };
 		92A9E39028DA6CEB0000A77F /* Levels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 92A9E37E28DA6CEB0000A77F /* Levels.swift */; };
@@ -130,7 +131,6 @@
 		92A9E40128DA6D620000A77F /* cliff.png in Resources */ = {isa = PBXBuildFile; fileRef = 92A9E3D128DA6D620000A77F /* cliff.png */; };
 		92A9E40228DA6D620000A77F /* pineTree.png in Resources */ = {isa = PBXBuildFile; fileRef = 92A9E3D228DA6D620000A77F /* pineTree.png */; };
 		92A9E40328DA6D620000A77F /* testflat.mtl in Resources */ = {isa = PBXBuildFile; fileRef = 92A9E3D428DA6D620000A77F /* testflat.mtl */; };
-		92A9E40428DA6D620000A77F /* testflat.obj in Resources */ = {isa = PBXBuildFile; fileRef = 92A9E3D528DA6D620000A77F /* testflat.obj */; };
 		92A9E40528DA6D620000A77F /* testflat.png in Resources */ = {isa = PBXBuildFile; fileRef = 92A9E3D628DA6D620000A77F /* testflat.png */; };
 		92A9E40828DA6D620000A77F /* cloud2.obj in Resources */ = {isa = PBXBuildFile; fileRef = 92A9E3DA28DA6D620000A77F /* cloud2.obj */; };
 		92A9E40928DA6D620000A77F /* cloud3.obj in Resources */ = {isa = PBXBuildFile; fileRef = 92A9E3DB28DA6D620000A77F /* cloud3.obj */; };
@@ -317,9 +317,10 @@
 		92489C022799DD0500639B52 /* LaunchScreen.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = LaunchScreen.storyboard; sourceTree = "<group>"; };
 		9270CD9B28E1084600A5CB05 /* FontRenderable.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = FontRenderable.m; sourceTree = "<group>"; };
 		9270CD9D28E10F4500A5CB05 /* FontRenderable.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = FontRenderable.h; sourceTree = "<group>"; };
-		9295E4CC2900AFB300A33A0D /* FontRenderables.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FontRenderables.swift; sourceTree = "<group>"; };
-		9295E4CE2900B84900A33A0D /* TestTextObject.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestTextObject.swift; sourceTree = "<group>"; };
+		9295E4CC2900AFB300A33A0D /* TextLibraries.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextLibraries.swift; sourceTree = "<group>"; };
+		9295E4CE2900B84900A33A0D /* TextObject.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextObject.swift; sourceTree = "<group>"; };
 		9295E4D02900BB2900A33A0D /* TextShaders.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = TextShaders.metal; sourceTree = "<group>"; };
+		9295E4D4290111D800A33A0D /* testflat.obj */ = {isa = PBXFileReference; lastKnownFileType = file; name = testflat.obj; path = "FluidEngineIOS/Res/TTFlat-backup/testflat.obj"; sourceTree = SOURCE_ROOT; };
 		92A9E37A28DA6CEB0000A77F /* Renderable.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Renderable.swift; sourceTree = "<group>"; };
 		92A9E37C28DA6CEB0000A77F /* Camera.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Camera.swift; sourceTree = "<group>"; };
 		92A9E37E28DA6CEB0000A77F /* Levels.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Levels.swift; sourceTree = "<group>"; };
@@ -357,7 +358,6 @@
 		92A9E3D128DA6D620000A77F /* cliff.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = cliff.png; sourceTree = "<group>"; };
 		92A9E3D228DA6D620000A77F /* pineTree.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = pineTree.png; sourceTree = "<group>"; };
 		92A9E3D428DA6D620000A77F /* testflat.mtl */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = testflat.mtl; sourceTree = "<group>"; };
-		92A9E3D528DA6D620000A77F /* testflat.obj */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = testflat.obj; sourceTree = "<group>"; };
 		92A9E3D628DA6D620000A77F /* testflat.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = testflat.png; sourceTree = "<group>"; };
 		92A9E3DA28DA6D620000A77F /* cloud2.obj */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = cloud2.obj; sourceTree = "<group>"; };
 		92A9E3DB28DA6D620000A77F /* cloud3.obj */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = cloud3.obj; sourceTree = "<group>"; };
@@ -460,7 +460,7 @@
 		923F2BC427A0FD7300443936 /* Libraries */ = {
 			isa = PBXGroup;
 			children = (
-				9295E4CC2900AFB300A33A0D /* FontRenderables.swift */,
+				9295E4CC2900AFB300A33A0D /* TextLibraries.swift */,
 				923F2BC527A0FD7300443936 /* CustomMesh.swift */,
 				923F2BC627A0FD7300443936 /* TextureLibrary.swift */,
 				923F2BC727A0FD7300443936 /* DepthStencilStates.swift */,
@@ -756,7 +756,7 @@
 		92A9E38028DA6CEB0000A77F /* Game Objects */ = {
 			isa = PBXGroup;
 			children = (
-				9295E4CE2900B84900A33A0D /* TestTextObject.swift */,
+				9295E4CE2900B84900A33A0D /* TextObject.swift */,
 				92A9E38128DA6CEB0000A77F /* BoxPolygon.swift */,
 				92A9E38228DA6CEB0000A77F /* SharedBackground.swift */,
 				92A9E38328DA6CEB0000A77F /* SkyBackground.swift */,
@@ -838,8 +838,8 @@
 		92A9E3D328DA6D620000A77F /* TTFlat */ = {
 			isa = PBXGroup;
 			children = (
+				9295E4D4290111D800A33A0D /* testflat.obj */,
 				92A9E3D428DA6D620000A77F /* testflat.mtl */,
-				92A9E3D528DA6D620000A77F /* testflat.obj */,
 				92A9E3D628DA6D620000A77F /* testflat.png */,
 			);
 			path = TTFlat;
@@ -996,11 +996,11 @@
 				92A9E41528DA6D620000A77F /* beach.mtl in Resources */,
 				92A9E40928DA6D620000A77F /* cloud3.obj in Resources */,
 				92A9E41128DA6D620000A77F /* cloud0.mtl in Resources */,
+				9295E4D5290111D800A33A0D /* testflat.obj in Resources */,
 				92A9E3FD28DA6D620000A77F /* pineTree.mtl in Resources */,
 				92A9E44228DA72910000A77F /* testButton.obj in Resources */,
 				92A9E40228DA6D620000A77F /* pineTree.png in Resources */,
 				92A9E3ED28DA6D620000A77F /* quad.obj in Resources */,
-				92A9E40428DA6D620000A77F /* testflat.obj in Resources */,
 				92A9E43728DA72910000A77F /* clearButton.mtl in Resources */,
 				92A9E44128DA72910000A77F /* beachButton.obj in Resources */,
 				92A9E43B28DA72910000A77F /* menuButton.obj in Resources */,
@@ -1119,9 +1119,9 @@
 				9295E4D12900BB2900A33A0D /* TextShaders.metal in Sources */,
 				923F2B6127A0FCE200443936 /* Preferences.swift in Sources */,
 				92489BBC2799DA0400639B52 /* b2Math.cpp in Sources */,
-				9295E4CF2900B84900A33A0D /* TestTextObject.swift in Sources */,
+				9295E4CF2900B84900A33A0D /* TextObject.swift in Sources */,
 				92489BB92799DA0400639B52 /* b2Stat.cpp in Sources */,
-				9295E4CD2900AFB300A33A0D /* FontRenderables.swift in Sources */,
+				9295E4CD2900AFB300A33A0D /* TextLibraries.swift in Sources */,
 				923F2BDA27A0FD7300443936 /* FluidShaders.metal in Sources */,
 				92489BCA2799DA0400639B52 /* b2EdgeShape.cpp in Sources */,
 				92489BC02799DA0400639B52 /* b2VoronoiDiagram.cpp in Sources */,

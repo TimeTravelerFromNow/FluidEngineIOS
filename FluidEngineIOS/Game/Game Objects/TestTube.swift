@@ -122,7 +122,7 @@ class TestTube: Node {
     //initialization
     private func makeContainer() {
         guard let tubeCustomMesh = tubeMesh else { fatalError("mesh of this tube was nil") }
-        (self.tubeOBJVertices, self.tubeHeight) = tubeCustomMesh.getFlatVertices(modelName: "testtube", scale: 30.0)
+        (self.tubeOBJVertices, self.tubeHeight) = tubeCustomMesh.getFlatVertices(modelName: "testtube", scale: 50.0)
         self.tubeHeight = self.tubeHeight - bottomOffset
         let tubeVerticesPtr = LiquidFun.getVec2(&tubeOBJVertices, vertexCount: UInt32(tubeOBJVertices.count))
         var sensorVertices : [Vector2D] = [
@@ -149,6 +149,7 @@ class TestTube: Node {
             Vector2D(x: -(tubeWidth + hBD) ,     y: -tubeHeight * 0.8),
             Vector2D(x: tubeWidth  + hBD ,      y: -tubeHeight * 0.8 )
         ]
+        // MARK: I thought sensors weren't needed anymore but we could still use them later for engulfing particle code.
         particleSystem = LiquidFun.createParticleSystem(withRadius: GameSettings.particleRadius / ptmRatio,
                                                         dampingStrength: GameSettings.DampingStrength,
                                                         gravityScale: 1,

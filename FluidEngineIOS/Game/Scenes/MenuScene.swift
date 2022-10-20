@@ -21,7 +21,7 @@ class MenuScene : Scene {
     var backGroundObject: CloudsBackground!
     var fluidObject: DebugEnvironment!
     var waterFall: WaterFallObject!
-    var testTextObject: TestTextObject!
+    var testTextObject: TextObject!
     
     var buttons: [ BoxButton ] = []
         
@@ -31,7 +31,7 @@ class MenuScene : Scene {
     private var _emptyKF = 0
     
     private func addTestButtons() {
-        let newGameButton   = BoxButton(.TestButton, .TestButton, .NewGame, center: box2DOrigin + float2(x: 0.5, y: 1.0))
+        let newGameButton   = BoxButton(.Menu, .Menu, .NewGame, center: box2DOrigin + float2(x: 0.5, y: 1.0), label: .NewGameLabel )
         let beachButton     = BoxButton(.BeachButton, .BeachButton, .ToBeach, center: box2DOrigin + float2(x: 0.3, y: 0.0))
 
         buttons.append(newGameButton)
@@ -57,7 +57,7 @@ class MenuScene : Scene {
     
     override func buildScene() {
    
-        testTextObject = TestTextObject(.HoeflerDefault)
+        testTextObject = TextObject(.HoeflerDefault)
         testTextObject.setPositionZ(0.2)
         testTextObject.setRotationY(2 * .pi)
         testTextObject.setRotationX(.pi)
