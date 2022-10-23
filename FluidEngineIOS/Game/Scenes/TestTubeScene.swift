@@ -9,6 +9,7 @@ enum States {
     case Idle
     case HoldInterval
     case CleanupValues
+    case AnimatingPour
 }
 
 class TestTubeScene : Scene {
@@ -169,6 +170,7 @@ class TestTubeScene : Scene {
     }
     
     private func refillTubesToCurrentState() {
+        gyroVector = float2(0,-9.806)
         for (i, tubeColors) in tubeLevel.colorStates.enumerated() {
             tubeGrid[i].initialFillContainer(colors: tubeColors)
         }
@@ -252,6 +254,7 @@ class TestTubeScene : Scene {
     }
     
     func pourTubes() {
+        _currentState = .AnimatingPour
         self.selectedTube!.setCandidateTube( self.pourCandidate! )
         var newPouringTubeColors = [TubeColors].init(repeating: .Empty, count: 4)
         var newCandidateTubeColors = [TubeColors].init(repeating: .Empty, count: 4)
@@ -424,9 +427,16 @@ class TestTubeScene : Scene {
     override func update(deltaTime : Float) {
         super.update(deltaTime: deltaTime)
         
+        shouldUpdateGyro = false
         if _currentState ==  .Emptying {
-        EmptyTubesStep(deltaTime)
+            EmptyTubesStep(deltaTime)
         }
+        
+        
+        if shouldUpdateGyro {
+            LiquidFun.setGravity(Vector2D(x: gyroVector.x, y: gyroVector.y))
+        }
+        
         if (Touches.IsDragging) {
             if buttonPressed != nil {
                 buttonPressed = boxButtonHitTest(boxPos: Touches.GetBoxPos())

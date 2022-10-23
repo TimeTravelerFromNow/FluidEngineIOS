@@ -14,7 +14,7 @@ class CloudsBackground: Node {
         }
         for cGrp in clouds {
             addChild(cGrp)
-            cGrp.setPositionZ(0.1)
+            cGrp.setPositionZ(0.09)
             cGrp.setScale(0.01)
         }
         skyBG.setScale(1)
@@ -41,6 +41,7 @@ class Clouds: InstancedObject {
         let randF =  Float.randomZeroToOne * Renderer.ScreenSize.x * scale * 0.5
             node.setPositionX( hRange[1] + randF)
             node.setPositionY( Float.random(min: vRange[0], max: vRange[1]) )
+        
         }
     
     func randomizeStart() {

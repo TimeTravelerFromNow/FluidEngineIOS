@@ -1,4 +1,5 @@
 import MetalKit
+import CoreMotion
 
 enum SceneTypes {
     case TestTubes
@@ -31,6 +32,9 @@ class Scene: Node {
     private var _smoothInterval: Float = 1.0
     private var _smoothStage: SmoothingStates = .Leaving
     let sceneType: SceneTypes!
+    
+    var shouldUpdateGyro = false
+    var gyroVector: float2 = float2(0)
     
     init(_ sceneType: SceneTypes) {
         box2DOrigin = SceneOrigins[sceneType]
@@ -153,13 +157,18 @@ class SceneManager: Library<SceneTypes, Scene> {
     
     public static var SkyBackground: CloudsBackground!
 
+    public static let MotionManager: CMMotionManager = CMMotionManager() //MARK: not sure if best place, but things are getting messy anyways
+    
     public static func Initialize(_ startingScene: SceneTypes ) {
         createScenes()
         currentScene = Get(startingScene)
         sceneSwitchingTo = .None
         SkyBackground = SharedBackground.Background
-        SkyBackground.setPositionX(currentScene.getPositionX())
-        SkyBackground.setPositionY(currentScene.getPositionY())
+        SkyBackground.setPositionX(currentScene.orthoCamera.getPositionX())
+        SkyBackground.setPositionY(currentScene.orthoCamera.getPositionY())
+        for scene in scenes.values {
+            scene.sceneSizeWillChange()
+        }
     }
     
     private static func createScenes() {
@@ -182,6 +191,16 @@ class SceneManager: Library<SceneTypes, Scene> {
         if( sceneSwitchingTo != .None ) {
             scenes[sceneSwitchingTo]!.update(deltaTime:deltaTime)
             currentScene.sceneSwitchStep(deltaTime: deltaTime, toScene: sceneSwitchingTo)
+        }
+        if( currentScene.shouldUpdateGyro ) {
+            SceneManager.MotionManager.startAccelerometerUpdates(to: OperationQueue(),
+                                                                 withHandler: {
+                (accelerometerData, error) -> Void in
+                guard let acceleration = accelerometerData?.acceleration else { print("Motion Manger WARNING:: couldnt get acceleromter data."); return}
+                let gravityX = 9.806 * Float(acceleration.x)
+                let gravityY = 9.806 * Float(acceleration.y)
+                currentScene.gyroVector = float2(gravityX, gravityY)
+            })
         }
     }
     

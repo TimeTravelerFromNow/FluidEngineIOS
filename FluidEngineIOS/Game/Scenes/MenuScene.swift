@@ -56,19 +56,17 @@ class MenuScene : Scene {
         }
     }
     
-    private var _testInterval: Float = 1.0
-    private var counter: Int = 0
     override func update(deltaTime: Float) {
         super.update(deltaTime: deltaTime)
-        testTextObject.rotateZ(deltaTime)
-        testTextObject.setScale(((sin(GameTime.TotalGameTime) + 1.0 )  * 0.3 + 0.4 ) * 2 / (GameSettings.ptmRatio * 10)  )
-        _testInterval -= deltaTime
-        if(_testInterval < 0.0) {
-            testTextObject.setText(String(counter))
-            counter += 1
-            _testInterval = 1.0
+        shouldUpdateGyro = false
+
+        if _currentState == .Idle {
+            shouldUpdateGyro = true
         }
         
+        if shouldUpdateGyro {
+            LiquidFun.setGravity(Vector2D(x: gyroVector.x, y: gyroVector.y))
+        }
         if (Touches.IsDragging) {
             switch _currentState {
             case .HoldInterval:
@@ -94,13 +92,6 @@ class MenuScene : Scene {
     }
     
     override func buildScene() {
-   
-        testTextObject = TextObject(.HoeflerDefault)
-        testTextObject.setPositionZ(0.2)
-        testTextObject.setRotationY(2 * .pi)
-        testTextObject.setRotationX(.pi)
-        testTextObject.setScale(2 / (GameSettings.ptmRatio * 10))
-        testTextObject.setPosition(box2DOrigin.x / 5 - 0.1, box2DOrigin.y / 5 + 0.1, 0.3)
         
         fluidObject = FluidEnvironment.Environment
         
@@ -117,7 +108,6 @@ class MenuScene : Scene {
         addChild(fluidObject)
         addChild(waterFall)
         addChild(waterFall.getCliff())
-        addChild(testTextObject)
 
         for pine in waterFall.getPines() {
             addChild(pine)

@@ -71,6 +71,7 @@ typedef void (^MBEGlyphPositionEnumerationBlock)(CGGlyph glyph,
     MBEIndexType *indices = malloc(indexCount * sizeof(MBEIndexType));
 
     __block MBEIndexType v = 0, i = 0;
+    const float xOffset = -100.5;
     [self enumerateGlyphsInFrame:frame block:^(CGGlyph glyph, NSInteger glyphIndex, CGRect glyphBounds) {
         if (glyph >= fontAtlas.glyphDescriptors.count)
         {
@@ -86,10 +87,10 @@ typedef void (^MBEGlyphPositionEnumerationBlock)(CGGlyph glyph,
         float maxS = glyphInfo.bottomRightTexCoord.x;
         float minT = glyphInfo.topLeftTexCoord.y;
         float maxT = glyphInfo.bottomRightTexCoord.y;
-        vertices[v++] = (MBEVertex){ { minX, maxY, 0, 1 }, { minS, maxT } };
-        vertices[v++] = (MBEVertex){ { minX, minY, 0, 1 }, { minS, minT } };
-        vertices[v++] = (MBEVertex){ { maxX, minY, 0, 1 }, { maxS, minT } };
-        vertices[v++] = (MBEVertex){ { maxX, maxY, 0, 1 }, { maxS, maxT } };
+        vertices[v++] = (MBEVertex){ { minX + xOffset, maxY, 0, 1 }, { minS, maxT } };
+        vertices[v++] = (MBEVertex){ { minX + xOffset, minY, 0, 1 }, { minS, minT } };
+        vertices[v++] = (MBEVertex){ { maxX + xOffset, minY, 0, 1 }, { maxS, minT } };
+        vertices[v++] = (MBEVertex){ { maxX + xOffset, maxY, 0, 1 }, { maxS, maxT } };
         indices[i++] = glyphIndex * 4;
         indices[i++] = glyphIndex * 4 + 1;
         indices[i++] = glyphIndex * 4 + 2;
