@@ -76,19 +76,21 @@ class TestTubeScene : Scene {
     var player: CHHapticPatternPlayer?
     
     func addTestButton() {
-        let testButton = BoxButton(.ClearButton, .ClearButton, .Clear, center: box2DOrigin + float2(1.0,-3.0) )
+        let clearButton = BoxButton(.ClearButton, .ClearButton, .Clear, center: box2DOrigin + float2(1.0,-3.0) )
         let menuButton = BoxButton(.Menu,.Menu, .ToMenu, center: box2DOrigin + float2(-1.0,-3.0), label: .MenuLabel)
-
-        buttons.append(testButton)
+        let testButton = BoxButton(.Menu, .Menu, .TestAction, center: box2DOrigin + float2(-1.0,-4.0), label: .TestLabel)
+        buttons.append(clearButton)
         buttons.append(menuButton)
-        addChild(testButton)
+        buttons.append(testButton)
+        addChild(clearButton)
         addChild(menuButton)
+        addChild(testButton)
     }
     
     func addReservoirs() {
-        testReservoir0 = ReservoirObject(origin: box2DOrigin + float2(-1,4))
+        testReservoir0 = ReservoirObject(origin: box2DOrigin + float2(-1,6))
         testReservoir0.fill(color: .Red)
-        testReservoir1 =  ReservoirObject(origin: box2DOrigin + float2(1,4))
+        testReservoir1 =  ReservoirObject(origin: box2DOrigin + float2(1,6))
         testReservoir1.fill(color: .Blue)
         addChild(testReservoir0)
         addChild(testReservoir1)
@@ -399,7 +401,9 @@ class TestTubeScene : Scene {
         }
     }
     
-    override func touchesEnded() {
+    var testIndex: Int = 0
+    
+    func doButtonAction() {
         if( buttonPressed != nil ) {
         switch boxButtonHitTest(boxPos: Touches.GetBoxPos()) {
           
@@ -411,12 +415,20 @@ class TestTubeScene : Scene {
         case .ToMenu:
             SceneManager.sceneSwitchingTo = .Menu
             SceneManager.Get( .Menu ).unFreeze()
+        case .TestAction:
+            testReservoir0.removeWallPiece(testIndex)
+            testIndex += 1
         case nil:
             print("let go of no button")
         default:
+            print("Button Action WARN::need \(boxButtonHitTest(boxPos: Touches.GetBoxPos())) action.")
             break
         }
         }
+    }
+    override func touchesEnded() {
+        
+        doButtonAction()
         
         buttonPressed = nil
         

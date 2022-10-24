@@ -170,4 +170,7 @@ typedef struct VertexIn {
 
 + (Vector2D)getReservoirPosition:(void *)reservoir;
 + (float)getReservoirRotation:(void *)reservoir;
++ (void)createBulbOnReservoir:(void *)reservoir;
++ (void)removeWallPieceOnReservoir:(void *)reservoir atIndex:(long)atIndex;
+
 @end

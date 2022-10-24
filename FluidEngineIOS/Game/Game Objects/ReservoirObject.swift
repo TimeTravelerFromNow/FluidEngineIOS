@@ -38,13 +38,6 @@ class ReservoirObject: Node {
         
     }
     
-    func setTubeConstants(_ fromTubes: [TestTube]) {
-        
-        for t in tubes {
-            
-        }
-    }
-    
     init( origin: float2, scale: Float = 4.0 ) {
         super.init()
         mesh = MeshLibrary.Get(.Reservoir)
@@ -60,6 +53,7 @@ class ReservoirObject: Node {
         updateModelConstants()
         self.texture = Textures.Get(.Reservoir)
         self.material.useTexture = true
+        createBulb()
     }
     
     //initialization
@@ -84,6 +78,14 @@ class ReservoirObject: Node {
         spawnParticleBox(origin,
                          float2(1.0,3.2),
                          color: &waterColor)
+    }
+    
+    func createBulb() {
+        LiquidFun.createBulb(onReservoir: _reservoir)
+    }
+    
+    func removeWallPiece(_ atIndex: Int) {
+        LiquidFun.removeWallPiece(onReservoir: _reservoir, at: atIndex)
     }
 
     //buffer updates

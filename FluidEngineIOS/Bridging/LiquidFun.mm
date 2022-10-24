@@ -601,6 +601,14 @@ return belowPositionsCount;
     return ((Reservoir *)reservoir)->GetRotation();
 }
 
++ (void)createBulbOnReservoir:(void *)reservoir {
+    ((Reservoir *)reservoir)->CreateBulb();
+}
+
++ (void)removeWallPieceOnReservoir:(void *)reservoir atIndex:(long)atIndex {
+    ((Reservoir *)reservoir)->RemoveWallPiece( atIndex );
+}
+
 @end
 
 

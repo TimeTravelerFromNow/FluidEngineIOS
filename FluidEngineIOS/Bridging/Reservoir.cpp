@@ -4,7 +4,7 @@ Reservoir::Reservoir(b2World* worldRef,
            b2ParticleSystem* particleSysRef,
            b2Vec2 location,
            b2Vec2* vertices, unsigned int count) {
-    
+    m_world = worldRef;
     m_particleSys = particleSysRef;
     m_filter = b2Filter();
     m_filter.isFiltering = true;
@@ -33,13 +33,18 @@ Reservoir::Reservoir(b2World* worldRef,
     valve0BodyDef.position.Set(location.x, location.y);
     b2FixtureDef valve0Def;
     b2EdgeShape valveLine;
-    valveLine.Set(((b2Vec2 *)vertices)[0], ((b2Vec2 *)vertices)[count - 1]);
+    
+    b2Vec2 firstVertex = ((b2Vec2 *)vertices)[0];
+    b2Vec2 lastVertex = ((b2Vec2 *)vertices)[count - 1];
+    valveLine.Set(firstVertex, lastVertex);
     valve0Def.shape = &valveLine;
     
-    b2Body *body2 = worldRef->CreateBody(&valve0BodyDef);
-    m_valve0Fixture = body2->CreateFixture(&valve0Def);
-    m_valve0Body = body2;
-
+    m_exitWidth = abs(firstVertex.x - lastVertex.x);
+    m_exitPosition = b2Vec2(location.x + (firstVertex.x + lastVertex.x) / 2, location.y + (firstVertex.y + lastVertex.y) / 2);
+    
+    b2Body *valve0Body = worldRef->CreateBody(&valve0BodyDef);
+//    m_valve0Fixture = body2->CreateFixture(&valve0Def);
+    m_valve0Body = valve0Body;
     
     b2WeldJointDef weldJointDef;
     weldJointDef.bodyA = m_body;
@@ -47,6 +52,49 @@ Reservoir::Reservoir(b2World* worldRef,
     weldJointDef.collideConnected = false;
     worldRef->CreateJoint(&weldJointDef);
 }
+
+void Reservoir::CreateBulb() {
+    b2BodyDef bulbBodyDef;
+    bulbBodyDef.type = b2_kinematicBody;
+    bulbBodyDef.active = true;
+    bulbBodyDef.gravityScale = 0.0;
+    
+    const float bulbRadius = 0.7;
+    b2Vec2 bulbCenter = b2Vec2( m_exitPosition.x, m_exitPosition.y - bulbRadius);
+    bulbBodyDef.position.Set( bulbCenter.x, bulbCenter.y );
+    
+    float currentIterationAngle = 0.0;
+    float angleIncrement = 0.3;
+
+    b2Body *bulbBody = m_world->CreateBody(&bulbBodyDef);
+    for( float f; f < 2 * b2_pi; f += angleIncrement ) {
+        if ( ( ((b2_pi / 2) - 0.2) < f && f < ((b2_pi / 2) + 0.2) ) ) {
+            
+        } else {
+            b2FixtureDef lineFixtureDef;
+            b2EdgeShape bulbLine;
+            
+            float y = sin( f ) * bulbRadius; // center of the line
+            float x = cos( f ) * bulbRadius;
+            float xT = sin( f ) * angleIncrement * bulbRadius * 0.5; // tangent
+            float yT = cos( f ) * angleIncrement * bulbRadius * 0.5;
+            b2Vec2 cwVertex = b2Vec2( x + xT, y - yT);
+            b2Vec2 ccwVertex = b2Vec2( x - xT, y + yT);
+            bulbLine.Set(cwVertex, ccwVertex);
+            lineFixtureDef.shape = &bulbLine;
+            b2Fixture* lineFixture = bulbBody->CreateFixture(&lineFixtureDef);
+            m_lineFixtures.push_back(lineFixture);
+            
+            numBulbWallPieces++;
+        }
+    }
+    m_bulbBody = bulbBody;
+}
+
+void Reservoir::RemoveWallPiece( long atIndex ) {
+    m_bulbBody->DestroyFixture( m_lineFixtures[atIndex] );
+}
+
 Reservoir::~Reservoir() {
     
 }
@@ -113,3 +161,4 @@ void Reservoir::SetValve0AngularVelocity( float angV ) {
 float Reservoir::GetValve0Rotation() {
     return m_valve0Body->GetAngle();
 }
+

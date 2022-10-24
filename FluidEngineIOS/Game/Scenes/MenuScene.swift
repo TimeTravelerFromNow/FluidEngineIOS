@@ -6,6 +6,7 @@ enum ButtonActions {
     case ToMenu
     case ToBeach
     
+    case TestAction
     case None
 }
 
@@ -221,6 +222,9 @@ class MenuScene : Scene {
             print("pressed to menu button in the menu?")
         case nil:
             print("let go of no button")
+        default:
+            print("Button Action WARN::need \(boxButtonHitTest(boxPos: Touches.GetBoxPos())) action.")
+            break
         }
         for b in buttons {
             b.deSelect()
