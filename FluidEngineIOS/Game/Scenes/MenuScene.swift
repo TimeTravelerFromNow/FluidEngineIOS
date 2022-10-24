@@ -50,7 +50,7 @@ class MenuScene : Scene {
         let testTube1 = TestTube(origin: box2DOrigin + float2(x:1.2, y: 3.0), gridId: 1, scale: 20.0)
         tubeGrid.append(contentsOf: [testTube0, testTube1])
         for tt in tubeGrid {
-            tt.initialFillContainer(colors: [.Empty,.Empty,.Empty,.Empty])
+            tt.startFastFill(colors: [.Empty,.Empty,.Empty,.Empty])
             addChild(tt)
             addChild(tt.sceneRepresentation)
         }
@@ -58,11 +58,6 @@ class MenuScene : Scene {
     
     override func update(deltaTime: Float) {
         super.update(deltaTime: deltaTime)
-        shouldUpdateGyro = false
-
-        if _currentState == .Idle {
-            shouldUpdateGyro = true
-        }
         
         if shouldUpdateGyro {
             LiquidFun.setGravity(Vector2D(x: gyroVector.x, y: gyroVector.y))
@@ -104,7 +99,6 @@ class MenuScene : Scene {
         waterFall = WaterFallObject(center: float2(x:-2.5, y: -1.0) + box2DOrigin)
         
         fluidObject = FluidEnvironment.Environment
-        fluidObject.isDebugging = false
         addChild(fluidObject)
         addChild(waterFall)
         addChild(waterFall.getCliff())

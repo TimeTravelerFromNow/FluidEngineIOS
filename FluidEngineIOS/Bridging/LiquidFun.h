@@ -110,7 +110,6 @@ typedef struct VertexIn {
 + (void *)makeTube:(void *)particleSysRef
           location:(Vector2D)location
           vertices:(void *)vertices vertexCount:(UInt32)vertexCount
-          hitBoxVertices:(void *)hitBoxVertices hitBoxCount:(UInt32)hitBoxCount
           sensorVertices:(void *)sensorVertices sensorCount:(UInt32)sensorCount
           tubeWidth:(Float32)tubeWidth
           tubeHeight:(Float32)tubeHeight
@@ -140,11 +139,13 @@ typedef struct VertexIn {
 
 //pour filter bits
 + (void) SetPourBits:(void *)ofTube;
-    
 + (void) ClearPourBits:(void *)ofTube;
++ (void) beginEmpty:(void *)tube;
+
 // box button
 + (void *) makeBoxButton:( Vector2D* )withVertices location:(Vector2D)location;
 + (bool) boxIsAtPosition:( Vector2D )boxPosition boxRef:(void *)boxRef;
+
 //box button states
 + (Vector2D) getBoxButtonPosition:(void *)boxRef;
 + (float) getBoxButtonRotation:(void *)boxRef;
@@ -162,4 +163,11 @@ typedef struct VertexIn {
 
 + (void) moveParticleSystem:(void *)particleSys byVelocity:(Vector2D)byVelocity;
 
+//Reservoir Class
++ (void *) makeReservoir:(void *)particleSysRef
+                location:(Vector2D)location
+                vertices:(void *) vertices vertexCount:(UInt32)vertexCount;
+
++ (Vector2D)getReservoirPosition:(void *)reservoir;
++ (float)getReservoirRotation:(void *)reservoir;
 @end

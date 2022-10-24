@@ -3,6 +3,7 @@
 #import "Tube.h"
 #import "BoxButton.h"
 #import "PolygonObject.h"
+#import "Reservoir.h"
 
 static b2World *world;
 
@@ -413,7 +414,6 @@ return belowPositionsCount;
 + (void *)makeTube:(void *)particleSysRef
           location:(Vector2D)location
           vertices:(void *) vertices vertexCount:(UInt32)vertexCount
-          hitBoxVertices:(void *)hitBoxVertices hitBoxCount:(UInt32)hitBoxCount
           sensorVertices:(void *)sensorVertices sensorCount:(UInt32)sensorCount
           tubeWidth:(float32)tubeWidth
           tubeHeight:(float32)tubeHeight
@@ -422,7 +422,6 @@ return belowPositionsCount;
                              (b2ParticleSystem*) particleSysRef,
                              b2Vec2(location.x,location.y),
                              (b2Vec2*)vertices, (unsigned int)vertexCount,
-                             (b2Vec2*)hitBoxVertices, (unsigned int)hitBoxCount,
                              (b2Vec2*)sensorVertices, (unsigned int)sensorCount,
                              tubeWidth,
                              tubeHeight,
@@ -499,6 +498,10 @@ return belowPositionsCount;
     ((Tube *)ofTube)->ClearPourBits();
 }
 
++ (void) beginEmpty:(void *)tube {
+    ((Tube *)tube)->BeginEmpty();
+}
+
 // making buttons
 
 + (void *) makeBoxButton:( Vector2D* )withVertices location:(Vector2D)location {
@@ -565,6 +568,39 @@ return belowPositionsCount;
         vBuffer[i] += velocityChange;
     }
 }
+
+// Reservoir Class
+
++ (void *) makeReservoir:(void *)particleSysRef
+                location:(Vector2D)location
+                vertices:(void *) vertices vertexCount:(UInt32)vertexCount {
+    Reservoir* newReservoir = new Reservoir(world,
+                             (b2ParticleSystem*) particleSysRef,
+                             b2Vec2(location.x,location.y),
+                             (b2Vec2*)vertices, (unsigned int)vertexCount);
+    reservoirs.push_back(newReservoir);
+    return newReservoir;
+}
+
++ (void) setValve0AngularVelocity:(void*)reservoir angV:(float)angV {
+    ((Reservoir *)reservoir)->SetValve0AngularVelocity(angV);
+}
++ (float) getValve0Rotation:(void*)reservoir {
+    return ((Reservoir*)reservoir)->GetValve0Rotation();
+}
+
++ (Vector2D)getReservoirPosition:(void *)reservoir {
+    Vector2D sharedPosition;
+    b2Vec2 b2Pos = ((Reservoir*)reservoir)->GetPosition();
+    sharedPosition.x = b2Pos.x;
+    sharedPosition.y = b2Pos.y;
+    return sharedPosition;
+}
+
++ (float)getReservoirRotation:(void *)reservoir{
+    return ((Reservoir *)reservoir)->GetRotation();
+}
+
 @end
 
 

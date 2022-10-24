@@ -37,6 +37,7 @@ struct b2Filter
 		categoryBits = 0x0001;
 		maskBits = 0xFFFF;
 		groupIndex = 0;
+        isFiltering = false;
 	}
 
 	/// The collision category bits. Normally you would just set one bit.
@@ -50,6 +51,9 @@ struct b2Filter
 	/// or always collide (positive). Zero means no collision group. Non-zero group
 	/// filtering always wins against the mask bits.
 	int16 groupIndex;
+    
+    // should groupIndex should be taken into account or not (addresses the 0 groupIndex issue, (because I use group index 0 as a filter)
+    bool isFiltering;
 };
 
 /// A fixture definition is used to create a fixture. This class defines an

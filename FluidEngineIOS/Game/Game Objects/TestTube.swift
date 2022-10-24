@@ -18,7 +18,7 @@ class TestTube: Node {
     
     var particleCount: Int = 0
     var origin : float2!
-    
+        
     var scale: Float!
     //emptying
     private var _emptyIncrement: Float = 0.8
@@ -69,9 +69,9 @@ class TestTube: Node {
     private var tubeOBJVertices: [Vector2D] = []
     private var tubeHeight: Float32 = 0.4
     private var tubeWidth : Float32 = 0.18
-    private let bottomOffset: Float = 0.3 // experimental, simulates uneven taper at bottom.
     private var bottomFromOrigin: Float  { return tubeHeight / 2 - _dividerIncrement }
     private var _dividerIncrement: Float { return (tubeHeight) / Float(totalColors) }
+    private var _dividerScale: Float = 1.9
     //game state related
     private var totalColors: Int = 4//no. cells dont change during game.
     private var _initialFillProgress: Int = 0
@@ -119,39 +119,21 @@ class TestTube: Node {
         self.tubeMesh = MeshLibrary.Get(.TestTube)
         self.scale = scale
         self.makeContainer()
-        self.sceneRepresentation = TubeVisual(tubeHeight + bottomOffset)
+        self.sceneRepresentation = TubeVisual(tubeHeight)
     }
     
     //initialization
     private func makeContainer() {
         guard let tubeCustomMesh = tubeMesh else { fatalError("mesh of this tube was nil") }
         (self.tubeOBJVertices, self.tubeHeight) = tubeCustomMesh.getFlatVertices(modelName: "testtube", scale: self.scale)
-        self.tubeHeight = self.tubeHeight - bottomOffset
         let tubeVerticesPtr = LiquidFun.getVec2(&tubeOBJVertices, vertexCount: UInt32(tubeOBJVertices.count))
         var sensorVertices : [Vector2D] = [
-            Vector2D(x: -tubeWidth, y:  tubeHeight),
-            Vector2D(x: -tubeWidth, y: -tubeHeight),
-            Vector2D(x: tubeWidth , y: -tubeHeight),
-            Vector2D(x: tubeWidth , y:  tubeHeight)
+            Vector2D(x: -tubeWidth, y:  tubeHeight * 0.5),
+            Vector2D(x: -tubeWidth, y: -tubeHeight * 0.5),
+            Vector2D(x: tubeWidth , y: -tubeHeight * 0.5),
+            Vector2D(x: tubeWidth , y:  tubeHeight * 0.5)
         ]
-        let hBE: Float = 0.1 // hit box extent
-        let hBD: Float = 0.1 // how far the hitbox is from body
-        var hitBoxVertices : [Vector2D] = [
-            Vector2D(x: tubeWidth + hBD + hBE, y: tubeHeight * 0.5),
-            Vector2D(x: tubeWidth + hBD + hBE, y: -tubeHeight * 0.5),
-            Vector2D(x: tubeWidth + hBD, y: -tubeHeight * 0.5),
-            Vector2D(x: tubeWidth + hBD, y: tubeHeight * 0.5 ),
-            
-            Vector2D(x: -(tubeWidth + hBD + hBE), y: tubeHeight * 0.5),
-            Vector2D(x: -(tubeWidth + hBD + hBE), y: -tubeHeight * 0.5),
-            Vector2D(x: -(tubeWidth  + hBD) , y: -tubeHeight * 0.5),
-            Vector2D(x: -(tubeWidth  + hBD) , y: tubeHeight * 0.5 ),
-            
-            Vector2D(x: tubeWidth  + hBD , y: -tubeHeight * 0.8 + hBE),
-            Vector2D(x: -(tubeWidth + hBD), y: -tubeHeight * 0.8 + hBE),
-            Vector2D(x: -(tubeWidth + hBD), y: -tubeHeight * 0.8),
-            Vector2D(x: tubeWidth  + hBD, y: -tubeHeight * 0.8 )
-        ]
+
         // MARK: I thought sensors weren't needed anymore but we could still use them later for engulfing particle code.
         particleSystem = LiquidFun.createParticleSystem(withRadius: GameSettings.particleRadius / ptmRatio,
                                                         dampingStrength: GameSettings.DampingStrength,
@@ -160,7 +142,6 @@ class TestTube: Node {
         _tube = LiquidFun.makeTube(particleSystem,
                                    location: Vector2D(x:origin.x,y:origin.y),
                                    vertices: tubeVerticesPtr, vertexCount: UInt32(tubeOBJVertices.count),
-                                   hitBoxVertices: &hitBoxVertices, hitBoxCount: UInt32(hitBoxVertices.count),
                                    sensorVertices: &sensorVertices, sensorCount: 4,
                                    tubeWidth: tubeWidth,
                                    tubeHeight: tubeHeight,
@@ -178,11 +159,9 @@ class TestTube: Node {
     private func initializeDividerPositions() {
         for incr in 0..<totalColors {
             let yPos = (_dividerIncrement * Float(incr)) - bottomFromOrigin
-            print("before: \(_dividerPositions[incr]) ")
-            var dividerVertices = [Vector2D(x: -tubeWidth * 1.6,y:yPos ),
-                                   Vector2D(x:  tubeWidth * 1.6,y:yPos ) ]
+            var dividerVertices = [Vector2D(x: -tubeWidth * _dividerScale,y:yPos ),
+                                   Vector2D(x:  tubeWidth * _dividerScale,y:yPos ) ]
             _dividerPositions[incr] =  dividerVertices
-            print("after: \(_dividerPositions[incr])")
             _dividerYs[incr] = yPos
         }
     }
@@ -307,7 +286,7 @@ class TestTube: Node {
     }
     
     //begin animations
-    func initialFillContainer(colors: [TubeColors] ) {
+    func startFastFill(colors: [TubeColors] ) {
         self.currentState = .Initializing
         _fillKeyFrame = 0
         timeToSkim = capPlaceDelay
@@ -364,6 +343,7 @@ class TestTube: Node {
     func BeginEmpty() {
         self.rotateZ(0.0)
         print("rotation before empty: \(self.getRotationZ())")
+        LiquidFun.beginEmpty( _tube )
         self.emptyKeyFrame = 0
         self._pourSpeed = pourSpeedDefault
         self.isEmptying = true
@@ -469,16 +449,7 @@ class TestTube: Node {
             }
         }
     }
-    
-    // updates the yValues to update colors at levels, really cool effect
-    func updateYs(_ angle: Float) {
-        for index in 0..<_dividerPositions.count {
-            let originalVectors = _dividerPositions[index]
-            _dividerYs[index] = getOffsetPosition().y + (originalVectors[0].y ) - 0.1
-            
-        }
-    }
-    
+
     //emptying animation
     func emptyStep(_ deltaTime: Float) {
         switch emptyKeyFrame {
@@ -677,7 +648,7 @@ class TestTube: Node {
                 if timeToSkim > 0.0 {
                     if currentColor != .Empty {
                         if !particleGroupPlaced {
-                            let yPos = (_dividerIncrement * 1.4 - tubeHeight / 2) + bottomOffset + GameSettings.DropHeight
+                            let yPos = (_dividerIncrement * 1.4 - tubeHeight / 2) + GameSettings.DropHeight
                             let groupSpawnPosition = Vector2D(x: self.getBoxPositionX(),
                                                               y: self.getBoxPositionY() + yPos - _dividerIncrement/2)
                             let groupSize = Size2D(width: tubeWidth * _groupScaleX,
@@ -715,7 +686,6 @@ class TestTube: Node {
             let outsidesDelet = deleteOutside()
             print("deleted \(outsidesDelet) particles outside.")
             self.returnToOrigin()
-            updateYs(getRotationZ())
             refreshDividers()
         default:
             print("unknown fill key frame \(_fillKeyFrame)")
@@ -813,12 +783,6 @@ class TestTube: Node {
         return self
         }
         return nil
-    }
-    
-    func getOffsetPosition() -> float2 {
-        let o = self.getBoxPosition()
-        let ang = -self.getRotationZ()
-        return float2(x: -bottomOffset*sin(ang) + o.x, y: -bottomOffset*cos(ang) + o.y)
     }
     
     func unitDirection(_ direction: float2) -> float2 {

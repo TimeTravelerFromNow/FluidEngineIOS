@@ -20,6 +20,8 @@ enum TextureTypes {
     case BeachButton
     case Sand
     
+    case Reservoir
+    
     case None // special, no texture at all, not even in library
 }
 
@@ -44,6 +46,8 @@ class Textures {
         _library.updateValue(Texture("beach", ext: "png").texture, forKey: .Sand)
 
         _library.updateValue(Texture("pineTree", ext: "png").texture, forKey: .PineTree)
+        _library.updateValue(Texture("reservoir", ext: "png").texture, forKey: .Reservoir)
+
 
     }
     

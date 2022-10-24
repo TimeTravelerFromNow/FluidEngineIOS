@@ -21,6 +21,8 @@ enum MeshTypes {
     case BeachButton
     case Sand
     
+    case Reservoir
+    
     case NoMesh
 }
 
@@ -50,6 +52,8 @@ class MeshLibrary: Library<MeshTypes, Mesh> {
     private static func createDefaultMeshes() {
         
         meshes.updateValue(Mesh(modelName: "testtube", faceless : true), forKey: .TestTube)
+        meshes.updateValue(Mesh(modelName: "reservoir"), forKey: .Reservoir)
+
         meshes.updateValue(Mesh(modelName: "testflat"), forKey: .ttFlat)
         
         meshes.updateValue(Mesh(modelName: "quad"), forKey: .Quad)
@@ -101,7 +105,7 @@ class Mesh {
                                                  Vector2D(x: -1.2, y: -1.0),
                                                  Vector2D(x: -1.2, y: 1.0) ] // default box so it doesnt crash
         guard let assetURL = Bundle.main.url(forResource: _modelName, withExtension: "obj") else {
-            print("Asset \(_modelName) does not exist.")
+            print("getBoxVertices() WARNING::Asset \(_modelName) does not exist. Returning default box vertices.")
             return boxVertices
         }
         
@@ -120,6 +124,7 @@ class Mesh {
         return boxVertices
     }
     
+    //MARK: could be refactored if vertices are indexed in order in Blender.
     // this function gets 2D vertex data for the creation of Box2D physical world objects from vertex positions made in Blender, also returns height. (it's counter clockwise starting from the top left.)
     func getFlatVertices(modelName: String, scale: Float) -> ([Vector2D], Float) {
         var output2DPositions : [Vector2D] = [Vector2D(x: 3, y: 3), Vector2D(x:-3,y:-3), Vector2D(x:-1,y:-1)] // just a line so it doesnt crash

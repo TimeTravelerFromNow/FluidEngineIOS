@@ -4,18 +4,18 @@ Tube::Tube(b2World* worldRef,
            b2ParticleSystem* particleSysRef,
            b2Vec2 location,
            b2Vec2* vertices, unsigned int count,
-           b2Vec2* hitBoxVertices, unsigned int hitBoxCount,
            b2Vec2* sensorVertices, unsigned int sensorCount,
            float32 tubeWidth,
            float32 tubeHeight,
            long gridId) {
-    bool debugging = false;
+    static bool debugging = true;
     width = tubeWidth;
     height = tubeHeight;
     id = gridId;
     m_particleSys = particleSysRef;
     m_filter = b2Filter();
     m_filter.groupIndex = gridId;
+    m_filter.isFiltering = true;
     m_particleSys->filter = m_filter;
     
     b2BodyDef body1Def;
@@ -37,17 +37,27 @@ Tube::Tube(b2World* worldRef,
     if (debugging) {
         b2BodyDef sensorBodyDef;
         sensorBodyDef.type = b2_dynamicBody;
-        sensorBodyDef.active = false;
-        sensorBodyDef.bullet = true;
+        sensorBodyDef.active = true;
         sensorBodyDef.position.Set(location.x, location.y);
         sensorBodyDef.gravityScale = 0.0;
+        
         b2Body *sensorBody = worldRef->CreateBody(&sensorBodyDef);
         b2PolygonShape shape1; // sensor
         shape1.Set(sensorVertices, sensorCount);
         b2FixtureDef sensorFixture;
         sensorFixture.shape = &shape1;
+        sensorFixture.filter = m_filter;
+        sensorFixture.filter.categoryBits = 0x0000;
+        sensorFixture.filter.groupIndex = 100; // MARK: dont know hwat i'm testing here, just remove.
         sensorBody->CreateFixture(&sensorFixture);
+        
         m_sensorBody = sensorBody;
+        
+        b2WeldJointDef weldJointDef;
+        weldJointDef.bodyA = body1;
+        weldJointDef.bodyB = sensorBody;
+        weldJointDef.collideConnected = false;
+        worldRef->CreateJoint(&weldJointDef);
     };
 }
 Tube::~Tube() {
@@ -131,7 +141,6 @@ bool Tube::IsAtPosition(b2Vec2 position) {
 
 void Tube::SetPourBits() {
     b2Fixture* fixtures = m_body->GetFixtureList();
-    int32 fixtureCount = m_body->GetFixtureCount();
     
     m_filter.categoryBits = tube_isPouring;
     while( fixtures ) {
@@ -146,6 +155,7 @@ void Tube::ClearPourBits() {
     b2Fixture* fixtures = m_body->GetFixtureList();
     
     m_filter.categoryBits = tube_isNotPouring;
+    m_filter.isFiltering = true;
     while(fixtures) {
         fixtures->SetFilterData( m_filter );
         fixtures = fixtures->GetNext();
@@ -166,9 +176,10 @@ int Tube::EngulfParticles( b2ParticleSystem* originalSystem ) {
     for(int i = 0; i<oldPositionsCount; i++) {
         b2Vec2 c = positionBuffer[i];
         if( IsAtPosition( c ) ) {
-        newPositionsCount++;
+            newPositionsCount++;
         }
     }
+    
     b2Vec2 newPositions[newPositionsCount];
     b2Vec2 newVelocities[newPositionsCount];
     int newPositionIndex = 0;
@@ -198,3 +209,7 @@ int Tube::EngulfParticles( b2ParticleSystem* originalSystem ) {
     return newPositionsCount;
 }
 
+void Tube::BeginEmpty() {
+    m_filter.isFiltering = false;
+    m_particleSys->filter = m_filter;
+}

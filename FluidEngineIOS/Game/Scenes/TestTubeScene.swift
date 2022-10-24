@@ -26,6 +26,9 @@ class TestTubeScene : Scene {
     
     var buttonPressed: ButtonActions?
     
+    var testReservoir0: ReservoirObject!
+    var testReservoir1: ReservoirObject!
+
     // tube emptying
     var emptyingTubes: Bool = false
     private var _emptyDuration: Float = 1.0
@@ -73,13 +76,23 @@ class TestTubeScene : Scene {
     var player: CHHapticPatternPlayer?
     
     func addTestButton() {
-        let testButton = BoxButton(.ClearButton,.ClearButton, .Clear, center: box2DOrigin + float2(1.0,-3.0) )
+        let testButton = BoxButton(.ClearButton, .ClearButton, .Clear, center: box2DOrigin + float2(1.0,-3.0) )
         let menuButton = BoxButton(.Menu,.Menu, .ToMenu, center: box2DOrigin + float2(-1.0,-3.0), label: .MenuLabel)
 
         buttons.append(testButton)
         buttons.append(menuButton)
         addChild(testButton)
         addChild(menuButton)
+    }
+    
+    func addReservoirs() {
+        testReservoir0 = ReservoirObject(origin: box2DOrigin + float2(-1,4))
+        testReservoir0.fill(color: .Red)
+        testReservoir1 =  ReservoirObject(origin: box2DOrigin + float2(1,4))
+        testReservoir1.fill(color: .Blue)
+        addChild(testReservoir0)
+        addChild(testReservoir1)
+
     }
     
     override func buildScene(){
@@ -91,11 +104,11 @@ class TestTubeScene : Scene {
         do {
             engine = try CHHapticEngine()
         } catch let error {
-            fatalError("Engine Creation Error: \(error)")
+            print("Engine Creation Error: \(error)")
         }
         if let pattern = pattern {
             do {
-            player = try engine.makePlayer(with: pattern)
+                player = try engine?.makePlayer(with: pattern)
             } catch {
                 print("warn haptic not working")
             }
@@ -103,16 +116,17 @@ class TestTubeScene : Scene {
 
         tubeLevel = TubeLevel()
         fluidObject = FluidEnvironment.Environment
-                        
+        fluidObject.isDebugging = false
+        
         InitializeGrid()
         
         addTestButton()
+        addReservoirs()
         
         for tube in tubeGrid {
             addChild(tube)
         }
         addChild(fluidObject)
-        freeze()
     }
     
     private func InitializeGrid() {
@@ -120,7 +134,7 @@ class TestTubeScene : Scene {
         let width  : Float = 5.0
         let xSep : Float = 1.0
         let ySep : Float = 2.0
-        var y : Float = height + box2DOrigin.y
+        var y : Float = box2DOrigin.y
         var x : Float = box2DOrigin.x
         let rowNum = Int(width / xSep)
         let maxColNum = Int(height / ySep)
@@ -149,7 +163,7 @@ class TestTubeScene : Scene {
                     self.tubeHeight = currentTube.getTubeHeight()
                     print("initializing real tube height for collision testing")
                 }
-                currentTube.initialFillContainer(colors: tubeColors)
+                currentTube.startFastFill(colors: tubeColors)
                 currentTube.setScale(2 / (GameSettings.ptmRatio * 10) )
                 currentTube.setPositionZ(1)
                 addChild(currentTube.sceneRepresentation)
@@ -159,7 +173,7 @@ class TestTubeScene : Scene {
                 x = 0.5
                 y -= ySep
                 let currentTube = TestTube(origin: float2(x:x,y:y), gridId: i)
-                currentTube.initialFillContainer(colors: tubeColors)
+                currentTube.startFastFill(colors: tubeColors)
                 currentTube.setScale(2 / (GameSettings.ptmRatio * 10) )
                 currentTube.setPositionZ(1)
                 addChild(currentTube.sceneRepresentation)
@@ -172,7 +186,7 @@ class TestTubeScene : Scene {
     private func refillTubesToCurrentState() {
         gyroVector = float2(0,-9.806)
         for (i, tubeColors) in tubeLevel.colorStates.enumerated() {
-            tubeGrid[i].initialFillContainer(colors: tubeColors)
+            tubeGrid[i].startFastFill(colors: tubeColors)
         }
     }
     
