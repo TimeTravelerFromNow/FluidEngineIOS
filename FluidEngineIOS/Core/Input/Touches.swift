@@ -55,7 +55,7 @@ class Touches {
     public static func GetBoxPos()->float2 {
         var normalizedPosition = GetTouchViewportPosition()
         normalizedPosition.x *= SceneManager.currentScene.currentCamera.aspect
-        var boxPosition = normalizedPosition * 5.0 // MARK: needs fixing still
+        var boxPosition = normalizedPosition * 5.0 * ((SceneManager.currentScene.currentCamera as? OrthoCamera)?.getFrameSize() ?? 1.0) // MARK: needs fixing still
         let cameraOffset = float2(x: SceneManager.currentScene.currentCamera.getPositionX(),
                                   y: SceneManager.currentScene.currentCamera.getPositionY())
         boxPosition += cameraOffset * 5.0

@@ -46,8 +46,9 @@ class DebugEnvironment : Node {
         super.init()
         self.ptmRatio = GameSettings.ptmRatio
         self.pointSize = 1
+        self.setScale(1 / (GameSettings.ptmRatio * 5) )
+        self.setPositionZ(0.11)
         self.MakeWorld()
-       // self.TestParticles()
     }
     
     deinit {
@@ -74,12 +75,12 @@ class DebugEnvironment : Node {
     }
     func refreshVertexBuffer () {
         if particleSystem != nil {
-        particleCount = Int(LiquidFun.particleCount(forSystem: particleSystem))
-        if particleCount > 0 {
-        let positions = LiquidFun.particlePositions(forSystem: particleSystem)
-        let bufferSize = float2.stride(particleCount)
-        _vertexBuffer = Engine.Device.makeBuffer(bytes: positions!, length: bufferSize, options: [])
-        }
+            particleCount = Int(LiquidFun.particleCount(forSystem: particleSystem))
+            if particleCount > 0 {
+                let positions = LiquidFun.particlePositions(forSystem: particleSystem)
+                let bufferSize = float2.stride(particleCount)
+                _vertexBuffer = Engine.Device.makeBuffer(bytes: positions!, length: bufferSize, options: [])
+            }
         }
     }
     //debug draw
@@ -109,7 +110,7 @@ class DebugEnvironment : Node {
             _trianglesBuffer = Engine.Device.makeBuffer(bytes: triangleVertices!, length: trianglesBufferSize, options: [])
         }
     }
-    let bbSF : Float = 0.8
+
     private func MakeWorld() {
         LiquidFun.createWorld(withGravity: Vector2D(x: _gravity.x, y: _gravity.y))
         particleSystem = LiquidFun.createParticleSystem(withRadius: GameSettings.particleRadius / ptmRatio,
@@ -138,7 +139,6 @@ class DebugEnvironment : Node {
                                     position: Vector2D(x: atPosition.x, y: atPosition.y),
                                     size: Size2D(width: 0.1, height: 0.1),
                                     color: &debugColor)
-            LiquidFun.deleteBelow(inParticleSystem: particleSystem, belowYPosition: 1.0)
         } else { print("trying to debug draw particle at (x: \(atPosition.x), y: \(atPosition.y)) without having initialized the particle system")}
     }
 }
@@ -154,7 +154,7 @@ extension DebugEnvironment: Renderable {
         if isDebugging{
         pointsRender( renderCommandEncoder )
         linesRender(renderCommandEncoder)
-        trianglesRender(renderCommandEncoder)
+//        trianglesRender(renderCommandEncoder)
         }
     }
     

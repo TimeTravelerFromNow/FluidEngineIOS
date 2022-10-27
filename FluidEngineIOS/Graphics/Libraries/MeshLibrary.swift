@@ -22,6 +22,7 @@ enum MeshTypes {
     case Sand
     
     case Reservoir
+    case BulbMesh
     
     case NoMesh
 }
@@ -68,7 +69,8 @@ class MeshLibrary: Library<MeshTypes, Mesh> {
         meshes.updateValue(Mesh(modelName: "pineTree"), forKey: .PineTree)
         meshes.updateValue(Mesh(modelName: "menuButton"), forKey: .Menu)
         meshes.updateValue(Mesh(modelName: "beachButton"), forKey: .BeachButton)
-
+        meshes.updateValue(Mesh(modelName: "bulbMesh"), forKey: .BulbMesh)
+        
         meshes.updateValue(Mesh(modelName: "beach"), forKey: .Sand)
         
         meshes.updateValue(NoMesh(), forKey: .NoMesh)

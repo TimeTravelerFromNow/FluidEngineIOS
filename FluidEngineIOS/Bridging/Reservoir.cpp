@@ -53,18 +53,17 @@ Reservoir::Reservoir(b2World* worldRef,
     worldRef->CreateJoint(&weldJointDef);
 }
 
-void Reservoir::CreateBulb() {
+void Reservoir::CreateBulb(long hemisphereSegments, float bulbRadius) {
     b2BodyDef bulbBodyDef;
     bulbBodyDef.type = b2_kinematicBody;
     bulbBodyDef.active = true;
     bulbBodyDef.gravityScale = 0.0;
     
-    const float bulbRadius = 0.7;
     b2Vec2 bulbCenter = b2Vec2( m_exitPosition.x, m_exitPosition.y - bulbRadius);
     bulbBodyDef.position.Set( bulbCenter.x, bulbCenter.y );
     
     float currentIterationAngle = 0.0;
-    float angleIncrement = 0.3;
+    float angleIncrement = b2_pi / hemisphereSegments;
 
     b2Body *bulbBody = m_world->CreateBody(&bulbBodyDef);
     for( float f; f < 2 * b2_pi; f += angleIncrement ) {
@@ -89,6 +88,19 @@ void Reservoir::CreateBulb() {
         }
     }
     m_bulbBody = bulbBody;
+}
+
+b2Vec2 Reservoir::GetBulbSegmentPosition(long atIndex) {
+    b2Vec2 v0 = ((b2EdgeShape*)m_lineFixtures[ atIndex ]->GetShape())->m_vertex0;
+    b2Vec2 v1 = ((b2EdgeShape*)m_lineFixtures[ atIndex ]->GetShape())->m_vertex1;
+    return (v0 + v1) / 2;
+}
+
+b2Vec2 Reservoir::GetBulbPosition() {
+    if(m_bulbBody) {
+        return m_bulbBody->GetPosition();
+    }
+    return b2Vec2(0, 0);
 }
 
 void Reservoir::RemoveWallPiece( long atIndex ) {

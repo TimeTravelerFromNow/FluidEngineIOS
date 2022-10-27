@@ -4,7 +4,9 @@ class ReservoirObject: Node {
     
     var boxVertices: [Vector2D] = []
     
-    var mesh: Mesh!
+    var reservoirMesh: Mesh!
+    var bulbMesh: Mesh!
+    var bulbNode: Node!
     
     var scale: Float!
     
@@ -25,6 +27,7 @@ class ReservoirObject: Node {
     private var _colorBuffer: MTLBuffer!
     
     var modelConstants = ModelConstants()
+    var bulbModelConstants = ModelConstants()
     var material = CustomMaterial()
     var fluidModelConstants = ModelConstants()
 
@@ -34,31 +37,34 @@ class ReservoirObject: Node {
     var tubeColors: [TubeColors] = []
     var tubeHeight: Float = 0.0
     
+    var hemisphereSegments = 8
+    
     func setTubeHeight(_ height: Float) {
         
     }
     
     init( origin: float2, scale: Float = 4.0 ) {
         super.init()
-        mesh = MeshLibrary.Get(.Reservoir)
+        reservoirMesh = MeshLibrary.Get(.Reservoir)
+        bulbMesh = MeshLibrary.Get(.BulbMesh)
         self.scale = scale
        
         self.origin = origin
-        
         setScale(1 / (GameSettings.ptmRatio * 5) )
         fluidModelConstants.modelMatrix = modelMatrix
         setPositionZ(0.1)
         setScale(GameSettings.stmRatio / scale)
+        bulbNode = Node()
+        bulbNode.setScale(GameSettings.stmRatio / scale)
         buildContainer()
         updateModelConstants()
         self.texture = Textures.Get(.Reservoir)
         self.material.useTexture = true
-        createBulb()
     }
     
     //initialization
     func buildContainer() {
-        guard let reservoirMesh = mesh else { fatalError("Reservoir OBject ERROR::NO Mesh!") }
+        guard let reservoirMesh = reservoirMesh else { fatalError("Reservoir OBject ERROR::NO Mesh!") }
         boxVertices = reservoirMesh.getBoxVertices(scale)
         let tubeVerticesPtr = LiquidFun.getVec2(&boxVertices, vertexCount: UInt32(boxVertices.count))
         
@@ -70,6 +76,7 @@ class ReservoirObject: Node {
                                              location: Vector2D(x:origin.x,y: origin.y),
                                              vertices: tubeVerticesPtr,
                                              vertexCount: UInt32(boxVertices.count))
+        createBulb()
         LiquidFun.setParticleLimitForSystem(particleSystem, maxParticles: GameSettings.MaxParticles)
     }
     
@@ -81,19 +88,42 @@ class ReservoirObject: Node {
     }
     
     func createBulb() {
-        LiquidFun.createBulb(onReservoir: _reservoir)
+        LiquidFun.createBulb(onReservoir: _reservoir, hemisphereSegments: hemisphereSegments, radius: 0.5)
     }
     
     func removeWallPiece(_ atIndex: Int) {
         LiquidFun.removeWallPiece(onReservoir: _reservoir, at: atIndex)
     }
 
+    func testFunction() {
+        let angle = 11 * Float.pi / 6
+        removeWallPiece( getSegmentIndex(angle) )
+    }
+    
+    private func getBulbPos() -> float3 {
+        let boxPos = LiquidFun.getBulbPos(_reservoir)
+        return float3( boxPos.x * GameSettings.stmRatio, boxPos.y * GameSettings.stmRatio, 0);
+    }
+    
+    func getSegmentIndex(_ atAngle : Float) -> Int {
+        return Int(floor( atAngle * Float(hemisphereSegments) / Float.pi))
+    }
+    
+    func getSegmentCenter(_ atAngle: Float) -> float2 {
+        let boxPos = LiquidFun.getSegmentPos(_reservoir, at: getSegmentIndex(atAngle))
+        return float2(boxPos.x, boxPos.y)
+    }
+    
     //buffer updates
     func updateModelConstants() {
-        modelConstants.modelMatrix = modelMatrix
         setPositionX(self.getBoxPositionX() * GameSettings.stmRatio)
         setPositionY(self.getBoxPositionY() * GameSettings.stmRatio)
         setRotationZ( getRotationZ() )
+        modelConstants.modelMatrix = modelMatrix
+        let bulbPos = getBulbPos()
+        bulbNode.setPositionX(bulbPos.x)
+        bulbNode.setPositionY(bulbPos.y)
+        bulbModelConstants.modelMatrix = bulbNode.modelMatrix
     }
     
     func refreshVertexBuffer() {
@@ -162,7 +192,9 @@ extension ReservoirObject: Renderable {
         renderCommandEncoder.setVertexBytes(&modelConstants, length : ModelConstants.stride, index: 2)
         //Fragment
         renderCommandEncoder.setFragmentBytes(&material, length : CustomMaterial.stride, index : 1)
-        mesh.drawPrimitives(renderCommandEncoder)
+        reservoirMesh.drawPrimitives(renderCommandEncoder)
+        renderCommandEncoder.setVertexBytes(&bulbModelConstants, length : ModelConstants.stride, index: 2) // different modelConstants
+        bulbMesh.drawPrimitives(renderCommandEncoder)
         fluidSystemRender(renderCommandEncoder)
     }
     

@@ -78,13 +78,17 @@ class TestTubeScene : Scene {
     func addTestButton() {
         let clearButton = BoxButton(.ClearButton, .ClearButton, .Clear, center: box2DOrigin + float2(1.0,-3.0) )
         let menuButton = BoxButton(.Menu,.Menu, .ToMenu, center: box2DOrigin + float2(-1.0,-3.0), label: .MenuLabel)
-        let testButton = BoxButton(.Menu, .Menu, .TestAction, center: box2DOrigin + float2(-1.0,-4.0), label: .TestLabel)
+        let testButton0 = BoxButton(.Menu, .Menu, .TestAction0, center: box2DOrigin + float2(-1.0,-4.0), label: .TestLabel)
+        let testButton1 = BoxButton(.Menu, .Menu, .TestAction1, center: box2DOrigin + float2(1.0,-4.0), label: .TestLabel)
+
         buttons.append(clearButton)
         buttons.append(menuButton)
-        buttons.append(testButton)
+        buttons.append(testButton0)
+        buttons.append(testButton1)
         addChild(clearButton)
         addChild(menuButton)
-        addChild(testButton)
+        addChild(testButton0)
+        addChild(testButton1)
     }
     
     func addReservoirs() {
@@ -117,9 +121,7 @@ class TestTubeScene : Scene {
         }
 
         tubeLevel = TubeLevel()
-        fluidObject = FluidEnvironment.Environment
-        fluidObject.isDebugging = false
-        
+ 
         InitializeGrid()
         
         addTestButton()
@@ -128,7 +130,6 @@ class TestTubeScene : Scene {
         for tube in tubeGrid {
             addChild(tube)
         }
-        addChild(fluidObject)
     }
     
     private func InitializeGrid() {
@@ -347,7 +348,7 @@ class TestTubeScene : Scene {
             try player?.start(atTime: 0)
             } catch { print("haptics not working")}
         }
-        fluidObject.debugParticleDraw(atPosition: Touches.GetBoxPos())
+        FluidEnvironment.Environment.debugParticleDraw(atPosition: Touches.GetBoxPos())
     
         switch _currentState {
         case .HoldInterval:
@@ -415,9 +416,11 @@ class TestTubeScene : Scene {
         case .ToMenu:
             SceneManager.sceneSwitchingTo = .Menu
             SceneManager.Get( .Menu ).unFreeze()
-        case .TestAction:
+        case .TestAction0:
             testReservoir0.removeWallPiece(testIndex)
             testIndex += 1
+        case .TestAction1:
+            testReservoir1.testFunction()
         case nil:
             print("let go of no button")
         default:
@@ -457,7 +460,6 @@ class TestTubeScene : Scene {
         if _currentState ==  .Emptying {
             EmptyTubesStep(deltaTime)
         }
-        
         
         if shouldUpdateGyro {
             LiquidFun.setGravity(Vector2D(x: gyroVector.x, y: gyroVector.y))

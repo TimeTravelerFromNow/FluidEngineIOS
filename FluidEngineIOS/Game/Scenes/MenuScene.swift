@@ -6,7 +6,8 @@ enum ButtonActions {
     case ToMenu
     case ToBeach
     
-    case TestAction
+    case TestAction0
+    case TestAction1
     case None
 }
 
@@ -18,7 +19,6 @@ enum SceneSwitchStates {
 }
 
 class MenuScene : Scene {
-    var fluidObject: DebugEnvironment!
     var waterFall: WaterFallObject!
     var testTextObject: TextObject!
     
@@ -89,18 +89,11 @@ class MenuScene : Scene {
     
     override func buildScene() {
         
-        fluidObject = FluidEnvironment.Environment
-        
-        fluidObject.setScale(2 / (GameSettings.ptmRatio * 10) )
-        fluidObject.setPositionZ(0.1)
-        
         addTestButtons()
         addTestTube()
         
         waterFall = WaterFallObject(center: float2(x:-2.5, y: -1.0) + box2DOrigin)
-        
-        fluidObject = FluidEnvironment.Environment
-        addChild(fluidObject)
+    
         addChild(waterFall)
         addChild(waterFall.getCliff())
 
@@ -159,7 +152,7 @@ class MenuScene : Scene {
         default:
             print("clicked a button")
         }
-        fluidObject.debugParticleDraw(atPosition: Touches.GetBoxPos())
+        FluidEnvironment.Environment.debugParticleDraw(atPosition: Touches.GetBoxPos())
         
         switch _currentState {
         case .HoldInterval:

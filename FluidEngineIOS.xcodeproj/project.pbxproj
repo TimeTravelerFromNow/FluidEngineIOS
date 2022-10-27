@@ -7,6 +7,9 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		920603B1290B03F400C1C846 /* bulbMesh.obj in Resources */ = {isa = PBXBuildFile; fileRef = 920603AF290B03F400C1C846 /* bulbMesh.obj */; };
+		920603B2290B03F400C1C846 /* bulbMesh.mtl in Resources */ = {isa = PBXBuildFile; fileRef = 920603B0290B03F400C1C846 /* bulbMesh.mtl */; };
+		920603B4290B044100C1C846 /* bulbMesh.png in Resources */ = {isa = PBXBuildFile; fileRef = 920603B3290B044100C1C846 /* bulbMesh.png */; };
 		9226D3102905E306007785D5 /* Reservoir.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9226D30E2905E306007785D5 /* Reservoir.cpp */; };
 		9226D3122905F5C4007785D5 /* testflat.obj in Resources */ = {isa = PBXBuildFile; fileRef = 9226D3112905F5C4007785D5 /* testflat.obj */; };
 		9226D3142905FA2A007785D5 /* testtube.obj in Resources */ = {isa = PBXBuildFile; fileRef = 9226D3132905FA2A007785D5 /* testtube.obj */; };
@@ -172,6 +175,9 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		920603AF290B03F400C1C846 /* bulbMesh.obj */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = bulbMesh.obj; sourceTree = "<group>"; };
+		920603B0290B03F400C1C846 /* bulbMesh.mtl */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = bulbMesh.mtl; sourceTree = "<group>"; };
+		920603B3290B044100C1C846 /* bulbMesh.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = bulbMesh.png; sourceTree = "<group>"; };
 		9226D30E2905E306007785D5 /* Reservoir.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Reservoir.cpp; sourceTree = "<group>"; };
 		9226D30F2905E306007785D5 /* Reservoir.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Reservoir.h; sourceTree = "<group>"; };
 		9226D3112905F5C4007785D5 /* testflat.obj */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = testflat.obj; sourceTree = "<group>"; };
@@ -424,6 +430,9 @@
 		9226D32829070069007785D5 /* reservoir */ = {
 			isa = PBXGroup;
 			children = (
+				920603B3290B044100C1C846 /* bulbMesh.png */,
+				920603B0290B03F400C1C846 /* bulbMesh.mtl */,
+				920603AF290B03F400C1C846 /* bulbMesh.obj */,
 				9226D33529071250007785D5 /* reservoir.obj */,
 				9226D32F29071212007785D5 /* reservoir.mtl */,
 				9226D33129071212007785D5 /* reservoir.png */,
@@ -1010,6 +1019,7 @@
 				92A9E43C28DA72910000A77F /* testButton.png in Resources */,
 				92A9E3FF28DA6D620000A77F /* pineTree.obj in Resources */,
 				92A9E40028DA6D620000A77F /* cliff.obj in Resources */,
+				920603B2290B03F400C1C846 /* bulbMesh.mtl in Resources */,
 				92A9E3EC28DA6D620000A77F /* quad.mtl in Resources */,
 				92A9E40A28DA6D620000A77F /* cloud1.obj in Resources */,
 				92A9E43D28DA72910000A77F /* menuButton.mtl in Resources */,
@@ -1017,6 +1027,7 @@
 				92A9E43E28DA72910000A77F /* beachButton.png in Resources */,
 				92A9E40E28DA6D620000A77F /* Cloud0.png in Resources */,
 				92489C032799DD0500639B52 /* LaunchScreen.storyboard in Resources */,
+				920603B4290B044100C1C846 /* bulbMesh.png in Resources */,
 				92A9E41228DA6D620000A77F /* cloud2.mtl in Resources */,
 				92A9E41628DA6D620000A77F /* beach.png in Resources */,
 				92A9E41528DA6D620000A77F /* beach.mtl in Resources */,
@@ -1027,6 +1038,7 @@
 				92A9E44228DA72910000A77F /* testButton.obj in Resources */,
 				92A9E40228DA6D620000A77F /* pineTree.png in Resources */,
 				92A9E3ED28DA6D620000A77F /* quad.obj in Resources */,
+				920603B1290B03F400C1C846 /* bulbMesh.obj in Resources */,
 				92A9E43728DA72910000A77F /* clearButton.mtl in Resources */,
 				92A9E44128DA72910000A77F /* beachButton.obj in Resources */,
 				92A9E43B28DA72910000A77F /* menuButton.obj in Resources */,

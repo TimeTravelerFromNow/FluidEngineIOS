@@ -45,8 +45,13 @@ public:
     
     void SetValve0AngularVelocity( float angV );
     float GetValve0Rotation();
-    void CreateBulb();
+    void CreateBulb(long hemisphereSegments, float bulbRadius);
+    b2Vec2 GetBulbPosition();
+    b2Vec2 GetBulbSegmentPosition(long atIndex);
+
+    
     void RemoveWallPiece( long atIndex );
+    
 private:
     b2Fixture* m_topCap;
     b2Fixture* m_guide0;

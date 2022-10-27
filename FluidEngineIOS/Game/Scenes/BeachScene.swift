@@ -3,7 +3,6 @@ import MetalKit
 class BeachScene : Scene {
     
     var currentState: SceneSwitchStates!
-    var fluidObject: DebugEnvironment!
     var surfObject: SurfObject!
     
     var buttons: [ BoxButton ] = []
@@ -31,16 +30,9 @@ class BeachScene : Scene {
         addChild(surfObject)
         addChild(surfObject.getBeach())
         
-        fluidObject = FluidEnvironment.Environment
-        fluidObject.setScale(2 / (GameSettings.ptmRatio * 10) )
-        fluidObject.setPositionZ(0.1)
-                
         addTestButtons()
                 
-        fluidObject = FluidEnvironment.Environment
-        addChild(fluidObject)
         freeze()
-        fluidObject.makeBoundingBox(center: box2DOrigin - float2(6,2), size: Size2D(width: 12, height: 4))
 
     }
     
@@ -68,34 +60,8 @@ class BeachScene : Scene {
         }
         return nil
     }
-
-    
-    private func shareNodesWithTestTubeScene() {
-        if isSharingNodes {
-            for node in sharedNodes {
-                self.removeChild(node)
-            }
-            self.sharedNodes = []
-            isSharingNodes = false
-        } else {
-            for node in SceneManager.Get(.TestTubes).children {
-                if node is Camera {
-                    
-                }
-                else if node is DebugEnvironment {
-                    print("dont add teh shared fluid env again")
-                }
-                else {
-                    self.addChild(node)
-                    self.sharedNodes.append(node)
-                }
-            }
-            isSharingNodes = true
-        }
-    }
     
     private func switchToTestTubeScene() {
-        shareNodesWithTestTubeScene()
         SceneManager.SetCurrentScene(.TestTubes)
         SceneManager.currentScene.sceneSizeWillChange()
 
@@ -121,7 +87,7 @@ class BeachScene : Scene {
         default:
             print("clicked a button")
         }
-        fluidObject.debugParticleDraw(atPosition: Touches.GetBoxPos())
+        FluidEnvironment.Environment.debugParticleDraw(atPosition: Touches.GetBoxPos())
     
     }
     

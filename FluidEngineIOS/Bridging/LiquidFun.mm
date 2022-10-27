@@ -601,8 +601,24 @@ return belowPositionsCount;
     return ((Reservoir *)reservoir)->GetRotation();
 }
 
-+ (void)createBulbOnReservoir:(void *)reservoir {
-    ((Reservoir *)reservoir)->CreateBulb();
++ (void)createBulbOnReservoir:(void *)reservoir hemisphereSegments:(long)hemisphereSegments radius:(float)radius {
+    ((Reservoir *)reservoir)->CreateBulb(hemisphereSegments, radius);
+}
+
++ (Vector2D)getBulbPos:(void *)reservoir {
+    Vector2D sharedPos;
+    b2Vec2 pos = ((Reservoir *)reservoir)->GetBulbPosition();
+    sharedPos.x = pos.x;
+    sharedPos.y = pos.y;
+    return sharedPos;
+}
+
++ (Vector2D)getSegmentPos:(void *)reservoir atIndex:(long)atIndex {
+    b2Vec2 pos = ((Reservoir *)reservoir)->GetBulbSegmentPosition(atIndex);
+    Vector2D sharedPos;
+    sharedPos.x = pos.x;
+    sharedPos.y = pos.y;
+    return sharedPos;
 }
 
 + (void)removeWallPieceOnReservoir:(void *)reservoir atIndex:(long)atIndex {

@@ -27,8 +27,6 @@ class Scene: Node {
     var orthoCamera = OrthoCamera()
     var panVelocity = float2(0,0)
     let box2DOrigin: float2!
-    private var sharedNodes: [Node] = []
-    private var isSharingNodes: Bool = false
     private var _smoothInterval: Float = 1.0
     private var _smoothStage: SmoothingStates = .Leaving
     let sceneType: SceneTypes!
@@ -168,7 +166,10 @@ class SceneManager: Library<SceneTypes, Scene> {
         SkyBackground.setPositionY(currentScene.orthoCamera.getPositionY())
         for scene in scenes.values {
             scene.sceneSizeWillChange()
+            scene.freeze()
         }
+        currentScene.unFreeze()
+        FluidEnvironment.Environment.isDebugging = true
     }
     
     private static func createScenes() {
@@ -202,6 +203,7 @@ class SceneManager: Library<SceneTypes, Scene> {
                 currentScene.gyroVector = float2(gravityX, gravityY)
             })
         }
+        FluidEnvironment.Environment.update(deltaTime: deltaTime)
     }
     
     public static func render(_ renderCommandEncoder: MTLRenderCommandEncoder) {
@@ -210,6 +212,7 @@ class SceneManager: Library<SceneTypes, Scene> {
         if( sceneSwitchingTo != .None) {
             scenes[sceneSwitchingTo]!.render(renderCommandEncoder)
         }
+        FluidEnvironment.Environment.render(renderCommandEncoder) // causing GPU errors which freeze app.
     }
 }
 
