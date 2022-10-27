@@ -68,7 +68,6 @@ class ColorGameObject: Node {
 
 extension ColorGameObject : Renderable {
     func doRender(_ renderCommandEncoder: MTLRenderCommandEncoder) {
-        //renderCommandEncoder.setTriangleFillMode(.lines)
         // Send info to render command encoder
         renderCommandEncoder.setRenderPipelineState(RenderPipelineStates.Get(.Instanced))
         renderCommandEncoder.setDepthStencilState(DepthStencilStates.Get(.Less))

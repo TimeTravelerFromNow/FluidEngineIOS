@@ -48,6 +48,8 @@ class DebugEnvironment : Node {
         self.pointSize = 1
         self.MakeWorld()
        // self.TestParticles()
+        refreshDrawBuffer()
+        refreshFluidConstants()
     }
     
     deinit {
@@ -68,10 +70,11 @@ class DebugEnvironment : Node {
         modelConstants.modelMatrix = modelMatrix
     }
     
-    func refreshFluidBuffer () {
+    func refreshFluidConstants () {
       var fluidConstants = FluidConstants(ptmRatio: ptmRatio, pointSize: GameSettings.particleRadius)
       _fluidBuffer = Engine.Device.makeBuffer(bytes: &fluidConstants, length: FluidConstants.size, options: [])
     }
+    
     func refreshVertexBuffer () {
         if particleSystem != nil {
         particleCount = Int(LiquidFun.particleCount(forSystem: particleSystem))
@@ -82,6 +85,7 @@ class DebugEnvironment : Node {
         }
         }
     }
+    
     //debug draw
     func refreshDrawBuffer() {
         pointsCount = Int(LiquidFun.getPointsDrawCount())
@@ -109,6 +113,7 @@ class DebugEnvironment : Node {
             _trianglesBuffer = Engine.Device.makeBuffer(bytes: triangleVertices!, length: trianglesBufferSize, options: [])
         }
     }
+    
     let bbSF : Float = 0.8
     private func MakeWorld() {
         LiquidFun.createWorld(withGravity: Vector2D(x: _gravity.x, y: _gravity.y))
@@ -146,21 +151,21 @@ class DebugEnvironment : Node {
 extension DebugEnvironment: Renderable {
     func doRender(_ renderCommandEncoder: MTLRenderCommandEncoder) {
         if isDebugging {
-        refreshDrawBuffer()
+//        refreshDrawBuffer()
         }
         refreshVertexBuffer()
-        refreshFluidBuffer()
+        refreshFluidConstants()
         fluidSystemRender(renderCommandEncoder)
         if isDebugging{
-        pointsRender( renderCommandEncoder )
+//        pointsRender( renderCommandEncoder )
         linesRender(renderCommandEncoder)
-        trianglesRender(renderCommandEncoder)
+//        trianglesRender(renderCommandEncoder)
         }
     }
     
     func trianglesRender( _ renderCommandEncoder: MTLRenderCommandEncoder ) {
         if trianglesVerticesCount > 0 {
-            renderCommandEncoder.setRenderPipelineState(RenderPipelineStates.Get(.Lines))
+            renderCommandEncoder.setRenderPipelineState(RenderPipelineStates.Get(.Points))
             renderCommandEncoder.setDepthStencilState(DepthStencilStates.Get(.Less))
             
             renderCommandEncoder.setVertexBuffer(_trianglesBuffer,
@@ -181,7 +186,7 @@ extension DebugEnvironment: Renderable {
 
     func linesRender( _ renderCommandEncoder: MTLRenderCommandEncoder ) {
         if linesCount > 0 {
-            renderCommandEncoder.setRenderPipelineState(RenderPipelineStates.Get(.Lines))
+            renderCommandEncoder.setRenderPipelineState(RenderPipelineStates.Get(.Points))
             renderCommandEncoder.setDepthStencilState(DepthStencilStates.Get(.Less))
             
             renderCommandEncoder.setVertexBuffer(_linesVertexBuffer,
@@ -190,9 +195,6 @@ extension DebugEnvironment: Renderable {
             renderCommandEncoder.setVertexBytes(&modelConstants,
                                                 length: ModelConstants.stride,
                                                 index: 2)
-            renderCommandEncoder.setVertexBuffer(_fluidBuffer,
-                                                       offset: 0,
-                                                       index: 3)
             renderCommandEncoder.setVertexBuffer(_linesColorBuffer,
                                                        offset: 0,
                                                        index: 4)

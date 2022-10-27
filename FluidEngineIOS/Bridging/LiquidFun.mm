@@ -601,8 +601,21 @@ return belowPositionsCount;
     return ((Reservoir *)reservoir)->GetRotation();
 }
 
-+ (void)createBulbOnReservoir:(void *)reservoir {
-    ((Reservoir *)reservoir)->CreateBulb();
++ (Vector2D *)createBulbOnReservoir:(void *)reservoir {
+    b2Vec2* vertices = ((Reservoir *)reservoir)->CreateBulb();
+    return ((Vector2D*)vertices);
+}
+
++ (void)buildPipe:(void *)reservoir towardsPoint:(b2Vec2)towardsPoint {
+    ((Reservoir *)reservoir)->BuildPipe(towardsPoint);
+}
+
++ (b2Vec2 **)getAllPipeVertices:(void *)reservoir {
+    return ((Reservoir *)reservoir)->GetAllPipeVertices();
+}
+
++ (int32 *)getPipeLineVertexCounts:(void *)reservoir {
+    return ((Reservoir *)reservoir)->GetPipeLineVertexCounts();
 }
 
 + (void)removeWallPieceOnReservoir:(void *)reservoir atIndex:(long)atIndex {

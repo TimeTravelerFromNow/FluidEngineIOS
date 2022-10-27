@@ -169,7 +169,8 @@ class RenderPipelineStates {
             print("ERROR::RENDERPIPELINESTATE::\(error)")
         }
         
-        _library.updateValue(renderPipelineState, forKey: .Lines)    }
+        _library.updateValue(renderPipelineState, forKey: .Lines)
+    }
     
     private static func generateInstancedRenderPipelineState() {
         let vertexFunction = Engine.DefaultLibrary.makeFunction(name: "instanced_vertex_shader")

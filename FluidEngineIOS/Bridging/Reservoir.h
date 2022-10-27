@@ -9,7 +9,6 @@
 class Reservoir {
 public:
     b2ParticleSystem* m_particleSys;
-    long numBulbWallPieces;
 public:
     Reservoir(b2World* worldRef,
               b2ParticleSystem* particleSysRef,
@@ -45,7 +44,14 @@ public:
     
     void SetValve0AngularVelocity( float angV );
     float GetValve0Rotation();
-    void CreateBulb();
+    b2Vec2* CreateBulb();
+    
+    void BuildPipe(b2Vec2 towardsPoint);
+
+    b2Vec2** GetAllPipeVertices();
+    int* GetPipeLineVertexCounts();
+    int GetPipeLineCounts();
+    
     void RemoveWallPiece( long atIndex );
 private:
     b2Fixture* m_topCap;
@@ -71,6 +77,20 @@ private:
     std::vector<b2Fixture*> m_lineFixtures;
     
     b2Body* m_bulbBody;
+    long numBulbWallPieces;
+    //pipe building variables
+    float m_pipeWidth;
+    b2Vec2 m_pipeDirection;
+    b2Vec2 m_pipePosition;
+    
+    b2Fixture* m_rightPipeFixture;
+    b2Fixture* m_leftPipeFixture;
+    
+    b2Vec2* m_rightPipeVertices;
+    b2Vec2* m_leftPipeVertices;
+    
+    bool m_pipeLengthsEqual;
+    int m_totalPipeLinesVertexCount;
     
     b2World* m_world;
 };

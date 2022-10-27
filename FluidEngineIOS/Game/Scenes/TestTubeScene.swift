@@ -118,7 +118,7 @@ class TestTubeScene : Scene {
 
         tubeLevel = TubeLevel()
         fluidObject = FluidEnvironment.Environment
-        fluidObject.isDebugging = false
+        fluidObject.isDebugging = true
         
         InitializeGrid()
         
@@ -416,7 +416,8 @@ class TestTubeScene : Scene {
             SceneManager.sceneSwitchingTo = .Menu
             SceneManager.Get( .Menu ).unFreeze()
         case .TestAction:
-            testReservoir0.removeWallPiece(testIndex)
+            testReservoir0.buildPipe( tubeGrid[0].origin )
+            FluidEnvironment.Environment.refreshDrawBuffer()
             testIndex += 1
         case nil:
             print("let go of no button")

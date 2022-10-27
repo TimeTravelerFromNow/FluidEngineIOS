@@ -94,6 +94,10 @@ struct TransformedVertex
     float2 texCoords;
 };
 
+struct LinesRasterizerData {
+    float4 position [[ position ]];
+};
+
 constexpr sampler sampler2d(address::clamp_to_zero,
                             filter::linear,
                             compare_func::less);

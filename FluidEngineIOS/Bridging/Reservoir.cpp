@@ -43,7 +43,7 @@ Reservoir::Reservoir(b2World* worldRef,
     m_exitPosition = b2Vec2(location.x + (firstVertex.x + lastVertex.x) / 2, location.y + (firstVertex.y + lastVertex.y) / 2);
     
     b2Body *valve0Body = worldRef->CreateBody(&valve0BodyDef);
-//    m_valve0Fixture = body2->CreateFixture(&valve0Def);
+//    m_valve0Fixture = valve0Body->CreateFixture(&valve0Def);
     m_valve0Body = valve0Body;
     
     b2WeldJointDef weldJointDef;
@@ -51,24 +51,32 @@ Reservoir::Reservoir(b2World* worldRef,
     weldJointDef.bodyB = m_valve0Body;
     weldJointDef.collideConnected = false;
     worldRef->CreateJoint(&weldJointDef);
+    m_pipeLengthsEqual = true;
 }
 
-void Reservoir::CreateBulb() {
+b2Vec2* Reservoir::CreateBulb() {
     b2BodyDef bulbBodyDef;
     bulbBodyDef.type = b2_kinematicBody;
     bulbBodyDef.active = true;
     bulbBodyDef.gravityScale = 0.0;
     
-    const float bulbRadius = 0.7;
+    const float bulbRadius = 0.4;
     b2Vec2 bulbCenter = b2Vec2( m_exitPosition.x, m_exitPosition.y - bulbRadius);
     bulbBodyDef.position.Set( bulbCenter.x, bulbCenter.y );
     
-    float currentIterationAngle = 0.0;
-    float angleIncrement = 0.3;
+    float angleIncrement = b2_pi / 6;
 
     b2Body *bulbBody = m_world->CreateBody(&bulbBodyDef);
-    for( float f; f < 2 * b2_pi; f += angleIncrement ) {
-        if ( ( ((b2_pi / 2) - 0.2) < f && f < ((b2_pi / 2) + 0.2) ) ) {
+    numBulbWallPieces = long( 2 * b2_pi / angleIncrement );
+    
+    b2Vec2 verticesOut[numBulbWallPieces * 2];
+    long linOff = 0;
+    
+    b2Vec2 pipeTestPos;
+    b2Vec2 startRightVertex;
+    b2Vec2 startLeftVertex;
+    for( float f = 0.0; f < 2 * b2_pi; f += angleIncrement ) {
+        if ( ( ((b2_pi / 2) - 0.3) < f && f < ((b2_pi / 2) + 0.3) ) ) {
             
         } else {
             b2FixtureDef lineFixtureDef;
@@ -80,20 +88,142 @@ void Reservoir::CreateBulb() {
             float yT = cos( f ) * angleIncrement * bulbRadius * 0.5;
             b2Vec2 cwVertex = b2Vec2( x + xT, y - yT);
             b2Vec2 ccwVertex = b2Vec2( x - xT, y + yT);
+            
+            verticesOut[linOff * 2] = cwVertex;
+            verticesOut[linOff * 2 + 1] = ccwVertex;
+            if(linOff == 10) {
+                pipeTestPos = b2Vec2((cwVertex.x + ccwVertex.x) / 2, (cwVertex.y + ccwVertex.y) / 2);
+                startLeftVertex = cwVertex;
+                startRightVertex = ccwVertex;
+            }
             bulbLine.Set(cwVertex, ccwVertex);
             lineFixtureDef.shape = &bulbLine;
             b2Fixture* lineFixture = bulbBody->CreateFixture(&lineFixtureDef);
             m_lineFixtures.push_back(lineFixture);
             
-            numBulbWallPieces++;
+            linOff++;
         }
     }
+    b2Vec2 pipeDirection =  pipeTestPos;
+    float pipeDirNorm = pipeDirection.Length();
+    pipeDirection = 0.3 * pipeDirection / pipeDirNorm;
+    m_pipeDirection = pipeDirection;
+    m_pipePosition = pipeTestPos;
+    
+    b2Vec2 rightVertex1 = startRightVertex + pipeDirection;
+    b2Vec2 leftVertex1 = startLeftVertex + pipeDirection;
+    
+    
+    b2Vec2 firstRightLine[2];
+    firstRightLine[0] = startRightVertex;
+    firstRightLine[1] = rightVertex1;
+    
+    b2FixtureDef rightLineDef;
+    b2ChainShape rightLine;
+    
+    rightLine.CreateChain(firstRightLine, 2);
+    rightLineDef.shape = &rightLine;
+    
+    b2Vec2 firstLeftLine[2];
+    firstLeftLine[0] = startLeftVertex;
+    firstLeftLine[1] = leftVertex1;
+    
+    b2FixtureDef leftLineDef;
+    b2ChainShape leftLine;
+    leftLine.CreateChain(firstLeftLine, 2);
+    leftLineDef.shape = &leftLine;
+    
     m_bulbBody = bulbBody;
+
+    m_rightPipeFixture = m_bulbBody->CreateFixture(&rightLineDef);
+    m_leftPipeFixture  = m_bulbBody->CreateFixture(&leftLineDef);
+    
+    return verticesOut;
+}
+
+void Reservoir::BuildPipe(b2Vec2 towardsPoint) {
+    b2Fixture* rightFixture = m_rightPipeFixture;
+    b2Fixture* leftFixture = m_leftPipeFixture;
+    b2ChainShape* rightShape = ((b2ChainShape *)  rightFixture->GetShape() );
+    b2ChainShape* leftShape = ((b2ChainShape *) leftFixture->GetShape() );
+
+    b2Vec2* rightVertices =  rightShape->m_vertices;
+    int32 rightVertexCount =  rightShape->m_count;
+
+    b2Vec2* leftVertices = leftShape->m_vertices;
+    int32 leftVertexCount =  leftShape->m_count;
+    
+    b2Vec2 newRVertices[ rightVertexCount + 1 ]; // L and R should be the same size, but keeping sanity
+    b2Vec2 newLVertices[ leftVertexCount + 1 ];
+
+    b2FixtureDef newRFixDef;
+    b2FixtureDef newLFixDef;
+    b2ChainShape newRChainShape;
+    b2ChainShape newLChainShape;
+    
+    for( int i = 0; i < rightVertexCount; i++) { // rewrite the old vertices
+        newRVertices[i] = rightVertices[i];
+        newLVertices[i] = leftVertices[i];
+    }
+    //decide on a new pipeDirection
+    m_pipeDirection += towardsPoint * 0.01;
+    //normalize
+    m_pipeDirection = 0.5 * b2Vec2(m_pipeDirection.x, m_pipeDirection.y) / m_pipeDirection.Normalize();
+    b2Vec2 nextDir = m_pipeDirection + towardsPoint * 0.01;
+    b2Vec2 nextPipeDirection = 0.5 * b2Vec2(nextDir.x, nextDir.y) / nextDir.Normalize();
+    float32 adjustmentAngle;
+    
+    // set the last vertices a vector away from the previous last vertices
+    newRVertices[rightVertexCount]  = newRVertices[rightVertexCount - 1] + m_pipeDirection;
+    newLVertices[leftVertexCount]  = newLVertices[leftVertexCount - 1] + m_pipeDirection;
+    
+    newRChainShape.CreateChain(newRVertices, rightVertexCount + 1);
+    newLChainShape.CreateChain(newLVertices, leftVertexCount + 1);
+
+    newRFixDef.shape = &newRChainShape;
+    newLFixDef.shape = &newLChainShape;
+    
+    m_bulbBody->DestroyFixture(m_leftPipeFixture);
+    m_bulbBody->DestroyFixture(m_rightPipeFixture);
+    m_rightPipeFixture = m_bulbBody->CreateFixture(&newRFixDef);
+    m_leftPipeFixture = m_bulbBody->CreateFixture(&newLFixDef);
+
+}
+
+b2Vec2** Reservoir::GetAllPipeVertices() { // get an array of all pipe vertices.
+    b2Vec2** pipeVerticesArray = static_cast<b2Vec2 **>(malloc(2 * sizeof(b2Vec2 *)));
+    pipeVerticesArray[0] = ((b2ChainShape*)m_rightPipeFixture->GetShape())->m_vertices;
+    int32 count1 = ((b2ChainShape*)m_rightPipeFixture->GetShape())->m_count;
+    b2Vec2 center1 = m_body->GetPosition();
+    for( int32 i = 0; i < count1; i++) {
+        pipeVerticesArray[0][i] += center1;
+    }
+    pipeVerticesArray[1] = ((b2ChainShape*)m_leftPipeFixture->GetShape())->m_vertices;
+    return pipeVerticesArray;
+}
+
+int32* Reservoir::GetPipeLineVertexCounts() {
+    int32* vertexCountArray = static_cast<int32 *>(malloc(2 * sizeof(int32 *)));
+    vertexCountArray[0] = ((b2ChainShape*)m_rightPipeFixture->GetShape())->m_count;
+    vertexCountArray[1] = ((b2ChainShape*)m_leftPipeFixture->GetShape())->m_count;
+    return vertexCountArray;
+}
+
+int Reservoir::GetPipeLineCounts() {  // returns total number of pipe lines
+    return 2;
 }
 
 void Reservoir::RemoveWallPiece( long atIndex ) {
+    if( m_lineFixtures[atIndex] && atIndex < numBulbWallPieces ) {
     m_bulbBody->DestroyFixture( m_lineFixtures[atIndex] );
+    }
 }
+
+//void Reservoir::AttachWallPiece( long atIndex ) {
+//    if( m_lineFixtures[atIndex] && atIndex < numBulbWallPieces ) {
+//    m_bulbBody->Fixture( m_lineFixtures[atIndex] );
+//    }
+//}
 
 Reservoir::~Reservoir() {
     

@@ -196,7 +196,7 @@ class SceneManager: Library<SceneTypes, Scene> {
             SceneManager.MotionManager.startAccelerometerUpdates(to: OperationQueue(),
                                                                  withHandler: {
                 (accelerometerData, error) -> Void in
-                guard let acceleration = accelerometerData?.acceleration else { print("Motion Manger WARNING:: couldnt get acceleromter data."); return}
+                guard let acceleration = accelerometerData?.acceleration else { print("Motion Manager WARNING:: couldnt get acceleromter data."); return}
                 let gravityX = 9.806 * Float(acceleration.x)
                 let gravityY = 9.806 * Float(acceleration.y)
                 currentScene.gyroVector = float2(gravityX, gravityY)

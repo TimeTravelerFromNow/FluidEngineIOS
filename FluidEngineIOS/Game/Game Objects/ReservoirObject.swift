@@ -21,8 +21,14 @@ class ReservoirObject: Node {
     
     // draw data
     private var _vertexBuffer: MTLBuffer!
-    private var _fluidBuffer: MTLBuffer!
+    private var _fluidConstants: MTLBuffer!
     private var _colorBuffer: MTLBuffer!
+    
+    let pipeLinesCount = 2 // how many pipes are there
+    
+    private var _pipeVerticesBuffers: [MTLBuffer] = []
+    private var _pipeVertexCounts: [Int] = []
+    private var _pipeColorsBuffers: [MTLBuffer] = []
     
     var modelConstants = ModelConstants()
     var material = CustomMaterial()
@@ -33,6 +39,8 @@ class ReservoirObject: Node {
     var tubeOrigins: [float2] = []
     var tubeColors: [TubeColors] = []
     var tubeHeight: Float = 0.0
+    
+    var bulbVertices: [Vector2D] = []
     
     func setTubeHeight(_ height: Float) {
         
@@ -54,6 +62,7 @@ class ReservoirObject: Node {
         self.texture = Textures.Get(.Reservoir)
         self.material.useTexture = true
         createBulb()
+        refreshFluidConstants()
     }
     
     //initialization
@@ -81,7 +90,12 @@ class ReservoirObject: Node {
     }
     
     func createBulb() {
-        LiquidFun.createBulb(onReservoir: _reservoir)
+        var verticesPtr = LiquidFun.createBulb(onReservoir: _reservoir)
+        bulbVertices = []
+    }
+    
+    func buildPipe(_ towardsPoint: float2) {
+        LiquidFun.buildPipe(_reservoir, towardsPoint: Vector2D(x:towardsPoint.x, y:towardsPoint.y))
     }
     
     func removeWallPiece(_ atIndex: Int) {
@@ -94,6 +108,39 @@ class ReservoirObject: Node {
         setPositionX(self.getBoxPositionX() * GameSettings.stmRatio)
         setPositionY(self.getBoxPositionY() * GameSettings.stmRatio)
         setRotationZ( getRotationZ() )
+    }
+    
+    func updatePipeVertexBuffers() {
+        var pipeVerticesPtr = LiquidFun.getAllPipeVertices(_reservoir)
+        var pipeVertexCounts = LiquidFun.getPipeLineVertexCounts(_reservoir)
+        
+        for i in 0..<pipeLinesCount { // hardcoded 2 pipe lines
+            guard let currVertexCount32 = pipeVertexCounts?.pointee else { break }
+            let currVertexCount = Int(currVertexCount32)
+            guard var currVertices = pipeVerticesPtr?.pointee else { break }
+            
+            let newBufferSize = float2.stride(currVertexCount)
+            var verticesBytes = [float2].init(repeating: float2(x:0,y:0), count: currVertexCount)
+            let colorBufferSize = float3.stride(currVertexCount)
+            var colors = [float3].init(repeating: float3(1.0,0,0), count: currVertexCount)
+            
+            for j in 0..<currVertexCount {
+                verticesBytes[j] = float2(currVertices.pointee.x, currVertices.pointee.y)
+                currVertices = currVertices.advanced(by: 1)
+            }
+            guard var newColorBuffer = Engine.Device.makeBuffer(bytes: colors, length: colorBufferSize, options: []) else { break }
+            guard var newBuffer = Engine.Device.makeBuffer(bytes: verticesBytes, length: newBufferSize, options: []) else { break }
+            if( i > _pipeVerticesBuffers.count - 1 ) {
+                _pipeVerticesBuffers.append( newBuffer )
+                _pipeVertexCounts.append(currVertexCount)
+                _pipeColorsBuffers.append( newColorBuffer)
+            }
+            _pipeVerticesBuffers[i] = newBuffer
+            _pipeVertexCounts[i] = currVertexCount
+            _pipeColorsBuffers[i] = newColorBuffer
+            pipeVerticesPtr = pipeVerticesPtr?.advanced(by: 1)
+            pipeVertexCounts = pipeVertexCounts?.advanced(by: 1)
+        }
     }
     
     func refreshVertexBuffer() {
@@ -112,9 +159,9 @@ class ReservoirObject: Node {
         }
     }
     
-    func refreshFluidBuffer () {
-        var fluidConstants = FluidConstants(ptmRatio: ptmRatio, pointSize: GameSettings.particleRadius)
-        _fluidBuffer = Engine.Device.makeBuffer(bytes: &fluidConstants, length: FluidConstants.size, options: [])
+    func refreshFluidConstants () {
+      var fluidConstants = FluidConstants(ptmRatio: ptmRatio, pointSize: GameSettings.particleRadius)
+      _fluidConstants = Engine.Device.makeBuffer(bytes: &fluidConstants, length: FluidConstants.size, options: [])
     }
     
     func spawnParticleBox(_ position: float2,_ groupSize: float2, color: UnsafeMutableRawPointer) {
@@ -155,7 +202,9 @@ class ReservoirObject: Node {
 extension ReservoirObject: Renderable {
     func doRender(_ renderCommandEncoder: MTLRenderCommandEncoder) {
         refreshVertexBuffer()
-        refreshFluidBuffer()
+        refreshFluidConstants()
+        updatePipeVertexBuffers()
+
         renderCommandEncoder.setRenderPipelineState(RenderPipelineStates.Get(.Instanced))
         renderCommandEncoder.setDepthStencilState(DepthStencilStates.Get(.Less))
         // Vertex
@@ -163,12 +212,13 @@ extension ReservoirObject: Renderable {
         //Fragment
         renderCommandEncoder.setFragmentBytes(&material, length : CustomMaterial.stride, index : 1)
         mesh.drawPrimitives(renderCommandEncoder)
-        fluidSystemRender(renderCommandEncoder)
+        pipeVerticesRender(renderCommandEncoder)
+//        fluidSystemRender(renderCommandEncoder)
     }
     
     func fluidSystemRender( _ renderCommandEncoder: MTLRenderCommandEncoder ) {
         if particleCount > 0{
-            renderCommandEncoder.setRenderPipelineState(RenderPipelineStates.Get(.ColorFluid))
+            renderCommandEncoder.setRenderPipelineState(RenderPipelineStates.Get(.Lines))
             renderCommandEncoder.setDepthStencilState(DepthStencilStates.Get(.Less))
             
             renderCommandEncoder.setVertexBuffer(_vertexBuffer,
@@ -177,7 +227,7 @@ extension ReservoirObject: Renderable {
             renderCommandEncoder.setVertexBytes(&fluidModelConstants,
                                                 length: ModelConstants.stride,
                                                 index: 2)
-            renderCommandEncoder.setVertexBuffer(_fluidBuffer,
+            renderCommandEncoder.setVertexBuffer(_fluidConstants,
                                                  offset: 0,
                                                  index: 3)
             renderCommandEncoder.setVertexBuffer(_colorBuffer,
@@ -188,6 +238,31 @@ extension ReservoirObject: Renderable {
             renderCommandEncoder.drawPrimitives(type: .point,
                                                 vertexStart: 0,
                                                 vertexCount: particleCount)
+        }
+    }
+    
+    func pipeVerticesRender(_ renderCommandEncoder: MTLRenderCommandEncoder) {
+        if pipeLinesCount > 0 {
+                renderCommandEncoder.setRenderPipelineState(RenderPipelineStates.Get(.Lines))
+                renderCommandEncoder.setDepthStencilState(DepthStencilStates.Get(.Less))
+            for p in 0..<pipeLinesCount {
+                renderCommandEncoder.setVertexBuffer(_pipeVerticesBuffers[p],
+                                                     offset: 0,
+                                                     index: 0)
+                renderCommandEncoder.setVertexBytes(&fluidModelConstants,
+                                                    length: ModelConstants.stride,
+                                                    index: 2)
+                renderCommandEncoder.setVertexBuffer(_fluidConstants,
+                                                           offset: 0,
+                                                           index: 3)
+                renderCommandEncoder.setVertexBuffer(_pipeColorsBuffers[p],
+                                                     offset: 0,
+                                                     index: 4)
+
+                renderCommandEncoder.drawPrimitives(type: .point,
+                                                    vertexStart: 0,
+                                                    vertexCount: _pipeVertexCounts[p])
+            }
         }
     }
 }
