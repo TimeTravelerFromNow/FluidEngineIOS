@@ -17,7 +17,7 @@ class MenuScene : Scene {
     var testTextObject: TextObject!
     
     var buttons: [ BoxButton ] = []
-    
+    var buttonPressed: ButtonActions?
     // test tube play state
     
     var tubeGrid: [ TestTube ] = []
@@ -34,10 +34,11 @@ class MenuScene : Scene {
         let beachButton     = BoxButton(.BeachButton, .BeachButton, .ToBeach, center: box2DOrigin + float2(x: 0.3, y: 0.0))
         let devSceneButton  = BoxButton(.Menu, .Menu, .ToDev, center: box2DOrigin + float2(x:0.0, y: 3.0), label: .DevSceneLabel)
         buttons.append(newGameButton)
-        addChild(newGameButton)
-        
         buttons.append(beachButton)
+        buttons.append(devSceneButton)
+        addChild(newGameButton)
         addChild(beachButton)
+        addChild(devSceneButton)
     }
     
     private func addTestTube() {
@@ -58,6 +59,13 @@ class MenuScene : Scene {
             LiquidFun.setGravity(Vector2D(x: gyroVector.x, y: gyroVector.y))
         }
         if (Touches.IsDragging) {
+            if(buttonPressed != nil) {
+                let boxPos = Touches.GetBoxPos()
+                buttonPressed = boxButtonHitTest(boxPos: boxPos)
+                if buttonPressed == nil {
+                    deselectButtons()
+                }
+            }
             switch _currentState {
             case .HoldInterval:
                 if _holdDelay == _defaultHoldTime {
@@ -133,17 +141,20 @@ class MenuScene : Scene {
     }
     
     override func touchesBegan() {
-        switch boxButtonHitTest(boxPos: Touches.GetBoxPos()) {
-        case .None:
-            print("hit a test button")
-        case .Clear:
-            print("hit the clear button")
-        case .NewGame:
-            print("hit the new game button")
-        case nil:
-            print("clicked no button")
-        default:
-            print("clicked a button")
+        if let buttonHit = boxButtonHitTest(boxPos: Touches.GetBoxPos()) {
+            buttonPressed = buttonHit
+            switch buttonHit {
+            case .None:
+                print("hit a test button")
+            case .Clear:
+                print("hit the clear button")
+            case .NewGame:
+                print("hit the new game button")
+            case nil:
+                print("clicked no button")
+            default:
+                print("clicked a button")
+            }
         }
         FluidEnvironment.Environment.debugParticleDraw(atPosition: Touches.GetBoxPos())
         
@@ -190,9 +201,11 @@ class MenuScene : Scene {
             print("nothing to do")
         }
     }
+  
     
     override func touchesEnded() {
-        switch boxButtonHitTest(boxPos: Touches.GetBoxPos()) {
+        if buttonPressed != nil {
+        switch buttonPressed {
         case .None:
             print("let go of a button")
         case .Clear:
@@ -206,15 +219,18 @@ class MenuScene : Scene {
             SceneManager.Get( .Beach ).unFreeze()
         case .ToMenu:
             print("pressed to menu button in the menu?")
+        case .ToDev:
+            SceneManager.sceneSwitchingTo = .Dev
+            print("Going to developer scene!")
+            SceneManager.Get( .Dev ).unFreeze()
         case nil:
             print("let go of no button")
         default:
             print("Button Action WARN::need \(boxButtonHitTest(boxPos: Touches.GetBoxPos())) action.")
             break
         }
-        for b in buttons {
-            b.deSelect()
         }
+        deselectButtons()
         
         switch _currentState {
         case .HoldInterval:
@@ -248,6 +264,12 @@ class MenuScene : Scene {
             }
         }
         return nil
+    }
+    
+    private func deselectButtons() {
+        for b in buttons {
+            b.deSelect()
+        }
     }
 }
 
