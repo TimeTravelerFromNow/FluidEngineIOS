@@ -10,6 +10,7 @@
 		920603B1290B03F400C1C846 /* bulbMesh.obj in Resources */ = {isa = PBXBuildFile; fileRef = 920603AF290B03F400C1C846 /* bulbMesh.obj */; };
 		920603B2290B03F400C1C846 /* bulbMesh.mtl in Resources */ = {isa = PBXBuildFile; fileRef = 920603B0290B03F400C1C846 /* bulbMesh.mtl */; };
 		920603B4290B044100C1C846 /* bulbMesh.png in Resources */ = {isa = PBXBuildFile; fileRef = 920603B3290B044100C1C846 /* bulbMesh.png */; };
+		920603B6290C4E8300C1C846 /* DevScene.swift in Sources */ = {isa = PBXBuildFile; fileRef = 920603B5290C4E8300C1C846 /* DevScene.swift */; };
 		9226D3102905E306007785D5 /* Reservoir.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9226D30E2905E306007785D5 /* Reservoir.cpp */; };
 		9226D3122905F5C4007785D5 /* testflat.obj in Resources */ = {isa = PBXBuildFile; fileRef = 9226D3112905F5C4007785D5 /* testflat.obj */; };
 		9226D3142905FA2A007785D5 /* testtube.obj in Resources */ = {isa = PBXBuildFile; fileRef = 9226D3132905FA2A007785D5 /* testtube.obj */; };
@@ -178,6 +179,7 @@
 		920603AF290B03F400C1C846 /* bulbMesh.obj */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = bulbMesh.obj; sourceTree = "<group>"; };
 		920603B0290B03F400C1C846 /* bulbMesh.mtl */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = bulbMesh.mtl; sourceTree = "<group>"; };
 		920603B3290B044100C1C846 /* bulbMesh.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = bulbMesh.png; sourceTree = "<group>"; };
+		920603B5290C4E8300C1C846 /* DevScene.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DevScene.swift; sourceTree = "<group>"; };
 		9226D30E2905E306007785D5 /* Reservoir.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Reservoir.cpp; sourceTree = "<group>"; };
 		9226D30F2905E306007785D5 /* Reservoir.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Reservoir.h; sourceTree = "<group>"; };
 		9226D3112905F5C4007785D5 /* testflat.obj */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = testflat.obj; sourceTree = "<group>"; };
@@ -814,6 +816,7 @@
 				92A9E3A328DA6D1F0000A77F /* BeachScene.swift */,
 				92A9E3A528DA6D1F0000A77F /* MenuScene.swift */,
 				92A9E3A628DA6D1F0000A77F /* Node.swift */,
+				920603B5290C4E8300C1C846 /* DevScene.swift */,
 			);
 			path = Scenes;
 			sourceTree = "<group>";
@@ -1180,6 +1183,7 @@
 				92A9E3B328DA6D3E0000A77F /* Math.swift in Sources */,
 				92489BA62799DA0400639B52 /* b2DistanceJoint.cpp in Sources */,
 				92A9E39E28DA6CEB0000A77F /* SurfObject.swift in Sources */,
+				920603B6290C4E8300C1C846 /* DevScene.swift in Sources */,
 				92489BA12799DA0400639B52 /* b2Contact.cpp in Sources */,
 				92489BA52799DA0400639B52 /* b2FrictionJoint.cpp in Sources */,
 				92376BF428DE6E9F007C93DB /* MBETextMesh.m in Sources */,

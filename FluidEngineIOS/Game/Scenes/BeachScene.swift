@@ -2,7 +2,6 @@ import MetalKit
 
 class BeachScene : Scene {
     
-    var currentState: SceneSwitchStates!
     var surfObject: SurfObject!
     
     var buttons: [ BoxButton ] = []
@@ -23,9 +22,6 @@ class BeachScene : Scene {
     }
     
     override func buildScene(){
-    
-        currentState = .Idle
-
         surfObject = SurfObject(center: box2DOrigin)
         addChild(surfObject)
         addChild(surfObject.getBeach())
@@ -64,7 +60,6 @@ class BeachScene : Scene {
     private func switchToTestTubeScene() {
         SceneManager.SetCurrentScene(.TestTubes)
         SceneManager.currentScene.sceneSizeWillChange()
-
     }
 
     override func update(deltaTime: Float) {

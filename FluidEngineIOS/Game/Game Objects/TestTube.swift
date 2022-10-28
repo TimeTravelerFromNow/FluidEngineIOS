@@ -371,6 +371,13 @@ class TestTube: Node {
         self.currentState = .ReturningToOrigin
     }
     
+    func freeze() {
+        LiquidFun.pauseParticleSystem(particleSystem)
+    }
+    func unFreeze() {
+        LiquidFun.resumeParticleSystem(particleSystem)
+    }
+    
     // dividers
     func refreshDividers() {
         for i in 0..<totalColors {

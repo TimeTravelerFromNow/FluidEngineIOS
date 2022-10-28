@@ -67,16 +67,16 @@ void Reservoir::CreateBulb(long hemisphereSegments, float bulbRadius) {
 
     b2Body *bulbBody = m_world->CreateBody(&bulbBodyDef);
     for( float f; f < 2 * b2_pi; f += angleIncrement ) {
-        if ( ( ((b2_pi / 2) - 0.2) < f && f < ((b2_pi / 2) + 0.2) ) ) {
+//        if ( ( ((b2_pi / 2) - 0.2) < f && f < ((b2_pi / 2) + 0.2) ) ) {
             
-        } else {
+//        } else {
             b2FixtureDef lineFixtureDef;
             b2EdgeShape bulbLine;
             
             float y = sin( f ) * bulbRadius; // center of the line
             float x = cos( f ) * bulbRadius;
-            float xT = sin( f ) * angleIncrement * bulbRadius * 0.5; // tangent
-            float yT = cos( f ) * angleIncrement * bulbRadius * 0.5;
+            float xT = sin( f ) * angleIncrement * bulbRadius * 0.6; // tangent
+            float yT = cos( f ) * angleIncrement * bulbRadius * 0.6;
             b2Vec2 cwVertex = b2Vec2( x + xT, y - yT);
             b2Vec2 ccwVertex = b2Vec2( x - xT, y + yT);
             bulbLine.Set(cwVertex, ccwVertex);
@@ -85,7 +85,7 @@ void Reservoir::CreateBulb(long hemisphereSegments, float bulbRadius) {
             m_lineFixtures.push_back(lineFixture);
             
             numBulbWallPieces++;
-        }
+//        }
     }
     m_bulbBody = bulbBody;
 }

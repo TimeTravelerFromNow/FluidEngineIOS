@@ -1,18 +1,7 @@
 import MetalKit
 import CoreHaptics
 
-enum States {
-    case Moving
-    case Emptying
-    case Filling
-    case Selected
-    case Idle
-    case HoldInterval
-    case CleanupValues
-    case AnimatingPour
-}
-
-class TestTubeScene : Scene {    
+class DevScene : Scene {    
     var tubeGrid: [ TestTube ] = []
     
     var buttons: [ BoxButton ] = []
@@ -118,11 +107,9 @@ class TestTubeScene : Scene {
         }
 
         tubeLevel = TubeLevel()
- 
-        InitializeGrid()
         
         addTestButton()
-//        addReservoirs()
+        addReservoirs()
         
         for tube in tubeGrid {
             addChild(tube)
@@ -319,16 +306,10 @@ class TestTubeScene : Scene {
         for button in buttons {
             button.freeze()
         }
-        for tube in tubeGrid  {
-            tube.freeze()
-        }
     }
     override func unFreeze() {
         for button in buttons {
             button.unFreeze()
-        }
-        for tube in tubeGrid  {
-            tube.unFreeze()
         }
     }
     func unSelect() {

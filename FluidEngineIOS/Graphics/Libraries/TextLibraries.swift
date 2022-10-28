@@ -5,11 +5,13 @@ enum FontRenderableTypes {
     case NewGameText
     case MenuText
     case TestText
+    case DevText
 }
 enum ButtonLabelTypes {
     case NewGameLabel
     case MenuLabel
     case TestLabel
+    case DevSceneLabel
     
     case None
 }
@@ -26,6 +28,7 @@ class FontRenderables: Library<FontRenderableTypes, FontRenderable> {
         fontRenderables.updateValue(FontRenderable(device: Engine.Device), forKey: .NewGameText)
         fontRenderables.updateValue(FontRenderable(device: Engine.Device), forKey: .MenuText)
         fontRenderables.updateValue(FontRenderable(device: Engine.Device), forKey: .TestText)
+        fontRenderables.updateValue(FontRenderable(device: Engine.Device), forKey: .DevText)
     }
     
     public static func Get(_ fontType : FontRenderableTypes) -> FontRenderable {
@@ -45,6 +48,7 @@ class ButtonLabels: Library<ButtonLabelTypes, TextObject> {
         textObjects.updateValue(TextObject(.MenuText, "menu" ), forKey: .MenuLabel)
         textObjects.updateValue(TextObject(.NewGameText, "new game"), forKey: .NewGameLabel)
         textObjects.updateValue(TextObject(.TestText, "test action"), forKey: .TestLabel)
+        textObjects.updateValue(TextObject(.DevText, "developer"), forKey: .DevSceneLabel)
     }
     
     public static func Get(_ labelType : ButtonLabelTypes) -> TextObject {

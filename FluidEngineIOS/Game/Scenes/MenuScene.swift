@@ -5,17 +5,11 @@ enum ButtonActions {
     case NewGame
     case ToMenu
     case ToBeach
+    case ToDev
     
     case TestAction0
     case TestAction1
     case None
-}
-
-enum SceneSwitchStates {
-    case Idle
-    case ToTestTubeScene
-    case ToBeachScene
-    case ToMenuScene
 }
 
 class MenuScene : Scene {
@@ -38,7 +32,7 @@ class MenuScene : Scene {
     private func addTestButtons() {
         let newGameButton   = BoxButton(.Menu, .Menu, .NewGame, center: box2DOrigin + float2(x: 0.5, y: 1.0), label: .NewGameLabel )
         let beachButton     = BoxButton(.BeachButton, .BeachButton, .ToBeach, center: box2DOrigin + float2(x: 0.3, y: 0.0))
-
+        let devSceneButton  = BoxButton(.Menu, .Menu, .ToDev, center: box2DOrigin + float2(x:0.0, y: 3.0), label: .DevSceneLabel)
         buttons.append(newGameButton)
         addChild(newGameButton)
         
@@ -88,7 +82,6 @@ class MenuScene : Scene {
     }
     
     override func buildScene() {
-        
         addTestButtons()
         addTestTube()
         
