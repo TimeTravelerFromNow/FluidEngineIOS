@@ -15,6 +15,7 @@ class GameObject: Node {
     func setTexture(_ texture: TextureTypes){
         self.texture = Textures.Get(texture)
         self.material.useTexture = true
+        self.material.useMaterialColor = false
     }
     
     override func update() {
@@ -37,6 +38,7 @@ class GameObject: Node {
                    renderCommandEncoder.setFragmentTexture(texture, index: 0)
         }
         mesh.drawPrimitives(renderCommandEncoder)
+        
         super.render(renderCommandEncoder)
     }
     
@@ -50,7 +52,6 @@ class ColorGameObject: Node {
     
     public var material : CustomMaterial = CustomMaterial()
 
-    
     override init() {
         super.init()
     }
@@ -68,7 +69,6 @@ class ColorGameObject: Node {
 
 extension ColorGameObject : Renderable {
     func doRender(_ renderCommandEncoder: MTLRenderCommandEncoder) {
-        //renderCommandEncoder.setTriangleFillMode(.lines)
         // Send info to render command encoder
         renderCommandEncoder.setRenderPipelineState(RenderPipelineStates.Get(.Instanced))
         renderCommandEncoder.setDepthStencilState(DepthStencilStates.Get(.Less))

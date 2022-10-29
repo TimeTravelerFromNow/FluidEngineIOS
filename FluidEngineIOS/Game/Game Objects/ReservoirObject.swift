@@ -1,6 +1,47 @@
 import MetalKit
 
+
+enum MiniMenuActions {
+    case ToggleMiniMenu
+    case None
+}
+// A button without a representation in the box2d world
+class FloatingButton: Node {
+    
+    var buttonQuad: Mesh
+    var buttonTexture: TextureTypes
+    var action: MiniMenuActions
+    var modelConstants = ModelConstants()
+    var box2DPos: float2!
+    var size: float2!
+    
+    var isSelected = false
+    
+    init(_ boxPos: float2, size: float2, action: MiniMenuActions = .None, textureType: TextureTypes = .Missing) {
+        super.init()
+        box2DPos = boxPos
+        self.size = size
+        self.action = action
+        self.buttonTexture = textureType
+    }
+    
+    func pressButton( closure: () -> Void ) {
+        
+        isSelected = true
+    }
+    func releaseButton( closure: () -> Void ) {
+       
+        isSelected = false
+    }
+}
+
 class ReservoirObject: Node {
+    
+    var buttons: [FloatingButton] = []
+    var buttonPressed: FloatingButton?
+    
+    var isTesting: Bool = true
+    var isShowingMiniMenu: Bool = false
     
     var boxVertices: [Vector2D] = []
     
@@ -52,6 +93,8 @@ class ReservoirObject: Node {
     
     var hemisphereSegments = 8
     
+    var selectTime: Float = 0.0
+    
     func setTubeHeight(_ height: Float) {
         
     }
@@ -73,6 +116,7 @@ class ReservoirObject: Node {
         updateModelConstants()
         self.texture = Textures.Get(.Reservoir)
         self.material.useTexture = true
+        
     }
     
     //initialization
@@ -91,6 +135,29 @@ class ReservoirObject: Node {
                                              vertexCount: UInt32(boxVertices.count))
         createBulb()
         LiquidFun.setParticleLimitForSystem(particleSystem, maxParticles: GameSettings.MaxParticles)
+        buildMiniMenu()
+    }
+    
+    func buildMiniMenu() {
+        let quad = MeshLibrary.Get(.Quad)
+        let quadVertices = quad.getBoxVertices(1.0)
+        let quadWidth = abs(quadVertices[0].x - quadVertices[1].x) / 5
+        let quadHeight = abs(quadVertices[1].y - quadVertices[2].y) / 5
+        let quadSize = float2(quadWidth, quadHeight)
+        let buttonNode = Node()
+        buttonNode.setScale(1 / (GameSettings.ptmRatio * 5) )
+        let boxPos = float2(-1.0, 1.0)
+        buttonNode.setPositionX( boxPos.x * GameSettings.stmRatio )
+        buttonNode.setPositionY( boxPos.y * GameSettings.stmRatio )
+        buttonNode.setPositionZ( 0.1 )
+
+        let toggleMiniMenuButton = FloatingButton(buttonQuad: quad,
+                                              buttonTexture: .EditTexture,
+                                              box2DPos: boxPos,
+                                              action: .ToggleMiniMenu,
+                                              size: quadSize,
+                                                  node: buttonNode )
+        buttons.append(toggleMiniMenuButton)
     }
     
     func fill(color: TubeColors) {
@@ -194,6 +261,14 @@ class ReservoirObject: Node {
         bulbNode.setPositionY(bulbPos.y * GameSettings.stmRatio)
         bulbModelConstants.modelMatrix = bulbNode.modelMatrix
         refreshFluidMCBuffer()
+        
+        for i in 0..<buttons.count {
+            let x = buttons[i].box2DPos.x + getBoxPositionX()
+            let y =  buttons[i].box2DPos.y + getBoxPositionY()
+            buttons[i].node.setPositionX(x * GameSettings.stmRatio)
+            buttons[i].node.setPositionY(y * GameSettings.stmRatio)
+            buttons[i].modelConstants.modelMatrix = buttons[i].node.modelMatrix
+        }
     }
     
     func refreshBuffers() {
@@ -231,6 +306,7 @@ class ReservoirObject: Node {
     
     override func update(deltaTime: Float) {
         super.update(deltaTime: deltaTime)
+        selectTime += deltaTime
         updateModelConstants()
     }
     
@@ -254,6 +330,18 @@ class ReservoirObject: Node {
     override func getRotationZ() -> Float {
         return Float(LiquidFun.getReservoirRotation(_reservoir))
     }
+    
+    func getButtonAtPos(_ atPos: float2 ) -> FloatingButton? {
+        let boxPos = self.getBoxPosition()
+        for b in buttons {
+            let boxCenter = b.box2DPos + boxPos
+            if ( ( ( (boxCenter.x - b.size.x) < atPos.x) && (atPos.x < (boxCenter.x + b.size.x) ) ) &&
+                 ( ( (boxCenter.y - b.size.y) < atPos.y) && (atPos.y < (boxCenter.y + b.size.y) ) )  ){
+                return b
+            }
+        }
+        return nil
+    }
 }
 
 
@@ -272,6 +360,7 @@ extension ReservoirObject: Renderable {
         bulbMesh.drawPrimitives(renderCommandEncoder)
         fluidSystemRender(renderCommandEncoder)
         pipesRender(renderCommandEncoder)
+        testingRender(renderCommandEncoder)
     }
     
     func fluidSystemRender( _ renderCommandEncoder: MTLRenderCommandEncoder ) {
@@ -318,6 +407,42 @@ extension ReservoirObject: Renderable {
             renderCommandEncoder.drawPrimitives(type: .line,
                                                 vertexStart: 0,
                                                 vertexCount: _pipeVertexCount)
+        }
+    }
+}
+
+extension ReservoirObject: Testable {
+    func touchesBegan(_ boxPos: float2) {
+        buttonPressed = getButtonAtPos( boxPos )
+    }
+    
+    func touchDragged(_ boxPos: float2) {
+        if buttonPressed != nil {
+        print(buttonPressed?.id)
+        }
+    }
+    
+    func touchEnded() {
+        
+    }
+    
+    func testingRender(_ renderCommandEncoder: MTLRenderCommandEncoder) {
+        if isTesting {
+            
+                renderCommandEncoder.setRenderPipelineState(RenderPipelineStates.Get(.Instanced))
+                renderCommandEncoder.setDepthStencilState(DepthStencilStates.Get(.Less))
+            for i in 0..<buttons.count {
+                // Vertex
+                if (buttonPressed?.id == buttons[i].id) {
+                    var selectColor = float4(0.3,0.4,0.1,1.0)
+                    renderCommandEncoder.setRenderPipelineState(RenderPipelineStates.Get(.Select))
+                    renderCommandEncoder.setFragmentBytes(&selectColor, length: float4.size, index: 2)
+                    renderCommandEncoder.setFragmentBytes(&selectTime, length : Float.size, index : 0)
+                }
+                
+                renderCommandEncoder.setVertexBytes(&buttons[i].modelConstants, length : ModelConstants.stride, index: 2)
+                buttons[i].buttonQuad.drawPrimitives(renderCommandEncoder, baseColorTextureType: buttons[i].buttonTexture)
+            }
         }
     }
 }

@@ -14,7 +14,7 @@ class DevScene : Scene {
     
     var testReservoir0: ReservoirObject!
     var testReservoir1: ReservoirObject!
-
+    
     // tube emptying
     var emptyingTubes: Bool = false
     private var _emptyDuration: Float = 1.0
@@ -61,11 +61,16 @@ class DevScene : Scene {
     var engine: CHHapticEngine!
     var player: CHHapticPatternPlayer?
     
+    func addSnapshots() {
+        let testSnapshot = SnapshotObject(box2DOrigin)
+        addChild(testSnapshot)
+    }
+    
     func addTestButton() {
         let clearButton = BoxButton(.ClearButton, .ClearButton, .Clear, center: box2DOrigin + float2(1.0,-3.0) )
         let menuButton = BoxButton(.Menu,.Menu, .ToMenu, center: box2DOrigin + float2(-1.0,-3.0), label: .MenuLabel)
-        let testButton0 = BoxButton(.Menu, .Menu, .TestAction0, center: box2DOrigin + float2(-1.0,-4.0), label: .TestLabel)
-        let testButton1 = BoxButton(.Menu, .Menu, .TestAction1, center: box2DOrigin + float2(1.0,-4.0), label: .TestLabel)
+        let testButton0 = BoxButton(.Menu, .Menu, .TestAction0, center: box2DOrigin + float2(-1.0,-4.0), label: .TestLabel0)
+        let testButton1 = BoxButton(.Menu, .Menu, .TestAction1, center: box2DOrigin + float2(1.0,-4.0), label: .TestLabel1)
 
         buttons.append(clearButton)
         buttons.append(menuButton)
@@ -78,13 +83,12 @@ class DevScene : Scene {
     }
     
     func addReservoirs() {
-        testReservoir0 = ReservoirObject(origin: box2DOrigin + float2(-1,6))
+        testReservoir0 = ReservoirObject(origin: box2DOrigin + float2(-1,3))
         testReservoir0.fill(color: .Red)
-        testReservoir1 =  ReservoirObject(origin: box2DOrigin + float2(1,6))
+        testReservoir1 =  ReservoirObject(origin: box2DOrigin + float2(1,3))
         testReservoir1.fill(color: .Blue)
         addChild(testReservoir0)
         addChild(testReservoir1)
-
     }
     
     override func buildScene(){
@@ -111,70 +115,7 @@ class DevScene : Scene {
         addTestButton()
         addReservoirs()
         
-        for tube in tubeGrid {
-            addChild(tube)
-        }
-    }
-    
-    private func InitializeGrid() {
-        let height : Float = 2.0
-        let width  : Float = 5.0
-        let xSep : Float = 1.0
-        let ySep : Float = 2.0
-        var y : Float = box2DOrigin.y
-        var x : Float = box2DOrigin.x
-        let rowNum = Int(width / xSep)
-        let maxColNum = Int(height / ySep)
-        
-        let tubesCount = tubeLevel.startingLevel.count
-        
-        if tubesCount > (rowNum * maxColNum ){
-            print("warning we will probably be out of bounds with this many tubes.")
-        }
-        
-        if( tubesCount <= rowNum ) {
-            if( tubesCount % 2 == 0) { // center it
-                x -= xSep * Float(tubesCount) / 2
-            }
-            else { // center it on the center tube
-                x -= xSep * floor( Float(tubesCount) / 2)
-            }
-        } else { // center it on the center tube
-            x -= xSep * floor( Float(tubesCount) / 2)
-        }
-        
-        for (i, tubeColors) in tubeLevel.startingLevel.enumerated() {
-            if(x < width) {
-                let currentTube = TestTube(origin: float2(x:x,y:y), gridId: i)
-                if tubeHeight == 0.0  {// unitialized, then initialize
-                    self.tubeHeight = currentTube.getTubeHeight()
-                    print("initializing real tube height for collision testing")
-                }
-                currentTube.startFastFill(colors: tubeColors)
-                currentTube.setScale(2 / (GameSettings.ptmRatio * 10) )
-                currentTube.setPositionZ(1)
-                addChild(currentTube.sceneRepresentation)
-                tubeGrid.append(currentTube)
-                x += xSep
-            } else {
-                x = 0.5
-                y -= ySep
-                let currentTube = TestTube(origin: float2(x:x,y:y), gridId: i)
-                currentTube.startFastFill(colors: tubeColors)
-                currentTube.setScale(2 / (GameSettings.ptmRatio * 10) )
-                currentTube.setPositionZ(1)
-                addChild(currentTube.sceneRepresentation)
-                tubeGrid.append(currentTube)
-                x += xSep
-            }
-        }
-    }
-    
-    private func refillTubesToCurrentState() {
-        gyroVector = float2(0,-9.806)
-        for (i, tubeColors) in tubeLevel.colorStates.enumerated() {
-            tubeGrid[i].startFastFill(colors: tubeColors)
-        }
+//        addSnapshots()
     }
     
     private func beginEmpty() {
@@ -208,7 +149,7 @@ class DevScene : Scene {
             if !stillEmptying { nextEmptyKF() }
         case 3:  // done
             emptyingTubes = false
-            refillTubesToCurrentState()
+            print("execute refill")
             nextEmptyKF()
         default :
             break
@@ -320,8 +261,15 @@ class DevScene : Scene {
         _currentState = .Idle
     }
     override func touchesBegan() {
+        let boxPos = Touches.GetBoxPos()
+        buttonPressed = boxButtonHitTest(boxPos: boxPos)
         
-        buttonPressed = boxButtonHitTest(boxPos: Touches.GetBoxPos())
+        for node in children {
+            if let testableNode = node as? Testable {
+                testableNode.touchesBegan(boxPos)
+            }
+        }
+        
         if buttonPressed != nil {
             // Stop the engine after it completes the playback.
             engine.notifyWhenPlayersFinished { error in
@@ -404,7 +352,7 @@ class DevScene : Scene {
             testReservoir0.removeWallPiece(testIndex)
             testIndex += 1
         case .TestAction1:
-            testReservoir1.testFunction(tubeGrid[0].origin)
+            break
         case nil:
             print("let go of no button")
         default:

@@ -11,6 +11,10 @@
 		920603B2290B03F400C1C846 /* bulbMesh.mtl in Resources */ = {isa = PBXBuildFile; fileRef = 920603B0290B03F400C1C846 /* bulbMesh.mtl */; };
 		920603B4290B044100C1C846 /* bulbMesh.png in Resources */ = {isa = PBXBuildFile; fileRef = 920603B3290B044100C1C846 /* bulbMesh.png */; };
 		920603B6290C4E8300C1C846 /* DevScene.swift in Sources */ = {isa = PBXBuildFile; fileRef = 920603B5290C4E8300C1C846 /* DevScene.swift */; };
+		920603B8290C559600C1C846 /* Testable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 920603B7290C559600C1C846 /* Testable.swift */; };
+		920603BA290C585600C1C846 /* SnapshotObject.swift in Sources */ = {isa = PBXBuildFile; fileRef = 920603B9290C585600C1C846 /* SnapshotObject.swift */; };
+		920603BC290C684F00C1C846 /* missingTexture.png in Resources */ = {isa = PBXBuildFile; fileRef = 920603BB290C684F00C1C846 /* missingTexture.png */; };
+		920603BF290C99C100C1C846 /* editTexture.png in Resources */ = {isa = PBXBuildFile; fileRef = 920603BE290C99C100C1C846 /* editTexture.png */; };
 		9226D3102905E306007785D5 /* Reservoir.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9226D30E2905E306007785D5 /* Reservoir.cpp */; };
 		9226D3122905F5C4007785D5 /* testflat.obj in Resources */ = {isa = PBXBuildFile; fileRef = 9226D3112905F5C4007785D5 /* testflat.obj */; };
 		9226D3142905FA2A007785D5 /* testtube.obj in Resources */ = {isa = PBXBuildFile; fileRef = 9226D3132905FA2A007785D5 /* testtube.obj */; };
@@ -180,6 +184,10 @@
 		920603B0290B03F400C1C846 /* bulbMesh.mtl */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = bulbMesh.mtl; sourceTree = "<group>"; };
 		920603B3290B044100C1C846 /* bulbMesh.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = bulbMesh.png; sourceTree = "<group>"; };
 		920603B5290C4E8300C1C846 /* DevScene.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DevScene.swift; sourceTree = "<group>"; };
+		920603B7290C559600C1C846 /* Testable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Testable.swift; sourceTree = "<group>"; };
+		920603B9290C585600C1C846 /* SnapshotObject.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SnapshotObject.swift; sourceTree = "<group>"; };
+		920603BB290C684F00C1C846 /* missingTexture.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = missingTexture.png; sourceTree = "<group>"; };
+		920603BE290C99C100C1C846 /* editTexture.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = editTexture.png; sourceTree = "<group>"; };
 		9226D30E2905E306007785D5 /* Reservoir.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Reservoir.cpp; sourceTree = "<group>"; };
 		9226D30F2905E306007785D5 /* Reservoir.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Reservoir.h; sourceTree = "<group>"; };
 		9226D3112905F5C4007785D5 /* testflat.obj */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = testflat.obj; sourceTree = "<group>"; };
@@ -429,9 +437,18 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		920603BD290C990000C1C846 /* Button Textures */ = {
+			isa = PBXGroup;
+			children = (
+				920603BE290C99C100C1C846 /* editTexture.png */,
+			);
+			path = "Button Textures";
+			sourceTree = "<group>";
+		};
 		9226D32829070069007785D5 /* reservoir */ = {
 			isa = PBXGroup;
 			children = (
+				920603BB290C684F00C1C846 /* missingTexture.png */,
 				920603B3290B044100C1C846 /* bulbMesh.png */,
 				920603B0290B03F400C1C846 /* bulbMesh.mtl */,
 				920603AF290B03F400C1C846 /* bulbMesh.obj */,
@@ -764,6 +781,7 @@
 			isa = PBXGroup;
 			children = (
 				92A9E37A28DA6CEB0000A77F /* Renderable.swift */,
+				920603B7290C559600C1C846 /* Testable.swift */,
 			);
 			path = Protocols;
 			sourceTree = "<group>";
@@ -788,6 +806,8 @@
 		92A9E38028DA6CEB0000A77F /* Game Objects */ = {
 			isa = PBXGroup;
 			children = (
+				920603B9290C585600C1C846 /* SnapshotObject.swift */,
+				92A9E38828DA6CEB0000A77F /* GameObject.swift */,
 				9226D3172905FE6B007785D5 /* ReservoirObject.swift */,
 				92A9E38428DA6CEB0000A77F /* TestTube.swift */,
 				9295E4CE2900B84900A33A0D /* TextObject.swift */,
@@ -797,7 +817,6 @@
 				92A9E38528DA6CEB0000A77F /* CloudsBackground.swift */,
 				92A9E38628DA6CEB0000A77F /* TubeVisual.swift */,
 				92A9E38728DA6CEB0000A77F /* FluidEnvironment.swift */,
-				92A9E38828DA6CEB0000A77F /* GameObject.swift */,
 				92A9E38928DA6CEB0000A77F /* InstancedObject.swift */,
 				92A9E38A28DA6CEB0000A77F /* WaterFallObject.swift */,
 				92A9E38B28DA6CEB0000A77F /* BoxButton.swift */,
@@ -836,6 +855,7 @@
 		92A9E3B728DA6D620000A77F /* Res */ = {
 			isa = PBXGroup;
 			children = (
+				920603BD290C990000C1C846 /* Button Textures */,
 				9226D32829070069007785D5 /* reservoir */,
 				9226D3132905FA2A007785D5 /* testtube.obj */,
 				92A9E42A28DA72910000A77F /* BoxButtons */,
@@ -1032,6 +1052,7 @@
 				92489C032799DD0500639B52 /* LaunchScreen.storyboard in Resources */,
 				920603B4290B044100C1C846 /* bulbMesh.png in Resources */,
 				92A9E41228DA6D620000A77F /* cloud2.mtl in Resources */,
+				920603BC290C684F00C1C846 /* missingTexture.png in Resources */,
 				92A9E41628DA6D620000A77F /* beach.png in Resources */,
 				92A9E41528DA6D620000A77F /* beach.mtl in Resources */,
 				92A9E40928DA6D620000A77F /* cloud3.obj in Resources */,
@@ -1039,6 +1060,7 @@
 				9226D33229071212007785D5 /* reservoir.mtl in Resources */,
 				92A9E3FD28DA6D620000A77F /* pineTree.mtl in Resources */,
 				92A9E44228DA72910000A77F /* testButton.obj in Resources */,
+				920603BF290C99C100C1C846 /* editTexture.png in Resources */,
 				92A9E40228DA6D620000A77F /* pineTree.png in Resources */,
 				92A9E3ED28DA6D620000A77F /* quad.obj in Resources */,
 				920603B1290B03F400C1C846 /* bulbMesh.obj in Resources */,
@@ -1149,6 +1171,7 @@
 				92A9E39628DA6CEB0000A77F /* CloudsBackground.swift in Sources */,
 				92A9E38E28DA6CEB0000A77F /* Renderable.swift in Sources */,
 				92A9E39D28DA6CEB0000A77F /* DebugEnvironment.swift in Sources */,
+				920603BA290C585600C1C846 /* SnapshotObject.swift in Sources */,
 				92489B972799DA0400639B52 /* b2World.cpp in Sources */,
 				923F2BD127A0FD7300443936 /* CustomMesh.swift in Sources */,
 				923F2BD427A0FD7300443936 /* MeshLibrary.swift in Sources */,
@@ -1186,6 +1209,7 @@
 				920603B6290C4E8300C1C846 /* DevScene.swift in Sources */,
 				92489BA12799DA0400639B52 /* b2Contact.cpp in Sources */,
 				92489BA52799DA0400639B52 /* b2FrictionJoint.cpp in Sources */,
+				920603B8290C559600C1C846 /* Testable.swift in Sources */,
 				92376BF428DE6E9F007C93DB /* MBETextMesh.m in Sources */,
 				92489BC52799DA0400639B52 /* b2Distance.cpp in Sources */,
 				92A9E3A728DA6D1F0000A77F /* Scene.swift in Sources */,

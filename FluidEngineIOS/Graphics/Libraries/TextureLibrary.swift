@@ -22,7 +22,13 @@ enum TextureTypes {
     
     case Reservoir
     case Bulb
+    
+    case Missing
     case None // special, no texture at all, not even in library
+    
+    case EditTexture
+    
+    case ReservoirSnapShot
 }
 
 class Textures {
@@ -48,7 +54,8 @@ class Textures {
         _library.updateValue(Texture("pineTree", ext: "png").texture, forKey: .PineTree)
         _library.updateValue(Texture("reservoir", ext: "png").texture, forKey: .Reservoir)
         _library.updateValue(Texture("bulbMesh", ext: "png").texture, forKey: .Bulb)
-
+        _library.updateValue(Texture("missingTexture", ext: "png").texture, forKey: .Missing)
+        _library.updateValue(Texture("editTexture", ext: "png").texture, forKey: .EditTexture)
 
     }
     

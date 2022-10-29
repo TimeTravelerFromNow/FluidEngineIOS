@@ -75,27 +75,11 @@ class TestTubeScene : Scene {
     func addTestButton() {
         let clearButton = BoxButton(.ClearButton, .ClearButton, .Clear, center: box2DOrigin + float2(1.0,-3.0) )
         let menuButton = BoxButton(.Menu,.Menu, .ToMenu, center: box2DOrigin + float2(-1.0,-3.0), label: .MenuLabel)
-        let testButton0 = BoxButton(.Menu, .Menu, .TestAction0, center: box2DOrigin + float2(-1.0,-4.0), label: .TestLabel)
-        let testButton1 = BoxButton(.Menu, .Menu, .TestAction1, center: box2DOrigin + float2(1.0,-4.0), label: .TestLabel)
 
         buttons.append(clearButton)
         buttons.append(menuButton)
-        buttons.append(testButton0)
-        buttons.append(testButton1)
         addChild(clearButton)
         addChild(menuButton)
-        addChild(testButton0)
-        addChild(testButton1)
-    }
-    
-    func addReservoirs() {
-        testReservoir0 = ReservoirObject(origin: box2DOrigin + float2(-1,6))
-        testReservoir0.fill(color: .Red)
-        testReservoir1 =  ReservoirObject(origin: box2DOrigin + float2(1,6))
-        testReservoir1.fill(color: .Blue)
-        addChild(testReservoir0)
-        addChild(testReservoir1)
-
     }
     
     override func buildScene(){
