@@ -15,6 +15,8 @@
 		920603BA290C585600C1C846 /* SnapshotObject.swift in Sources */ = {isa = PBXBuildFile; fileRef = 920603B9290C585600C1C846 /* SnapshotObject.swift */; };
 		920603BC290C684F00C1C846 /* missingTexture.png in Resources */ = {isa = PBXBuildFile; fileRef = 920603BB290C684F00C1C846 /* missingTexture.png */; };
 		920603BF290C99C100C1C846 /* editTexture.png in Resources */ = {isa = PBXBuildFile; fileRef = 920603BE290C99C100C1C846 /* editTexture.png */; };
+		920603C5290DB6AD00C1C846 /* controlPoints.png in Resources */ = {isa = PBXBuildFile; fileRef = 920603C4290DB6AD00C1C846 /* controlPoints.png */; };
+		920603C7290DC54400C1C846 /* constructPipe.png in Resources */ = {isa = PBXBuildFile; fileRef = 920603C6290DC54400C1C846 /* constructPipe.png */; };
 		9226D3102905E306007785D5 /* Reservoir.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9226D30E2905E306007785D5 /* Reservoir.cpp */; };
 		9226D3122905F5C4007785D5 /* testflat.obj in Resources */ = {isa = PBXBuildFile; fileRef = 9226D3112905F5C4007785D5 /* testflat.obj */; };
 		9226D3142905FA2A007785D5 /* testtube.obj in Resources */ = {isa = PBXBuildFile; fileRef = 9226D3132905FA2A007785D5 /* testtube.obj */; };
@@ -188,6 +190,8 @@
 		920603B9290C585600C1C846 /* SnapshotObject.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SnapshotObject.swift; sourceTree = "<group>"; };
 		920603BB290C684F00C1C846 /* missingTexture.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = missingTexture.png; sourceTree = "<group>"; };
 		920603BE290C99C100C1C846 /* editTexture.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = editTexture.png; sourceTree = "<group>"; };
+		920603C4290DB6AD00C1C846 /* controlPoints.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = controlPoints.png; sourceTree = "<group>"; };
+		920603C6290DC54400C1C846 /* constructPipe.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = constructPipe.png; sourceTree = "<group>"; };
 		9226D30E2905E306007785D5 /* Reservoir.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Reservoir.cpp; sourceTree = "<group>"; };
 		9226D30F2905E306007785D5 /* Reservoir.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Reservoir.h; sourceTree = "<group>"; };
 		9226D3112905F5C4007785D5 /* testflat.obj */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = testflat.obj; sourceTree = "<group>"; };
@@ -440,9 +444,41 @@
 		920603BD290C990000C1C846 /* Button Textures */ = {
 			isa = PBXGroup;
 			children = (
+				920603C6290DC54400C1C846 /* constructPipe.png */,
+				920603C4290DB6AD00C1C846 /* controlPoints.png */,
 				920603BE290C99C100C1C846 /* editTexture.png */,
 			);
 			path = "Button Textures";
+			sourceTree = "<group>";
+		};
+		920603C0290D96D700C1C846 /* Box2DPresentables */ = {
+			isa = PBXGroup;
+			children = (
+				92A9E38B28DA6CEB0000A77F /* BoxButton.swift */,
+				92A9E38A28DA6CEB0000A77F /* WaterFallObject.swift */,
+				92A9E38D28DA6CEB0000A77F /* SurfObject.swift */,
+				92A9E38728DA6CEB0000A77F /* FluidEnvironment.swift */,
+				92A9E38C28DA6CEB0000A77F /* DebugEnvironment.swift */,
+				9226D3172905FE6B007785D5 /* ReservoirObject.swift */,
+				92A9E38128DA6CEB0000A77F /* BoxPolygon.swift */,
+				92A9E38428DA6CEB0000A77F /* TestTube.swift */,
+			);
+			path = Box2DPresentables;
+			sourceTree = "<group>";
+		};
+		920603C3290D973100C1C846 /* Decorative */ = {
+			isa = PBXGroup;
+			children = (
+				92A9E38928DA6CEB0000A77F /* InstancedObject.swift */,
+				92A9E38228DA6CEB0000A77F /* SharedBackground.swift */,
+				9295E4CE2900B84900A33A0D /* TextObject.swift */,
+				92A9E38828DA6CEB0000A77F /* GameObject.swift */,
+				92A9E38628DA6CEB0000A77F /* TubeVisual.swift */,
+				920603B9290C585600C1C846 /* SnapshotObject.swift */,
+				92A9E38528DA6CEB0000A77F /* CloudsBackground.swift */,
+				92A9E38328DA6CEB0000A77F /* SkyBackground.swift */,
+			);
+			path = Decorative;
 			sourceTree = "<group>";
 		};
 		9226D32829070069007785D5 /* reservoir */ = {
@@ -806,22 +842,8 @@
 		92A9E38028DA6CEB0000A77F /* Game Objects */ = {
 			isa = PBXGroup;
 			children = (
-				920603B9290C585600C1C846 /* SnapshotObject.swift */,
-				92A9E38828DA6CEB0000A77F /* GameObject.swift */,
-				9226D3172905FE6B007785D5 /* ReservoirObject.swift */,
-				92A9E38428DA6CEB0000A77F /* TestTube.swift */,
-				9295E4CE2900B84900A33A0D /* TextObject.swift */,
-				92A9E38128DA6CEB0000A77F /* BoxPolygon.swift */,
-				92A9E38228DA6CEB0000A77F /* SharedBackground.swift */,
-				92A9E38328DA6CEB0000A77F /* SkyBackground.swift */,
-				92A9E38528DA6CEB0000A77F /* CloudsBackground.swift */,
-				92A9E38628DA6CEB0000A77F /* TubeVisual.swift */,
-				92A9E38728DA6CEB0000A77F /* FluidEnvironment.swift */,
-				92A9E38928DA6CEB0000A77F /* InstancedObject.swift */,
-				92A9E38A28DA6CEB0000A77F /* WaterFallObject.swift */,
-				92A9E38B28DA6CEB0000A77F /* BoxButton.swift */,
-				92A9E38C28DA6CEB0000A77F /* DebugEnvironment.swift */,
-				92A9E38D28DA6CEB0000A77F /* SurfObject.swift */,
+				920603C3290D973100C1C846 /* Decorative */,
+				920603C0290D96D700C1C846 /* Box2DPresentables */,
 			);
 			path = "Game Objects";
 			sourceTree = "<group>";
@@ -1077,12 +1099,14 @@
 				92A9E43828DA72910000A77F /* beachButton.mtl in Resources */,
 				92A9E40828DA6D620000A77F /* cloud2.obj in Resources */,
 				92A9E43F28DA72910000A77F /* clearButton.png in Resources */,
+				920603C5290DB6AD00C1C846 /* controlPoints.png in Resources */,
 				92A9E40C28DA6D620000A77F /* cloud3.png in Resources */,
 				92A9E40D28DA6D620000A77F /* cloud2.png in Resources */,
 				92A9E40B28DA6D620000A77F /* cloud0.obj in Resources */,
 				92489A142799D9BF00639B52 /* Assets.xcassets in Resources */,
 				92489A122799D9BD00639B52 /* Main.storyboard in Resources */,
 				92A9E43A28DA72910000A77F /* testButton.mtl in Resources */,
+				920603C7290DC54400C1C846 /* constructPipe.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

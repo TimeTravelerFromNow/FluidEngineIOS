@@ -3,15 +3,19 @@ import MetalKit
 
 enum MiniMenuActions {
     case ToggleMiniMenu
+    case ToggleControlPoints
+    case ConstructPipe
+    
     case None
 }
 // A button without a representation in the box2d world
 class FloatingButton: Node {
     
-    var buttonQuad: Mesh
-    var buttonTexture: TextureTypes
-    var action: MiniMenuActions
+    var buttonQuad: Mesh = MeshLibrary.Get(.Quad)
+    var buttonTexture: TextureTypes!
+    var action: MiniMenuActions!
     var modelConstants = ModelConstants()
+    var parentNode: Node!
     var box2DPos: float2!
     var size: float2!
     
@@ -21,19 +25,29 @@ class FloatingButton: Node {
         super.init()
         box2DPos = boxPos
         self.size = size
+        let xScale = size.x
+        let yScale = size.y
         self.action = action
         self.buttonTexture = textureType
+        self.setScaleX(GameSettings.stmRatio * xScale  )
+        self.setScaleY(GameSettings.stmRatio * yScale )
+        self.setPositionZ(0.1)
+    }
+    
+    func setButtonSizeFromQuad() {
+        
     }
     
     func pressButton( closure: () -> Void ) {
-        
         isSelected = true
     }
     func releaseButton( closure: () -> Void ) {
-       
         isSelected = false
     }
+    
 }
+
+
 
 class ReservoirObject: Node {
     
@@ -42,6 +56,7 @@ class ReservoirObject: Node {
     
     var isTesting: Bool = true
     var isShowingMiniMenu: Bool = false
+    var isPlacingControlPoints = false
     
     var boxVertices: [Vector2D] = []
     
@@ -79,6 +94,11 @@ class ReservoirObject: Node {
     
     private var _pipeVertices: [float2] = []
     private var _pipeVertexCount: Int = 0
+    
+    //control points
+    var controlPoints: [float2] = []
+    private var _controlPointsCount: Int = 0
+    private var _controlPointsVertexBuffer: MTLBuffer!
     
     private var _pipeArrowHeadPos: float2 = float2(0)
     private var _pipeArrowTailPos: float2 = float2(0)
@@ -139,25 +159,23 @@ class ReservoirObject: Node {
     }
     
     func buildMiniMenu() {
-        let quad = MeshLibrary.Get(.Quad)
-        let quadVertices = quad.getBoxVertices(1.0)
-        let quadWidth = abs(quadVertices[0].x - quadVertices[1].x) / 5
-        let quadHeight = abs(quadVertices[1].y - quadVertices[2].y) / 5
-        let quadSize = float2(quadWidth, quadHeight)
-        let buttonNode = Node()
-        buttonNode.setScale(1 / (GameSettings.ptmRatio * 5) )
-        let boxPos = float2(-1.0, 1.0)
-        buttonNode.setPositionX( boxPos.x * GameSettings.stmRatio )
-        buttonNode.setPositionY( boxPos.y * GameSettings.stmRatio )
-        buttonNode.setPositionZ( 0.1 )
-
-        let toggleMiniMenuButton = FloatingButton(buttonQuad: quad,
-                                              buttonTexture: .EditTexture,
-                                              box2DPos: boxPos,
-                                              action: .ToggleMiniMenu,
-                                              size: quadSize,
-                                                  node: buttonNode )
+        let toggleMiniMenuButton = FloatingButton(float2(-1.0,1.0),
+                                                  size: float2(0.25,0.25),
+                                                  action: .ToggleMiniMenu,
+                                                  textureType: .EditTexture)
+        
+            let toggleMakeControlPointsButton = FloatingButton(float2(-1.0,0.5),
+                                                               size: float2(0.25,0.25),
+                                                      action: .ToggleControlPoints,
+                                                      textureType: .ControlPointsTexture)
+        
+            let constructPipesButton = FloatingButton(float2(-1.0,0.0),
+                                                               size: float2(0.25,0.25),
+                                                      action: .ConstructPipe,
+                                                      textureType: .ConstructPipesTexture)
         buttons.append(toggleMiniMenuButton)
+        buttons.append(toggleMakeControlPointsButton)
+        buttons.append(constructPipesButton)
     }
     
     func fill(color: TubeColors) {
@@ -252,8 +270,8 @@ class ReservoirObject: Node {
     
     //buffer updates
     func updateModelConstants() {
-        setPositionX(self.getBoxPositionX() * GameSettings.stmRatio)
-        setPositionY(self.getBoxPositionY() * GameSettings.stmRatio)
+        setPositionX( self.getBoxPositionX() * GameSettings.stmRatio )
+        setPositionY( self.getBoxPositionY() * GameSettings.stmRatio )
         setRotationZ( getRotationZ() )
         modelConstants.modelMatrix = modelMatrix
         let bulbPos = getBulbPos()
@@ -264,10 +282,18 @@ class ReservoirObject: Node {
         
         for i in 0..<buttons.count {
             let x = buttons[i].box2DPos.x + getBoxPositionX()
-            let y =  buttons[i].box2DPos.y + getBoxPositionY()
-            buttons[i].node.setPositionX(x * GameSettings.stmRatio)
-            buttons[i].node.setPositionY(y * GameSettings.stmRatio)
-            buttons[i].modelConstants.modelMatrix = buttons[i].node.modelMatrix
+            let y = buttons[i].box2DPos.y + getBoxPositionY()
+            if(buttons[i].action == .ToggleControlPoints) {
+                if buttons[i].isSelected {
+                    buttons[i].rotateZ(GameTime.DeltaTime)
+                }
+                else {
+                    buttons[i].setRotationZ(0)
+                }
+            }
+            buttons[i].setPositionX(x * GameSettings.stmRatio)
+            buttons[i].setPositionY(y * GameSettings.stmRatio)
+            buttons[i].modelConstants.modelMatrix = buttons[i].modelMatrix
         }
     }
     
@@ -289,6 +315,11 @@ class ReservoirObject: Node {
         if _pipeVertexCount > 0 {
         let pipeVertexSize = float2.stride( _pipeVertexCount )
         _pipeVertexBuffer =  Engine.Device.makeBuffer(bytes: _pipeVertices, length: pipeVertexSize, options: [])
+        }
+        _controlPointsCount = controlPoints.count
+        if _controlPointsCount > 0 {
+            let controlPointsSize = float2.stride( _controlPointsCount )
+            _controlPointsVertexBuffer = Engine.Device.makeBuffer(bytes: controlPoints, length: controlPointsSize, options: [])
         }
     }
     
@@ -408,12 +439,60 @@ extension ReservoirObject: Renderable {
                                                 vertexStart: 0,
                                                 vertexCount: _pipeVertexCount)
         }
+        if _controlPointsCount > 0 {
+            renderCommandEncoder.setRenderPipelineState(RenderPipelineStates.Get(.Lines))
+            renderCommandEncoder.setDepthStencilState(DepthStencilStates.Get(.Less))
+            renderCommandEncoder.setVertexBuffer(_controlPointsVertexBuffer,
+                                                 offset: 0,
+                                                 index: 0)
+            renderCommandEncoder.setVertexBytes(&fluidModelConstants,
+                                                length: ModelConstants.stride,
+                                                index: 2)
+            renderCommandEncoder.setVertexBuffer(_fluidBuffer,
+                                                 offset: 0,
+                                                 index: 3)
+            renderCommandEncoder.setVertexBuffer(_colorBuffer,
+                                                 offset: 0,
+                                                 index: 4)
+            renderCommandEncoder.drawPrimitives(type: .point,
+                                                vertexStart: 0,
+                                                vertexCount: _controlPointsCount)
+        }
     }
 }
 
 extension ReservoirObject: Testable {
     func touchesBegan(_ boxPos: float2) {
         buttonPressed = getButtonAtPos( boxPos )
+        if let pressed = buttonPressed {
+            switch pressed.action {
+            case .ToggleMiniMenu:
+                isShowingMiniMenu.toggle()
+                pressed.isSelected.toggle()
+                if(!pressed.isSelected) { closeAllButtons() }
+            case .ToggleControlPoints:
+                pressed.isSelected.toggle()
+                isPlacingControlPoints.toggle()
+                controlPoints = []
+            case .ConstructPipe:
+                pressed.isSelected.toggle()
+                if controlPoints.count > 0 {
+                    testFunction( controlPoints.first! )
+                }
+            default:
+                print("unprogrammed floating button action! button at \(pressed.box2DPos + self.getBoxPosition())")
+            }
+        } else {
+            if isPlacingControlPoints {
+                controlPoints.append(boxPos)
+            }
+        }
+    }
+    
+    func closeAllButtons() {
+        for b in buttons {
+            b.isSelected = false
+        }
     }
     
     func touchDragged(_ boxPos: float2) {
@@ -423,17 +502,25 @@ extension ReservoirObject: Testable {
     }
     
     func touchEnded() {
-        
+        for i in 0..<buttons.count {
+            switch buttons[i].action {
+            case .ConstructPipe:
+                buttons[i].isSelected = false
+            default:
+                print("touches ended on floating buttons with nothing to do")
+            }
+            
+        }
     }
     
     func testingRender(_ renderCommandEncoder: MTLRenderCommandEncoder) {
         if isTesting {
-            
                 renderCommandEncoder.setRenderPipelineState(RenderPipelineStates.Get(.Instanced))
                 renderCommandEncoder.setDepthStencilState(DepthStencilStates.Get(.Less))
             for i in 0..<buttons.count {
+                if (i > 0) && !isShowingMiniMenu { break }
                 // Vertex
-                if (buttonPressed?.id == buttons[i].id) {
+                if( buttons[i].isSelected ) {
                     var selectColor = float4(0.3,0.4,0.1,1.0)
                     renderCommandEncoder.setRenderPipelineState(RenderPipelineStates.Get(.Select))
                     renderCommandEncoder.setFragmentBytes(&selectColor, length: float4.size, index: 2)

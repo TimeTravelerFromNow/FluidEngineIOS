@@ -26,7 +26,10 @@ enum TextureTypes {
     case Missing
     case None // special, no texture at all, not even in library
     
+    //floating button Quad textures
     case EditTexture
+    case ControlPointsTexture
+    case ConstructPipesTexture
     
     case ReservoirSnapShot
 }
@@ -56,6 +59,8 @@ class Textures {
         _library.updateValue(Texture("bulbMesh", ext: "png").texture, forKey: .Bulb)
         _library.updateValue(Texture("missingTexture", ext: "png").texture, forKey: .Missing)
         _library.updateValue(Texture("editTexture", ext: "png").texture, forKey: .EditTexture)
+        _library.updateValue(Texture("controlPoints", ext: "png").texture, forKey: .ControlPointsTexture)
+        _library.updateValue(Texture("constructPipe", ext: "png").texture, forKey: .ConstructPipesTexture)
 
     }
     

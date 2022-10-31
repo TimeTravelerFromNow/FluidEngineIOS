@@ -19,7 +19,7 @@ class TextObject: Node {
         self.setPositionZ(0.2)
         self.setRotationY(2 * .pi)
         self.setRotationX(.pi)
-        self.setScale(2 / (GameSettings.ptmRatio * 10))
+        self.setScale(1 / (GameSettings.ptmRatio * 5))
         
         _fontType = fontType
         _fontRenderable = FontRenderables.Get(_fontType)

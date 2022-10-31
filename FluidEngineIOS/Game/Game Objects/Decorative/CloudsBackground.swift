@@ -14,7 +14,7 @@ class CloudsBackground: Node {
         }
         for cGrp in clouds {
             addChild(cGrp)
-            cGrp.setPositionZ(0.09)
+            cGrp.setPositionZ(0.01)
             cGrp.setScale(0.01)
         }
         skyBG.setScale(1)
