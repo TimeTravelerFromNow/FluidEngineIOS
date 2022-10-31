@@ -407,7 +407,7 @@ class TestTubeScene : Scene {
             testReservoir0.removeWallPiece(testIndex)
             testIndex += 1
         case .TestAction1:
-            testReservoir1.testFunction(tubeGrid[0].origin)
+            print("TestAction1 button unprogrammed")
         case nil:
             print("let go of no button")
         default:

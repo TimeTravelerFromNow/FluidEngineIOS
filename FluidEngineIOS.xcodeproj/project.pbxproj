@@ -17,6 +17,7 @@
 		920603BF290C99C100C1C846 /* editTexture.png in Resources */ = {isa = PBXBuildFile; fileRef = 920603BE290C99C100C1C846 /* editTexture.png */; };
 		920603C5290DB6AD00C1C846 /* controlPoints.png in Resources */ = {isa = PBXBuildFile; fileRef = 920603C4290DB6AD00C1C846 /* controlPoints.png */; };
 		920603C7290DC54400C1C846 /* constructPipe.png in Resources */ = {isa = PBXBuildFile; fileRef = 920603C6290DC54400C1C846 /* constructPipe.png */; };
+		920603C929105F6000C1C846 /* pipeTexture.png in Resources */ = {isa = PBXBuildFile; fileRef = 920603C829105F6000C1C846 /* pipeTexture.png */; };
 		9226D3102905E306007785D5 /* Reservoir.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9226D30E2905E306007785D5 /* Reservoir.cpp */; };
 		9226D3122905F5C4007785D5 /* testflat.obj in Resources */ = {isa = PBXBuildFile; fileRef = 9226D3112905F5C4007785D5 /* testflat.obj */; };
 		9226D3142905FA2A007785D5 /* testtube.obj in Resources */ = {isa = PBXBuildFile; fileRef = 9226D3132905FA2A007785D5 /* testtube.obj */; };
@@ -192,6 +193,7 @@
 		920603BE290C99C100C1C846 /* editTexture.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = editTexture.png; sourceTree = "<group>"; };
 		920603C4290DB6AD00C1C846 /* controlPoints.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = controlPoints.png; sourceTree = "<group>"; };
 		920603C6290DC54400C1C846 /* constructPipe.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = constructPipe.png; sourceTree = "<group>"; };
+		920603C829105F6000C1C846 /* pipeTexture.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = pipeTexture.png; sourceTree = "<group>"; };
 		9226D30E2905E306007785D5 /* Reservoir.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Reservoir.cpp; sourceTree = "<group>"; };
 		9226D30F2905E306007785D5 /* Reservoir.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Reservoir.h; sourceTree = "<group>"; };
 		9226D3112905F5C4007785D5 /* testflat.obj */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = testflat.obj; sourceTree = "<group>"; };
@@ -484,6 +486,7 @@
 		9226D32829070069007785D5 /* reservoir */ = {
 			isa = PBXGroup;
 			children = (
+				920603C829105F6000C1C846 /* pipeTexture.png */,
 				920603BB290C684F00C1C846 /* missingTexture.png */,
 				920603B3290B044100C1C846 /* bulbMesh.png */,
 				920603B0290B03F400C1C846 /* bulbMesh.mtl */,
@@ -1073,6 +1076,7 @@
 				92A9E40E28DA6D620000A77F /* Cloud0.png in Resources */,
 				92489C032799DD0500639B52 /* LaunchScreen.storyboard in Resources */,
 				920603B4290B044100C1C846 /* bulbMesh.png in Resources */,
+				920603C929105F6000C1C846 /* pipeTexture.png in Resources */,
 				92A9E41228DA6D620000A77F /* cloud2.mtl in Resources */,
 				920603BC290C684F00C1C846 /* missingTexture.png in Resources */,
 				92A9E41628DA6D620000A77F /* beach.png in Resources */,

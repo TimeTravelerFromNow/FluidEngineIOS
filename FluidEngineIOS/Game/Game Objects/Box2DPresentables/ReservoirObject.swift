@@ -47,7 +47,178 @@ class FloatingButton: Node {
     
 }
 
+class Arrow2D {
+    
+    var tailPos: float2!
+    var headPos: float2!
+    var length: Float!
+    var pathVertices: [float2] = []
+    var directionVectors: [float2] = []
+        
+    private var _unitDir: float2 { return normalize( headPos - tailPos ) }
+    private var _newUnitDir: float2 = float2(0)
+    
+    private var _maxTurnAngle: Float = .pi/14
+    func setMaxTurnAngle(_ to: Float) { _maxTurnAngle = to }
+    func getMaxTurnAngle() -> Float { return _maxTurnAngle }
+    
+    init(_ origin: float2, length: Float, direction: float2 = float2(0,-1)) {
+        self.tailPos = origin
+        self.length = length
+        let unitDir = normalize( direction )
+        self.headPos = tailPos + length * unitDir
+        pathVertices.append(tailPos)
+        directionVectors.append( unitDir )
+    }
+    
+    func turnAndMoveArrow(_ toDest: float2) {
+        turnArrow( toDest )
+        moveArrowToNewDir()
+    }
+    
+    private func turnArrow(_ toDest: float2) {
+            let vectorToDest = toDest - tailPos
+            let unitToDest = normalize(vectorToDest)
+            let shadow = dot(_unitDir, unitToDest  )
+            
+            var angleToDest = abs(acos(shadow))
+            if (angleToDest > _maxTurnAngle ) {
+                angleToDest = _maxTurnAngle
+            }
+            // determine whether left or right with cross product!
+            let cross = cross(_unitDir, unitToDest)
+            let sign = cross.z
+            if sign < 0 {
+                angleToDest *= -1
+            }
+            
+            var rotationMat = matrix_float2x2()
+            rotationMat.columns.0 = float2( cos(angleToDest), sin(angleToDest) )
+            rotationMat.columns.1 = float2( -sin(angleToDest), cos(angleToDest) )
+            _newUnitDir =  rotationMat * _unitDir
+    }
+    
+    private func moveArrowToNewDir() {
+ 
+        tailPos = headPos
+        headPos = headPos + _newUnitDir * length
+        pathVertices.append(headPos)
+        directionVectors.append(_newUnitDir)
+    }
+}
 
+class Pipe: Node {
+    private var _leftVertices:  [float2] = []
+    private var _rightVertices: [float2] = []
+    private var _sourceVertices: [float2] = [] // path vertices
+    private var _sourceTangents: [float2] = [] // perpendicular vector at each source vertex
+    
+    private var _textureType: TextureTypes = .PipeTexture
+    private var _mesh: CustomMesh!
+    
+    var modelConstants = ModelConstants()
+    var fluidConstants: FluidConstants!
+    private var _vertexBuffer: MTLBuffer!
+    private var _vertexCount: Int = 0
+    private let _ninetyDegreeRotMat = matrix_float2x2( float2( cos(.pi/2), sin(.pi/2) ),
+                                                        float2( -sin(.pi/2), cos(.pi/2) ) )
+    
+    private var _pipeWidth: Float = 0.3
+    var debugging = false
+    
+    override init() {
+        super.init()
+        _mesh = CustomMeshes.Get(.Quad)
+        self.setScale(1 / ( GameSettings.ptmRatio * 5 ) )
+        fluidConstants = FluidConstants(ptmRatio: GameSettings.ptmRatio, pointSize: GameSettings.particleRadius)
+    }
+    override func render(_ renderCommandEncoder: MTLRenderCommandEncoder) {
+        if( _vertexCount > 3 ) { // we wont have indices set until we have at least 4 vertices
+        renderCommandEncoder.setRenderPipelineState(RenderPipelineStates.Get(.CustomBox2D))
+            renderCommandEncoder.setVertexBytes(&modelConstants,
+                                                length: ModelConstants.stride,
+                                                index: 2)
+            renderCommandEncoder.setVertexBytes(&fluidConstants,
+                                                length: ModelConstants.stride,
+                                                index: 3)
+        renderCommandEncoder.setFragmentTexture(Textures.Get(_textureType), index: 0)
+        _mesh.drawPrimitives( renderCommandEncoder )
+        }
+        if(debugging) {
+            if _vertexCount > 2 {
+                makeDebugVertexBuffer()
+                renderCommandEncoder.setRenderPipelineState(RenderPipelineStates.Get(.Lines))
+                renderCommandEncoder.setDepthStencilState(DepthStencilStates.Get(.Less))
+                renderCommandEncoder.setVertexBuffer(_vertexBuffer,
+                                                     offset: 0,
+                                                     index: 0)
+//                renderCommandEncoder.setVertexBuffer(_fluidBuffer,
+//                                                     offset: 0,
+//                                                     index: 3)
+//                renderCommandEncoder.setVertexBuffer(_colorBuffer,
+//                                                     offset: 0,
+//                                                     index: 4)
+                renderCommandEncoder.drawPrimitives(type: .point,
+                                                    vertexStart: 0,
+                                                    vertexCount: _vertexCount * 2)
+            }
+        }
+    }
+    
+   func makeDebugVertexBuffer() {
+       var vertexBytes = _leftVertices
+       vertexBytes.append(contentsOf: _rightVertices)
+       _vertexBuffer = Engine.Device.makeBuffer(bytes: vertexBytes, length: float2.stride(_leftVertices.count + _rightVertices.count), options: [])
+    }
+    func setSourceVectors(pathVertices: [float2], pathVectors: [float2]) {
+        _sourceVertices = pathVertices
+        _sourceTangents = [float2].init(repeating: float2(0), count: pathVectors.count)
+        // rotate each pathVector ninety deg. (so it is tangent), from this we can construct pipe vertices
+        for i in 0..<pathVectors.count {
+            _sourceTangents[i] = _ninetyDegreeRotMat * pathVectors[i]
+        }
+    }
+    
+    func newSourceVectors(pathVertex: float2, pathVector: float2) {
+        _sourceVertices.append(pathVertex)
+        let rotatedVector = _ninetyDegreeRotMat * pathVector
+        _sourceTangents.append( rotatedVector )
+    }
+    
+    func buildPipeVertices() {
+        if( _sourceVertices.count < 2 ) { // need at least 4 vertices (from 2 source points)
+            return
+        }
+        var newLeftVertices = _sourceVertices
+        var newRightVertices = _sourceVertices // resizes both arrays
+        var customVertices = [CustomVertex].init(repeating: CustomVertex(position: float3(0),
+                                                                         color: float4(1.0,0.0,0.0,1.0),
+                                                                         textureCoordinate: float2(0)), count: _sourceVertices.count * 2)
+
+        var indices: [UInt32] = []
+        var currIndex: UInt32 = 1
+        for (i, v) in _sourceVertices.enumerated() {
+            newLeftVertices[i] = v + _sourceTangents[i] * _pipeWidth / 2
+            newRightVertices[i] = v - _sourceTangents[i] * _pipeWidth / 2
+            customVertices[ Int(currIndex) - 1 ].position = float3(newLeftVertices[i].x, newLeftVertices[i].y, 0)
+            customVertices[ Int(currIndex) - 1 ].textureCoordinate = float2(0,Float(i % 2))
+            customVertices[ Int(currIndex) ].position = float3(newRightVertices[i].x, newRightVertices[i].y, 0)
+            customVertices[ Int(currIndex) ].textureCoordinate =  float2(1, Float(i % 2))
+            if currIndex > 2 {
+                let triangle0 = [ currIndex - 3, currIndex - 2, currIndex - 1].map( { UInt32($0) } )
+                let triangle1 = [ currIndex - 2, currIndex - 1, currIndex ].map( { UInt32($0) } )
+                indices.append(contentsOf: triangle0)
+                indices.append(contentsOf: triangle1)
+            }
+            currIndex += 2
+        }
+        _leftVertices = newLeftVertices
+        _rightVertices = newRightVertices
+        _vertexCount = newLeftVertices.count + newRightVertices.count
+        _mesh.setIndices( indices )
+        _mesh.setVertices( customVertices )
+    }
+}
 
 class ReservoirObject: Node {
     
@@ -95,36 +266,33 @@ class ReservoirObject: Node {
     private var _pipeVertices: [float2] = []
     private var _pipeVertexCount: Int = 0
     
+    var selectTime: Float = 0.0
+    
+    // object state stuff
+    var isBuildingPipes = false
+    
+    // animation
+    private let _defaultPipeBuildDelay: Float = 0.3
+    private var _pipeBuildDelay: Float = 0.05
+    private var _controlPointIndex: Int = 0
+    private var _targetRange: Float = 0.3 // how close the arrow needs to be to consider at target.
+    private var _testArrow: Arrow2D!
     //control points
     var controlPoints: [float2] = []
     private var _controlPointsCount: Int = 0
     private var _controlPointsVertexBuffer: MTLBuffer!
     
-    private var _pipeArrowHeadPos: float2 = float2(0)
-    private var _pipeArrowTailPos: float2 = float2(0)
-    private var _pipeArrowUnitDir: float2 { return normalize( _pipeArrowHeadPos - _pipeArrowTailPos ) }
-    private var _newPipeArrowUnitDir: float2 = float2(0)
-    private var _pipeArrowMagnitude: Float { return length(_pipeArrowHeadPos - _pipeArrowTailPos) }
-    var pipeMag: Float = 0.2
-    
-    var tubeOrigins: [float2] = []
-    var tubeColors: [TubeColors] = []
-    var tubeHeight: Float = 0.0
-    
     var hemisphereSegments = 8
     
-    var selectTime: Float = 0.0
-    
-    func setTubeHeight(_ height: Float) {
-        
-    }
+    // pipes objects
+    var _testPipe = Pipe()
+    var _pipes: [Pipe] = []
     
     init( origin: float2, scale: Float = 4.0 ) {
         super.init()
         reservoirMesh = MeshLibrary.Get(.Reservoir)
         bulbMesh = MeshLibrary.Get(.BulbMesh)
         self.scale = scale
-       
         self.origin = origin
         setScale(1 / (GameSettings.ptmRatio * 5) )
         fluidModelConstants.modelMatrix = modelMatrix
@@ -134,9 +302,11 @@ class ReservoirObject: Node {
         bulbNode.setScale(GameSettings.stmRatio / scale)
         buildContainer()
         updateModelConstants()
+        refreshFluidMCBuffer()
+        _testPipe.modelConstants = fluidModelConstants
         self.texture = Textures.Get(.Reservoir)
         self.material.useTexture = true
-        
+        _pipes.append(_testPipe)
     }
     
     //initialization
@@ -163,16 +333,14 @@ class ReservoirObject: Node {
                                                   size: float2(0.25,0.25),
                                                   action: .ToggleMiniMenu,
                                                   textureType: .EditTexture)
-        
-            let toggleMakeControlPointsButton = FloatingButton(float2(-1.0,0.5),
-                                                               size: float2(0.25,0.25),
-                                                      action: .ToggleControlPoints,
-                                                      textureType: .ControlPointsTexture)
-        
-            let constructPipesButton = FloatingButton(float2(-1.0,0.0),
-                                                               size: float2(0.25,0.25),
-                                                      action: .ConstructPipe,
-                                                      textureType: .ConstructPipesTexture)
+        let toggleMakeControlPointsButton = FloatingButton(float2(-1.0,0.5),
+                                                           size: float2(0.25,0.25),
+                                                           action: .ToggleControlPoints,
+                                                           textureType: .ControlPointsTexture)
+        let constructPipesButton = FloatingButton(float2(-1.0,0.0),
+                                                  size: float2(0.25,0.25),
+                                                  action: .ConstructPipe,
+                                                  textureType: .ConstructPipesTexture)
         buttons.append(toggleMiniMenuButton)
         buttons.append(toggleMakeControlPointsButton)
         buttons.append(constructPipesButton)
@@ -193,67 +361,6 @@ class ReservoirObject: Node {
         LiquidFun.removeWallPiece(onReservoir: _reservoir, at: atIndex)
     }
     
-    func determinePipeBuildingConstants(_ dest: float2) {
-        let angle = 3 * Float.pi / 2
-        var normalVector = float2( cos(angle), sin(angle) )
-        var v0 =  getBulbPos()
-        var v1 = v0 + normalVector
-        var vectorToDest = dest - getSegmentCenter(3 * Float.pi / 2)
-        var unitToDest = normalize(dest - v0)
-        var shadow = dot(normalVector, unitToDest  )
-        var angleToDest = acos(shadow)
-        if (angleToDest > .pi ) {
-            angleToDest = .pi
-        }
-        if (angleToDest < -.pi) {
-            angleToDest = -.pi
-        }
-        
-        _pipeVertices.append(v0)
-        _pipeVertices.append(v1)
-           _pipeArrowTailPos = v0
-            _pipeArrowHeadPos =  v1
-        
-    }
-    var hasOpened: Bool = false
-    var hasReachedHalfway: Bool = false // we should aim for 3 points to turn at, first turn point, midpoint, second turn point
-    // let's have a function that builds a smooth curved line to a destination
-    func testFunction(_ dest: float2) {
-        if !hasOpened  {
-        removeWallPiece( getSegmentIndex(Float.pi/2) )
-            hasOpened = true
-            determinePipeBuildingConstants(dest)
-        }
-        if _pipeVertices.count == 0 {
-        } else {
-            let vectorToDest = dest - _pipeArrowHeadPos
-            let unitToDest = normalize(vectorToDest)
-            let shadow = dot(_pipeArrowUnitDir, unitToDest  )
-            
-            var angleToDest = abs(acos(shadow))
-            if (angleToDest > .pi/24 ) {
-                angleToDest = .pi/24
-            }
-            // determine whether left or right with cross product!
-            let cross = cross(_pipeArrowUnitDir, unitToDest)
-            let sign = cross.z
-            if sign < 0 {
-                angleToDest *= -1
-            }
-            print(_pipeArrowUnitDir)
-            var rotationMat = matrix_float2x2()
-            rotationMat.columns.0 = float2( cos(angleToDest), sin(angleToDest) )
-            rotationMat.columns.1 = float2( -sin(angleToDest), cos(angleToDest) )
-            _newPipeArrowUnitDir =  rotationMat * _pipeArrowUnitDir
-            _pipeArrowTailPos = _pipeArrowHeadPos
-            _pipeArrowHeadPos = _pipeArrowHeadPos + _newPipeArrowUnitDir * pipeMag
-            print(_pipeArrowUnitDir)
-
-            _pipeVertices.append(_pipeArrowHeadPos)
-        }
-        
-    }
-    
     private func getBulbPos() -> float2 {
         let boxPos = LiquidFun.getBulbPos(_reservoir)
         return float2( boxPos.x, boxPos.y )
@@ -267,7 +374,7 @@ class ReservoirObject: Node {
         let boxPos = LiquidFun.getSegmentPos(_reservoir, at: getSegmentIndex(atAngle))
         return float2(boxPos.x, boxPos.y)
     }
-    
+
     //buffer updates
     func updateModelConstants() {
         setPositionX( self.getBoxPositionX() * GameSettings.stmRatio )
@@ -275,10 +382,9 @@ class ReservoirObject: Node {
         setRotationZ( getRotationZ() )
         modelConstants.modelMatrix = modelMatrix
         let bulbPos = getBulbPos()
-        bulbNode.setPositionX(bulbPos.x * GameSettings.stmRatio)
-        bulbNode.setPositionY(bulbPos.y * GameSettings.stmRatio)
+        bulbNode.setPositionX( bulbPos.x * GameSettings.stmRatio )
+        bulbNode.setPositionY( bulbPos.y * GameSettings.stmRatio )
         bulbModelConstants.modelMatrix = bulbNode.modelMatrix
-        refreshFluidMCBuffer()
         
         for i in 0..<buttons.count {
             let x = buttons[i].box2DPos.x + getBoxPositionX()
@@ -291,8 +397,8 @@ class ReservoirObject: Node {
                     buttons[i].setRotationZ(0)
                 }
             }
-            buttons[i].setPositionX(x * GameSettings.stmRatio)
-            buttons[i].setPositionY(y * GameSettings.stmRatio)
+            buttons[i].setPositionX( x * GameSettings.stmRatio )
+            buttons[i].setPositionY( y * GameSettings.stmRatio )
             buttons[i].modelConstants.modelMatrix = buttons[i].modelMatrix
         }
     }
@@ -334,11 +440,64 @@ class ReservoirObject: Node {
                                     size: Size2D(width:groupSize.x, height: groupSize.y),
                                     color: color)
     }
-    
+
     override func update(deltaTime: Float) {
         super.update(deltaTime: deltaTime)
         selectTime += deltaTime
         updateModelConstants()
+        
+        if( isBuildingPipes ) {
+            pipeBuildStep( deltaTime )
+        }
+    }
+    // initiatiators
+    func buildPipe() {
+        self._pipeBuildDelay = _defaultPipeBuildDelay
+        self._controlPointIndex = 0
+        let startingPos = getBulbPos()
+        self._testArrow = Arrow2D(startingPos, length: 0.2)
+        self.isBuildingPipes = true
+    }
+    
+    func makeControlPoints(_ toDest: float2) {
+        let start = getBulbPos()
+        let overDest = float2(toDest.x, toDest.y + 0.4)
+        let midpoint = ( start + overDest ) / 2
+        var halfPoint1 = (start + midpoint) / 2 // midpoint of midpoint
+        var halfPoint2 = ( overDest + midpoint ) / 2
+        
+        halfPoint1 = float2(halfPoint1.x, halfPoint1.y - 0.4)
+        halfPoint2 = float2(halfPoint2.x, halfPoint2.y + 0.4)
+        // now we want to curve our line so that it bends more naturally, do this by editing half points.
+        controlPoints = [ halfPoint1, midpoint, halfPoint2, overDest, toDest ]
+    }
+    
+    //animations
+    func pipeBuildStep( _ deltaTime: Float ) {
+        if( _controlPointIndex > controlPoints.count - 1 ) {
+            isBuildingPipes = false
+            print("Done building pipes with \(controlPoints.count) control points.")
+            return
+        }
+        
+        let currDest = controlPoints[_controlPointIndex]
+        
+        if( _pipeBuildDelay > 0.0 ) {
+            _pipeBuildDelay -= deltaTime
+        } else {
+            _testArrow.turnAndMoveArrow( currDest )
+            _pipeVertices = _testArrow.pathVertices
+            
+            _testPipe.setSourceVectors(pathVertices: _pipeVertices, pathVectors: _testArrow.directionVectors)
+            _testPipe.buildPipeVertices()
+            
+            _pipeBuildDelay = _defaultPipeBuildDelay
+        }
+        if( abs(length( _testArrow.tailPos - currDest )) < _targetRange ) {
+            print("arrow reached control point number \(_controlPointIndex + 1).")
+            _controlPointIndex += 1
+            _pipeBuildDelay = _defaultPipeBuildDelay
+        }
     }
     
     // particle management
@@ -392,6 +551,10 @@ extension ReservoirObject: Renderable {
         fluidSystemRender(renderCommandEncoder)
         pipesRender(renderCommandEncoder)
         testingRender(renderCommandEncoder)
+        
+        for i in 0..<_pipes.count{
+            _pipes[i].render( renderCommandEncoder )
+        }
     }
     
     func fluidSystemRender( _ renderCommandEncoder: MTLRenderCommandEncoder ) {
@@ -473,18 +636,23 @@ extension ReservoirObject: Testable {
             case .ToggleControlPoints:
                 pressed.isSelected.toggle()
                 isPlacingControlPoints.toggle()
-                controlPoints = []
             case .ConstructPipe:
                 pressed.isSelected.toggle()
-                if controlPoints.count > 0 {
-                    testFunction( controlPoints.first! )
+                if controlPoints.count > 3 {
+                    buildPipe()
+                }
+                if controlPoints.count == 1 {
+                    makeControlPoints(controlPoints[0])
+                    buildPipe()
                 }
             default:
                 print("unprogrammed floating button action! button at \(pressed.box2DPos + self.getBoxPosition())")
             }
         } else {
             if isPlacingControlPoints {
+                if controlPoints.count < 4 {
                 controlPoints.append(boxPos)
+                }
             }
         }
     }

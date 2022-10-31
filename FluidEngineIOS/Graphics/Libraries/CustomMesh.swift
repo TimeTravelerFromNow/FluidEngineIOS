@@ -17,6 +17,7 @@ class CustomMeshes: Library<CustomMeshTypes, CustomMesh> {
     private static func createDefaultMeshes() {
         customMeshes.updateValue(CustomMesh(), forKey: .Default)
         customMeshes.updateValue(SkyQuad(), forKey: .SkyQuad)
+        customMeshes.updateValue(SkyQuad(), forKey: .Quad)
     }
     
     public static func Get(_ meshType : CustomMeshTypes) -> CustomMesh {
@@ -57,6 +58,11 @@ class CustomMesh {
 
     internal func setIndices(_ toIndices: [UInt32] ) {
         _indices = toIndices
+    }
+    
+    internal func setVertices(_ toVertices: [CustomVertex] ) {
+        _vertices = toVertices
+        buildBuffers()
     }
     
     private func buildBuffers() {

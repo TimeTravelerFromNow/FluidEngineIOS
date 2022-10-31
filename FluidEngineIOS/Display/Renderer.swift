@@ -69,7 +69,7 @@ extension Renderer: MTKViewDelegate{
     public func updateScreenSize(view: MTKView){
         Renderer.ScreenSize = float2(Float(view.drawableSize.width), Float(view.drawableSize.height))
         Renderer.Bounds  = float2(Float(view.bounds.width), Float(view.bounds.height))
-        print("SCreensize : \(Renderer.ScreenSize)")
+        print("Screensize : \(Renderer.ScreenSize)")
         SceneManager.currentScene?.sceneSizeWillChange()
     }
     

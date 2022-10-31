@@ -43,3 +43,24 @@ fragment float4 bg_color_fragment(const ColorRasterizerData rd [[ stage_in ]],
     return color;
 }
 
+vertex ColorRasterizerData custom_box2d_vertex_shader(const ColorVertex vIn [[ stage_in ]],
+                                                      constant SceneConstants &sceneConstants [[ buffer(1) ]],
+                                                      constant ModelConstants &fluidModelConstants [[ buffer(2) ]],
+                                                      const device FluidConstants &fluidConstants [[ buffer(3) ]],
+                                                      unsigned int vid [[ vertex_id ]] ) {
+               ColorRasterizerData rd;
+    float3 position = vIn.position;
+               rd.position = sceneConstants.projectionMatrix * sceneConstants.viewMatrix * fluidModelConstants.modelMatrix * float4(position.x * fluidConstants.ptmRatio, position.y * fluidConstants.ptmRatio, 0, 1);
+        rd.textureCoordinate = vIn.textureCoordinate;
+               return rd;
+};
+
+fragment half4 custom_box2d_fragment_shader(const ColorRasterizerData rd [[ stage_in ]],
+                                            texture2d<float> baseTexture [[ texture(0) ]]) {
+    float2 textureCoord = rd.textureCoordinate;
+    float4 color = baseTexture.sample(sampler2d, textureCoord);
+    if( color.a < 0.1) {
+        discard_fragment();
+    }
+    return half4(color);
+}
