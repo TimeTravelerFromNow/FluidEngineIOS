@@ -625,6 +625,21 @@ return belowPositionsCount;
     ((Reservoir *)reservoir)->RemoveWallPiece( atIndex );
 }
 
+
++(void) MakePipeFixture:(void *)reservoir
+                       leftVertices:(void *)leftVertices
+                rightVertices:(void *)rightVertices
+              leftVertexCount:(int)leftVertexCount
+             rightVertexCount:(int)rightVertexCount {
+    ((Reservoir *)reservoir)->MakePipeFixture((b2Vec2*)leftVertices,
+                                              (b2Vec2*)rightVertices,
+                                              leftVertexCount,
+                                              rightVertexCount);
+}
+
++ (void) DestroyPipeFixtures:(void *)reservoir {
+    ((Reservoir*)reservoir)->DestroyPipeFixtures();
+}
 @end
 
 

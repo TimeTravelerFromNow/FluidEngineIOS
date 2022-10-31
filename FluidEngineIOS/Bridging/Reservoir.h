@@ -49,6 +49,11 @@ public:
     b2Vec2 GetBulbPosition();
     b2Vec2 GetBulbSegmentPosition(long atIndex);
 
+    void MakePipeFixture(b2Vec2* leftVertices,
+                         b2Vec2* rightVertices,
+                         int leftVertexCount,
+                         int rightVertexCount);
+    void DestroyPipeFixtures();
     
     void RemoveWallPiece( long atIndex );
     

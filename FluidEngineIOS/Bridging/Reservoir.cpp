@@ -107,6 +107,35 @@ void Reservoir::RemoveWallPiece( long atIndex ) {
     m_bulbBody->DestroyFixture( m_lineFixtures[atIndex] );
 }
 
+void Reservoir::MakePipeFixture( b2Vec2* leftVertices,
+                                 b2Vec2* rightVertices,
+                                 int leftVertexCount,
+                                 int rightVertexCount) {
+    b2FixtureDef leftFixtureDef;
+    b2FixtureDef rightFixtureDef;
+
+    b2ChainShape leftShape;
+    b2ChainShape rightShape;
+    leftShape.CreateChain(leftVertices, leftVertexCount);
+    rightShape.CreateChain(rightVertices, rightVertexCount);
+    leftFixtureDef.shape = &leftShape;
+    rightFixtureDef.shape = &rightShape;
+    
+    leftFixtureDef.filter = m_filter;
+    rightFixtureDef.filter = m_filter;
+    
+    m_lineFixtures.push_back( m_bulbBody->CreateFixture( &leftFixtureDef ) );
+    m_lineFixtures.push_back( m_bulbBody->CreateFixture( &rightFixtureDef ) );
+}
+
+void Reservoir::DestroyPipeFixtures() {
+    int pipeFixtureCount = (m_lineFixtures.size()) / sizeof(b2Fixture*);
+    for( int i = 0; i < pipeFixtureCount; i++) {
+        m_bulbBody->DestroyFixture(m_lineFixtures[i]);
+    }
+
+}
+
 Reservoir::~Reservoir() {
     
 }

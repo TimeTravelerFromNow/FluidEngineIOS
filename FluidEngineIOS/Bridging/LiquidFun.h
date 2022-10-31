@@ -177,4 +177,12 @@ typedef struct VertexIn {
 
 + (void)removeWallPieceOnReservoir:(void *)reservoir atIndex:(long)atIndex;
 
++(void) MakePipeFixture:(void *)reservoir
+                       leftVertices:(void *)leftVertices
+                rightVertices:(void *)rightVertices
+              leftVertexCount:(int)leftVertexCount
+       rightVertexCount:(int)rightVertexCount;
+
++ (void) DestroyPipeFixtures:(void *)reservoir;
+
 @end

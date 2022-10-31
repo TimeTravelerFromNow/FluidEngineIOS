@@ -44,7 +44,6 @@ class FloatingButton: Node {
     func releaseButton( closure: () -> Void ) {
         isSelected = false
     }
-    
 }
 
 class Arrow2D {
@@ -217,6 +216,19 @@ class Pipe: Node {
         _vertexCount = newLeftVertices.count + newRightVertices.count
         _mesh.setIndices( indices )
         _mesh.setVertices( customVertices )
+    }
+    
+    func createFixtures(_ onReservoir: UnsafeMutableRawPointer, bulbCenter: float2) {
+        var b2LeftVertices = _leftVertices.map() { Vector2D(x:Float32($0.x - bulbCenter.x),y:Float32($0.y - bulbCenter.y))}
+        var b2RightVertices = _rightVertices.map() { Vector2D(x:Float32($0.x - bulbCenter.x ),y:Float32($0.y - bulbCenter.y))}
+        LiquidFun.makePipeFixture(onReservoir,
+                                  leftVertices: &b2LeftVertices,
+                                  rightVertices: &b2RightVertices,
+                                  leftVertexCount: Int32(_leftVertices.count),
+                                  rightVertexCount: Int32(_rightVertices.count))
+    }
+    func destroyFixtures(_ onReservoir: UnsafeMutableRawPointer) {
+        LiquidFun.destroyPipeFixtures( onReservoir )
     }
 }
 
@@ -454,13 +466,13 @@ class ReservoirObject: Node {
     func buildPipe() {
         self._pipeBuildDelay = _defaultPipeBuildDelay
         self._controlPointIndex = 0
-        let startingPos = getBulbPos()
+        let startingPos = getBulbPos() + getSegmentCenter(3 * Float.pi / 2)
         self._testArrow = Arrow2D(startingPos, length: 0.2)
         self.isBuildingPipes = true
     }
     
     func makeControlPoints(_ toDest: float2) {
-        let start = getBulbPos()
+        let start = getSegmentCenter( 3 * Float.pi / 2) + getBulbPos()
         let overDest = float2(toDest.x, toDest.y + 0.4)
         let midpoint = ( start + overDest ) / 2
         var halfPoint1 = (start + midpoint) / 2 // midpoint of midpoint
@@ -476,6 +488,7 @@ class ReservoirObject: Node {
     func pipeBuildStep( _ deltaTime: Float ) {
         if( _controlPointIndex > controlPoints.count - 1 ) {
             isBuildingPipes = false
+            _testPipe.createFixtures(_reservoir, bulbCenter: getBulbPos())
             print("Done building pipes with \(controlPoints.count) control points.")
             return
         }
