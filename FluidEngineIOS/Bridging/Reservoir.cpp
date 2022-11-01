@@ -15,6 +15,7 @@ Reservoir::Reservoir(b2World* worldRef,
     body1Def.active = true;
     body1Def.gravityScale = 0.0;
     body1Def.position.Set(location.x, location.y);
+
     b2Body *body1 = worldRef->CreateBody(&body1Def);
     
     b2ChainShape shape;  // chain
@@ -22,8 +23,9 @@ Reservoir::Reservoir(b2World* worldRef,
     shape.CreateChain(vertices, count);
     fixtureDef.shape = &shape;
     fixtureDef.filter = m_filter;
+    fixtureDef.density = 1.0f;
     
-    m_PipeFixture = body1->CreateFixture(&fixtureDef);
+    body1->CreateFixture(&fixtureDef);
     m_body = body1;
     
     b2BodyDef valve0BodyDef;
@@ -31,26 +33,28 @@ Reservoir::Reservoir(b2World* worldRef,
     valve0BodyDef.active = true;
     valve0BodyDef.gravityScale = 0.0;
     valve0BodyDef.position.Set(location.x, location.y);
+   
     b2FixtureDef valve0Def;
+    valve0Def.filter = m_filter;
     b2EdgeShape valveLine;
     
     b2Vec2 firstVertex = ((b2Vec2 *)vertices)[0];
     b2Vec2 lastVertex = ((b2Vec2 *)vertices)[count - 1];
     valveLine.Set(firstVertex, lastVertex);
     valve0Def.shape = &valveLine;
+    valve0Def.density = 1.0f;
     
     m_exitWidth = abs(firstVertex.x - lastVertex.x);
     m_exitPosition = b2Vec2(location.x + (firstVertex.x + lastVertex.x) / 2, location.y + (firstVertex.y + lastVertex.y) / 2);
     
     b2Body *valve0Body = worldRef->CreateBody(&valve0BodyDef);
-//    m_valve0Fixture = body2->CreateFixture(&valve0Def);
+//    m_valve0Fixture = va	lve0Body->CreateFixture(&valve0Def);
     m_valve0Body = valve0Body;
     
-    b2WeldJointDef weldJointDef;
-    weldJointDef.bodyA = m_body;
-    weldJointDef.bodyB = m_valve0Body;
-    weldJointDef.collideConnected = false;
-    worldRef->CreateJoint(&weldJointDef);
+    b2WeldJointDef valve0JointDef;
+    valve0JointDef.Initialize(m_body, m_valve0Body, m_exitPosition);
+
+    m_world->CreateJoint(&valve0JointDef);
 }
 
 void Reservoir::CreateBulb(long hemisphereSegments, float bulbRadius) {
@@ -62,14 +66,10 @@ void Reservoir::CreateBulb(long hemisphereSegments, float bulbRadius) {
     b2Vec2 bulbCenter = b2Vec2( m_exitPosition.x, m_exitPosition.y - bulbRadius);
     bulbBodyDef.position.Set( bulbCenter.x, bulbCenter.y );
     
-    float currentIterationAngle = 0.0;
     float angleIncrement = b2_pi / hemisphereSegments;
 
     b2Body *bulbBody = m_world->CreateBody(&bulbBodyDef);
-    for( float f; f < 2 * b2_pi; f += angleIncrement ) {
-//        if ( ( ((b2_pi / 2) - 0.2) < f && f < ((b2_pi / 2) + 0.2) ) ) {
-            
-//        } else {
+    for( float f = 0.0; f < 2 * b2_pi; f += angleIncrement ) {
             b2FixtureDef lineFixtureDef;
             b2EdgeShape bulbLine;
             
@@ -80,19 +80,19 @@ void Reservoir::CreateBulb(long hemisphereSegments, float bulbRadius) {
             b2Vec2 cwVertex = b2Vec2( x + xT, y - yT);
             b2Vec2 ccwVertex = b2Vec2( x - xT, y + yT);
             bulbLine.Set(cwVertex, ccwVertex);
-            lineFixtureDef.shape = &bulbLine;
+            lineFixtureDef.shape   = &bulbLine;
+            lineFixtureDef.density = 1.0;   
             b2Fixture* lineFixture = bulbBody->CreateFixture(&lineFixtureDef);
-            m_lineFixtures.push_back(lineFixture);
+            m_bulbFixtures.push_back(lineFixture);
             
             numBulbWallPieces++;
-//        }
     }
     m_bulbBody = bulbBody;
 }
 
 b2Vec2 Reservoir::GetBulbSegmentPosition(long atIndex) {
-    b2Vec2 v0 = ((b2EdgeShape*)m_lineFixtures[ atIndex ]->GetShape())->m_vertex0;
-    b2Vec2 v1 = ((b2EdgeShape*)m_lineFixtures[ atIndex ]->GetShape())->m_vertex1;
+    b2Vec2 v0 = ((b2EdgeShape*)m_bulbFixtures[ atIndex ]->GetShape())->m_vertex0;
+    b2Vec2 v1 = ((b2EdgeShape*)m_bulbFixtures[ atIndex ]->GetShape())->m_vertex1;
     return (v0 + v1) / 2;
 }
 
@@ -104,7 +104,11 @@ b2Vec2 Reservoir::GetBulbPosition() {
 }
 
 void Reservoir::RemoveWallPiece( long atIndex ) {
-    m_bulbBody->DestroyFixture( m_lineFixtures[atIndex] );
+    m_bulbBody->DestroyFixture( m_bulbFixtures[atIndex] );
+}
+
+void Reservoir::SetWallPieceAngV( long atIndex, float angV ) {
+    m_bulbFixtures[ atIndex ]->
 }
 
 void Reservoir::MakePipeFixture( b2Vec2* leftVertices,
@@ -124,44 +128,20 @@ void Reservoir::MakePipeFixture( b2Vec2* leftVertices,
     leftFixtureDef.filter = m_filter;
     rightFixtureDef.filter = m_filter;
     
-    m_lineFixtures.push_back( m_bulbBody->CreateFixture( &leftFixtureDef ) );
-    m_lineFixtures.push_back( m_bulbBody->CreateFixture( &rightFixtureDef ) );
+    m_pipeFixtures.push_back( m_bulbBody->CreateFixture( &leftFixtureDef ) );
+    m_pipeFixtures.push_back( m_bulbBody->CreateFixture( &rightFixtureDef ) );
 }
 
 void Reservoir::DestroyPipeFixtures() {
-    int pipeFixtureCount = (m_lineFixtures.size()) / sizeof(b2Fixture*);
+    int pipeFixtureCount = (m_pipeFixtures.size()) / sizeof(b2Fixture*);
     for( int i = 0; i < pipeFixtureCount; i++) {
-        m_bulbBody->DestroyFixture(m_lineFixtures[i]);
+        m_bulbBody->DestroyFixture(m_pipeFixtures[i]);
     }
 
 }
 
 Reservoir::~Reservoir() {
     
-}
-//collision
-
-long Reservoir::GetHoverCandidateGridId() {
-    return 0; // MARK: if I want to do the hover logic in C++ I can, but it's up to me
-}
-
-b2Fixture* Reservoir::addDivider(b2Vec2* dividerVertices) {
-    b2FixtureDef fixtureDef;
-    fixtureDef.filter = m_filter;
-    b2EdgeShape line;
-    line.Set(((b2Vec2 *)dividerVertices)[0], ((b2Vec2 *)dividerVertices)[1]);
-    fixtureDef.shape = &line;
-    b2Fixture* lineFixture = m_body->CreateFixture(&fixtureDef);
-    return lineFixture;
-}
-
-void Reservoir::removeDivider(b2Fixture* dividerRef) {
-}
-
-//pour guides
-void Reservoir::AddGuides(b2Vec2* guidesVertices) {
-}
-void Reservoir::RemoveGuides() {
 }
 //movement
 void Reservoir::SetVelocity(b2Vec2 velocity) {

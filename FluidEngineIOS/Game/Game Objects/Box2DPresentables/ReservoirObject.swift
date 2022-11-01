@@ -6,6 +6,8 @@ enum MiniMenuActions {
     case ToggleControlPoints
     case ConstructPipe
     
+    case MoveObject
+    
     case None
 }
 // A button without a representation in the box2d world
@@ -241,6 +243,8 @@ class ReservoirObject: Node {
     var isShowingMiniMenu: Bool = false
     var isPlacingControlPoints = false
     
+    var moveButtonOffset = float2(1.0, 1.0)
+    
     var boxVertices: [Vector2D] = []
     
     var reservoirMesh: Mesh!
@@ -282,6 +286,7 @@ class ReservoirObject: Node {
     
     // object state stuff
     var isBuildingPipes = false
+    var isMoving = false
     
     // animation
     private let _defaultPipeBuildDelay: Float = 0.3
@@ -353,9 +358,14 @@ class ReservoirObject: Node {
                                                   size: float2(0.25,0.25),
                                                   action: .ConstructPipe,
                                                   textureType: .ConstructPipesTexture)
+        let moveReservoirButton = FloatingButton(moveButtonOffset,
+                                                 size: float2(0.25,0.25),
+                                                 action: .MoveObject,
+                                                 textureType: .MoveObjectTexture)
         buttons.append(toggleMiniMenuButton)
         buttons.append(toggleMakeControlPointsButton)
         buttons.append(constructPipesButton)
+        buttons.append(moveReservoirButton)
     }
     
     func fill(color: TubeColors) {
@@ -478,8 +488,8 @@ class ReservoirObject: Node {
         var halfPoint1 = (start + midpoint) / 2 // midpoint of midpoint
         var halfPoint2 = ( overDest + midpoint ) / 2
         
-        halfPoint1 = float2(halfPoint1.x, halfPoint1.y - 0.4)
-        halfPoint2 = float2(halfPoint2.x, halfPoint2.y + 0.4)
+        halfPoint1 = float2(halfPoint1.x, halfPoint1.y - 0.1)
+        halfPoint2 = float2(halfPoint2.x, halfPoint2.y + 0.1)
         // now we want to curve our line so that it bends more naturally, do this by editing half points.
         controlPoints = [ halfPoint1, midpoint, halfPoint2, overDest, toDest ]
     }
@@ -658,6 +668,8 @@ extension ReservoirObject: Testable {
                     makeControlPoints(controlPoints[0])
                     buildPipe()
                 }
+            case .MoveObject:
+                isMoving = true
             default:
                 print("unprogrammed floating button action! button at \(pressed.box2DPos + self.getBoxPosition())")
             }
@@ -680,9 +692,17 @@ extension ReservoirObject: Testable {
         if buttonPressed != nil {
         print(buttonPressed?.id)
         }
+        if( isMoving ) {
+            let newV = boxPos - getBoxPosition() - moveButtonOffset
+            LiquidFun.setVelocity(_reservoir, velocity: Vector2D(x:newV.x,y:newV.y))
+        }
     }
     
     func touchEnded() {
+        if(isMoving) {
+        isMoving = false
+            LiquidFun.setVelocity(_reservoir, velocity: Vector2D(x:0,y:0))
+        }
         for i in 0..<buttons.count {
             switch buttons[i].action {
             case .ConstructPipe:

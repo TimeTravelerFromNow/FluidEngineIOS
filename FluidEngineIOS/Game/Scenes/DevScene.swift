@@ -349,7 +349,8 @@ class DevScene : Scene {
             SceneManager.sceneSwitchingTo = .Menu
             SceneManager.Get( .Menu ).unFreeze()
         case .TestAction0:
-            testReservoir0.removeWallPiece(testIndex)
+            testReservoir0.removeWallPiece(testReservoir0.getSegmentIndex(.pi/2))
+            testReservoir0.removeWallPiece(testReservoir0.getSegmentIndex(3 * .pi/2))
             testIndex += 1
         case .TestAction1:
             break
@@ -382,6 +383,11 @@ class DevScene : Scene {
             unSelect()
         default:
             print("nothing to do")
+        }
+        for n in children {
+            if let testableNode = n as? Testable {
+                testableNode.touchEnded()
+            }
         }
     }
     
@@ -425,6 +431,12 @@ class DevScene : Scene {
             default:
                 break
                 print("current scene state: \(_currentState)")
+            }
+            
+            for n in children {
+                if let testableNode = n as? Testable {
+                    testableNode.touchDragged(Touches.GetBoxPos())
+                }
             }
         }
 

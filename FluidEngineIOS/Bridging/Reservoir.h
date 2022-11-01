@@ -16,15 +16,6 @@ public:
               b2Vec2 location,
               b2Vec2* vertices, unsigned int count);
     ~Reservoir();
-    // hover candidate testing
-    long GetHoverCandidateGridId();
-    // pour guides
-    void AddGuides(b2Vec2* guideVertices);
-    void RemoveGuides();
-
-    // dividers once again
-    b2Fixture* addDivider(b2Vec2* dividerVertices);
-    void removeDivider(b2Fixture* dividerRef);
     
     void SetVelocity(b2Vec2 velocity);
     
@@ -61,7 +52,6 @@ private:
     b2Fixture* m_topCap;
     b2Fixture* m_guide0;
     b2Fixture* m_guide1;
-    b2Fixture* m_PipeFixture;
     
     b2Body* m_body;
     b2Body* m_hboxBody;
@@ -78,7 +68,8 @@ private:
     float m_exitWidth;
     b2Vec2 m_exitPosition;
     
-    std::vector<b2Fixture*> m_lineFixtures;
+    std::vector<b2Fixture*> m_bulbFixtures;
+    std::vector<b2Fixture*> m_pipeFixtures;
     
     b2Body* m_bulbBody;
     

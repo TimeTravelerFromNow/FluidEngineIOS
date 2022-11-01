@@ -30,6 +30,7 @@ enum TextureTypes {
     case EditTexture
     case ControlPointsTexture
     case ConstructPipesTexture
+    case MoveObjectTexture
     
     case PipeTexture
     
@@ -64,6 +65,7 @@ class Textures {
         _library.updateValue(Texture("controlPoints", ext: "png").texture, forKey: .ControlPointsTexture)
         _library.updateValue(Texture("constructPipe", ext: "png").texture, forKey: .ConstructPipesTexture)
         _library.updateValue(Texture("pipeTexture", ext: "png").texture, forKey: .PipeTexture)
+        _library.updateValue(Texture("moveTexture", ext: "png").texture, forKey: .MoveObjectTexture)
 
     }
     

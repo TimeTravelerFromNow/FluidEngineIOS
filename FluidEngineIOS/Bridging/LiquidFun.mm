@@ -626,7 +626,7 @@ return belowPositionsCount;
 }
 
 
-+(void) MakePipeFixture:(void *)reservoir
++(void) makePipeFixture:(void *)reservoir
                        leftVertices:(void *)leftVertices
                 rightVertices:(void *)rightVertices
               leftVertexCount:(int)leftVertexCount
@@ -637,9 +637,22 @@ return belowPositionsCount;
                                               rightVertexCount);
 }
 
-+ (void) DestroyPipeFixtures:(void *)reservoir {
++ (void) destroyPipeFixtures:(void *)reservoir {
     ((Reservoir*)reservoir)->DestroyPipeFixtures();
 }
+
++ (void) setVelocity:(void *)ofReservoir velocity:(b2Vec2)velocity{
+    ((Reservoir *)ofReservoir)->SetVelocity(velocity);
+}
+
++ (Vector2D) getVelocity:(void *)ofReservoir {
+    Vector2D sharedVelocity;
+    b2Vec2 velocity = ((Reservoir *)ofReservoir)->GetVelocity();
+    sharedVelocity.x = velocity.x;
+    sharedVelocity.y = velocity.y;
+    return sharedVelocity;
+}
+
 @end
 
 
