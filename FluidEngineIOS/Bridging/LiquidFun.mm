@@ -653,6 +653,10 @@ return belowPositionsCount;
     return sharedVelocity;
 }
 
++ (void) setBulbWallAngV:(void *)ofReservoir atIndex:(long)atIndex angV:(float)angV {
+    ((Reservoir *)ofReservoir)->SetWallPieceAngV(atIndex, angV);
+}
+
 @end
 
 

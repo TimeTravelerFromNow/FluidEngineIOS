@@ -19,6 +19,9 @@
 		920603C7290DC54400C1C846 /* constructPipe.png in Resources */ = {isa = PBXBuildFile; fileRef = 920603C6290DC54400C1C846 /* constructPipe.png */; };
 		920603C929105F6000C1C846 /* pipeTexture.png in Resources */ = {isa = PBXBuildFile; fileRef = 920603C829105F6000C1C846 /* pipeTexture.png */; };
 		920603CB2910972D00C1C846 /* moveTexture.png in Resources */ = {isa = PBXBuildFile; fileRef = 920603CA2910972D00C1C846 /* moveTexture.png */; };
+		920603CE291217EF00C1C846 /* Pipe.swift in Sources */ = {isa = PBXBuildFile; fileRef = 920603CD291217EF00C1C846 /* Pipe.swift */; };
+		920603D02912180600C1C846 /* Arrow2D.swift in Sources */ = {isa = PBXBuildFile; fileRef = 920603CF2912180600C1C846 /* Arrow2D.swift */; };
+		920603D22912181E00C1C846 /* FloatingButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 920603D12912181E00C1C846 /* FloatingButton.swift */; };
 		9226D3102905E306007785D5 /* Reservoir.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9226D30E2905E306007785D5 /* Reservoir.cpp */; };
 		9226D3122905F5C4007785D5 /* testflat.obj in Resources */ = {isa = PBXBuildFile; fileRef = 9226D3112905F5C4007785D5 /* testflat.obj */; };
 		9226D3142905FA2A007785D5 /* testtube.obj in Resources */ = {isa = PBXBuildFile; fileRef = 9226D3132905FA2A007785D5 /* testtube.obj */; };
@@ -196,6 +199,9 @@
 		920603C6290DC54400C1C846 /* constructPipe.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = constructPipe.png; sourceTree = "<group>"; };
 		920603C829105F6000C1C846 /* pipeTexture.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = pipeTexture.png; sourceTree = "<group>"; };
 		920603CA2910972D00C1C846 /* moveTexture.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = moveTexture.png; sourceTree = "<group>"; };
+		920603CD291217EF00C1C846 /* Pipe.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Pipe.swift; sourceTree = "<group>"; };
+		920603CF2912180600C1C846 /* Arrow2D.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Arrow2D.swift; sourceTree = "<group>"; };
+		920603D12912181E00C1C846 /* FloatingButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FloatingButton.swift; sourceTree = "<group>"; };
 		9226D30E2905E306007785D5 /* Reservoir.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Reservoir.cpp; sourceTree = "<group>"; };
 		9226D30F2905E306007785D5 /* Reservoir.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Reservoir.h; sourceTree = "<group>"; };
 		9226D3112905F5C4007785D5 /* testflat.obj */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = testflat.obj; sourceTree = "<group>"; };
@@ -459,12 +465,12 @@
 		920603C0290D96D700C1C846 /* Box2DPresentables */ = {
 			isa = PBXGroup;
 			children = (
+				920603CC291217CD00C1C846 /* ReservoirStuff */,
 				92A9E38B28DA6CEB0000A77F /* BoxButton.swift */,
 				92A9E38A28DA6CEB0000A77F /* WaterFallObject.swift */,
 				92A9E38D28DA6CEB0000A77F /* SurfObject.swift */,
 				92A9E38728DA6CEB0000A77F /* FluidEnvironment.swift */,
 				92A9E38C28DA6CEB0000A77F /* DebugEnvironment.swift */,
-				9226D3172905FE6B007785D5 /* ReservoirObject.swift */,
 				92A9E38128DA6CEB0000A77F /* BoxPolygon.swift */,
 				92A9E38428DA6CEB0000A77F /* TestTube.swift */,
 			);
@@ -484,6 +490,17 @@
 				92A9E38328DA6CEB0000A77F /* SkyBackground.swift */,
 			);
 			path = Decorative;
+			sourceTree = "<group>";
+		};
+		920603CC291217CD00C1C846 /* ReservoirStuff */ = {
+			isa = PBXGroup;
+			children = (
+				9226D3172905FE6B007785D5 /* ReservoirObject.swift */,
+				920603CD291217EF00C1C846 /* Pipe.swift */,
+				920603CF2912180600C1C846 /* Arrow2D.swift */,
+				920603D12912181E00C1C846 /* FloatingButton.swift */,
+			);
+			path = ReservoirStuff;
 			sourceTree = "<group>";
 		};
 		9226D32829070069007785D5 /* reservoir */ = {
@@ -1146,6 +1163,7 @@
 				923F2C0E27A10CFA00443936 /* Touches.swift in Sources */,
 				92A9E39128DA6CEB0000A77F /* GameStateEnums.swift in Sources */,
 				923F2B5D27A0FCE200443936 /* Engine.swift in Sources */,
+				920603CE291217EF00C1C846 /* Pipe.swift in Sources */,
 				92489BB72799DA0400639B52 /* b2Settings.cpp in Sources */,
 				92489B9E2799DA0400639B52 /* b2ContactSolver.cpp in Sources */,
 				92489BA22799DA0400639B52 /* b2WorldCallbacks.cpp in Sources */,
@@ -1162,7 +1180,9 @@
 				92A9E3B628DA6D3E0000A77F /* ColorUtil.swift in Sources */,
 				92489BC92799DA0400639B52 /* b2ChainShape.cpp in Sources */,
 				92489BCC2799DA0400639B52 /* b2PolygonShape.cpp in Sources */,
+				920603D22912181E00C1C846 /* FloatingButton.swift in Sources */,
 				92489BAE2799DA0400639B52 /* b2RopeJoint.cpp in Sources */,
+				920603D02912180600C1C846 /* Arrow2D.swift in Sources */,
 				92489B9B2799DA0400639B52 /* b2ChainAndCircleContact.cpp in Sources */,
 				92489BBF2799DA0400639B52 /* b2ParticleGroup.cpp in Sources */,
 				923F2B6227A0FCE200443936 /* GameTime.swift in Sources */,

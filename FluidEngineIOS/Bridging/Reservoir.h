@@ -48,6 +48,8 @@ public:
     
     void RemoveWallPiece( long atIndex );
     
+    void SetWallPieceAngV( long atIndex, float angV );
+    
 private:
     b2Fixture* m_topCap;
     b2Fixture* m_guide0;
@@ -69,6 +71,7 @@ private:
     b2Vec2 m_exitPosition;
     
     std::vector<b2Fixture*> m_bulbFixtures;
+    std::vector<b2Body*> m_bulbBodies;
     std::vector<b2Fixture*> m_pipeFixtures;
     
     b2Body* m_bulbBody;

@@ -83,9 +83,9 @@ class DevScene : Scene {
     }
     
     func addReservoirs() {
-        testReservoir0 = ReservoirObject(origin: box2DOrigin + float2(-1,3))
+        testReservoir0 = ReservoirObject(origin: box2DOrigin + float2(-1,8))
         testReservoir0.fill(color: .Red)
-        testReservoir1 =  ReservoirObject(origin: box2DOrigin + float2(1,3))
+        testReservoir1 =  ReservoirObject(origin: box2DOrigin + float2(1,8))
         testReservoir1.fill(color: .Blue)
         addChild(testReservoir0)
         addChild(testReservoir1)
@@ -115,9 +115,96 @@ class DevScene : Scene {
         addTestButton()
         addReservoirs()
         
+        InitializeGrid()
 //        addSnapshots()
     }
     
+    func buildPipesToTubes() {
+        var colorVariety: [TubeColors] = []
+        var tubesToFillIndices: [Int] = []
+        for (i, tube) in tubeGrid.enumerated() {
+            for color in tube.currentColors {
+                if( !colorVariety.contains(color)) {
+                    colorVariety.append(color)
+                }
+            }
+            if( tube.currentColors.first != .Empty ){ // non-empty tube
+                tubesToFillIndices.append(i)
+            }
+        } // unused colorVariety (use this to figure out how many color reservoirs are needed programatically
+        // MARK: hardcoded for testing
+        colorVariety = [ .Red, .Blue ]
+        var reservoirs: [ReservoirObject] = [ testReservoir0, testReservoir1 ]
+        
+        var targetsArray: [ [float2] ] = []
+        for color in colorVariety {
+            var currTargets: [float2] = []
+            for ind in tubesToFillIndices {
+                let colors = tubeGrid[ind].currentColors
+                if colors.contains(color) { // this tube is a target for this color reservoir
+                    currTargets.append(tubeGrid[ind].getBoxPosition() + tubeGrid[ind].getTubeHeight() / 2)
+                }
+            }
+            targetsArray.append( currTargets )
+        }
+        for (i, reservoir) in reservoirs.enumerated() {
+            reservoir.targets = targetsArray[i]
+            reservoir.buildPipes()
+        }
+        
+    }
+    
+    private func InitializeGrid() {
+        let height : Float = 2.0
+        let width  : Float = 5.0
+        let xSep : Float = 1.0
+        let ySep : Float = 2.0
+        var y : Float = box2DOrigin.y
+        var x : Float = box2DOrigin.x
+        let rowNum = Int(width / xSep)
+        let maxColNum = Int(height / ySep)
+        
+        let tubesCount = tubeLevel.startingLevel.count
+        
+        if tubesCount > (rowNum * maxColNum ){
+            print("warning we will probably be out of bounds with this many tubes.")
+        }
+        
+        if( tubesCount <= rowNum ) {
+            if( tubesCount % 2 == 0) { // center it
+                x -= xSep * Float(tubesCount) / 2
+            }
+            else { // center it on the center tube
+                x -= xSep * floor( Float(tubesCount) / 2)
+            }
+        } else { // center it on the center tube
+            x -= xSep * floor( Float(tubesCount) / 2)
+        }
+        
+        for (i, tubeColors) in tubeLevel.startingLevel.enumerated() {
+            if(x < width) {
+                let currentTube = TestTube(origin: float2(x:x,y:y), gridId: i)
+                if tubeHeight == 0.0  {// unitialized, then initialize
+                    self.tubeHeight = currentTube.getTubeHeight()
+                    print("initializing real tube height for collision testing")
+                }
+                currentTube.currentColors = tubeColors
+                addChild(currentTube.sceneRepresentation)
+                addChild(currentTube)
+                tubeGrid.append(currentTube)
+                x += xSep
+            } else {
+                x = 0.5
+                y -= ySep
+                let currentTube = TestTube(origin: float2(x:x,y:y), gridId: i)
+                currentTube.currentColors = tubeColors
+                addChild(currentTube.sceneRepresentation)
+                addChild(currentTube)
+                tubeGrid.append(currentTube)
+                x += xSep
+            }
+        }
+    }
     private func beginEmpty() {
         _emptyKF = 0
         tubeIsActive = false
@@ -349,9 +436,7 @@ class DevScene : Scene {
             SceneManager.sceneSwitchingTo = .Menu
             SceneManager.Get( .Menu ).unFreeze()
         case .TestAction0:
-            testReservoir0.removeWallPiece(testReservoir0.getSegmentIndex(.pi/2))
-            testReservoir0.removeWallPiece(testReservoir0.getSegmentIndex(3 * .pi/2))
-            testIndex += 1
+            buildPipesToTubes()
         case .TestAction1:
             break
         case nil:

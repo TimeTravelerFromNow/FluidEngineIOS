@@ -81,7 +81,7 @@ class TestTube: Node {
     private var _dividerYs : [ Float ]!
     // for handling group destruction
     private var _groupReferences:   UnsafeMutableRawPointer!
-    private var _currentColorTypes: [TubeColors] = []
+    var currentColors: [TubeColors] = []
     private var _newColorTypes: [TubeColors] = []
     private var _colors: [float4] = []
     
@@ -117,9 +117,11 @@ class TestTube: Node {
         self.ptmRatio = GameSettings.ptmRatio
         self.origin = origin
         self.tubeMesh = MeshLibrary.Get(.TestTube)
+        self.setScale(1 / ( 5 * GameSettings.ptmRatio) )
         self.scale = scale
         self.makeContainer()
         self.sceneRepresentation = TubeVisual(tubeHeight)
+        self.toForeground()
     }
     
     //initialization
@@ -169,14 +171,14 @@ class TestTube: Node {
     private func initializeColors(_ colors: [TubeColors]) {
         self.totalColors = colors.count
         self._colors = [float4].init(repeating: WaterColors[.Empty]!, count: totalColors)
-        self._currentColorTypes = [TubeColors].init(repeating: .Empty, count: totalColors)
+        self.currentColors = [TubeColors].init(repeating: .Empty, count: totalColors)
 
         _currentTopIndex = -1
         for (i,c) in colors.enumerated() {
             if c != .Empty {
                 self._currentTopIndex = i // keep setting the top Cap index until we are at an empty color.
             }
-            _currentColorTypes[i] = c
+            currentColors[i] = c
         }
         refreshColorBuffer()
     }
@@ -418,11 +420,11 @@ class TestTube: Node {
     }
     
     func refreshTopIndex() {
-        for (i,c) in _currentColorTypes.enumerated() {
+        for (i,c) in currentColors.enumerated() {
             if c != .Empty {
                 self._currentTopIndex = i // keep setting the top Cap index until we are at an empty color.
             }
-            _currentColorTypes[i] = c
+            currentColors[i] = c
         }
         refreshDividers()
     }
@@ -438,17 +440,17 @@ class TestTube: Node {
   
     //color management
     func setNewColors() {
-        assert(_currentColorTypes.count == _newColorTypes.count)
-        _currentColorTypes = _newColorTypes
+        assert(currentColors.count == _newColorTypes.count)
+        currentColors = _newColorTypes
         refreshColorBuffer()
     }
     
     func refreshColorBuffer() { // sets the _color buffer after pouring or initialization
-        for (i,c) in self._currentColorTypes.enumerated() {
+        for (i,c) in self.currentColors.enumerated() {
             if c == .Empty {
                 if _newTopIndex < totalColors - 1 { // ensures stray particles are not gray
                     if _newTopIndex < 0 { return }
-                    _colors[i] = WaterColors[ _currentColorTypes[ _newTopIndex ]  ]!
+                    _colors[i] = WaterColors[ currentColors[ _newTopIndex ]  ]!
                 }
             }
             else {
@@ -649,7 +651,7 @@ class TestTube: Node {
         switch _fillKeyFrame {
         case 0:
             if _initialFillProgress < totalColors {
-                let currentColor = _currentColorTypes[_initialFillProgress]
+                let currentColor = currentColors[_initialFillProgress]
                 var color = _colors[_initialFillProgress]
                 
                 if timeToSkim > 0.0 {

@@ -68,8 +68,8 @@ void Reservoir::CreateBulb(long hemisphereSegments, float bulbRadius) {
     
     float angleIncrement = b2_pi / hemisphereSegments;
 
-    b2Body *bulbBody = m_world->CreateBody(&bulbBodyDef);
     for( float f = 0.0; f < 2 * b2_pi; f += angleIncrement ) {
+        b2Body *bulbBody = m_world->CreateBody(&bulbBodyDef);
             b2FixtureDef lineFixtureDef;
             b2EdgeShape bulbLine;
             
@@ -84,16 +84,17 @@ void Reservoir::CreateBulb(long hemisphereSegments, float bulbRadius) {
             lineFixtureDef.density = 1.0;   
             b2Fixture* lineFixture = bulbBody->CreateFixture(&lineFixtureDef);
             m_bulbFixtures.push_back(lineFixture);
-            
+        m_bulbBodies.push_back(bulbBody);
+        m_bulbBody = bulbBody;
             numBulbWallPieces++;
     }
-    m_bulbBody = bulbBody;
 }
 
 b2Vec2 Reservoir::GetBulbSegmentPosition(long atIndex) {
     b2Vec2 v0 = ((b2EdgeShape*)m_bulbFixtures[ atIndex ]->GetShape())->m_vertex0;
     b2Vec2 v1 = ((b2EdgeShape*)m_bulbFixtures[ atIndex ]->GetShape())->m_vertex1;
-    return (v0 + v1) / 2;
+    b2Vec2 bulbCenter = ((b2Body*)m_bulbBodies[ 0 ])->GetPosition();
+    return bulbCenter + (v0 + v1);
 }
 
 b2Vec2 Reservoir::GetBulbPosition() {
@@ -108,7 +109,7 @@ void Reservoir::RemoveWallPiece( long atIndex ) {
 }
 
 void Reservoir::SetWallPieceAngV( long atIndex, float angV ) {
-    m_bulbFixtures[ atIndex ]->
+    m_bulbBodies[ atIndex ]->SetAngularVelocity(angV);
 }
 
 void Reservoir::MakePipeFixture( b2Vec2* leftVertices,
