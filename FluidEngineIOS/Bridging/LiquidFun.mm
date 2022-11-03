@@ -657,6 +657,10 @@ return belowPositionsCount;
     ((Reservoir *)ofReservoir)->SetWallPieceAngV(atIndex, angV);
 }
 
++ (float) getBulbWallAngle:(void *)ofReservoir atIndex:(long)atIndex {
+    return ((Reservoir *)ofReservoir)->GetBulbSegmentRotation(atIndex);
+}
+
 @end
 
 

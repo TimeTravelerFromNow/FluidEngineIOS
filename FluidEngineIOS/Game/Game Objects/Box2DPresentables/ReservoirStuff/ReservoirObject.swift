@@ -18,6 +18,8 @@ class ReservoirObject: Node {
     var bulbNode: Node!
     
     var scale: Float!
+    // bulb variables
+    var hemisphereSegments = 8
     var bulbRadius: Float = 1.0
 
     private var _reservoir: UnsafeMutableRawPointer!
@@ -43,12 +45,6 @@ class ReservoirObject: Node {
 
     var texture: MTLTexture!
     
-    // pipes draw data
-    private var _pipeVertexBuffer: MTLBuffer!
-    
-    private var _pipeVertices: [float2] = []
-    private var _pipeVertexCount: Int = 0
-    
     var selectTime: Float = 0.0
     
     // object state stuff
@@ -61,22 +57,15 @@ class ReservoirObject: Node {
     private var _controlPointIndex: Int = 0
     private var _targetRange: Float = 0.3 // how close the arrow needs to be to consider at target.
     private var _testArrow: Arrow2D!
-    // control points
-    var testControlPoints: [float2] = []
-    private var _controlPointsCount: Int = 0
-    private var _controlPointsVertexBuffer: MTLBuffer!
-    
-    var hemisphereSegments = 8
     
     // pipe filling arrays
     var targets: [float2] = []
     var controlPointArrays: [ [float2] ] = []
     private var _arrows: [Arrow2D] = []
     
-    // pipes objects
-    var _testPipe = Pipe()
     var _pipes: [Pipe] = []
-    
+    var isBuildingPipes = false
+    var arrowLength: Float = 0.2
     
     init( origin: float2, scale: Float = 4.0 ) {
         super.init()
@@ -93,7 +82,6 @@ class ReservoirObject: Node {
         buildContainer()
         updateModelConstants()
         refreshFluidMCBuffer()
-        _testPipe.modelConstants = fluidModelConstants
         self.texture = Textures.Get(.Reservoir)
         self.material.useTexture = true
     }
@@ -143,7 +131,7 @@ class ReservoirObject: Node {
     func fill(color: TubeColors) {
         waterColor = WaterColors[color]!
         spawnParticleBox(origin,
-                         float2(2.0,4.2),
+                         float2(1.0,2.2),
                          color: &waterColor)
     }
     
@@ -211,16 +199,6 @@ class ReservoirObject: Node {
                 _vertexBuffer = Engine.Device.makeBuffer(bytes: positions!, length: bufferSize, options: [])
             }
         }
-        _pipeVertexCount = _pipeVertices.count
-        if _pipeVertexCount > 0 {
-        let pipeVertexSize = float2.stride( _pipeVertexCount )
-        _pipeVertexBuffer =  Engine.Device.makeBuffer(bytes: _pipeVertices, length: pipeVertexSize, options: [])
-        }
-        _controlPointsCount = testControlPoints.count
-        if _controlPointsCount > 0 {
-            let controlPointsSize = float2.stride( _controlPointsCount )
-            _controlPointsVertexBuffer = Engine.Device.makeBuffer(bytes: testControlPoints, length: controlPointsSize, options: [])
-        }
     }
     
     func refreshFluidMCBuffer () {
@@ -240,11 +218,11 @@ class ReservoirObject: Node {
         selectTime += deltaTime
         updateModelConstants()
         
-        if( isBuildingTestPipe ) {
-            testPipeBuildStep( deltaTime )
-        }
         if( isBuildingPipes ) {
             buildPipesStep( deltaTime )
+        }
+        if( isRotatingSegment ) {
+            rotateSegmentStep( deltaTime )
         }
     }
     // initiatiators
@@ -255,9 +233,6 @@ class ReservoirObject: Node {
         self._testArrow = Arrow2D(startingPos, length: arrowLength)
         self.isBuildingTestPipe = true
     }
-    
-    var isBuildingPipes = false
-    var arrowLength: Float = 0.2
     
     func buildPipes() {
         let targetCount = self.targets.count
@@ -334,38 +309,61 @@ class ReservoirObject: Node {
         
         self._pipeBuildDelay = _defaultPipeBuildDelay
         self.isBuildingPipes = true
-        self.mostBehindControlPointIndex = 0
     }
     
-    func makeControlPoints(_ toDest: float2) {
-        let start = getSegmentCenter( 3 * Float.pi / 2) + getBulbPos()
-        let overDest = float2(toDest.x, toDest.y + 0.4)
-        let midpoint = ( start + overDest ) / 2
-        var halfPoint1 = (start + midpoint) / 2 // midpoint of midpoint
-        var halfPoint2 = ( overDest + midpoint ) / 2
-        
-        halfPoint1 = float2(halfPoint1.x, halfPoint1.y - 0.1)
-        halfPoint2 = float2(halfPoint2.x, halfPoint2.y + 0.1)
-        // now we want to curve our line so that it bends more naturally, do this by editing half points.
-        testControlPoints = [ halfPoint1, midpoint, halfPoint2, overDest, toDest ]
+    func openTop() {
+        rotateBulbSegment(segmentAngle: .pi/2, toAngle: .pi/2)
     }
     
+    var isRotatingSegment = false
+    var segmentsToRotate: [Int: Float] = [:]
+    func rotateBulbSegment(segmentAngle: Float, toAngle:Float) {
+        let segmentIndex = getSegmentIndex( segmentAngle )
+        segmentsToRotate.updateValue( toAngle, forKey: segmentIndex )
+        isRotatingSegment = true
+    }
+    
+    func rotateSegmentStep(_ deltaTime: Float) {
+        var angV: Float = 4.0
+        for (segmentInd, destAngle) in segmentsToRotate {
+            let currAngle = LiquidFun.getBulbWallAngle(_reservoir, at: segmentInd)
+            let angleToClose = destAngle - currAngle
+            if( angleToClose < 0.0 ) {
+                angV = -1.0
+            }
+            var change = angV * deltaTime
+            while(abs( change ) > abs( angleToClose )) {
+                angV *= 0.99
+                change = angV * deltaTime
+            }
+            LiquidFun.setBulbWallAngV(_reservoir, at: segmentInd, angV: angV)
+            if(abs(angleToClose) < 0.01 ){
+                segmentsToRotate.removeValue(forKey: segmentInd)
+            }
+        }
+        if segmentsToRotate.count == 0 {
+            isRotatingSegment = false
+        }
+    }
+    
+    // MARK: refactor so that we somehow are close to pointing downwards by the time we are over the tube.
     func controlPoints(_ fromArrow: Arrow2D, destination: float2) -> [float2] {
         let start = fromArrow.tailPos!
-        let overDest = float2(destination.x, destination.y + 0.4)
+        let overDest = float2(destination.x, destination.y + 0.3)
+        var tangent = Arrow2D.ninetyDegreeRotMat * normalize(start - destination )
         let midpoint = ( start + overDest ) / 2
-        var halfPoint1 = (start + midpoint) / 2 // midpoint of midpoint
+        var halfPoint1 = ( start + midpoint ) / 2 // midpoint of midpoint
         var halfPoint2 = ( overDest + midpoint ) / 2
-        
-        halfPoint1 = float2(halfPoint1.x, halfPoint1.y - 0.1)
-        halfPoint2 = float2(halfPoint2.x, halfPoint2.y + 0.1)
+        // flip tangent if we started to the right of target
+        if( start.x > destination.x) {
+            tangent *= -1
+        }
+        halfPoint1.y += tangent.y * 0.1
         // now we want to curve our line so that it bends more naturally, do this by editing half points.
         return  [ halfPoint1, midpoint, halfPoint2, overDest, destination ]
     }
     
     //animations
-    var mostBehindControlPointIndex = 1
-
     func buildPipesStep(_ deltaTime: Float){
         if( _pipes.count == 0 ) {
             isBuildingPipes = false
@@ -400,37 +398,9 @@ class ReservoirObject: Node {
                 for p in _pipes {
                     p.createFixtures(_reservoir, bulbCenter: getBulbPos())
                 }
-                if isTesting { print("Done building pipes with \(testControlPoints.count) control points.") }
+                if isTesting { print("Done building  \(_pipes.count) pipes with.") }
                 return
             }
-            _pipeBuildDelay = _defaultPipeBuildDelay
-        }
-    }
-    
-    func testPipeBuildStep( _ deltaTime: Float ) {
-        if( _controlPointIndex > testControlPoints.count - 1 ) {
-            isBuildingTestPipe = false
-            _testPipe.createFixtures(_reservoir, bulbCenter: getBulbPos())
-            print("Done building pipes with \(testControlPoints.count) control points.")
-            return
-        }
-        
-        let currDest = testControlPoints[_controlPointIndex]
-        
-        if( _pipeBuildDelay > 0.0 ) {
-            _pipeBuildDelay -= deltaTime
-        } else {
-            _testArrow.turnAndMoveArrow( currDest )
-            _pipeVertices = _testArrow.pathVertices
-            
-            _testPipe.setSourceVectors(pathVertices: _pipeVertices, pathVectors: _testArrow.directionVectors)
-            _testPipe.buildPipeVertices()
-            
-            _pipeBuildDelay = _defaultPipeBuildDelay
-        }
-        if( abs(length( _testArrow.tailPos - currDest )) < _targetRange ) {
-            print("arrow reached control point number \(_controlPointIndex + 1).")
-            _controlPointIndex += 1
             _pipeBuildDelay = _defaultPipeBuildDelay
         }
     }
@@ -484,11 +454,12 @@ extension ReservoirObject: Renderable {
         renderCommandEncoder.setVertexBytes(&bulbModelConstants, length : ModelConstants.stride, index: 2) // different modelConstants
         bulbMesh.drawPrimitives(renderCommandEncoder)
         fluidSystemRender(renderCommandEncoder)
-        testingRender(renderCommandEncoder)
+        
         
         for i in 0..<_pipes.count{
             _pipes[i].render( renderCommandEncoder )
         }
+        testingRender(renderCommandEncoder)
     }
     
     func fluidSystemRender( _ renderCommandEncoder: MTLRenderCommandEncoder ) {
@@ -531,13 +502,7 @@ extension ReservoirObject: Testable {
                 isPlacingControlPoints.toggle()
             case .ConstructPipe:
                 pressed.isSelected.toggle()
-                if testControlPoints.count > 3 {
-                    buildTestPipe()
-                }
-                if testControlPoints.count == 1 {
-                    makeControlPoints(testControlPoints[0])
-                    buildTestPipe()
-                }
+               
             case .MoveObject:
                 isMoving = true
             default:
@@ -545,9 +510,6 @@ extension ReservoirObject: Testable {
             }
         } else {
             if isPlacingControlPoints {
-                if testControlPoints.count < 4 {
-                testControlPoints.append(boxPos)
-                }
             }
         }
     }

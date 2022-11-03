@@ -67,26 +67,26 @@ void Reservoir::CreateBulb(long hemisphereSegments, float bulbRadius) {
     bulbBodyDef.position.Set( bulbCenter.x, bulbCenter.y );
     
     float angleIncrement = b2_pi / hemisphereSegments;
-
+    
     for( float f = 0.0; f < 2 * b2_pi; f += angleIncrement ) {
         b2Body *bulbBody = m_world->CreateBody(&bulbBodyDef);
-            b2FixtureDef lineFixtureDef;
-            b2EdgeShape bulbLine;
-            
-            float y = sin( f ) * bulbRadius; // center of the line
-            float x = cos( f ) * bulbRadius;
-            float xT = sin( f ) * angleIncrement * bulbRadius * 0.6; // tangent
-            float yT = cos( f ) * angleIncrement * bulbRadius * 0.6;
-            b2Vec2 cwVertex = b2Vec2( x + xT, y - yT);
-            b2Vec2 ccwVertex = b2Vec2( x - xT, y + yT);
-            bulbLine.Set(cwVertex, ccwVertex);
-            lineFixtureDef.shape   = &bulbLine;
-            lineFixtureDef.density = 1.0;   
-            b2Fixture* lineFixture = bulbBody->CreateFixture(&lineFixtureDef);
-            m_bulbFixtures.push_back(lineFixture);
+        b2FixtureDef lineFixtureDef;
+        b2EdgeShape bulbLine;
+        
+        float y = sin( f ) * bulbRadius; // center of the line
+        float x = cos( f ) * bulbRadius;
+        float xT = sin( f ) * angleIncrement * bulbRadius * 0.6; // tangent
+        float yT = cos( f ) * angleIncrement * bulbRadius * 0.6;
+        b2Vec2 cwVertex = b2Vec2( x + xT, y - yT);
+        b2Vec2 ccwVertex = b2Vec2( x - xT, y + yT);
+        bulbLine.Set(cwVertex, ccwVertex);
+        lineFixtureDef.shape   = &bulbLine;
+        lineFixtureDef.density = 1.0;
+        b2Fixture* lineFixture = bulbBody->CreateFixture(&lineFixtureDef);
+        m_bulbFixtures.push_back(lineFixture);
         m_bulbBodies.push_back(bulbBody);
         m_bulbBody = bulbBody;
-            numBulbWallPieces++;
+        numBulbWallPieces++;
     }
 }
 
@@ -111,6 +111,10 @@ void Reservoir::RemoveWallPiece( long atIndex ) {
 void Reservoir::SetWallPieceAngV( long atIndex, float angV ) {
     m_bulbBodies[ atIndex ]->SetAngularVelocity(angV);
 }
+float Reservoir::GetBulbSegmentRotation( long atIndex ) {
+    return m_bulbBodies[ atIndex ]->GetAngle();
+}
+
 
 void Reservoir::MakePipeFixture( b2Vec2* leftVertices,
                                  b2Vec2* rightVertices,

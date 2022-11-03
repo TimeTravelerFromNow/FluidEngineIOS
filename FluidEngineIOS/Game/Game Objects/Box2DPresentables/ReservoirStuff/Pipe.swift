@@ -13,18 +13,14 @@ class Pipe: Node {
     var fluidConstants: FluidConstants!
     private var _vertexBuffer: MTLBuffer!
     private var _vertexCount: Int = 0
-    private let _ninetyDegreeRotMat = matrix_float2x2( float2( cos(.pi/2), sin(.pi/2) ),
-                                                        float2( -sin(.pi/2), cos(.pi/2) ) )
     
     private var _pipeWidth: Float = 0.5
-    var debugging = true
+    var debugging = false
     var controlPointIndex = 0
     
     override init() {
         super.init()
-        _mesh = CustomMeshes.Get(.Quad)
-        self.setScale(1 / ( GameSettings.ptmRatio * 5 ) )
-        self.setPositionZ(0.1)
+        _mesh = CustomMesh()
         fluidConstants = FluidConstants(ptmRatio: GameSettings.ptmRatio, pointSize: GameSettings.particleRadius)
     }
     override func render(_ renderCommandEncoder: MTLRenderCommandEncoder) {
@@ -34,7 +30,7 @@ class Pipe: Node {
                                                 length: ModelConstants.stride,
                                                 index: 2)
             renderCommandEncoder.setVertexBytes(&fluidConstants,
-                                                length: ModelConstants.stride,
+                                                length: FluidConstants.stride,
                                                 index: 3)
         renderCommandEncoder.setFragmentTexture(Textures.Get(_textureType), index: 0)
         _mesh.drawPrimitives( renderCommandEncoder )
@@ -70,7 +66,7 @@ class Pipe: Node {
         _sourceTangents = [float2].init(repeating: float2(0), count: pathVectors.count)
         // rotate each pathVector ninety deg. (so it is tangent), from this we can construct pipe vertices
         for i in 0..<pathVectors.count {
-            _sourceTangents[i] = _ninetyDegreeRotMat * pathVectors[i]
+            _sourceTangents[i] = Arrow2D.ninetyDegreeRotMat * pathVectors[i]
         }
     }
     

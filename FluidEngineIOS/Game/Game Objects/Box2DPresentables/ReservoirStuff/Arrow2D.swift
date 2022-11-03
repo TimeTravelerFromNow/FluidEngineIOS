@@ -9,8 +9,10 @@ class Arrow2D {
         
     private var _unitDir: float2 { return normalize( headPos - tailPos ) }
     private var _newUnitDir: float2 = float2(0)
+    public static let ninetyDegreeRotMat = matrix_float2x2( float2( cos(.pi/2), sin(.pi/2) ),
+                                                        float2( -sin(.pi/2), cos(.pi/2) ) )
     
-    private var _maxTurnAngle: Float = .pi/6
+    private var _maxTurnAngle: Float = .pi/8
     func setMaxTurnAngle(_ to: Float) { _maxTurnAngle = to }
     func getMaxTurnAngle() -> Float { return _maxTurnAngle }
     

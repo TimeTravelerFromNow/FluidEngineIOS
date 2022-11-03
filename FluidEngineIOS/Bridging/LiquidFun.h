@@ -186,4 +186,8 @@ typedef struct VertexIn {
 + (void) destroyPipeFixtures:(void *)reservoir;
 + (void) setVelocity:(void *)ofReservoir velocity:(Vector2D)velocity;
 + (Vector2D) getVelocity:(void *)ofReservoir;
+
++ (void) setBulbWallAngV:(void *)ofReservoir atIndex:(long)atIndex angV:(float)angV;
++ (float) getBulbWallAngle:(void *)ofReservoir atIndex:(long)atIndex;
+
 @end

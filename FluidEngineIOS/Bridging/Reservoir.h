@@ -49,6 +49,7 @@ public:
     void RemoveWallPiece( long atIndex );
     
     void SetWallPieceAngV( long atIndex, float angV );
+    float GetBulbSegmentRotation( long atIndex );
     
 private:
     b2Fixture* m_topCap;

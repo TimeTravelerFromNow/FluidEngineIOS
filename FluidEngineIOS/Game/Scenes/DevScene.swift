@@ -438,7 +438,8 @@ class DevScene : Scene {
         case .TestAction0:
             buildPipesToTubes()
         case .TestAction1:
-            break
+            testReservoir0.openTop()
+            testReservoir0.fill(color: .Red)
         case nil:
             print("let go of no button")
         default:
