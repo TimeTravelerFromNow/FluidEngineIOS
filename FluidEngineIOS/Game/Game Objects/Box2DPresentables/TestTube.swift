@@ -215,10 +215,6 @@ class TestTube: Node {
                         setFrozenDelay -= deltaTime
                     }
                 } else {
-                    LiquidFun.updateColors(particleSystem,
-                                           colors: &_colors,
-                                           yLevels: &_dividerYs,
-                                           numLevels: 4)
                     toBackground()
                     currentState = .CleanupValues
                     setFrozenDelay = _settleDelay

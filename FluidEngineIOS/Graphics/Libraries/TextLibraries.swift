@@ -50,8 +50,8 @@ class ButtonLabels: Library<ButtonLabelTypes, TextObject> {
     private static func createDefaultButtonLabels() {
         textObjects.updateValue(TextObject(.MenuText, "menu" ), forKey: .MenuLabel)
         textObjects.updateValue(TextObject(.NewGameText, "new game"), forKey: .NewGameLabel)
-        textObjects.updateValue(TextObject(.TestText0, "test action 0"), forKey: .TestLabel0)
-        textObjects.updateValue(TextObject(.TestText1, "test action 1"), forKey: .TestLabel1)
+        textObjects.updateValue(TextObject(.TestText0, "test0"), forKey: .TestLabel0)
+        textObjects.updateValue(TextObject(.TestText1, "test1"), forKey: .TestLabel1)
 
         textObjects.updateValue(TextObject(.DevText, "developer"), forKey: .DevSceneLabel)
     }

@@ -35,7 +35,7 @@ typedef void (^MBEGlyphPositionEnumerationBlock)(CGGlyph glyph,
 {
     if ((self = [super init]))
     {
-        [self buildMeshWithString:string inRect:rect withFont:fontAtlas atSize:fontSize device:device ];
+        [self buildMeshWithString:string inRect:rect withFont:fontAtlas atSize:fontSize device:device xCentering:0.0 yCentering:0.0 firstTime:true];
     }
     return self;
 }
@@ -45,8 +45,12 @@ typedef void (^MBEGlyphPositionEnumerationBlock)(CGGlyph glyph,
                    withFont:(MBEFontAtlas *)fontAtlas
                      atSize:(CGFloat)fontSize
                      device:(id<MTLDevice>)device
+                 xCentering:(float)xCentering
+                 yCentering:(float)yCentering
+                firstTime:(bool)firstTime
 //              justifyCenter:(bool)justifyCenter
 {
+    const bool shouldCenter = true;
     _rect = rect;
     _fontAtlasRef = fontAtlas;
     _size = fontSize;
@@ -71,7 +75,9 @@ typedef void (^MBEGlyphPositionEnumerationBlock)(CGGlyph glyph,
     MBEIndexType *indices = malloc(indexCount * sizeof(MBEIndexType));
 
     __block MBEIndexType v = 0, i = 0;
-    const float xOffset = -100.5;
+    // centering variables
+    __block float totalXMax = 0.0;
+    __block float totalYMax = 0.0;
     [self enumerateGlyphsInFrame:frame block:^(CGGlyph glyph, NSInteger glyphIndex, CGRect glyphBounds) {
         if (glyph >= fontAtlas.glyphDescriptors.count)
         {
@@ -83,14 +89,20 @@ typedef void (^MBEGlyphPositionEnumerationBlock)(CGGlyph glyph,
         float maxX = CGRectGetMaxX(glyphBounds);
         float minY = CGRectGetMinY(glyphBounds);
         float maxY = CGRectGetMaxY(glyphBounds);
+        if( totalXMax < maxX ) {
+            totalXMax = maxX;
+        }
+        if( totalYMax < maxY ) {
+            totalYMax = maxY;
+        }
         float minS = glyphInfo.topLeftTexCoord.x;
         float maxS = glyphInfo.bottomRightTexCoord.x;
         float minT = glyphInfo.topLeftTexCoord.y;
         float maxT = glyphInfo.bottomRightTexCoord.y;
-        vertices[v++] = (MBEVertex){ { minX + xOffset, maxY, 0, 1 }, { minS, maxT } };
-        vertices[v++] = (MBEVertex){ { minX + xOffset, minY, 0, 1 }, { minS, minT } };
-        vertices[v++] = (MBEVertex){ { maxX + xOffset, minY, 0, 1 }, { maxS, minT } };
-        vertices[v++] = (MBEVertex){ { maxX + xOffset, maxY, 0, 1 }, { maxS, maxT } };
+        vertices[v++] = (MBEVertex){ { minX - xCentering, maxY - yCentering, 0, 1 }, { minS, maxT } };
+        vertices[v++] = (MBEVertex){ { minX - xCentering, minY - yCentering, 0, 1 }, { minS, minT } };
+        vertices[v++] = (MBEVertex){ { maxX - xCentering, minY - yCentering, 0, 1 }, { maxS, minT } };
+        vertices[v++] = (MBEVertex){ { maxX - xCentering, maxY - yCentering, 0, 1 }, { maxS, maxT } };
         indices[i++] = glyphIndex * 4;
         indices[i++] = glyphIndex * 4 + 1;
         indices[i++] = glyphIndex * 4 + 2;
@@ -99,6 +111,13 @@ typedef void (^MBEGlyphPositionEnumerationBlock)(CGGlyph glyph,
         indices[i++] = glyphIndex * 4;
     }];
 
+    totalXMax = totalXMax / 2;
+    totalYMax = totalYMax / 2;
+    if( shouldCenter && firstTime ){
+        [ self buildMeshWithString:string inRect:rect withFont:fontAtlas atSize:fontSize device:device xCentering:totalXMax yCentering:totalYMax firstTime:false ];
+        return;
+    }
+    
     _vertexBuffer = [device newBufferWithBytes:vertices
                                         length:vertexCount * sizeof(MBEVertex)
                                        options:MTLResourceOptionCPUCacheModeDefault];
@@ -175,7 +194,7 @@ typedef void (^MBEGlyphPositionEnumerationBlock)(CGGlyph glyph,
 }
 
 - (void) updateTextMeshWithString:(NSString *)text {
-    [self buildMeshWithString:text inRect:_rect withFont:_fontAtlasRef atSize:_size device:_device];
+    [self buildMeshWithString:text inRect:_rect withFont:_fontAtlasRef atSize:_size device:_device xCentering:0.0 yCentering:0.0 firstTime:true] ;
 }
 
 @end
