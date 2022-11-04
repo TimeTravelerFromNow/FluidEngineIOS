@@ -71,21 +71,28 @@ class DevScene : Scene {
         let menuButton = BoxButton(.Menu,.Menu, .ToMenu, center: box2DOrigin + float2(-1.0,-3.0), label: .MenuLabel)
         let testButton0 = BoxButton(.Menu, .Menu, .TestAction0, center: box2DOrigin + float2(-1.0,-4.0), label: .TestLabel0)
         let testButton1 = BoxButton(.Menu, .Menu, .TestAction1, center: box2DOrigin + float2(1.0,-4.0), label: .TestLabel1)
+        
+        let testButton2 = BoxButton(.Menu, .Menu, .TestAction2, center: box2DOrigin + float2(-1.0,-5.0), label: .TestLabel2)
+        let testButton3 = BoxButton(.Menu, .Menu, .TestAction3, center: box2DOrigin + float2(1.0,-5.0), label: .TestLabel3)
 
         buttons.append(clearButton)
         buttons.append(menuButton)
         buttons.append(testButton0)
         buttons.append(testButton1)
+        buttons.append(testButton2)
+        buttons.append(testButton3)
         addChild(clearButton)
         addChild(menuButton)
         addChild(testButton0)
         addChild(testButton1)
+        addChild(testButton2)
+        addChild(testButton3)
     }
     
     func addReservoirs() {
-        testReservoir0 = ReservoirObject(origin: box2DOrigin + float2(-1,8))
+        testReservoir0 = ReservoirObject(origin: box2DOrigin + float2(-1,5))
         testReservoir0.fill(color: .Red)
-        testReservoir1 =  ReservoirObject(origin: box2DOrigin + float2(1,8))
+        testReservoir1 =  ReservoirObject(origin: box2DOrigin + float2(1,5))
         testReservoir1.fill(color: .Blue)
         addChild(testReservoir0)
         addChild(testReservoir1)
@@ -421,8 +428,6 @@ class DevScene : Scene {
         }
     }
     
-    var testIndex: Int = 0
-    
     func doButtonAction() {
         if( buttonPressed != nil ) {
         switch boxButtonHitTest(boxPos: Touches.GetBoxPos()) {
@@ -430,16 +435,20 @@ class DevScene : Scene {
         case .None:
             print("let go of a button")
         case .Clear:
-            beginEmpty()
-            print("clear action now")
+            testReservoir0.fill(color: .Red)
+            print("clear action now ? no testing filling")
         case .ToMenu:
             SceneManager.sceneSwitchingTo = .Menu
             SceneManager.Get( .Menu ).unFreeze()
         case .TestAction0:
             buildPipesToTubes()
         case .TestAction1:
-            testReservoir0.openTop()
-            testReservoir0.fill(color: .Red)
+            testReservoir0.toggleTop()
+            testReservoir1.toggleTop()
+        case .TestAction2:
+            tubesAskForLiquid()
+        case .TestAction3:
+            break
         case nil:
             print("let go of no button")
         default:
@@ -448,6 +457,22 @@ class DevScene : Scene {
         }
         }
     }
+    
+    func tubesAskForLiquid() {
+        for tube in tubeGrid {
+            var tubeColors = tube.currentColors
+            var visualColors = tube.visualColors
+            if( tubeColors.first != .Empty ) {
+                for i in 0..<visualColors.count {
+                    if( tubeColors[i] != visualColors[i] ) {
+                        
+                        testReservoir0.rotateBulbSegment(segmentAngle: <#T##Float#>, toAngle: <#T##Float#>)
+                    }
+                }
+            }
+        }
+    }
+    
     override func touchesEnded() {
         
         doButtonAction()

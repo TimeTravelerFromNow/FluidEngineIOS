@@ -13,6 +13,8 @@ enum ButtonLabelTypes {
     case MenuLabel
     case TestLabel0
     case TestLabel1
+    case TestLabel2
+    case TestLabel3
     case DevSceneLabel
     
     case None
@@ -52,6 +54,8 @@ class ButtonLabels: Library<ButtonLabelTypes, TextObject> {
         textObjects.updateValue(TextObject(.NewGameText, "new game"), forKey: .NewGameLabel)
         textObjects.updateValue(TextObject(.TestText0, "test0"), forKey: .TestLabel0)
         textObjects.updateValue(TextObject(.TestText1, "test1"), forKey: .TestLabel1)
+        textObjects.updateValue(TextObject(.TestText0, "test2"), forKey: .TestLabel2)
+        textObjects.updateValue(TextObject(.TestText1, "test3"), forKey: .TestLabel3)
 
         textObjects.updateValue(TextObject(.DevText, "developer"), forKey: .DevSceneLabel)
     }

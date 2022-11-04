@@ -63,7 +63,7 @@ void Reservoir::CreateBulb(long hemisphereSegments, float bulbRadius) {
     bulbBodyDef.active = true;
     bulbBodyDef.gravityScale = 0.0;
     
-    b2Vec2 bulbCenter = b2Vec2( m_exitPosition.x, m_exitPosition.y - bulbRadius);
+    b2Vec2 bulbCenter = b2Vec2( m_exitPosition.x, m_exitPosition.y - bulbRadius + 0.04);
     bulbBodyDef.position.Set( bulbCenter.x, bulbCenter.y );
     
     float angleIncrement = b2_pi / hemisphereSegments;
@@ -90,11 +90,11 @@ void Reservoir::CreateBulb(long hemisphereSegments, float bulbRadius) {
     }
 }
 
-b2Vec2 Reservoir::GetBulbSegmentPosition(long atIndex) {
+b2Vec2 Reservoir::GetBulbSegmentPosition(long atIndex) { //MARK: couldn't get it to work this way
     b2Vec2 v0 = ((b2EdgeShape*)m_bulbFixtures[ atIndex ]->GetShape())->m_vertex0;
     b2Vec2 v1 = ((b2EdgeShape*)m_bulbFixtures[ atIndex ]->GetShape())->m_vertex1;
-    b2Vec2 bulbCenter = ((b2Body*)m_bulbBodies[ 0 ])->GetPosition();
-    return bulbCenter + (v0 + v1);
+    b2Vec2 bulbCenter = ((b2Body*)m_bulbBodies[ atIndex ])->GetPosition();
+    return bulbCenter;
 }
 
 b2Vec2 Reservoir::GetBulbPosition() {

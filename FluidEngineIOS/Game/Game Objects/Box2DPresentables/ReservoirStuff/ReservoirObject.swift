@@ -3,6 +3,8 @@ import MetalKit
 class ReservoirObject: Node {
     
     var buttons: [FloatingButton] = []
+    var valves: [Int:FloatingButton] = [:]
+    var topValve: FloatingButton!
     var buttonPressed: FloatingButton?
     
     var isTesting: Bool = true
@@ -20,7 +22,7 @@ class ReservoirObject: Node {
     var scale: Float!
     // bulb variables
     var hemisphereSegments = 8
-    var bulbRadius: Float = 1.0
+    var bulbRadius: Float = 0.4
 
     private var _reservoir: UnsafeMutableRawPointer!
     
@@ -57,6 +59,7 @@ class ReservoirObject: Node {
     private var _controlPointIndex: Int = 0
     private var _targetRange: Float = 0.3 // how close the arrow needs to be to consider at target.
     private var _testArrow: Arrow2D!
+    private var _valveAngles: [Float] = []
     
     // pipe filling arrays
     var targets: [float2] = []
@@ -103,8 +106,9 @@ class ReservoirObject: Node {
         createBulb()
         LiquidFun.setParticleLimitForSystem(particleSystem, maxParticles: GameSettings.MaxParticles)
         buildMiniMenu()
+        attachTopValve()
     }
-    
+
     func buildMiniMenu() {
         let toggleMiniMenuButton = FloatingButton(float2(-1.0,1.0),
                                                   size: float2(0.25,0.25),
@@ -128,6 +132,14 @@ class ReservoirObject: Node {
         buttons.append(moveReservoirButton)
     }
     
+    func attachTopValve() {
+        let index = getSegmentIndex( .pi / 2)
+        let position = getSegmentCenter( .pi / 2)
+        let topValveButton = FloatingButton(position, size: float2(0.25,0.25), textureType: .BigValveTexture)
+        topValve = topValveButton
+    }
+    
+    
     func fill(color: TubeColors) {
         waterColor = WaterColors[color]!
         spawnParticleBox(origin,
@@ -136,7 +148,7 @@ class ReservoirObject: Node {
     }
     
     func createBulb() {
-        LiquidFun.createBulb(onReservoir: _reservoir, hemisphereSegments: hemisphereSegments, radius: 1.0)
+        LiquidFun.createBulb(onReservoir: _reservoir, hemisphereSegments: hemisphereSegments, radius: bulbRadius)
     }
     
     func removeWallPiece(_ atIndex: Int) {
@@ -153,8 +165,11 @@ class ReservoirObject: Node {
     }
     
     func getSegmentCenter(_ atAngle: Float) -> float2 {
-        let boxPos = LiquidFun.getSegmentPos(_reservoir, at: getSegmentIndex(atAngle))
-        return float2(boxPos.x, boxPos.y)
+        let boxPos = getBulbPos()
+        let angle = Float.pi * Float(getSegmentIndex(atAngle)) / Float(hemisphereSegments  )
+            let x = cos(angle) * bulbRadius
+        let y  = sin(angle) * bulbRadius
+        return float2(boxPos.x + x, boxPos.y + y)
     }
 
     //buffer updates
@@ -182,6 +197,23 @@ class ReservoirObject: Node {
             buttons[i].setPositionX( x * GameSettings.stmRatio )
             buttons[i].setPositionY( y * GameSettings.stmRatio )
             buttons[i].modelConstants.modelMatrix = buttons[i].modelMatrix
+        }
+        
+        let tvX = topValve.box2DPos.x
+        let tvY = topValve.box2DPos.y
+        
+        topValve.setPositionX( tvX * GameSettings.stmRatio )
+        topValve.setPositionY( tvY * GameSettings.stmRatio )
+        topValve.modelConstants.modelMatrix = topValve.modelMatrix
+        for i in valves.keys {
+            if let valve = valves[i] {
+                let x = valve.box2DPos.x
+                let y = valve.box2DPos.y
+                
+                valve.setPositionX( x * GameSettings.stmRatio )
+                valve.setPositionY( y * GameSettings.stmRatio )
+                valve.modelConstants.modelMatrix = valve.modelMatrix
+            }
         }
     }
     
@@ -241,6 +273,7 @@ class ReservoirObject: Node {
         
         var arrowCenters: [float2] = []
         var arrowNormals: [float2] = []
+        var arrowAngles: [Float] = [] // for figuring out where to place the valve buttons.
         //determine starting points (want symmetrical look)
         var numberPipeCentersOnOneSide = 1
         let oddCushion = Float.pi / 6
@@ -257,6 +290,7 @@ class ReservoirObject: Node {
                 let currNormal = float2(cos(currAngle), sin(currAngle))
                 arrowCenters.append( currCenter )
                 arrowNormals.append( currNormal )
+                arrowAngles.append( currAngle )
                 if i > 0 {
                     if( mod2Result ) {
                         numberPipeCentersOnOneSide += 1
@@ -265,11 +299,13 @@ class ReservoirObject: Node {
             }
            
         } else {
-            let bottomArrowCenter = getSegmentCenter(3 * .pi / 2)
+            let arrowAngle0: Float = 3 * .pi / 2 // first angle in odd situation is downwards.
+            let bottomArrowCenter = getSegmentCenter( arrowAngle0 )
             let bottomArrowNormal = float2(0, -1)
            
             arrowCenters.append(bottomArrowCenter)
             arrowNormals.append(bottomArrowNormal)
+            arrowAngles.append( arrowAngle0 )
             if targetCount > 1 {
                 for i in 1..<targetCount {
                     let mod2Result: Bool = (i % 2 == 0)
@@ -283,6 +319,7 @@ class ReservoirObject: Node {
                     let currNormal = float2(cos(currAngle), sin(currAngle))
                     arrowCenters.append( currCenter )
                     arrowNormals.append( currNormal )
+                    arrowAngles.append( currAngle )
                     if i > 2 {
                         if( mod2Result ) {
                             numberPipeCentersOnOneSide += 1
@@ -294,6 +331,9 @@ class ReservoirObject: Node {
         //initializeArrows
         _arrows = []
         _pipes = []
+        // make the valves
+        _valveAngles = arrowAngles
+        attachValves()
         for (i, center) in arrowCenters.enumerated() {
             let arrow = Arrow2D(center, length: arrowLength, direction: arrowNormals[i] )
             let pipe = Pipe()
@@ -301,7 +341,7 @@ class ReservoirObject: Node {
             _arrows.append(arrow)
             _pipes.append(pipe)
         }
-        
+    
         controlPointArrays = []
         for (i, t) in targets.enumerated() {
             controlPointArrays.append( controlPoints(_arrows[i], destination: t) )
@@ -311,8 +351,27 @@ class ReservoirObject: Node {
         self.isBuildingPipes = true
     }
     
-    func openTop() {
-        rotateBulbSegment(segmentAngle: .pi/2, toAngle: .pi/2)
+    func attachValves() {
+        for angle in _valveAngles {
+            let pos = getSegmentCenter( angle )
+            let index = getSegmentIndex( angle )
+            if( !valves.keys.contains( index ) ) {
+                let valveButton = FloatingButton(pos, size: float2(0.2, 0.2), textureType: .SmallValveTexture)
+                valveButton.setRotationZ( angle )
+                valves.updateValue(valveButton, forKey: index)
+            }
+        }
+    }
+    
+    var topStateOpen = false
+    func toggleTop() {
+        if( topStateOpen ) {
+            rotateBulbSegment(segmentAngle: .pi/2, toAngle: 0.0)
+            topStateOpen = false
+        } else {
+            rotateBulbSegment(segmentAngle: .pi/2, toAngle: .pi/2)
+            topStateOpen = true
+        }
     }
     
     var isRotatingSegment = false
@@ -323,13 +382,35 @@ class ReservoirObject: Node {
         isRotatingSegment = true
     }
     
+    
+    var tubeToPipeDictionary: [Int:Int] = [:]
+    func indexPipes(sourceGridIds: [Int] ) {
+        guard let maxSourceGridId = sourceGridIds.max() else { print(" index Pipes WARN:: sourceGridIds Empty"); return }
+        var angleIndex = 0
+        for i in 0..<maxSourceGridId {
+            if sourceGridIds.contains( i ) {
+                for j in 0..<( 2 * hemisphereSegments ) {
+                    if( valves.keys.contains( j ) ) {
+                        if(angleIndex != j) {
+                            angleIndex = j
+                            tubeToPipeDictionary.updateValue(angleIndex, forKey: i)
+                        break // break first loop
+                        } else { // this pipe angle index is already taken by another tube
+                            print("already taken")
+                        }
+                    }
+                }
+            }
+        }
+    }
+    
     func rotateSegmentStep(_ deltaTime: Float) {
         var angV: Float = 4.0
         for (segmentInd, destAngle) in segmentsToRotate {
             let currAngle = LiquidFun.getBulbWallAngle(_reservoir, at: segmentInd)
             let angleToClose = destAngle - currAngle
             if( angleToClose < 0.0 ) {
-                angV = -1.0
+                angV *= -1.0
             }
             var change = angV * deltaTime
             while(abs( change ) > abs( angleToClose )) {
@@ -339,6 +420,9 @@ class ReservoirObject: Node {
             LiquidFun.setBulbWallAngV(_reservoir, at: segmentInd, angV: angV)
             if(abs(angleToClose) < 0.01 ){
                 segmentsToRotate.removeValue(forKey: segmentInd)
+            }
+            if let valveToRotate = valves[segmentInd] {
+                valveToRotate.setRotationZ(currAngle)
             }
         }
         if segmentsToRotate.count == 0 {
@@ -354,11 +438,10 @@ class ReservoirObject: Node {
         let midpoint = ( start + overDest ) / 2
         var halfPoint1 = ( start + midpoint ) / 2 // midpoint of midpoint
         var halfPoint2 = ( overDest + midpoint ) / 2
-        // flip tangent if we started to the right of target
-        if( start.x > destination.x) {
-            tangent *= -1
-        }
+       
         halfPoint1.y += tangent.y * 0.1
+        halfPoint2.y -= tangent.y * 0.1
+
         // now we want to curve our line so that it bends more naturally, do this by editing half points.
         return  [ halfPoint1, midpoint, halfPoint2, overDest, destination ]
     }
@@ -455,11 +538,11 @@ extension ReservoirObject: Renderable {
         bulbMesh.drawPrimitives(renderCommandEncoder)
         fluidSystemRender(renderCommandEncoder)
         
-        
         for i in 0..<_pipes.count{
             _pipes[i].render( renderCommandEncoder )
         }
-        testingRender(renderCommandEncoder)
+        valvesRender( renderCommandEncoder )
+        testingRender( renderCommandEncoder )
     }
     
     func fluidSystemRender( _ renderCommandEncoder: MTLRenderCommandEncoder ) {
@@ -484,6 +567,23 @@ extension ReservoirObject: Renderable {
             renderCommandEncoder.drawPrimitives(type: .point,
                                                 vertexStart: 0,
                                                 vertexCount: particleCount)
+        }
+    }
+    
+    func valvesRender( _ renderCommandEncoder: MTLRenderCommandEncoder ) {
+        renderCommandEncoder.setRenderPipelineState(RenderPipelineStates.Get(.Instanced))
+        renderCommandEncoder.setDepthStencilState(DepthStencilStates.Get(.Less))
+        for i in valves.keys {
+            // Vertex
+            if( valves[i]!.isSelected ) {
+                var selectColor = float4(0.3,0.4,0.1,1.0)
+                renderCommandEncoder.setRenderPipelineState(RenderPipelineStates.Get(.Select))
+                renderCommandEncoder.setFragmentBytes(&selectColor, length: float4.size, index: 2)
+                renderCommandEncoder.setFragmentBytes(&selectTime, length : Float.size, index : 0)
+            }
+            
+            renderCommandEncoder.setVertexBytes(&valves[i]!.modelConstants, length : ModelConstants.stride, index: 2)
+            valves[i]!.buttonQuad.drawPrimitives(renderCommandEncoder, baseColorTextureType: valves[i]!.buttonTexture)
         }
     }
 }

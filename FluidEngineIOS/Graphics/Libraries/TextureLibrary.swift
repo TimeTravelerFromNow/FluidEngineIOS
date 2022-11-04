@@ -31,8 +31,9 @@ enum TextureTypes {
     case ControlPointsTexture
     case ConstructPipesTexture
     case MoveObjectTexture
-    
     case PipeTexture
+    case BigValveTexture
+    case SmallValveTexture
     
     case ReservoirSnapShot
 }
@@ -66,6 +67,8 @@ class Textures {
         _library.updateValue(Texture("constructPipe", ext: "png").texture, forKey: .ConstructPipesTexture)
         _library.updateValue(Texture("pipeTexture", ext: "png").texture, forKey: .PipeTexture)
         _library.updateValue(Texture("moveTexture", ext: "png").texture, forKey: .MoveObjectTexture)
+        _library.updateValue(Texture("bigValve", ext: "png").texture, forKey: .BigValveTexture)
+        _library.updateValue(Texture("smallValve", ext: "png").texture, forKey: .SmallValveTexture)
 
     }
     

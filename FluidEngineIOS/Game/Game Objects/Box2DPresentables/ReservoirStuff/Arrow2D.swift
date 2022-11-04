@@ -12,7 +12,7 @@ class Arrow2D {
     public static let ninetyDegreeRotMat = matrix_float2x2( float2( cos(.pi/2), sin(.pi/2) ),
                                                         float2( -sin(.pi/2), cos(.pi/2) ) )
     
-    private var _maxTurnAngle: Float = .pi/8
+    private var _maxTurnAngle: Float = .pi/4
     func setMaxTurnAngle(_ to: Float) { _maxTurnAngle = to }
     func getMaxTurnAngle() -> Float { return _maxTurnAngle }
     

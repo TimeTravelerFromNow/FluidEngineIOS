@@ -9,6 +9,8 @@ enum ButtonActions {
     
     case TestAction0
     case TestAction1
+    case TestAction2
+    case TestAction3
     case None
 }
 

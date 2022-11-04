@@ -14,7 +14,7 @@ class Pipe: Node {
     private var _vertexBuffer: MTLBuffer!
     private var _vertexCount: Int = 0
     
-    private var _pipeWidth: Float = 0.5
+    private var _pipeWidth: Float = 0.25
     var debugging = false
     var controlPointIndex = 0
     

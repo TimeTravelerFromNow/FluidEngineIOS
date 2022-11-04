@@ -184,6 +184,8 @@
 		92A9E44028DA72910000A77F /* clearButton.obj in Resources */ = {isa = PBXBuildFile; fileRef = 92A9E43428DA72910000A77F /* clearButton.obj */; };
 		92A9E44128DA72910000A77F /* beachButton.obj in Resources */ = {isa = PBXBuildFile; fileRef = 92A9E43528DA72910000A77F /* beachButton.obj */; };
 		92A9E44228DA72910000A77F /* testButton.obj in Resources */ = {isa = PBXBuildFile; fileRef = 92A9E43628DA72910000A77F /* testButton.obj */; };
+		92FD29A9291456B100DEB8CE /* bigValve.png in Resources */ = {isa = PBXBuildFile; fileRef = 92FD29A7291456B100DEB8CE /* bigValve.png */; };
+		92FD29AA291456B100DEB8CE /* smallValve.png in Resources */ = {isa = PBXBuildFile; fileRef = 92FD29A8291456B100DEB8CE /* smallValve.png */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -438,6 +440,8 @@
 		92A9E43428DA72910000A77F /* clearButton.obj */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = clearButton.obj; sourceTree = "<group>"; };
 		92A9E43528DA72910000A77F /* beachButton.obj */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = beachButton.obj; sourceTree = "<group>"; };
 		92A9E43628DA72910000A77F /* testButton.obj */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = testButton.obj; sourceTree = "<group>"; };
+		92FD29A7291456B100DEB8CE /* bigValve.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = bigValve.png; sourceTree = "<group>"; };
+		92FD29A8291456B100DEB8CE /* smallValve.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = smallValve.png; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -506,6 +510,8 @@
 		9226D32829070069007785D5 /* reservoir */ = {
 			isa = PBXGroup;
 			children = (
+				92FD29A7291456B100DEB8CE /* bigValve.png */,
+				92FD29A8291456B100DEB8CE /* smallValve.png */,
 				920603C829105F6000C1C846 /* pipeTexture.png */,
 				920603BB290C684F00C1C846 /* missingTexture.png */,
 				920603B3290B044100C1C846 /* bulbMesh.png */,
@@ -1110,6 +1116,7 @@
 				920603BF290C99C100C1C846 /* editTexture.png in Resources */,
 				92A9E40228DA6D620000A77F /* pineTree.png in Resources */,
 				92A9E3ED28DA6D620000A77F /* quad.obj in Resources */,
+				92FD29AA291456B100DEB8CE /* smallValve.png in Resources */,
 				920603B1290B03F400C1C846 /* bulbMesh.obj in Resources */,
 				92A9E43728DA72910000A77F /* clearButton.mtl in Resources */,
 				92A9E44128DA72910000A77F /* beachButton.obj in Resources */,
@@ -1117,6 +1124,7 @@
 				92A9E41028DA6D620000A77F /* cloud1.mtl in Resources */,
 				9226D3122905F5C4007785D5 /* testflat.obj in Resources */,
 				9226D3142905FA2A007785D5 /* testtube.obj in Resources */,
+				92FD29A9291456B100DEB8CE /* bigValve.png in Resources */,
 				92A9E40F28DA6D620000A77F /* cloud1.png in Resources */,
 				92A9E41328DA6D620000A77F /* cloud3.mtl in Resources */,
 				92A9E41728DA6D620000A77F /* beach.obj in Resources */,

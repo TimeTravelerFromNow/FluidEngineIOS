@@ -82,6 +82,7 @@ class TestTube: Node {
     // for handling group destruction
     private var _groupReferences:   UnsafeMutableRawPointer!
     var currentColors: [TubeColors] = []
+    var visualColors: [TubeColors] = [] // MARK: maybe refactor so that currentcolors are only what we see.
     private var _newColorTypes: [TubeColors] = []
     private var _colors: [float4] = []
     
@@ -172,7 +173,7 @@ class TestTube: Node {
         self.totalColors = colors.count
         self._colors = [float4].init(repeating: WaterColors[.Empty]!, count: totalColors)
         self.currentColors = [TubeColors].init(repeating: .Empty, count: totalColors)
-
+        self.visualColors = currentColors
         _currentTopIndex = -1
         for (i,c) in colors.enumerated() {
             if c != .Empty {
