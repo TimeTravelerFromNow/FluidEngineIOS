@@ -205,6 +205,7 @@ class ReservoirObject: Node {
         topValve.setPositionX( tvX * GameSettings.stmRatio )
         topValve.setPositionY( tvY * GameSettings.stmRatio )
         topValve.modelConstants.modelMatrix = topValve.modelMatrix
+        topValve.setRotationZ( LiquidFun.getSegmentRotation)
         for i in valves.keys {
             if let valve = valves[i] {
                 let x = valve.box2DPos.x
@@ -573,6 +574,15 @@ extension ReservoirObject: Renderable {
     func valvesRender( _ renderCommandEncoder: MTLRenderCommandEncoder ) {
         renderCommandEncoder.setRenderPipelineState(RenderPipelineStates.Get(.Instanced))
         renderCommandEncoder.setDepthStencilState(DepthStencilStates.Get(.Less))
+        if( topValve.isSelected  ) {
+            var selectColor = float4(0.3,0.4,0.1,1.0)
+            renderCommandEncoder.setRenderPipelineState(RenderPipelineStates.Get(.Select))
+            renderCommandEncoder.setFragmentBytes(&selectColor, length: float4.size, index: 2)
+            renderCommandEncoder.setFragmentBytes(&selectTime, length : Float.size, index : 0)
+        }
+        
+        renderCommandEncoder.setVertexBytes(&topValve.modelConstants, length : ModelConstants.stride, index: 2)
+        topValve.buttonQuad.drawPrimitives(renderCommandEncoder, baseColorTextureType: topValve.buttonTexture)
         for i in valves.keys {
             // Vertex
             if( valves[i]!.isSelected ) {
@@ -585,6 +595,7 @@ extension ReservoirObject: Renderable {
             renderCommandEncoder.setVertexBytes(&valves[i]!.modelConstants, length : ModelConstants.stride, index: 2)
             valves[i]!.buttonQuad.drawPrimitives(renderCommandEncoder, baseColorTextureType: valves[i]!.buttonTexture)
         }
+        
     }
 }
 
