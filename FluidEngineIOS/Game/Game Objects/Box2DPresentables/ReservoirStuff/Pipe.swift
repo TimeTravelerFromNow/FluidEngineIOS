@@ -18,6 +18,61 @@ class Pipe: Node {
     var debugging = false
     var controlPointIndex = 0
     
+    var controlPoints: [float2] = []
+    
+    func sylvestersFormula(_ x: Float) -> Float { // yVal interpolation result from controlPoints
+        var yVal: Float = 0.0;
+        for i in 0..<controlPoints.count {
+            let x_i = controlPoints[i].x
+            let y_i = controlPoints[i].y
+            var product: Float = 1.0
+            for j in 0..<controlPoints.count {
+                if( j != i ) {
+                    let x_j = controlPoints[j].x
+                    if( x_i != x_j ) {
+                    product *= y_i * ( x -  x_j ) / ( x_i - x_j )
+                    } else { print("WARN:: sylvester formula will give bad result, two x values are identical.")}
+                }
+            }
+            yVal += product
+        }
+        return yVal
+    }
+    
+    func getInterpolatedPosition(_ fromXPositions: [Float] ) {
+        var yVals: [Float]  = []
+        var tangents: [float2] = []
+        let desiredDerivativeAccuracy: Float = 0.99
+        let maxDerivativeIterations: Int = 10
+        
+        for xVal in fromXPositions {
+            let yVal = sylvestersFormula( xVal )
+            yVals.append(yVal)
+            var derivativeIterations = 0
+            var currentDerivativeAccuracy: Float = 0.0
+            var currentDerivative: Float = 0.0
+            var nextDerivative: Float  = 0.0
+            var dX: Float = 0.1
+            while( currentDerivativeAccuracy < desiredDerivativeAccuracy && derivativeIterations < maxDerivativeIterations ) {
+                currentDerivative = getDerivative(ofFunction: sylvestersFormula, x: xVal, dX: dX)
+                dX *= 0.99
+                nextDerivative = getDerivative(ofFunction: sylvestersFormula, x: xVal, dX: dX)
+                currentDerivativeAccuracy =  ( currentDerivative - nextDerivative ) / nextDerivative // assume accuracy will be better for next to calc error
+                derivativeIterations += 1
+            }
+            
+            let tangent = normalize( float2( dX, currentDerivative ) )
+            tangents.append( tangent )
+        }
+    }
+    
+    func getDerivative( ofFunction: (Float) -> Float, x: Float, dX: Float ) -> Float {
+        let y0 = ofFunction( x + dX)
+        let y1 = ofFunction( x - dX )
+        return ( y1 - y0 ) / dX
+    }
+    
+    
     override init() {
         super.init()
         _mesh = CustomMesh()
