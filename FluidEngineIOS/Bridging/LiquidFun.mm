@@ -4,6 +4,7 @@
 #import "BoxButton.h"
 #import "PolygonObject.h"
 #import "Reservoir.h"
+#import "TKSpline.h"
 
 static b2World *world;
 

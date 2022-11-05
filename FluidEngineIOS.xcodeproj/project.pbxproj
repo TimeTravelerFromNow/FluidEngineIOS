@@ -186,6 +186,7 @@
 		92A9E44228DA72910000A77F /* testButton.obj in Resources */ = {isa = PBXBuildFile; fileRef = 92A9E43628DA72910000A77F /* testButton.obj */; };
 		92FD29A9291456B100DEB8CE /* bigValve.png in Resources */ = {isa = PBXBuildFile; fileRef = 92FD29A7291456B100DEB8CE /* bigValve.png */; };
 		92FD29AA291456B100DEB8CE /* smallValve.png in Resources */ = {isa = PBXBuildFile; fileRef = 92FD29A8291456B100DEB8CE /* smallValve.png */; };
+		92FD2CC32916F2DD00DEB8CE /* TKSpline.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 92FD2CC12916F2DD00DEB8CE /* TKSpline.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -442,6 +443,8 @@
 		92A9E43628DA72910000A77F /* testButton.obj */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = testButton.obj; sourceTree = "<group>"; };
 		92FD29A7291456B100DEB8CE /* bigValve.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = bigValve.png; sourceTree = "<group>"; };
 		92FD29A8291456B100DEB8CE /* smallValve.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = smallValve.png; sourceTree = "<group>"; };
+		92FD2CC12916F2DD00DEB8CE /* TKSpline.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = TKSpline.cpp; sourceTree = "<group>"; };
+		92FD2CC22916F2DD00DEB8CE /* TKSpline.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TKSpline.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -995,6 +998,8 @@
 				92A9E42228DA6F410000A77F /* Tube.h */,
 				9226D30E2905E306007785D5 /* Reservoir.cpp */,
 				9226D30F2905E306007785D5 /* Reservoir.h */,
+				92FD2CC12916F2DD00DEB8CE /* TKSpline.cpp */,
+				92FD2CC22916F2DD00DEB8CE /* TKSpline.h */,
 			);
 			path = Bridging;
 			sourceTree = "<group>";
@@ -1225,6 +1230,7 @@
 				92489BB52799DA0400639B52 /* b2TrackedBlock.cpp in Sources */,
 				923F2BD827A0FD7300443936 /* MetalTypes.metal in Sources */,
 				92A9E38F28DA6CEB0000A77F /* Camera.swift in Sources */,
+				92FD2CC32916F2DD00DEB8CE /* TKSpline.cpp in Sources */,
 				92489BD02799DA0400639B52 /* b2Collision.cpp in Sources */,
 				92489BC82799DA0400639B52 /* b2DynamicTree.cpp in Sources */,
 				92A9E39528DA6CEB0000A77F /* TestTube.swift in Sources */,
