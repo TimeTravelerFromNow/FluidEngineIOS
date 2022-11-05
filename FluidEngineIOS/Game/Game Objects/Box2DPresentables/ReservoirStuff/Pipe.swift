@@ -8,6 +8,9 @@ struct Arrow2D {
 }
 
 class Pipe: Node {
+    
+    var splineRef: UnsafeMutableRawPointer?
+    
     private var _leftVertices:  [float2] = []
     private var _rightVertices: [float2] = []
     private var _sourceVertices: [float2] = [] // path vertices
@@ -29,101 +32,10 @@ class Pipe: Node {
     var segmentIndex = 0
     var totalSegments = 0
     
-    var controlPoints: [float2] = [] { didSet { updateModelConstants()  }}
+    var controlPoints: [float2] = [] { didSet {  updateModelConstants();  updateBox2DControlPts(); makeSpline();  }}
+    var box2DControlPts: [Vector2D] = []
     let segmentDensity: Int!
     var doneBuilding = false
-    
-    func initializeVertexPositions() {
-        setSourceVerticesFromControlPoints()
-        buildPipeVertices()
-    }
-    
-    func setSourceVerticesFromControlPoints(excludeFirstAndLast: Bool = true) {
-        if( controlPoints.count < 2 ) { print("Pipe build from control points WARN:: none or not enough control points."); return}
-        if( controlPoints.count < 4 && excludeFirstAndLast ) { print("Pipe build from control points WARN:: none or not enough control points."); return}
-        var trimmedControlPoints = controlPoints
-        if( excludeFirstAndLast ) {
-            trimmedControlPoints.removeFirst()
-            trimmedControlPoints.removeLast()
-        }
-        var totalControlPointsPathLength: Float = 0.0
-        for i in 0..<trimmedControlPoints.count - 1 {
-            totalControlPointsPathLength += length( trimmedControlPoints[i + 1]  - trimmedControlPoints[i] )
-        }
-        //segment density is number of segments per 1.0 length unit.
-        let totalSegmentCount: Int = Int( Float( segmentDensity ) * totalControlPointsPathLength )
-        totalSegments = totalSegmentCount
-        let xValues = trimmedControlPoints.map { $0.x }
-        
-        let xMin = xValues.min()!
-        let xMax = xValues.max()!
-        let xRange =  xMax - xMin
-        let xStep = xRange / Float(totalSegmentCount)
-        let xSourcePoints: [Float] = Array( stride(from: xMin, to: xMax, by: xStep) )
-
-        getInterpolatedPosition(xSourcePoints, controlPoints)
-    }
-    
-    func sylvestersFormula(_ x: Float, _ functionControlPts: [float2] ) -> Float { // yVal interpolation result from controlPoints
-        var yVal: Float = 0.0;
-        for i in 0..<functionControlPts.count {
-            let x_i = functionControlPts[i].x
-            let y_i = functionControlPts[i].y
-            var product: Float = 1.0
-            for j in 0..<functionControlPts.count {
-                if( j != i ) {
-                    let x_j = functionControlPts[j].x
-                    if( x_i != x_j ) {
-                        product *= ( x -  x_j ) / ( x_i - x_j )
-                    }
-                    else {
-                        print("WARN:: sylvester formula will give bad result, two x values are identical."); return 0.0}
-                }
-            }
-            product *= y_i
-            yVal += product
-        }
-        return yVal
-    }
-    
-    func getInterpolatedPosition(_ fromXPositions: [Float], _ functionControlPts: [float2] ) {
-        var tangents: [float2] = []
-        var positions: [float2] = []
-        let desiredDerivativeAccuracy: Float = 0.98
-        let maxDerivativeIterations: Int = 10
-        
-        for xVal in fromXPositions {
-            let yVal = sylvestersFormula( xVal, functionControlPts )
-            var derivativeIterations = 0
-            var currentDerivativeAccuracy: Float = 0.0
-            var currentDerivative: Float = 0.0
-            var nextDerivative: Float  = 0.0
-            var dX: Float = 0.01
-        var tangent: float2 = float2(0)
-            while( currentDerivativeAccuracy < desiredDerivativeAccuracy && derivativeIterations < maxDerivativeIterations ) {
-                (currentDerivative, tangent) = getDerivativeAndTangent(ofInterpFunction: sylvestersFormula, x: xVal, dX: dX, functionControlPts: functionControlPts)
-                dX *= 0.99
-                (nextDerivative, tangent) = getDerivativeAndTangent(ofInterpFunction: sylvestersFormula, x: xVal, dX: dX, functionControlPts: functionControlPts)
-                currentDerivativeAccuracy =  1.0 - ( currentDerivative - nextDerivative ) / nextDerivative // assume accuracy will be better for next to calc error
-                derivativeIterations += 1
-            }
-            
-            let position = float2(xVal, yVal)
-            tangent = MoveableArrow2D.ninetyDegreeRotMat * tangent
-            tangents.append( tangent )
-            positions.append( position )
-        }
-        setSourceVectors(pathVertices: positions, pathVectors: tangents)
-    }
-    
-    func getDerivativeAndTangent( ofInterpFunction: (Float, [float2] ) -> Float, x: Float, dX: Float, functionControlPts: [float2] ) -> (Float, float2) {
-        let y0 = ofInterpFunction( x - dX , functionControlPts )
-        let y1 = ofInterpFunction( x + dX , functionControlPts )
-        let derivative = ( y1 - y0 ) / dX
-        let angle = atan( derivative / 2 )
-        let tangent = float2(sin(angle), cos(angle))
-        return ( derivative , tangent )
-    }
     
     init(_ pipeSegmentDensity: Int = 10) {
         self.segmentDensity = pipeSegmentDensity
@@ -131,14 +43,23 @@ class Pipe: Node {
         _mesh = CustomMesh()
         _fluidConstants = FluidConstants(ptmRatio: GameSettings.ptmRatio, pointSize: GameSettings.particleRadius)
     }
-    
+    func updateBox2DControlPts() {
+        box2DControlPts = (controlPoints.map { Vector2D(x:$0.x,y:$0.y) })
+    }
+    func makeSpline() {
+        if controlPoints.count > 0{
+            splineRef = LiquidFun.makeSpline( &box2DControlPts, controlPtsCount: controlPoints.count )
+        }
+    }
     func updateModelConstants() {
         let fluidConstantsLength = FluidConstants.stride
         _fluidBuffer = Engine.Device.makeBuffer(bytes: &_fluidConstants, length: fluidConstantsLength, options: [])
         
         _controlPointsCount = controlPoints.count
-        let controlPointsLength = float2.stride( _controlPointsCount )
-        _controlPointsVertexBuffer = Engine.Device.makeBuffer(bytes: &controlPoints, length: controlPointsLength, options: [])
+        if _controlPointsCount > 0 {
+            let controlPointsLength = float2.stride( _controlPointsCount )
+            _controlPointsVertexBuffer = Engine.Device.makeBuffer(bytes: &controlPoints, length: controlPointsLength, options: [])
+        }
     }
     
     override func render(_ renderCommandEncoder: MTLRenderCommandEncoder) {

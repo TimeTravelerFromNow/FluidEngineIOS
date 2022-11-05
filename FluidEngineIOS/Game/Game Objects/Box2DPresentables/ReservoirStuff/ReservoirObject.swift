@@ -339,7 +339,7 @@ class ReservoirObject: Node {
             p.modelConstants = fluidModelConstants
             let currentControlPoints = controlPoints(sortedArrows[i])
             p.controlPoints = currentControlPoints
-            p.initializeVertexPositions()
+//            p.initializeVertexPositions() MARK: see what to do
             _pipes.append(p)
         }
         
@@ -428,12 +428,17 @@ class ReservoirObject: Node {
         var destination = arrow.target
         var start       = arrow.tail
         var actualStart = arrow.head
-        var overDest = float2(destination.x - 0.01, destination.y + 0.3) //MARK: Hacky, I will get an error if I use same x values
+        var overDest = float2(destination.x, destination.y + 0.3) //MARK: Hacky, I will get an error if I use same x values
         let midpoint = ( actualStart + overDest ) / 2
-//        let halfPoint1 = ( actualStart + midpoint ) / 2 // midpoint of midpoint
-//        let halfPoint2 = ( overDest + midpoint ) / 2
-        // now we want to curve our line so that it bends more naturally, do this by editing half points.
-        return  [ start, actualStart,  midpoint, overDest, destination ]
+        let outArray = [ destination, overDest, midpoint, actualStart, start ] // from bottom up
+        // make sure the yVals are increasing
+        for i in 0..<outArray.count - 1 {
+            if outArray[i].y > outArray[i + 1].y {
+                print("controlPoints WARN::y values not strictly increasing!")
+                return []
+            }
+        }
+        return outArray
     }
     
     //animations

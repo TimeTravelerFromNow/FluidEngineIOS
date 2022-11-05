@@ -665,6 +665,15 @@ return belowPositionsCount;
     return ((Reservoir *)ofReservoir)->GetBulbSegmentRotation(atIndex);
 }
 
++ (void *)makeSpline:(b2Vec2 *)withControlPoints controlPtsCount:(long)controlPtsCount {
+    TKSpline* spline = new TKSpline( withControlPoints, controlPtsCount );
+    return spline;
+}
+
++ (void) setInterpolatedValues:(void *)usingSpline yVals:(float *)yVals onXVals:(float *)onXVals valCount:(long)valCount {
+    ((TKSpline *)usingSpline )->SetInterpolatedPoints(yVals, onXVals, valCount);
+}
+
 @end
 
 
