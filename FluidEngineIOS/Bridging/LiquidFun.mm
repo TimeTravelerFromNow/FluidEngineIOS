@@ -630,11 +630,14 @@ return belowPositionsCount;
                        leftVertices:(void *)leftVertices
                 rightVertices:(void *)rightVertices
               leftVertexCount:(int)leftVertexCount
-             rightVertexCount:(int)rightVertexCount {
+             rightVertexCount:(int)rightVertexCount
+                    atIndex:(long)atIndex
+{
     ((Reservoir *)reservoir)->MakePipeFixture((b2Vec2*)leftVertices,
                                               (b2Vec2*)rightVertices,
                                               leftVertexCount,
-                                              rightVertexCount);
+                                              rightVertexCount,
+                                              atIndex);
 }
 
 + (void) destroyPipeFixtures:(void *)reservoir {

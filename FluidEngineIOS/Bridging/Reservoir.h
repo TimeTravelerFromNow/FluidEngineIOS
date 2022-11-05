@@ -43,7 +43,8 @@ public:
     void MakePipeFixture(b2Vec2* leftVertices,
                          b2Vec2* rightVertices,
                          int leftVertexCount,
-                         int rightVertexCount);
+                         int rightVertexCount,
+                         long forIndex);
     void DestroyPipeFixtures();
     
     void RemoveWallPiece( long atIndex );

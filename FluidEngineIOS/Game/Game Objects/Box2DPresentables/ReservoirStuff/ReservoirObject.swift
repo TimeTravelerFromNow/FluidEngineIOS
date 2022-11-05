@@ -63,7 +63,6 @@ class ReservoirObject: Node {
     
     // pipe filling arrays
     var targets: [float2] = []
-    var controlPointArrays: [ [float2] ] = []
     private var _arrows: [Arrow2D] = []
     
     var _pipes: [Pipe] = []
@@ -205,7 +204,7 @@ class ReservoirObject: Node {
         topValve.setPositionX( tvX * GameSettings.stmRatio )
         topValve.setPositionY( tvY * GameSettings.stmRatio )
         topValve.modelConstants.modelMatrix = topValve.modelMatrix
-        topValve.setRotationZ( LiquidFun.getSegmentRotation)
+        topValve.setRotationZ( LiquidFun.getBulbWallAngle(_reservoir, at: getSegmentIndex(.pi / 2)))
         for i in valves.keys {
             if let valve = valves[i] {
                 let x = valve.box2DPos.x
@@ -213,7 +212,9 @@ class ReservoirObject: Node {
                 
                 valve.setPositionX( x * GameSettings.stmRatio )
                 valve.setPositionY( y * GameSettings.stmRatio )
+                valve.setRotationZ( LiquidFun.getBulbWallAngle(_reservoir, at: i))
                 valve.modelConstants.modelMatrix = valve.modelMatrix
+        
             }
         }
     }
@@ -258,23 +259,13 @@ class ReservoirObject: Node {
             rotateSegmentStep( deltaTime )
         }
     }
-    // initiatiators
-    func buildTestPipe() {
-        self._pipeBuildDelay = _defaultPipeBuildDelay
-        self._controlPointIndex = 0
-        let startingPos = getBulbPos() + getSegmentCenter(3 * Float.pi / 2)
-        self._testArrow = Arrow2D(startingPos, length: arrowLength)
-        self.isBuildingTestPipe = true
-    }
     
     func buildPipes() {
         let targetCount = self.targets.count
         let centerAngle = 3 * Float.pi / 2
         let segmentAngleIncrement = Float.pi / Float(hemisphereSegments)
         
-        var arrowCenters: [float2] = []
-        var arrowNormals: [float2] = []
-        var arrowAngles: [Float] = [] // for figuring out where to place the valve buttons.
+        var arrowDictionary: [Float:Arrow2D] = [:] // Can use to sort.
         //determine starting points (want symmetrical look)
         var numberPipeCentersOnOneSide = 1
         let oddCushion = Float.pi / 6
@@ -289,9 +280,10 @@ class ReservoirObject: Node {
                 let currAngle = centerAngle + angleFromBottom
                 let currCenter = getSegmentCenter( currAngle )
                 let currNormal = float2(cos(currAngle), sin(currAngle))
-                arrowCenters.append( currCenter )
-                arrowNormals.append( currNormal )
-                arrowAngles.append( currAngle )
+                let evenArrow = Arrow2D(tail: getBulbPos(),
+                                        head: currCenter,
+                                        direction: currNormal)
+                arrowDictionary.updateValue(evenArrow, forKey: currAngle)
                 if i > 0 {
                     if( mod2Result ) {
                         numberPipeCentersOnOneSide += 1
@@ -304,9 +296,10 @@ class ReservoirObject: Node {
             let bottomArrowCenter = getSegmentCenter( arrowAngle0 )
             let bottomArrowNormal = float2(0, -1)
            
-            arrowCenters.append(bottomArrowCenter)
-            arrowNormals.append(bottomArrowNormal)
-            arrowAngles.append( arrowAngle0 )
+            let centerBottomArrow = Arrow2D(tail: getBulbPos(),
+                                            head: bottomArrowCenter,
+                                            direction: bottomArrowNormal)
+            arrowDictionary.updateValue( centerBottomArrow, forKey: arrowAngle0 )
             if targetCount > 1 {
                 for i in 1..<targetCount {
                     let mod2Result: Bool = (i % 2 == 0)
@@ -318,9 +311,12 @@ class ReservoirObject: Node {
                     let currAngle = centerAngle + angleFromBottom
                     let currCenter = getSegmentCenter( currAngle )
                     let currNormal = float2(cos(currAngle), sin(currAngle))
-                    arrowCenters.append( currCenter )
-                    arrowNormals.append( currNormal )
-                    arrowAngles.append( currAngle )
+ 
+                    let oddArrow = Arrow2D(tail: getBulbPos(),
+                                           head: currCenter,
+                                           direction: currNormal)
+                    arrowDictionary.updateValue( oddArrow, forKey: currAngle )
+
                     if i > 2 {
                         if( mod2Result ) {
                             numberPipeCentersOnOneSide += 1
@@ -329,23 +325,22 @@ class ReservoirObject: Node {
                 }
             }
         }
-        //initializeArrows
-        _arrows = []
-        _pipes = []
-        // make the valves
-        _valveAngles = arrowAngles
-        attachValves()
-        for (i, center) in arrowCenters.enumerated() {
-            let arrow = Arrow2D(center, length: arrowLength, direction: arrowNormals[i] )
-            let pipe = Pipe()
-            pipe.modelConstants = fluidModelConstants
-            _arrows.append(arrow)
-            _pipes.append(pipe)
+        var sortedArrows: [Arrow2D] = []
+        
+        let sortedAngles = Array(arrowDictionary.keys).sorted(by: <)
+        for angle in sortedAngles {
+            sortedArrows.append( arrowDictionary[angle]! )
         }
-    
-        controlPointArrays = []
+        _pipes = []
         for (i, t) in targets.enumerated() {
-            controlPointArrays.append( controlPoints(_arrows[i], destination: t) )
+            if ( i > sortedArrows.count - 1 ) { print("Pipe build WARN::more targets than arrows for pipes."); return}
+            sortedArrows[i].target = t
+            let p = Pipe()
+            p.modelConstants = fluidModelConstants
+            let currentControlPoints = controlPoints(sortedArrows[i])
+            p.controlPoints = currentControlPoints
+            p.initializeVertexPositions()
+            _pipes.append(p)
         }
         
         self._pipeBuildDelay = _defaultPipeBuildDelay
@@ -419,11 +414,8 @@ class ReservoirObject: Node {
                 change = angV * deltaTime
             }
             LiquidFun.setBulbWallAngV(_reservoir, at: segmentInd, angV: angV)
-            if(abs(angleToClose) < 0.01 ){
+            if( abs(angleToClose) < 0.01 ){
                 segmentsToRotate.removeValue(forKey: segmentInd)
-            }
-            if let valveToRotate = valves[segmentInd] {
-                valveToRotate.setRotationZ(currAngle)
             }
         }
         if segmentsToRotate.count == 0 {
@@ -432,19 +424,16 @@ class ReservoirObject: Node {
     }
     
     // MARK: refactor so that we somehow are close to pointing downwards by the time we are over the tube.
-    func controlPoints(_ fromArrow: Arrow2D, destination: float2) -> [float2] {
-        let start = fromArrow.tailPos!
-        let overDest = float2(destination.x, destination.y + 0.3)
-        var tangent = Arrow2D.ninetyDegreeRotMat * normalize(start - destination )
-        let midpoint = ( start + overDest ) / 2
-        var halfPoint1 = ( start + midpoint ) / 2 // midpoint of midpoint
-        var halfPoint2 = ( overDest + midpoint ) / 2
-       
-        halfPoint1.y += tangent.y * 0.1
-        halfPoint2.y -= tangent.y * 0.1
-
+    func controlPoints( _ arrow: Arrow2D) -> [float2] {
+        var destination = arrow.target
+        var start       = arrow.tail
+        var actualStart = arrow.head
+        var overDest = float2(destination.x - 0.01, destination.y + 0.3) //MARK: Hacky, I will get an error if I use same x values
+        let midpoint = ( actualStart + overDest ) / 2
+//        let halfPoint1 = ( actualStart + midpoint ) / 2 // midpoint of midpoint
+//        let halfPoint2 = ( overDest + midpoint ) / 2
         // now we want to curve our line so that it bends more naturally, do this by editing half points.
-        return  [ halfPoint1, midpoint, halfPoint2, overDest, destination ]
+        return  [ start, actualStart,  midpoint, overDest, destination ]
     }
     
     //animations
@@ -459,28 +448,17 @@ class ReservoirObject: Node {
             _pipeBuildDelay -= deltaTime
         } else {
             var pipesDone = 0
-            for (i, p) in _pipes.enumerated() {
-                let controlPoints = controlPointArrays[ i ]
-                if(p.controlPointIndex < controlPoints.count) {
-                    let currDest = controlPoints[p.controlPointIndex]
-                    let currArrow = _arrows[i]
-                    currArrow.turnAndMoveArrow( currDest )
-                    p.setSourceVectors(pathVertices: currArrow.pathVertices, pathVectors: currArrow.directionVectors)
-                    p.buildPipeVertices()
-                  
-                    if( abs(length( _arrows[i].tailPos - currDest )) < _targetRange ) {
-                        p.controlPointIndex += 1
-                        if( isTesting && i == 0 ) {  print("arrow 0 reached control point number \(p.controlPointIndex + 1).")}
-                    }
-                } else {
-                    if( isTesting ) {  print("arrow \(i) reached destination.")}
+            for p in _pipes {
+                if( p.doneBuilding ) {
                     pipesDone += 1
+                } else {
+//                    p.buildPiece()
                 }
             }
             if(pipesDone == _pipes.count) {
                 isBuildingPipes = false
-                for p in _pipes {
-                    p.createFixtures(_reservoir, bulbCenter: getBulbPos())
+                for (i, p) in _pipes.enumerated() {
+                    p.createFixtures(_reservoir, bulbCenter: getBulbPos(), pipeIndex: i)
                 }
                 if isTesting { print("Done building  \(_pipes.count) pipes with.") }
                 return

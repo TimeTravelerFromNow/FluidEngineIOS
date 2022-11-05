@@ -1,5 +1,5 @@
 
-class Arrow2D {
+class MoveableArrow2D {
     
     var tailPos: float2!
     var headPos: float2!

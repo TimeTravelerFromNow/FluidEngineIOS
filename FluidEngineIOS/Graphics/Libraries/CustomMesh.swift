@@ -66,8 +66,8 @@ class CustomMesh {
     }
     
     private func buildBuffers() {
-        _vertexBuffer = Engine.Device.makeBuffer(bytes: _vertices,
-                                                 length: Vertex.stride(_vertices.count),
+        _vertexBuffer = Engine.Device.makeBuffer(bytes: self._vertices,
+                                                 length: Vertex.stride(self._vertices.count),
                                                  options: [])
         
         _indexBuffer = Engine.Device.makeBuffer(bytes: _indices,

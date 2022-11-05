@@ -75,8 +75,8 @@ void Reservoir::CreateBulb(long hemisphereSegments, float bulbRadius) {
         
         float y = sin( f ) * bulbRadius; // center of the line
         float x = cos( f ) * bulbRadius;
-        float xT = sin( f ) * angleIncrement * bulbRadius * 0.6; // tangent
-        float yT = cos( f ) * angleIncrement * bulbRadius * 0.6;
+        float xT =  sin( f ) * angleIncrement * bulbRadius * 0.6; // tangent
+        float yT =  cos( f ) * angleIncrement * bulbRadius * 0.6;
         b2Vec2 cwVertex = b2Vec2( x + xT, y - yT);
         b2Vec2 ccwVertex = b2Vec2( x - xT, y + yT);
         bulbLine.Set(cwVertex, ccwVertex);
@@ -119,7 +119,24 @@ float Reservoir::GetBulbSegmentRotation( long atIndex ) {
 void Reservoir::MakePipeFixture( b2Vec2* leftVertices,
                                  b2Vec2* rightVertices,
                                  int leftVertexCount,
-                                 int rightVertexCount) {
+                                 int rightVertexCount,
+                                    long forIndex) {
+    if( forIndex < ( m_pipeFixtures.size() / sizeof(b2Fixture*) ) * 2 ) { // update the fixture
+        b2FixtureDef leftFixtureDef;
+        b2FixtureDef rightFixtureDef;
+
+        b2ChainShape leftShape;
+        b2ChainShape rightShape;
+        leftShape.CreateChain(leftVertices, leftVertexCount);
+        rightShape.CreateChain(rightVertices, rightVertexCount);
+        leftFixtureDef.shape = &leftShape;
+        rightFixtureDef.shape = &rightShape;
+        m_bulbBody->DestroyFixture( m_pipeFixtures[ forIndex * 2 ] );
+        m_bulbBody->DestroyFixture( m_pipeFixtures[ forIndex * 2 + 1 ] );
+        m_pipeFixtures[ forIndex * 2 ] = m_bulbBody->CreateFixture( &leftFixtureDef );
+        m_pipeFixtures[ forIndex * 2 + 1 ] = m_bulbBody->CreateFixture( &rightFixtureDef );
+    } else { // create fixture
+    
     b2FixtureDef leftFixtureDef;
     b2FixtureDef rightFixtureDef;
 
@@ -135,6 +152,7 @@ void Reservoir::MakePipeFixture( b2Vec2* leftVertices,
     
     m_pipeFixtures.push_back( m_bulbBody->CreateFixture( &leftFixtureDef ) );
     m_pipeFixtures.push_back( m_bulbBody->CreateFixture( &rightFixtureDef ) );
+    }
 }
 
 void Reservoir::DestroyPipeFixtures() {

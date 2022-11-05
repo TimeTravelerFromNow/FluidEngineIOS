@@ -90,9 +90,9 @@ class DevScene : Scene {
     }
     
     func addReservoirs() {
-        testReservoir0 = ReservoirObject(origin: box2DOrigin + float2(-1,5))
+        testReservoir0 = ReservoirObject(origin: box2DOrigin + float2(-3,5))
         testReservoir0.fill(color: .Red)
-        testReservoir1 =  ReservoirObject(origin: box2DOrigin + float2(1,5))
+        testReservoir1 =  ReservoirObject(origin: box2DOrigin + float2(3,5))
         testReservoir1.fill(color: .Blue)
         addChild(testReservoir0)
         addChild(testReservoir1)

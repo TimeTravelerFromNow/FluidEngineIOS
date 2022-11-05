@@ -181,7 +181,8 @@ typedef struct VertexIn {
                        leftVertices:(void *)leftVertices
                 rightVertices:(void *)rightVertices
               leftVertexCount:(int)leftVertexCount
-       rightVertexCount:(int)rightVertexCount;
+       rightVertexCount:(int)rightVertexCount
+            atIndex:(long)atIndex;
 
 + (void) destroyPipeFixtures:(void *)reservoir;
 + (void) setVelocity:(void *)ofReservoir velocity:(Vector2D)velocity;

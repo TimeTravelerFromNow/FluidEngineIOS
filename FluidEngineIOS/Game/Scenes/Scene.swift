@@ -11,10 +11,10 @@ enum SceneTypes {
     case None
 }
 
-let SceneOrigins: [SceneTypes: float2] = [.TestTubes:float2(5.0, 5.0),
+let SceneOrigins: [SceneTypes: float2] = [.TestTubes:float2(15.0, 15.0),
                                           .Menu:float2(-5.0, 5.0),
                                           .Beach:float2(15.0, 0.0),
-                                          .Dev:float2(-10.0,-10.0)]
+                                          .Dev:float2(0.0,0.0)]
 
 enum SmoothingStates {
     case Leaving
