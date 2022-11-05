@@ -85,7 +85,6 @@ class Pipe: Node {
         }
         return yVal
     }
-
     
     func getInterpolatedPosition(_ fromXPositions: [Float], _ functionControlPts: [float2] ) {
         var tangents: [float2] = []
