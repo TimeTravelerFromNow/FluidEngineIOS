@@ -27,12 +27,19 @@ class Pipe: Node {
     private var _controlPointsVertexBuffer: MTLBuffer!
     private var _controlPointsCount: Int = 0
     
+    private var _interpolatedPointsBuffer: MTLBuffer!
+    private var _interpolatedPointsCount: Int = 0
+    
     private var _pipeWidth: Float = 0.4
     var debugging = false
     var segmentIndex = 0
     var totalSegments = 0
     
-    var controlPoints: [float2] = [] { didSet {  updateModelConstants();  updateBox2DControlPts(); makeSpline();  }}
+    var controlPoints: [float2] = [] { didSet { updateBox2DControlPts(); makeSpline(); updateModelConstants(); }}
+    var _ySourcePoints: [Float] = []
+    var _interpolatedXValues: [Float] = []
+    var interpolatedPoints: [float2] = []
+    
     var box2DControlPts: [Vector2D] = []
     let segmentDensity: Int!
     var doneBuilding = false
@@ -43,12 +50,52 @@ class Pipe: Node {
         _mesh = CustomMesh()
         _fluidConstants = FluidConstants(ptmRatio: GameSettings.ptmRatio, pointSize: GameSettings.particleRadius)
     }
+    
+    func setSourceYValuesFromControlPoints(excludeFirstAndLast: Bool = true) {
+        if( controlPoints.count < 2 ) { print("Pipe build from control points WARN:: none or not enough control points."); return}
+        if( controlPoints.count < 4 && excludeFirstAndLast ) { print("Pipe build from control points WARN:: none or not enough control points."); return}
+        var trimmedControlPoints = controlPoints
+        if( excludeFirstAndLast ) {
+            trimmedControlPoints.removeFirst()
+            trimmedControlPoints.removeLast()
+        }
+        var totalControlPointsPathLength: Float = 0.0
+        for i in 0..<trimmedControlPoints.count - 1 {
+            totalControlPointsPathLength += length( trimmedControlPoints[i + 1]  - trimmedControlPoints[i] )
+        }
+        //segment density is number of segments per 1.0 length unit.
+        let totalSegmentCount: Int = Int( Float( segmentDensity ) * totalControlPointsPathLength )
+        totalSegments = totalSegmentCount
+        let yValues = trimmedControlPoints.map { $0.y }
+        
+        let yMin = yValues.min()!
+        let yMax = yValues.max()!
+        let yRange =  yMax - yMin
+        let yStep = yRange / Float(totalSegmentCount)
+        _ySourcePoints = Array( stride(from: yMin, to: yMax, by: yStep) )
+    }
+    
+    func setInterpolatedPositions() {
+        _interpolatedXValues = _ySourcePoints
+        let count = _ySourcePoints.count
+        if( splineRef != nil ) {
+        LiquidFun.setInterpolatedValues(splineRef, yVals: &_ySourcePoints, onXVals: &_interpolatedXValues, valCount: count)
+            interpolatedPoints = [float2].init(repeating: float2(0), count: count)
+            for i in 0..<interpolatedPoints.count {
+                interpolatedPoints[i].x = _interpolatedXValues[i]
+                interpolatedPoints[i].y = _ySourcePoints[i]
+            }
+        } else { print("setInterpolatedPositions WARN:: spline was nil")}
+    }
+    
     func updateBox2DControlPts() {
         box2DControlPts = (controlPoints.map { Vector2D(x:$0.x,y:$0.y) })
     }
     func makeSpline() {
         if controlPoints.count > 0{
             splineRef = LiquidFun.makeSpline( &box2DControlPts, controlPtsCount: controlPoints.count )
+            setSourceYValuesFromControlPoints()
+            setInterpolatedPositions()
         }
     }
     func updateModelConstants() {
@@ -59,6 +106,11 @@ class Pipe: Node {
         if _controlPointsCount > 0 {
             let controlPointsLength = float2.stride( _controlPointsCount )
             _controlPointsVertexBuffer = Engine.Device.makeBuffer(bytes: &controlPoints, length: controlPointsLength, options: [])
+        }
+        _interpolatedPointsCount = interpolatedPoints.count
+        if _interpolatedPointsCount > 0 {
+            let interpPointsSize = float2.stride( _interpolatedPointsCount )
+            _interpolatedPointsBuffer = Engine.Device.makeBuffer(bytes: &interpolatedPoints, length: interpPointsSize, options: [])
         }
     }
     
@@ -75,6 +127,7 @@ class Pipe: Node {
         _mesh.drawPrimitives( renderCommandEncoder )
         }
         controlPointsRender( renderCommandEncoder )
+        interpolatedPointsRender( renderCommandEncoder )
     }
     
     func controlPointsRender( _ renderCommandEncoder: MTLRenderCommandEncoder ) {
@@ -93,6 +146,24 @@ class Pipe: Node {
             renderCommandEncoder.drawPrimitives(type: .point,
                                                 vertexStart: 0,
                                                 vertexCount: _controlPointsCount)
+        }
+    }
+    func interpolatedPointsRender( _ renderCommandEncoder: MTLRenderCommandEncoder ) {
+        if _interpolatedPointsCount > 0 {
+            renderCommandEncoder.setRenderPipelineState(RenderPipelineStates.Get(.Points))
+            renderCommandEncoder.setDepthStencilState(DepthStencilStates.Get(.Less))
+            renderCommandEncoder.setVertexBuffer(_interpolatedPointsBuffer,
+                                                 offset: 0,
+                                                 index: 0)
+            renderCommandEncoder.setVertexBytes(&modelConstants,
+                                                length: ModelConstants.stride,
+                                                index: 2)
+            renderCommandEncoder.setVertexBuffer(_fluidBuffer,
+                                                 offset: 0,
+                                                 index: 3)
+            renderCommandEncoder.drawPrimitives(type: .point,
+                                                vertexStart: 0,
+                                                vertexCount: _interpolatedPointsCount)
         }
     }
 

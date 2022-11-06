@@ -430,7 +430,10 @@ class ReservoirObject: Node {
         var actualStart = arrow.head
         var overDest = float2(destination.x, destination.y + 0.3) //MARK: Hacky, I will get an error if I use same x values
         let midpoint = ( actualStart + overDest ) / 2
-        let outArray = [ destination, overDest, midpoint, actualStart, start ] // from bottom up
+//        var midMid0 = (actualStart + midpoint ) / 2
+//        var midMid1 = (overDest + midpoint) / 2
+        let outArray = [ destination, overDest, midpoint,  actualStart, start ] // from bottom up
+        
         // make sure the yVals are increasing
         for i in 0..<outArray.count - 1 {
             if outArray[i].y > outArray[i + 1].y {
