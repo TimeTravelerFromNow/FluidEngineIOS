@@ -393,27 +393,27 @@ class TestTubeScene : Scene {
     
     func doButtonAction() {
         if( buttonPressed != nil ) {
-        switch boxButtonHitTest(boxPos: Touches.GetBoxPos()) {
-          
-        case .None:
-            print("let go of a button")
-        case .Clear:
-            beginEmpty()
-            print("clear action now")
-        case .ToMenu:
-            SceneManager.sceneSwitchingTo = .Menu
-            SceneManager.Get( .Menu ).unFreeze()
-        case .TestAction0:
-            testReservoir0.removeWallPiece(testIndex)
-            testIndex += 1
-        case .TestAction1:
-            print("TestAction1 button unprogrammed")
-        case nil:
-            print("let go of no button")
-        default:
-            print("Button Action WARN::need \(boxButtonHitTest(boxPos: Touches.GetBoxPos())) action.")
-            break
-        }
+            switch boxButtonHitTest(boxPos: Touches.GetBoxPos()) {
+                
+            case .None:
+                print("let go of a button")
+            case .Clear:
+                beginEmpty()
+                print("clear action now")
+            case .ToMenu:
+                SceneManager.sceneSwitchingTo = .Menu
+                SceneManager.Get( .Menu ).unFreeze()
+            case .TestAction0:
+                testReservoir0.removeWallPiece(testIndex)
+                testIndex += 1
+            case .TestAction1:
+                print("TestAction1 button unprogrammed")
+            case nil:
+                print("let go of no button")
+            default:
+                print("Button Action WARN::need \(boxButtonHitTest(boxPos: Touches.GetBoxPos())) action.")
+                break
+            }
         }
     }
     override func touchesEnded() {

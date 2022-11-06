@@ -35,22 +35,36 @@ class Pipe: Node {
     var segmentIndex = 0
     var totalSegments = 0
     
-    var controlPoints: [float2] = [] { didSet { updateBox2DControlPts(); makeSpline(); updateModelConstants(); }}
-    var _ySourcePoints: [Float] = []
-    var _interpolatedXValues: [Float] = []
+    var controlPoints: [float2] = [] { didSet { updateBox2DControlPts(); makeSpline(); updateModelConstants(); } }
+    var tControlPoints: [Float] = []
+    var _tSourcePoints: [Float] = []
+    private var _interpolatedXValues: [Float] = []
+    private var _interpolatedYValues: [Float] = []
     var interpolatedPoints: [float2] = []
     
     var box2DControlPts: [Vector2D] = []
     let segmentDensity: Int!
     var doneBuilding = false
     
-    init(_ pipeSegmentDensity: Int = 10) {
+    init(_ pipeSegmentDensity: Int = 4) {
         self.segmentDensity = pipeSegmentDensity
         super.init()
         _mesh = CustomMesh()
         _fluidConstants = FluidConstants(ptmRatio: GameSettings.ptmRatio, pointSize: GameSettings.particleRadius)
     }
     
+    func setSourceTVals(excludeFirstAndLast: Bool = true) {
+        if( controlPoints.count < 2 ) { print("Pipe build from control points WARN:: none or not enough control points."); return}
+        if( controlPoints.count < 4 && excludeFirstAndLast ) { print("Pipe build from control points WARN:: none or not enough control points."); return}
+        var trimmedControlPoints = tControlPoints
+        if( excludeFirstAndLast ) {
+            trimmedControlPoints.removeFirst()
+            trimmedControlPoints.removeLast()
+        }
+        let minT = trimmedControlPoints.min()!
+        let maxT = trimmedControlPoints.max()!
+        _tSourcePoints = Array( stride(from: minT, to: maxT, by: 1/Float(trimmedControlPoints.count * segmentDensity)))
+    }
     func setSourceYValuesFromControlPoints(excludeFirstAndLast: Bool = true) {
         if( controlPoints.count < 2 ) { print("Pipe build from control points WARN:: none or not enough control points."); return}
         if( controlPoints.count < 4 && excludeFirstAndLast ) { print("Pipe build from control points WARN:: none or not enough control points."); return}
@@ -72,18 +86,20 @@ class Pipe: Node {
         let yMax = yValues.max()!
         let yRange =  yMax - yMin
         let yStep = yRange / Float(totalSegmentCount)
-        _ySourcePoints = Array( stride(from: yMin, to: yMax, by: yStep) )
+        // this range will become the parameter t.
+        _tSourcePoints = Array( stride(from: yMin, to: yMax, by: yStep) ) //MARK: was Y source points
     }
     
     func setInterpolatedPositions() {
-        _interpolatedXValues = _ySourcePoints
-        let count = _ySourcePoints.count
+        _interpolatedXValues = _tSourcePoints
+        _interpolatedYValues = _tSourcePoints
+        let count = _tSourcePoints.count
         if( splineRef != nil ) {
-        LiquidFun.setInterpolatedValues(splineRef, yVals: &_ySourcePoints, onXVals: &_interpolatedXValues, valCount: count)
+            LiquidFun.setInterpolatedValues(splineRef, tVals: &_tSourcePoints, onXVals: &_interpolatedXValues, onYVals: &_interpolatedYValues, valCount: count)
             interpolatedPoints = [float2].init(repeating: float2(0), count: count)
             for i in 0..<interpolatedPoints.count {
                 interpolatedPoints[i].x = _interpolatedXValues[i]
-                interpolatedPoints[i].y = _ySourcePoints[i]
+                interpolatedPoints[i].y = _interpolatedYValues[i]
             }
         } else { print("setInterpolatedPositions WARN:: spline was nil")}
     }
@@ -93,8 +109,8 @@ class Pipe: Node {
     }
     func makeSpline() {
         if controlPoints.count > 0{
-            splineRef = LiquidFun.makeSpline( &box2DControlPts, controlPtsCount: controlPoints.count )
-            setSourceYValuesFromControlPoints()
+            splineRef = LiquidFun.makeSpline( &tControlPoints, withControlPoints: &box2DControlPts, controlPtsCount: controlPoints.count )
+            setSourceTVals()
             setInterpolatedPositions()
         }
     }

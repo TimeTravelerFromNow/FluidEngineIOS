@@ -665,13 +665,13 @@ return belowPositionsCount;
     return ((Reservoir *)ofReservoir)->GetBulbSegmentRotation(atIndex);
 }
 
-+ (void *)makeSpline:(b2Vec2 *)withControlPoints controlPtsCount:(long)controlPtsCount {
-    TKSpline* spline = new TKSpline( withControlPoints, controlPtsCount );
++ (void *)makeSpline:(float *)tControlPoints withControlPoints:(b2Vec2 *)withControlPoints controlPtsCount:(long)controlPtsCount {
+    TKSpline* spline = new TKSpline( tControlPoints, withControlPoints, controlPtsCount );
     return spline;
 }
 
-+ (void) setInterpolatedValues:(void *)usingSpline yVals:(float *)yVals onXVals:(float *)onXVals valCount:(long)valCount {
-    ((TKSpline *)usingSpline )->SetInterpolatedPoints(yVals, onXVals, valCount);
++ (void) setInterpolatedValues:(void *)usingSpline tVals:(float *)tVals onXVals:(float *)onXVals onYVals:(float *)onYVals valCount:(long)valCount {
+    ((TKSpline *)usingSpline )->SetInterpolatedPoints(tVals, onXVals, onYVals, valCount);
 }
 
 @end

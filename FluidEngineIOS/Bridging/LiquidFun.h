@@ -191,7 +191,7 @@ typedef struct VertexIn {
 + (void) setBulbWallAngV:(void *)ofReservoir atIndex:(long)atIndex angV:(float)angV;
 + (float) getBulbWallAngle:(void *)ofReservoir atIndex:(long)atIndex;
 // TK Splines
-+ (void *)makeSpline:(Vector2D *)withControlPoints controlPtsCount:(long)controlPtsCount;
-+ (void) setInterpolatedValues:(void *)usingSpline yVals:(float *)yVals onXVals:(float *)onXVals valCount:(long)valCount;
++ (void *)makeSpline:(float *)tControlPoints withControlPoints:(Vector2D *)withControlPoints controlPtsCount:(long)controlPtsCount;
++ (void) setInterpolatedValues:(void *)usingSpline tVals:(float *)tVals onXVals:(float *)onXVals onYVals:(float *)onYVals valCount:(long)valCount;
 
 @end

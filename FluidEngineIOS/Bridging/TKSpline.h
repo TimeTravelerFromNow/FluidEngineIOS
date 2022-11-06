@@ -906,21 +906,20 @@ std::vector<double> solve_cubic(double a, double b, double c, double d,
 
 class TKSpline { // needs to be after spline header contents included.
 public:
-    TKSpline( b2Vec2* controlPoints, long controlPointsCount );
+    TKSpline( float* tControlPoints, b2Vec2* controlPoints, long controlPointsCount );
     ~TKSpline();
 
     float GetInterpolatedPosition(tk::spline fromSpline, float yVal);
     b2Vec2 GetTangentUnitVector(tk::spline fromSpline, float yVal);
-    
-    float GetInterpolatedPosition( float yVal );
 
-    void SetInterpolatedPoints( float* fromYVals, float* onXVals, long yValCount ) ;
+    void SetInterpolatedPoints(float* tControlPoints, float* fromYVals, float* onXVals, long yValCount ) ;
 
     b2Vec2 GetTangentUnitVector( float yVal );
 
 //    b2Vec2* GetTangentVectors( double* yVals, long yValCount );
 private:
-    tk::spline m_spline;
+    tk::spline mX_spline;
+    tk::spline mY_spline;
 };
 
 #endif /* TKSpline_h */

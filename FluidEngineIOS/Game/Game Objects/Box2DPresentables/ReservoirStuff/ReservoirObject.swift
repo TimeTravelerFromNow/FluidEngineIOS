@@ -338,7 +338,7 @@ class ReservoirObject: Node {
             let p = Pipe()
             p.modelConstants = fluidModelConstants
             let currentControlPoints = controlPoints(sortedArrows[i])
-            p.controlPoints = currentControlPoints
+            (p.tControlPoints, p.controlPoints) = currentControlPoints
 //            p.initializeVertexPositions() MARK: see what to do
             _pipes.append(p)
         }
@@ -424,24 +424,27 @@ class ReservoirObject: Node {
     }
     
     // MARK: refactor so that we somehow are close to pointing downwards by the time we are over the tube.
-    func controlPoints( _ arrow: Arrow2D) -> [float2] {
+    func controlPoints( _ arrow: Arrow2D) -> ([Float], [float2]) {
         var destination = arrow.target
         var start       = arrow.tail
         var actualStart = arrow.head
-        var overDest = float2(destination.x, destination.y + 0.3) //MARK: Hacky, I will get an error if I use same x values
+        var overDest = float2(destination.x, destination.y + 0.8)
+        var underDest = float2(destination.x, destination.y - 0.8)
         let midpoint = ( actualStart + overDest ) / 2
-//        var midMid0 = (actualStart + midpoint ) / 2
-//        var midMid1 = (overDest + midpoint) / 2
-        let outArray = [ destination, overDest, midpoint,  actualStart, start ] // from bottom up
+        let outArray = [ start, actualStart, midpoint, overDest,  destination, underDest]
         
-        // make sure the yVals are increasing
-        for i in 0..<outArray.count - 1 {
-            if outArray[i].y > outArray[i + 1].y {
-                print("controlPoints WARN::y values not strictly increasing!")
-                return []
-            }
+        var totalL: Float = 0.0
+        var tParams: [Float] = [ totalL ]
+        // assign tParams to calculated lengths
+        for i in 1..<outArray.count {
+            totalL += length( outArray[i] - outArray[i - 1] )
+            tParams.append( totalL)
         }
-        return outArray
+        // normalize tParams
+        // MARK: tParams must be strictly increasing
+        tParams = tParams.map { $0 / totalL }
+        
+        return (tParams, outArray)
     }
     
     //animations
