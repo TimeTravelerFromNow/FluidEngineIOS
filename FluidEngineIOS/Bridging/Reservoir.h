@@ -40,12 +40,9 @@ public:
     b2Vec2 GetBulbPosition();
     b2Vec2 GetBulbSegmentPosition(long atIndex);
 
-    void MakePipeFixture(b2Vec2* leftVertices,
-                         b2Vec2* rightVertices,
-                         int leftVertexCount,
-                         int rightVertexCount,
-                         long forIndex);
-    void DestroyPipeFixtures();
+    void* MakeLineFixture( b2Vec2* lineVertices, long vertexCount );
+//    void SetFixtureFilter( void* fixtureRef, ...) // MARK: TODO some pipe filter implementation here
+    void DestroyLineFixture( void* fixtureRef );
     
     void RemoveWallPiece( long atIndex );
     

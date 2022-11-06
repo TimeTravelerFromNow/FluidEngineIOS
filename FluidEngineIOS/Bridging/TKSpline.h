@@ -910,13 +910,9 @@ public:
     ~TKSpline();
 
     float GetInterpolatedPosition(tk::spline fromSpline, float yVal);
-    b2Vec2 GetTangentUnitVector(tk::spline fromSpline, float yVal);
 
-    void SetInterpolatedPoints(float* tControlPoints, float* fromYVals, float* onXVals, long yValCount ) ;
-
-    b2Vec2 GetTangentUnitVector( float yVal );
-
-//    b2Vec2* GetTangentVectors( double* yVals, long yValCount );
+    void SetInterpolatedPoints(float* tControlPoints, float* fromYVals, float* onXVals, b2Vec2* onTangentVectors, long yValCount ) ;
+    b2Vec2 GetTangentUnitVector(float t);
 private:
     tk::spline mX_spline;
     tk::spline mY_spline;

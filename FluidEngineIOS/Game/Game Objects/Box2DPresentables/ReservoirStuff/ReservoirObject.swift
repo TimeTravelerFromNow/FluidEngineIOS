@@ -335,11 +335,10 @@ class ReservoirObject: Node {
         for (i, t) in targets.enumerated() {
             if ( i > sortedArrows.count - 1 ) { print("Pipe build WARN::more targets than arrows for pipes."); return}
             sortedArrows[i].target = t
-            let p = Pipe()
+            let p = Pipe(parentReservoir: _reservoir)
             p.modelConstants = fluidModelConstants
             let currentControlPoints = controlPoints(sortedArrows[i])
             (p.tControlPoints, p.controlPoints) = currentControlPoints
-//            p.initializeVertexPositions() MARK: see what to do
             _pipes.append(p)
         }
         
@@ -428,10 +427,11 @@ class ReservoirObject: Node {
         var destination = arrow.target
         var start       = arrow.tail
         var actualStart = arrow.head
-        var overDest = float2(destination.x, destination.y + 0.8)
+        var overDest = float2(destination.x, destination.y + 0.4)
         var underDest = float2(destination.x, destination.y - 0.8)
         let midpoint = ( actualStart + overDest ) / 2
-        let outArray = [ start, actualStart, midpoint, overDest,  destination, underDest]
+        let bulbNormal = actualStart + normalize( arrow.head - arrow.tail ) * 0.3
+        let outArray = [ start, actualStart, bulbNormal, midpoint, overDest,  destination, underDest]
         
         var totalL: Float = 0.0
         var tParams: [Float] = [ totalL ]
@@ -463,14 +463,13 @@ class ReservoirObject: Node {
                 if( p.doneBuilding ) {
                     pipesDone += 1
                 } else {
-//                    p.buildPiece()
+                    p.buildPipeSegment()
+                    p.toggleFixtures()
                 }
             }
             if(pipesDone == _pipes.count) {
                 isBuildingPipes = false
-                for (i, p) in _pipes.enumerated() {
-                    p.createFixtures(_reservoir, bulbCenter: getBulbPos(), pipeIndex: i)
-                }
+              
                 if isTesting { print("Done building  \(_pipes.count) pipes with.") }
                 return
             }

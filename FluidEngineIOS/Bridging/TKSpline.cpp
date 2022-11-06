@@ -15,21 +15,18 @@ TKSpline::TKSpline( float* tControlPoints, b2Vec2* controlPoints, long controlPo
     mY_spline = yS;
 }
 
-void TKSpline::SetInterpolatedPoints( float* fromTVals, float* onXVals, float* onYVals, long valCount ) {
+void TKSpline::SetInterpolatedPoints( float* fromTVals, float* onXVals, float* onYVals, b2Vec2* onTangentVectors, long valCount ) {
     for( int i = 0; i < valCount; i++ ) {
         onXVals[i] = mX_spline( fromTVals[i] );
         onYVals[i] = mY_spline( fromTVals[i] );
+        onTangentVectors[i] = GetTangentUnitVector( fromTVals[i] );
     }
 }
 
-b2Vec2 TKSpline::GetTangentUnitVector( float yVal ) {
-    float slope = mX_spline.deriv(1, yVal);
-    float angle = atan( slope );
+b2Vec2 TKSpline::GetTangentUnitVector( float t ) {
+    float xSlope = mX_spline.deriv(1, t);
+    float ySlope = mY_spline.deriv(1, t);
+    float angle = atan( ySlope / xSlope );
     
-    return b2Vec2( cos(angle), sin(angle) );
+    return b2Vec2( cos( angle ), sin( angle ) );
 }
-
-//b2Vec2* TKSpline::GetTangentVectors( double* yVals, long yValCount ) {
-//    
-//    return void;
-//}

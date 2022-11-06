@@ -626,25 +626,6 @@ return belowPositionsCount;
     ((Reservoir *)reservoir)->RemoveWallPiece( atIndex );
 }
 
-
-+(void) makePipeFixture:(void *)reservoir
-                       leftVertices:(void *)leftVertices
-                rightVertices:(void *)rightVertices
-              leftVertexCount:(int)leftVertexCount
-             rightVertexCount:(int)rightVertexCount
-                    atIndex:(long)atIndex
-{
-    ((Reservoir *)reservoir)->MakePipeFixture((b2Vec2*)leftVertices,
-                                              (b2Vec2*)rightVertices,
-                                              leftVertexCount,
-                                              rightVertexCount,
-                                              atIndex);
-}
-
-+ (void) destroyPipeFixtures:(void *)reservoir {
-    ((Reservoir*)reservoir)->DestroyPipeFixtures();
-}
-
 + (void) setVelocity:(void *)ofReservoir velocity:(b2Vec2)velocity{
     ((Reservoir *)ofReservoir)->SetVelocity(velocity);
 }
@@ -664,14 +645,21 @@ return belowPositionsCount;
 + (float) getBulbWallAngle:(void *)ofReservoir atIndex:(long)atIndex {
     return ((Reservoir *)ofReservoir)->GetBulbSegmentRotation(atIndex);
 }
-
+//TK Splines
 + (void *)makeSpline:(float *)tControlPoints withControlPoints:(b2Vec2 *)withControlPoints controlPtsCount:(long)controlPtsCount {
     TKSpline* spline = new TKSpline( tControlPoints, withControlPoints, controlPtsCount );
     return spline;
 }
 
-+ (void) setInterpolatedValues:(void *)usingSpline tVals:(float *)tVals onXVals:(float *)onXVals onYVals:(float *)onYVals valCount:(long)valCount {
-    ((TKSpline *)usingSpline )->SetInterpolatedPoints(tVals, onXVals, onYVals, valCount);
++ (void) setInterpolatedValues:(void *)usingSpline tVals:(float *)tVals onXVals:(float *)onXVals onYVals:(float *)onYVals onTangents:(b2Vec2 *)onTangents valCount:(long)valCount {
+    ((TKSpline *)usingSpline )->SetInterpolatedPoints(tVals, onXVals, onYVals, onTangents, valCount);
+}
+// pipe fixture creation / destruction
++ (void *)makePipeFixture:(void*)onReservoir lineVertices:(b2Vec2 *)lineVertices vertexCount:(long)vertexCount {
+    return ((Reservoir *)onReservoir)->MakeLineFixture(lineVertices, vertexCount);
+}
++ (void) destroyPipeFixture:(void*)onReservoir lineRef:(void *)lineRef {
+    ((Reservoir *)onReservoir)->DestroyLineFixture( lineRef );
 }
 
 @end

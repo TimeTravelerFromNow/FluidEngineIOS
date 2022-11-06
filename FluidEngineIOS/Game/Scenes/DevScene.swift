@@ -90,9 +90,9 @@ class DevScene : Scene {
     }
     
     func addReservoirs() {
-        testReservoir0 = ReservoirObject(origin: box2DOrigin + float2(-1,6))
+        testReservoir0 = ReservoirObject(origin: box2DOrigin + float2(-1.5,6))
         testReservoir0.fill(color: .Red)
-        testReservoir1 =  ReservoirObject(origin: box2DOrigin + float2(3,5))
+        testReservoir1 =  ReservoirObject(origin: box2DOrigin + float2(1.5,6))
         testReservoir1.fill(color: .Blue)
         addChild(testReservoir0)
         addChild(testReservoir1)
@@ -366,13 +366,15 @@ class DevScene : Scene {
         
         if buttonPressed != nil {
             // Stop the engine after it completes the playback.
-            engine.notifyWhenPlayersFinished { error in
-                return .stopEngine
-            }
-            do {
-            try engine.start()
-            try player?.start(atTime: 0)
-            } catch { print("haptics not working")}
+            if engine != nil {
+                engine.notifyWhenPlayersFinished { error in
+                    return .stopEngine
+                }
+                do {
+                    try engine.start()
+                    try player?.start(atTime: 0)
+                } catch { print("haptics not working")}
+            } else { print("haptic WARN::No haptic engine!")}
         }
         FluidEnvironment.Environment.debugParticleDraw(atPosition: Touches.GetBoxPos())
     

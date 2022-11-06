@@ -177,14 +177,6 @@ typedef struct VertexIn {
 
 + (void)removeWallPieceOnReservoir:(void *)reservoir atIndex:(long)atIndex;
 
-+(void) makePipeFixture:(void *)reservoir
-                       leftVertices:(void *)leftVertices
-                rightVertices:(void *)rightVertices
-              leftVertexCount:(int)leftVertexCount
-       rightVertexCount:(int)rightVertexCount
-            atIndex:(long)atIndex;
-
-+ (void) destroyPipeFixtures:(void *)reservoir;
 + (void) setVelocity:(void *)ofReservoir velocity:(Vector2D)velocity;
 + (Vector2D) getVelocity:(void *)ofReservoir;
 
@@ -192,6 +184,9 @@ typedef struct VertexIn {
 + (float) getBulbWallAngle:(void *)ofReservoir atIndex:(long)atIndex;
 // TK Splines
 + (void *)makeSpline:(float *)tControlPoints withControlPoints:(Vector2D *)withControlPoints controlPtsCount:(long)controlPtsCount;
-+ (void) setInterpolatedValues:(void *)usingSpline tVals:(float *)tVals onXVals:(float *)onXVals onYVals:(float *)onYVals valCount:(long)valCount;
++ (void) setInterpolatedValues:(void *)usingSpline tVals:(float *)tVals onXVals:(float *)onXVals onYVals:(float *)onYVals onTangents:(Vector2D *)onTangents valCount:(long)valCount;
+// pipe fixture creation / destruction
++ (void *)makePipeFixture:(void*)onReservoir lineVertices:(Vector2D *)lineVertices vertexCount:(long)vertexCount;
++ (void *)destroyPipeFixture:(void*)onReservoir lineRef:(void *)lineRef;
 
 @end

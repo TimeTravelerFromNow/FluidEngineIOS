@@ -8,13 +8,18 @@ struct Arrow2D {
 }
 
 class Pipe: Node {
-    
+    private var _parentReservoirRef: UnsafeMutableRawPointer!
     var splineRef: UnsafeMutableRawPointer?
+    var leftFixRef: UnsafeMutableRawPointer?
+    var rightFixRef: UnsafeMutableRawPointer?
     
     private var _leftVertices:  [float2] = []
     private var _rightVertices: [float2] = []
+    private var _b2leftVertices: [Vector2D] = []
+    private var _b2rightVertices: [Vector2D] = []
     private var _sourceVertices: [float2] = [] // path vertices
-    private var _sourceTangents: [float2] = [] // perpendicular vector at each source vertex
+    private var _sourceTangents: [Vector2D] = [] // perpendicular vector at each source vertex
+    private var _perpendiculars: [float2] = []
     
     private var _textureType: TextureTypes = .PipeTexture
     private var _mesh: CustomMesh!
@@ -46,11 +51,49 @@ class Pipe: Node {
     let segmentDensity: Int!
     var doneBuilding = false
     
-    init(_ pipeSegmentDensity: Int = 4) {
+    init(_ pipeSegmentDensity: Int = 4, parentReservoir: UnsafeMutableRawPointer) {
         self.segmentDensity = pipeSegmentDensity
+        self._parentReservoirRef = parentReservoir
         super.init()
         _mesh = CustomMesh()
         _fluidConstants = FluidConstants(ptmRatio: GameSettings.ptmRatio, pointSize: GameSettings.particleRadius)
+    }
+    
+    func toggleFixtures() {
+        if ( _leftVertices.count < 2 || _rightVertices.count < 2 ) { return }
+        let bulbPos = LiquidFun.getBulbPos(_parentReservoirRef)
+        _b2leftVertices = _leftVertices.map { Vector2D(x:$0.x - bulbPos.x,y:$0.y - bulbPos.y) }
+        _b2rightVertices = _rightVertices.map { Vector2D(x:$0.x - bulbPos.x,y:$0.y - bulbPos.y) }
+        if(leftFixRef == nil && rightFixRef == nil) {
+            leftFixRef = LiquidFun.makePipeFixture(_parentReservoirRef, lineVertices: &_b2leftVertices, vertexCount: _leftVertices.count)
+            rightFixRef = LiquidFun.makePipeFixture(_parentReservoirRef, lineVertices: &_b2rightVertices, vertexCount: _rightVertices.count)
+        } else {
+            LiquidFun.destroyPipeFixture(_parentReservoirRef, lineRef: leftFixRef)
+            LiquidFun.destroyPipeFixture(_parentReservoirRef, lineRef: rightFixRef)
+            leftFixRef = nil
+            rightFixRef = nil
+        }
+    }
+    
+    func buildPipeSegment() {
+        if segmentIndex < totalSegments - 1 {
+            _sourceVertices = [float2].init( repeating: float2(0), count: segmentIndex )
+            for i in 0..<segmentIndex {
+                _sourceVertices[i] = interpolatedPoints[i]
+            }
+            segmentIndex += 1
+            buildPipeVertices()
+        }
+    }
+    func unBuildPipeSegment() {
+        if segmentIndex < totalSegments && ( segmentIndex > -1 ) {
+            _sourceVertices = [float2].init( repeating: float2(0), count: segmentIndex )
+            for i in 0..<segmentIndex {
+                _sourceVertices[i] = interpolatedPoints[i]
+            }
+            segmentIndex -= 1
+            buildPipeVertices()
+        }
     }
     
     func setSourceTVals(excludeFirstAndLast: Bool = true) {
@@ -63,43 +106,31 @@ class Pipe: Node {
         }
         let minT = trimmedControlPoints.min()!
         let maxT = trimmedControlPoints.max()!
-        _tSourcePoints = Array( stride(from: minT, to: maxT, by: 1/Float(trimmedControlPoints.count * segmentDensity)))
-    }
-    func setSourceYValuesFromControlPoints(excludeFirstAndLast: Bool = true) {
-        if( controlPoints.count < 2 ) { print("Pipe build from control points WARN:: none or not enough control points."); return}
-        if( controlPoints.count < 4 && excludeFirstAndLast ) { print("Pipe build from control points WARN:: none or not enough control points."); return}
-        var trimmedControlPoints = controlPoints
-        if( excludeFirstAndLast ) {
-            trimmedControlPoints.removeFirst()
-            trimmedControlPoints.removeLast()
+        totalSegments = trimmedControlPoints.count * segmentDensity + 1
+        let balancer = maxT - minT
+        _tSourcePoints = Array( stride(from: minT, to: maxT, by: balancer/Float(totalSegments)))
+        if !(_tSourcePoints.count == totalSegments) {
+            print("param t src array WARN::trimmed totalSegments \(totalSegments) not equal to array size \(_tSourcePoints.count)")
         }
-        var totalControlPointsPathLength: Float = 0.0
-        for i in 0..<trimmedControlPoints.count - 1 {
-            totalControlPointsPathLength += length( trimmedControlPoints[i + 1]  - trimmedControlPoints[i] )
-        }
-        //segment density is number of segments per 1.0 length unit.
-        let totalSegmentCount: Int = Int( Float( segmentDensity ) * totalControlPointsPathLength )
-        totalSegments = totalSegmentCount
-        let yValues = trimmedControlPoints.map { $0.y }
-        
-        let yMin = yValues.min()!
-        let yMax = yValues.max()!
-        let yRange =  yMax - yMin
-        let yStep = yRange / Float(totalSegmentCount)
-        // this range will become the parameter t.
-        _tSourcePoints = Array( stride(from: yMin, to: yMax, by: yStep) ) //MARK: was Y source points
+        totalSegments = _tSourcePoints.count
     }
     
     func setInterpolatedPositions() {
+        //initialize array sizes
+        let count = _tSourcePoints.count
         _interpolatedXValues = _tSourcePoints
         _interpolatedYValues = _tSourcePoints
-        let count = _tSourcePoints.count
+        _sourceTangents = [Vector2D].init(repeating: Vector2D(x:0,y:0), count: count)
+        _perpendiculars = [float2].init(repeating: float2(0,0), count: count)
+        interpolatedPoints = [float2].init(repeating: float2(0,0), count: count)
+        // if we have the spline, write to the arrays with their pointers.
         if( splineRef != nil ) {
-            LiquidFun.setInterpolatedValues(splineRef, tVals: &_tSourcePoints, onXVals: &_interpolatedXValues, onYVals: &_interpolatedYValues, valCount: count)
-            interpolatedPoints = [float2].init(repeating: float2(0), count: count)
+            LiquidFun.setInterpolatedValues(splineRef, tVals: &_tSourcePoints, onXVals: &_interpolatedXValues, onYVals: &_interpolatedYValues, onTangents: &_sourceTangents, valCount: count)
             for i in 0..<interpolatedPoints.count {
                 interpolatedPoints[i].x = _interpolatedXValues[i]
                 interpolatedPoints[i].y = _interpolatedYValues[i]
+                // rotate each tangent vector ninety deg., from this we can construct pipe vertices
+                _perpendiculars[i] = MoveableArrow2D.ninetyDegreeRotMat * float2(_sourceTangents[i].x, _sourceTangents[i].y)
             }
         } else { print("setInterpolatedPositions WARN:: spline was nil")}
     }
@@ -182,15 +213,6 @@ class Pipe: Node {
                                                 vertexCount: _interpolatedPointsCount)
         }
     }
-
-    func setSourceVectors(pathVertices: [float2], pathVectors: [float2]) {
-        _sourceVertices = pathVertices
-        _sourceTangents = [float2].init(repeating: float2(0), count: pathVectors.count)
-        // rotate each pathVector ninety deg. (so it is tangent), from this we can construct pipe vertices
-        for i in 0..<pathVectors.count {
-            _sourceTangents[i] = MoveableArrow2D.ninetyDegreeRotMat * pathVectors[i]
-        }
-    }
     
     func buildPipeVertices() {
         if( _sourceVertices.count < 2 ) { // need at least 4 vertices (from 2 source points)
@@ -205,8 +227,8 @@ class Pipe: Node {
         var indices: [UInt32] = []
         var currIndex: UInt32 = 1
         for (i, v) in _sourceVertices.enumerated() {
-            newLeftVertices[i] = v + _sourceTangents[i] * _pipeWidth / 2
-            newRightVertices[i] = v - _sourceTangents[i] * _pipeWidth / 2
+            newLeftVertices[i] = v + _perpendiculars[i] * _pipeWidth / 2
+            newRightVertices[i] = v - _perpendiculars[i] * _pipeWidth / 2
             customVertices[ Int(currIndex) - 1 ].position = float3(newLeftVertices[i].x, newLeftVertices[i].y, 0)
             customVertices[ Int(currIndex) - 1 ].textureCoordinate = float2(0,Float(i % 2))
             customVertices[ Int(currIndex) ].position = float3(newRightVertices[i].x, newRightVertices[i].y, 0)
@@ -224,19 +246,5 @@ class Pipe: Node {
         _vertexCount = newLeftVertices.count + newRightVertices.count
         _mesh.setIndices( indices )
         _mesh.setVertices( customVertices )
-    }
-    
-    func createFixtures(_ onReservoir: UnsafeMutableRawPointer, bulbCenter: float2, pipeIndex: Int ) {
-        var b2LeftVertices = _leftVertices.map() { Vector2D(x:Float32($0.x - bulbCenter.x),y:Float32($0.y - bulbCenter.y))}
-        var b2RightVertices = _rightVertices.map() { Vector2D(x:Float32($0.x - bulbCenter.x ),y:Float32($0.y - bulbCenter.y))}
-        LiquidFun.makePipeFixture(onReservoir,
-                                  leftVertices: &b2LeftVertices,
-                                  rightVertices: &b2RightVertices,
-                                  leftVertexCount: Int32(_leftVertices.count),
-                                  rightVertexCount: Int32(_rightVertices.count),
-                                  at: pipeIndex)
-    }
-    func destroyFixtures(_ onReservoir: UnsafeMutableRawPointer) {
-        LiquidFun.destroyPipeFixtures( onReservoir )
     }
 }

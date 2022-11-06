@@ -116,50 +116,22 @@ float Reservoir::GetBulbSegmentRotation( long atIndex ) {
 }
 
 
-void Reservoir::MakePipeFixture( b2Vec2* leftVertices,
-                                 b2Vec2* rightVertices,
-                                 int leftVertexCount,
-                                 int rightVertexCount,
-                                    long forIndex) {
-    if( forIndex < ( m_pipeFixtures.size() / sizeof(b2Fixture*) ) * 2 ) { // update the fixture
-        b2FixtureDef leftFixtureDef;
-        b2FixtureDef rightFixtureDef;
+void* Reservoir::MakeLineFixture( b2Vec2* lineVertices, long vertexCount ) {
+   
+    b2FixtureDef lineFixtureDef;
 
-        b2ChainShape leftShape;
-        b2ChainShape rightShape;
-        leftShape.CreateChain(leftVertices, leftVertexCount);
-        rightShape.CreateChain(rightVertices, rightVertexCount);
-        leftFixtureDef.shape = &leftShape;
-        rightFixtureDef.shape = &rightShape;
-        m_bulbBody->DestroyFixture( m_pipeFixtures[ forIndex * 2 ] );
-        m_bulbBody->DestroyFixture( m_pipeFixtures[ forIndex * 2 + 1 ] );
-        m_pipeFixtures[ forIndex * 2 ] = m_bulbBody->CreateFixture( &leftFixtureDef );
-        m_pipeFixtures[ forIndex * 2 + 1 ] = m_bulbBody->CreateFixture( &rightFixtureDef );
-    } else { // create fixture
+    b2ChainShape lineShape;
+    lineShape.CreateChain( lineVertices, vertexCount );
+    lineFixtureDef.shape = &lineShape;
     
-    b2FixtureDef leftFixtureDef;
-    b2FixtureDef rightFixtureDef;
-
-    b2ChainShape leftShape;
-    b2ChainShape rightShape;
-    leftShape.CreateChain(leftVertices, leftVertexCount);
-    rightShape.CreateChain(rightVertices, rightVertexCount);
-    leftFixtureDef.shape = &leftShape;
-    rightFixtureDef.shape = &rightShape;
-    
-    leftFixtureDef.filter = m_filter;
-    rightFixtureDef.filter = m_filter;
-    
-    m_pipeFixtures.push_back( m_bulbBody->CreateFixture( &leftFixtureDef ) );
-    m_pipeFixtures.push_back( m_bulbBody->CreateFixture( &rightFixtureDef ) );
-    }
+    lineFixtureDef.filter = m_filter;
+    b2Fixture* fixtureOut = m_bulbBody->CreateFixture( &lineFixtureDef );
+    return (void*)fixtureOut;
 }
 
-void Reservoir::DestroyPipeFixtures() {
-    int pipeFixtureCount = (m_pipeFixtures.size()) / sizeof(b2Fixture*);
-    for( int i = 0; i < pipeFixtureCount; i++) {
-        m_bulbBody->DestroyFixture(m_pipeFixtures[i]);
-    }
+
+void Reservoir::DestroyLineFixture( void* fixtureRef ) {
+    m_bulbBody->DestroyFixture( ( b2Fixture* )fixtureRef );
 
 }
 
