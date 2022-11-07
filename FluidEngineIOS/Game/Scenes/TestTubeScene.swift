@@ -394,7 +394,6 @@ class TestTubeScene : Scene {
     func doButtonAction() {
         if( buttonPressed != nil ) {
             switch boxButtonHitTest(boxPos: Touches.GetBoxPos()) {
-                
             case .None:
                 print("let go of a button")
             case .Clear:

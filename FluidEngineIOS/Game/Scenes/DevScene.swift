@@ -112,11 +112,14 @@ class DevScene : Scene {
 //        addSnapshots()
     }
     
-    func reservoirAction() {
+    func destroyReservoirs() {
         for i in 0..<reservoirs.count {
             removeChild(reservoirs[i])
         }
         reservoirs = []
+    }
+    func reservoirAction() {
+        destroyReservoirs()
         var colorVariety: [TubeColors] = []
         var colorsToTubeIndices: [TubeColors:[Int] ] = [:]
         var  reservoirForColor: [TubeColors:ReservoirObject] = [:]
@@ -469,7 +472,7 @@ class DevScene : Scene {
         case .TestAction2:
             tubesAskForLiquid()
         case .TestAction3:
-            break
+            destroyReservoirs()
         case nil:
             print("let go of no button")
         default:

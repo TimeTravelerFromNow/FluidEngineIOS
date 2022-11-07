@@ -41,19 +41,14 @@ bool b2ContactFilter::ShouldCollide(b2Fixture* fixtureA, b2Fixture* fixtureB)
 // collide if the groupIndex is shared by the tube and particle System ( this will ensure systems only interact with respective tubes )
 bool b2ContactFilter::ShouldCollide(b2Fixture *fixture, b2ParticleSystem *particleSystem, int32 particleIndex)
 {
-    const b2Filter& fixtureFilter = fixture->GetFilterData();
-    const b2Filter& particleSystemFilter = particleSystem->filter;
+    const b2Filter& filterA = fixture->GetFilterData();
+    const b2Filter& filterB = particleSystem->filter;
     
-    if( fixtureFilter.isFiltering ) {
-        if( fixtureFilter.groupIndex == particleSystemFilter.groupIndex ) {
-            return true;
-        }
-        
-        if( (fixtureFilter.categoryBits & tube_isPouring) && (particleSystemFilter.categoryBits & tube_isPouring) ) {
-            return true;
-        }
-        
-        return false; // in this case we were filtering, so make sure to avoid collision
+    if (filterA.groupIndex == filterB.groupIndex && filterA.groupIndex != 0)
+    {
+        return filterA.groupIndex > 0;
     }
-    return true; // indiscriminantly collide
+
+    bool collide = (filterA.maskBits & filterB.categoryBits) != 0 && (filterA.categoryBits & filterB.maskBits) != 0;
+    return collide;
 }

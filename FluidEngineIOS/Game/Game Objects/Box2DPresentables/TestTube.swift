@@ -112,7 +112,8 @@ class TestTube: Node {
     
     var sceneRepresentation: TubeVisual!
     
-    var pipes: [TubeColors: Pipe] = [:] // the pipes the tube will use for filling
+    var pipes: [TubeColors: Pipe] = [:] { didSet { setFilterOnPipes() } }// the pipes the tube will use for filling
+    var reservoirs: [TubeColors: ReservoirObject] = [:]
     
     init( origin: float2, gridId: Int, scale: Float = 50.0 ) {
         super.init()
@@ -188,10 +189,17 @@ class TestTube: Node {
     
     //destruction
     deinit {
-              LiquidFun.destroyBody(_tube)
+        LiquidFun.destroyBody(_tube)
     }
     
+    // state variables
+    var pipeValveOpen = false
     override func update(deltaTime: Float) {
+        
+        if pipeValveOpen {
+            pipeRecieveStep( deltaTime )
+        }
+        
         super.update()
         updateModelConstants()
         if shouldUpdateRep {
@@ -248,10 +256,21 @@ class TestTube: Node {
     }
     
     func fillFromPipes() {
-        guard let redPipe = pipes[ .Red] else { return }
-        redPipe.toggleValve()
         guard let pipeToAsk = pipes[currentColors[_currentTopIndex]] else { return }
+        print("asking for color \(_currentTopIndex) which should be \(currentColors[_currentTopIndex])")
+        print("pipe color was \(pipeToAsk.fluidColor)")
         pipeToAsk.toggleValve()
+        setFilterOnPipes() 
+    }
+    func setFilterOnPipes() {
+        for p in pipes.values {
+            print("sharing \(gridId) filter with pipe")
+            p.shareFilter( particleSystem )
+        }
+    }
+    
+    func pipeRecieveStep( _ deltaTime: Float ) {
+        
     }
     
     // funnel management

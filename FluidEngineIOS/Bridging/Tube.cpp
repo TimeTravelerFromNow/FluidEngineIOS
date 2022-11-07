@@ -14,8 +14,7 @@ Tube::Tube(b2World* worldRef,
     id = gridId;
     m_particleSys = particleSysRef;
     m_filter = b2Filter();
-    m_filter.groupIndex = gridId;
-    m_filter.isFiltering = true;
+    m_filter.groupIndex = gridId + 1;
     m_particleSys->filter = m_filter;
     
     b2BodyDef body1Def;
@@ -48,7 +47,6 @@ Tube::Tube(b2World* worldRef,
         sensorFixture.shape = &shape1;
         sensorFixture.filter = m_filter;
         sensorFixture.filter.categoryBits = 0x0000;
-        sensorFixture.filter.groupIndex = 100; // MARK: dont know hwat i'm testing here, just remove.
         sensorBody->CreateFixture(&sensorFixture);
         
         m_sensorBody = sensorBody;
@@ -155,7 +153,6 @@ void Tube::ClearPourBits() {
     b2Fixture* fixtures = m_body->GetFixtureList();
     
     m_filter.categoryBits = tube_isNotPouring;
-    m_filter.isFiltering = true;
     while(fixtures) {
         fixtures->SetFilterData( m_filter );
         fixtures = fixtures->GetNext();
@@ -210,6 +207,5 @@ int Tube::EngulfParticles( b2ParticleSystem* originalSystem ) {
 }
 
 void Tube::BeginEmpty() {
-    m_filter.isFiltering = false;
     m_particleSys->filter = m_filter;
 }

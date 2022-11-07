@@ -194,4 +194,7 @@ typedef struct VertexIn {
 + (void)setWallAngV:(void*)onReservoir wallBodyRef:(void *)wallBodyRef angV:(float)angV;
 + (float)getWallAngle:(void*)onReservoir wallBodyRef:(void *)wallBodyRef;
 
+// just setting fixture filters
++ (void)shareParticleSystemFilterWithFixture:(void*)fixtureRef particleSystem:(void *)particleSystem;
+
 @end

@@ -405,10 +405,11 @@ class ReservoirObject: Node {
     // MARK: refactor so that we somehow are close to pointing downwards by the time we are over the tube.
     func controlPoints( _ arrow: Arrow2D) -> ([Float], [float2]) {
         var destination = arrow.target
+        destination.y -= 0.6
         var start       = arrow.tail
         var actualStart = arrow.head
         var overDest = float2(destination.x, destination.y + 0.4)
-        var underDest = float2(destination.x, destination.y - 0.8)
+        var underDest = float2(destination.x, destination.y - 0.3)
         let midpoint = ( actualStart + overDest ) / 2
         let bulbNormal = actualStart + normalize( arrow.head - arrow.tail ) * 0.3
         let outArray = [ start, actualStart, bulbNormal, midpoint, overDest,  destination, underDest]

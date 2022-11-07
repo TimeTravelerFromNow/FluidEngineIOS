@@ -26,7 +26,6 @@ void TKSpline::SetInterpolatedPoints( float* fromTVals, float* onXVals, float* o
 b2Vec2 TKSpline::GetTangentUnitVector( float t ) {
     float xSlope = mX_spline.deriv(1, t);
     float ySlope = mY_spline.deriv(1, t);
-    float angle = atan( ySlope / xSlope );
-    
-    return b2Vec2( cos( angle ), sin( angle ) );
+    float magnitude = sqrt( xSlope * xSlope + ySlope * ySlope );    
+    return b2Vec2( xSlope , ySlope ) / magnitude;
 }

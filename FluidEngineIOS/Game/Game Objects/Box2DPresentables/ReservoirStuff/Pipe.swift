@@ -9,6 +9,7 @@ struct Arrow2D {
 
 class Pipe: Node {
     
+    var particleSystemSharing: UnsafeMutableRawPointer?
     var fluidColor: TubeColors!
     private var _parentReservoirRef: UnsafeMutableRawPointer!
     var splineRef: UnsafeMutableRawPointer?
@@ -65,6 +66,14 @@ class Pipe: Node {
         super.init()
         _mesh = CustomMesh()
         _fluidConstants = FluidConstants(ptmRatio: GameSettings.ptmRatio, pointSize: GameSettings.particleRadius)
+    }
+    
+    func shareFilter(_ withParticleSystem: UnsafeMutableRawPointer) {
+        particleSystemSharing = withParticleSystem
+        if(leftFixRef != nil && rightFixRef != nil ) {
+            LiquidFun.shareParticleSystemFilter(withFixture: leftFixRef, particleSystem: withParticleSystem)
+            LiquidFun.shareParticleSystemFilter(withFixture: rightFixRef, particleSystem: withParticleSystem)
+        }
     }
     
     func toggleFixtures() {
@@ -158,9 +167,9 @@ class Pipe: Node {
         }
         let minT = trimmedControlPoints.min()!
         let maxT = trimmedControlPoints.max()!
-        totalSegments = trimmedControlPoints.count * segmentDensity + 1
-        let balancer = maxT - minT
-        _tSourcePoints = Array( stride(from: minT, to: maxT, by: balancer/Float(totalSegments)))
+        totalSegments = trimmedControlPoints.count * segmentDensity
+        let increment = (maxT - minT) / Float( totalSegments  )
+        _tSourcePoints = Array( stride(from: minT, to: maxT + increment, by: increment ))
         if !(_tSourcePoints.count == totalSegments) {
             print("param t src array WARN::trimmed totalSegments \(totalSegments) not equal to array size \(_tSourcePoints.count)")
         }

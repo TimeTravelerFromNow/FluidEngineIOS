@@ -7,8 +7,8 @@ Reservoir::Reservoir(b2World* worldRef,
     m_world = worldRef;
     m_particleSys = particleSysRef;
     m_filter = b2Filter();
-    m_filter.isFiltering = true;
-    //m_particleSys->filter = m_filter;
+    m_filter.groupIndex = 10;
+    m_particleSys->filter = m_filter;
        
     b2BodyDef body1Def;
     body1Def.type = b2_kinematicBody;
@@ -128,7 +128,6 @@ void* Reservoir::MakeLineFixture( b2Vec2* lineVertices, long vertexCount ) {
     lineShape.CreateChain( lineVertices, vertexCount );
     lineFixtureDef.shape = &lineShape;
     
-    lineFixtureDef.filter = m_filter;
     b2Fixture* fixtureOut = m_bulbBody->CreateFixture( &lineFixtureDef );
     return (void*)fixtureOut;
 }

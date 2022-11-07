@@ -677,6 +677,11 @@ return belowPositionsCount;
     return ((Reservoir *)onReservoir)->GetWallAngle( wallBodyRef );
 }
 
+// just setting fixture filters
++ (void)shareParticleSystemFilterWithFixture:(void*)fixtureRef particleSystem:(void *)particleSystem {
+    ((b2Fixture*)fixtureRef)->SetFilterData( ((b2ParticleSystem *)particleSystem)->filter );
+}
+
 @end
 
 
