@@ -44,10 +44,14 @@ public:
 //    void SetFixtureFilter( void* fixtureRef, ...) // MARK: TODO some pipe filter implementation here
     void DestroyLineFixture( void* fixtureRef );
     
-    void RemoveWallPiece( long atIndex );
+    void* GetWallBody( long atIndex );
     
     void SetWallPieceAngV( long atIndex, float angV );
     float GetBulbSegmentRotation( long atIndex );
+    
+  
+    void SetValveAngV( void* wallBodyRef, float angV );
+    float GetWallAngle( void* wallBodyRef );
     
 private:
     b2Fixture* m_topCap;

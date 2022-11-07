@@ -404,7 +404,6 @@ class TestTubeScene : Scene {
                 SceneManager.sceneSwitchingTo = .Menu
                 SceneManager.Get( .Menu ).unFreeze()
             case .TestAction0:
-                testReservoir0.removeWallPiece(testIndex)
                 testIndex += 1
             case .TestAction1:
                 print("TestAction1 button unprogrammed")

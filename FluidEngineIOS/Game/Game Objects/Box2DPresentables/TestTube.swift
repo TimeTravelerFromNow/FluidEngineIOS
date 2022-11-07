@@ -112,6 +112,8 @@ class TestTube: Node {
     
     var sceneRepresentation: TubeVisual!
     
+    var pipes: [TubeColors: Pipe] = [:] // the pipes the tube will use for filling
+    
     init( origin: float2, gridId: Int, scale: Float = 50.0 ) {
         super.init()
         self.gridId = gridId

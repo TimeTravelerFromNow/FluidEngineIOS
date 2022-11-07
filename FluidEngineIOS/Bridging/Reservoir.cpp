@@ -56,7 +56,11 @@ Reservoir::Reservoir(b2World* worldRef,
 
     m_world->CreateJoint(&valve0JointDef);
 }
-
+Reservoir::~Reservoir() {
+    m_world->DestroyParticleSystem(m_particleSys);
+    m_world->DestroyBody(m_body);
+    m_world->DestroyBody(m_bulbBody);
+}
 void Reservoir::CreateBulb(long hemisphereSegments, float bulbRadius) {
     b2BodyDef bulbBodyDef;
     bulbBodyDef.type = b2_kinematicBody;
@@ -104,8 +108,8 @@ b2Vec2 Reservoir::GetBulbPosition() {
     return b2Vec2(0, 0);
 }
 
-void Reservoir::RemoveWallPiece( long atIndex ) {
-    m_bulbBody->DestroyFixture( m_bulbFixtures[atIndex] );
+void* Reservoir::GetWallBody( long atIndex ) {
+    return (void*)m_bulbBodies[ atIndex ];
 }
 
 void Reservoir::SetWallPieceAngV( long atIndex, float angV ) {
@@ -132,12 +136,8 @@ void* Reservoir::MakeLineFixture( b2Vec2* lineVertices, long vertexCount ) {
 
 void Reservoir::DestroyLineFixture( void* fixtureRef ) {
     m_bulbBody->DestroyFixture( ( b2Fixture* )fixtureRef );
-
 }
 
-Reservoir::~Reservoir() {
-    
-}
 //movement
 void Reservoir::SetVelocity(b2Vec2 velocity) {
     m_body->SetLinearVelocity(velocity);
@@ -178,3 +178,10 @@ float Reservoir::GetValve0Rotation() {
     return m_valve0Body->GetAngle();
 }
 
+
+void Reservoir::SetValveAngV( void* wallBodyRef, float angV ) {
+    ((b2Body*)wallBodyRef)->SetAngularVelocity( angV );
+}
+float Reservoir::GetWallAngle( void* wallBodyRef ) {
+    return ((b2Body*)wallBodyRef)->GetAngle();
+}

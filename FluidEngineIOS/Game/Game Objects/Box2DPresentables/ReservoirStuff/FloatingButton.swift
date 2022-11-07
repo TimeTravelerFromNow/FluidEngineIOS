@@ -12,7 +12,7 @@ enum MiniMenuActions {
 
 // A button without a representation in the box2d world
 class FloatingButton: Node {
-    
+    var b2BodyRef: UnsafeMutableRawPointer? // MARK: I know i said it wouldn't be represented, but it's kinda cool wat im doin
     var buttonQuad: Mesh = MeshLibrary.Get(.Quad)
     var buttonTexture: TextureTypes!
     var action: MiniMenuActions!

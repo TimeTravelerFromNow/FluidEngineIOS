@@ -2,8 +2,9 @@ import MetalKit
 
 class ReservoirObject: Node {
     
+    var reservoirFluidColor: TubeColors!
     var buttons: [FloatingButton] = []
-    var valves: [Int:FloatingButton] = [:]
+    var valves: [FloatingButton] = []
     var topValve: FloatingButton!
     var buttonPressed: FloatingButton?
     
@@ -25,7 +26,7 @@ class ReservoirObject: Node {
     var bulbRadius: Float = 0.4
 
     private var _reservoir: UnsafeMutableRawPointer!
-    
+    private var _topSegmentRef: UnsafeMutableRawPointer?
     var particleSystem: UnsafeMutableRawPointer!
     
     var origin: float2!
@@ -65,11 +66,12 @@ class ReservoirObject: Node {
     var targets: [float2] = []
     private var _arrows: [Arrow2D] = []
     
-    var _pipes: [Pipe] = []
+    var pipes: [Pipe] = []
     var isBuildingPipes = false
     var arrowLength: Float = 0.2
     
-    init( origin: float2, scale: Float = 4.0 ) {
+    init( origin: float2, scale: Float = 4.0, colorType: TubeColors ) {
+        self.reservoirFluidColor = colorType
         super.init()
         reservoirMesh = MeshLibrary.Get(.Reservoir)
         bulbMesh = MeshLibrary.Get(.BulbMesh)
@@ -86,6 +88,10 @@ class ReservoirObject: Node {
         refreshFluidMCBuffer()
         self.texture = Textures.Get(.Reservoir)
         self.material.useTexture = true
+    }
+    
+    deinit  {
+        LiquidFun.destroyReservoir(_reservoir)
     }
     
     //initialization
@@ -139,8 +145,8 @@ class ReservoirObject: Node {
     }
     
     
-    func fill(color: TubeColors) {
-        waterColor = WaterColors[color]!
+    func fill() {
+        waterColor = WaterColors[reservoirFluidColor]!
         spawnParticleBox(origin,
                          float2(1.0,2.2),
                          color: &waterColor)
@@ -148,10 +154,6 @@ class ReservoirObject: Node {
     
     func createBulb() {
         LiquidFun.createBulb(onReservoir: _reservoir, hemisphereSegments: hemisphereSegments, radius: bulbRadius)
-    }
-    
-    func removeWallPiece(_ atIndex: Int) {
-        LiquidFun.removeWallPiece(onReservoir: _reservoir, at: atIndex)
     }
     
     private func getBulbPos() -> float2 {
@@ -205,17 +207,16 @@ class ReservoirObject: Node {
         topValve.setPositionY( tvY * GameSettings.stmRatio )
         topValve.modelConstants.modelMatrix = topValve.modelMatrix
         topValve.setRotationZ( LiquidFun.getBulbWallAngle(_reservoir, at: getSegmentIndex(.pi / 2)))
-        for i in valves.keys {
-            if let valve = valves[i] {
-                let x = valve.box2DPos.x
-                let y = valve.box2DPos.y
-                
-                valve.setPositionX( x * GameSettings.stmRatio )
-                valve.setPositionY( y * GameSettings.stmRatio )
-                valve.setRotationZ( LiquidFun.getBulbWallAngle(_reservoir, at: i))
-                valve.modelConstants.modelMatrix = valve.modelMatrix
-        
+        for valve in valves {
+            let x = valve.box2DPos.x
+            let y = valve.box2DPos.y
+            
+            valve.setPositionX( x * GameSettings.stmRatio )
+            valve.setPositionY( y * GameSettings.stmRatio )
+            if( valve.b2BodyRef != nil ) {
+                valve.setRotationZ( LiquidFun.getWallAngle(_reservoir, wallBodyRef: valve.b2BodyRef))
             }
+            valve.modelConstants.modelMatrix = valve.modelMatrix
         }
     }
     
@@ -255,12 +256,12 @@ class ReservoirObject: Node {
         if( isBuildingPipes ) {
             buildPipesStep( deltaTime )
         }
-        if( isRotatingSegment ) {
+        if( isRotatingTopValve ) {
             rotateSegmentStep( deltaTime )
         }
     }
     
-    func buildPipes() {
+    func buildPipes(_ tubesNeedingFilling: [TestTube]) {
         let targetCount = self.targets.count
         let centerAngle = 3 * Float.pi / 2
         let segmentAngleIncrement = Float.pi / Float(hemisphereSegments)
@@ -331,94 +332,70 @@ class ReservoirObject: Node {
         for angle in sortedAngles {
             sortedArrows.append( arrowDictionary[angle]! )
         }
-        _pipes = []
+        pipes = []
         for (i, t) in targets.enumerated() {
             if ( i > sortedArrows.count - 1 ) { print("Pipe build WARN::more targets than arrows for pipes."); return}
             sortedArrows[i].target = t
-            let p = Pipe(parentReservoir: _reservoir)
+            let p = Pipe(parentReservoir: _reservoir, wallRef: LiquidFun.getWallBody(_reservoir, at: getSegmentIndex( sortedAngles[i] )), originArrow: sortedArrows[i] )
             p.modelConstants = fluidModelConstants
             let currentControlPoints = controlPoints(sortedArrows[i])
             (p.tControlPoints, p.controlPoints) = currentControlPoints
-            _pipes.append(p)
+            pipes.append(p)
+            tubesNeedingFilling[i].pipes.updateValue( p , forKey: reservoirFluidColor )
         }
-        
+        attachValves()
         self._pipeBuildDelay = _defaultPipeBuildDelay
         self.isBuildingPipes = true
     }
     
     func attachValves() {
-        for angle in _valveAngles {
-            let pos = getSegmentCenter( angle )
-            let index = getSegmentIndex( angle )
-            if( !valves.keys.contains( index ) ) {
-                let valveButton = FloatingButton(pos, size: float2(0.2, 0.2), textureType: .SmallValveTexture)
-                valveButton.setRotationZ( angle )
-                valves.updateValue(valveButton, forKey: index)
-            }
+        for p in pipes {
+            let currArrow = p.originArrow
+            let pos = currArrow.head
+            let valveButton = FloatingButton(pos, size: float2(0.2, 0.2), textureType: .SmallValveTexture)
+            valveButton.b2BodyRef = p.getWallRef()
+            valves.append( valveButton )
         }
     }
     
     var topStateOpen = false
     func toggleTop() {
         if( topStateOpen ) {
-            rotateBulbSegment(segmentAngle: .pi/2, toAngle: 0.0)
+            rotateTop( 0.0)
             topStateOpen = false
         } else {
-            rotateBulbSegment(segmentAngle: .pi/2, toAngle: .pi/2)
+            rotateTop( .pi/2)
             topStateOpen = true
         }
     }
     
-    var isRotatingSegment = false
-    var segmentsToRotate: [Int: Float] = [:]
-    func rotateBulbSegment(segmentAngle: Float, toAngle:Float) {
-        let segmentIndex = getSegmentIndex( segmentAngle )
-        segmentsToRotate.updateValue( toAngle, forKey: segmentIndex )
-        isRotatingSegment = true
-    }
-    
-    
-    var tubeToPipeDictionary: [Int:Int] = [:]
-    func indexPipes(sourceGridIds: [Int] ) {
-        guard let maxSourceGridId = sourceGridIds.max() else { print(" index Pipes WARN:: sourceGridIds Empty"); return }
-        var angleIndex = 0
-        for i in 0..<maxSourceGridId {
-            if sourceGridIds.contains( i ) {
-                for j in 0..<( 2 * hemisphereSegments ) {
-                    if( valves.keys.contains( j ) ) {
-                        if(angleIndex != j) {
-                            angleIndex = j
-                            tubeToPipeDictionary.updateValue(angleIndex, forKey: i)
-                        break // break first loop
-                        } else { // this pipe angle index is already taken by another tube
-                            print("already taken")
-                        }
-                    }
-                }
-            }
+    var isRotatingTopValve = false
+    var destAngle: Float = 0.0
+    func rotateTop(_ toAngle:Float) {
+        let segmentIndex = getSegmentIndex( .pi / 2 )
+        if(_topSegmentRef == nil ) {
+            _topSegmentRef = LiquidFun.getWallBody(_reservoir, at: segmentIndex)
         }
+        destAngle = toAngle
+        isRotatingTopValve = true
     }
     
     func rotateSegmentStep(_ deltaTime: Float) {
         var angV: Float = 4.0
-        for (segmentInd, destAngle) in segmentsToRotate {
-            let currAngle = LiquidFun.getBulbWallAngle(_reservoir, at: segmentInd)
-            let angleToClose = destAngle - currAngle
-            if( angleToClose < 0.0 ) {
-                angV *= -1.0
-            }
-            var change = angV * deltaTime
-            while(abs( change ) > abs( angleToClose )) {
-                angV *= 0.99
-                change = angV * deltaTime
-            }
-            LiquidFun.setBulbWallAngV(_reservoir, at: segmentInd, angV: angV)
-            if( abs(angleToClose) < 0.01 ){
-                segmentsToRotate.removeValue(forKey: segmentInd)
-            }
+        let currAngle = LiquidFun.getWallAngle(_reservoir, wallBodyRef: _topSegmentRef)
+        let angleToClose = destAngle - currAngle
+        if( angleToClose < 0.0 ) {
+            angV *= -1.0
         }
-        if segmentsToRotate.count == 0 {
-            isRotatingSegment = false
+        var change = angV * deltaTime
+        while(abs( change ) > abs( angleToClose )) {
+            angV *= 0.99
+            change = angV * deltaTime
+        }
+        LiquidFun.setWallAngV(_reservoir, wallBodyRef: _topSegmentRef, angV: angV)
+        if( abs(angleToClose) < 0.01 ){
+            LiquidFun.setWallAngV(_reservoir, wallBodyRef: _topSegmentRef, angV: 0.0)
+            isRotatingTopValve = false
         }
     }
     
@@ -449,7 +426,7 @@ class ReservoirObject: Node {
     
     //animations
     func buildPipesStep(_ deltaTime: Float){
-        if( _pipes.count == 0 ) {
+        if( pipes.count == 0 ) {
             isBuildingPipes = false
             print("pipeBuildStep() Warning::_pipes array was size 0")
             return
@@ -459,7 +436,7 @@ class ReservoirObject: Node {
             _pipeBuildDelay -= deltaTime
         } else {
             var pipesDone = 0
-            for p in _pipes {
+            for p in pipes {
                 if( p.doneBuilding ) {
                     pipesDone += 1
                 } else {
@@ -467,10 +444,10 @@ class ReservoirObject: Node {
                     p.toggleFixtures()
                 }
             }
-            if(pipesDone == _pipes.count) {
+            if(pipesDone == pipes.count) {
                 isBuildingPipes = false
               
-                if isTesting { print("Done building  \(_pipes.count) pipes with.") }
+                if isTesting { print("Done building  \(pipes.count) pipes with.") }
                 return
             }
             _pipeBuildDelay = _defaultPipeBuildDelay
@@ -527,8 +504,8 @@ extension ReservoirObject: Renderable {
         bulbMesh.drawPrimitives(renderCommandEncoder)
         fluidSystemRender(renderCommandEncoder)
         
-        for i in 0..<_pipes.count{
-            _pipes[i].render( renderCommandEncoder )
+        for i in 0..<pipes.count{
+            pipes[i].render( renderCommandEncoder )
         }
         valvesRender( renderCommandEncoder )
         testingRender( renderCommandEncoder )
@@ -571,17 +548,17 @@ extension ReservoirObject: Renderable {
         
         renderCommandEncoder.setVertexBytes(&topValve.modelConstants, length : ModelConstants.stride, index: 2)
         topValve.buttonQuad.drawPrimitives(renderCommandEncoder, baseColorTextureType: topValve.buttonTexture)
-        for i in valves.keys {
+        for i in 0..<valves.count {
             // Vertex
-            if( valves[i]!.isSelected ) {
+            if( valves[i].isSelected ) {
                 var selectColor = float4(0.3,0.4,0.1,1.0)
                 renderCommandEncoder.setRenderPipelineState(RenderPipelineStates.Get(.Select))
                 renderCommandEncoder.setFragmentBytes(&selectColor, length: float4.size, index: 2)
                 renderCommandEncoder.setFragmentBytes(&selectTime, length : Float.size, index : 0)
             }
             
-            renderCommandEncoder.setVertexBytes(&valves[i]!.modelConstants, length : ModelConstants.stride, index: 2)
-            valves[i]!.buttonQuad.drawPrimitives(renderCommandEncoder, baseColorTextureType: valves[i]!.buttonTexture)
+            renderCommandEncoder.setVertexBytes(&valves[i].modelConstants, length : ModelConstants.stride, index: 2)
+            valves[i].buttonQuad.drawPrimitives(renderCommandEncoder, baseColorTextureType: valves[i].buttonTexture)
         }
         
     }

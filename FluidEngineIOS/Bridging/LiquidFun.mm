@@ -133,6 +133,9 @@ static b2World *world;
     }
 }
 
++ (void)destroyParticleSystem:(void *)particleSystem {
+    world->DestroyParticleSystem( (b2ParticleSystem*)particleSystem );
+}
 
 + (void *)colorBufferForSystem:(void *)particleSystem {
     return ((b2ParticleSystem *)particleSystem)->GetColorBuffer();
@@ -583,6 +586,10 @@ return belowPositionsCount;
     return newReservoir;
 }
 
++ (void) destroyReservoir:(void *)reservoir {
+    ((Reservoir*)reservoir)->~Reservoir();
+}
+
 + (void) setValve0AngularVelocity:(void*)reservoir angV:(float)angV {
     ((Reservoir *)reservoir)->SetValve0AngularVelocity(angV);
 }
@@ -622,10 +629,6 @@ return belowPositionsCount;
     return sharedPos;
 }
 
-+ (void)removeWallPieceOnReservoir:(void *)reservoir atIndex:(long)atIndex {
-    ((Reservoir *)reservoir)->RemoveWallPiece( atIndex );
-}
-
 + (void) setVelocity:(void *)ofReservoir velocity:(b2Vec2)velocity{
     ((Reservoir *)ofReservoir)->SetVelocity(velocity);
 }
@@ -645,6 +648,11 @@ return belowPositionsCount;
 + (float) getBulbWallAngle:(void *)ofReservoir atIndex:(long)atIndex {
     return ((Reservoir *)ofReservoir)->GetBulbSegmentRotation(atIndex);
 }
+
++ (void*) getWallBody:(void *)onReservoir atIndex:(long)atIndex {
+    return ((Reservoir *)onReservoir)->GetWallBody(atIndex); //MARK: unsafe
+}
+
 //TK Splines
 + (void *)makeSpline:(float *)tControlPoints withControlPoints:(b2Vec2 *)withControlPoints controlPtsCount:(long)controlPtsCount {
     TKSpline* spline = new TKSpline( tControlPoints, withControlPoints, controlPtsCount );
@@ -660,6 +668,13 @@ return belowPositionsCount;
 }
 + (void) destroyPipeFixture:(void*)onReservoir lineRef:(void *)lineRef {
     ((Reservoir *)onReservoir)->DestroyLineFixture( lineRef );
+}
+// wall body rotations
++ (void)setWallAngV:(void*)onReservoir wallBodyRef:(void *)wallBodyRef angV:(float)angV {
+    ((Reservoir *)onReservoir)->SetValveAngV(wallBodyRef, angV);
+}
++ (float)getWallAngle:(void*)onReservoir wallBodyRef:(void *)wallBodyRef {
+    return ((Reservoir *)onReservoir)->GetWallAngle( wallBodyRef );
 }
 
 @end

@@ -12,6 +12,8 @@ class Pipe: Node {
     var splineRef: UnsafeMutableRawPointer?
     var leftFixRef: UnsafeMutableRawPointer?
     var rightFixRef: UnsafeMutableRawPointer?
+    private var _wallRef: UnsafeMutableRawPointer!
+    func getWallRef() -> UnsafeMutableRawPointer { return _wallRef }
     
     private var _leftVertices:  [float2] = []
     private var _rightVertices: [float2] = []
@@ -50,10 +52,13 @@ class Pipe: Node {
     var box2DControlPts: [Vector2D] = []
     let segmentDensity: Int!
     var doneBuilding = false
+    var originArrow: Arrow2D
     
-    init(_ pipeSegmentDensity: Int = 4, parentReservoir: UnsafeMutableRawPointer) {
+    init(_ pipeSegmentDensity: Int = 3, parentReservoir: UnsafeMutableRawPointer, wallRef: UnsafeMutableRawPointer, originArrow: Arrow2D) {
         self.segmentDensity = pipeSegmentDensity
         self._parentReservoirRef = parentReservoir
+        self._wallRef = wallRef
+        self.originArrow = originArrow
         super.init()
         _mesh = CustomMesh()
         _fluidConstants = FluidConstants(ptmRatio: GameSettings.ptmRatio, pointSize: GameSettings.particleRadius)
@@ -72,6 +77,38 @@ class Pipe: Node {
             LiquidFun.destroyPipeFixture(_parentReservoirRef, lineRef: rightFixRef)
             leftFixRef = nil
             rightFixRef = nil
+        }
+    }
+    var valveOpen = false
+    var isRotatingSegment = false
+    func toggleValve() {
+        if( valveOpen ){
+            destAngle = 0.0
+            isRotatingSegment = true
+        } else {
+            destAngle = .pi / 2
+            isRotatingSegment = true
+        }
+    }
+    
+    var destAngle: Float = .pi / 2
+    func rotateSegmentStep(_ deltaTime: Float) {
+        var angV: Float = 4.0
+        
+        let currAngle = LiquidFun.getWallAngle(_parentReservoirRef, wallBodyRef: _wallRef)
+        let angleToClose = destAngle - currAngle
+        if( angleToClose < 0.0 ) {
+            angV *= -1.0
+        }
+        var change = angV * deltaTime
+        while(abs( change ) > abs( angleToClose )) {
+            angV *= 0.99
+            change = angV * deltaTime
+        }
+        LiquidFun.setWallAngV(_parentReservoirRef, wallBodyRef: _wallRef, angV: angV)
+        if( abs(angleToClose) < 0.01 ){
+            LiquidFun.setWallAngV(_parentReservoirRef, wallBodyRef: _wallRef, angV: 0.0)
+            isRotatingSegment = false
         }
     }
     
@@ -138,6 +175,7 @@ class Pipe: Node {
     func updateBox2DControlPts() {
         box2DControlPts = (controlPoints.map { Vector2D(x:$0.x,y:$0.y) })
     }
+    
     func makeSpline() {
         if controlPoints.count > 0{
             splineRef = LiquidFun.makeSpline( &tControlPoints, withControlPoints: &box2DControlPts, controlPtsCount: controlPoints.count )

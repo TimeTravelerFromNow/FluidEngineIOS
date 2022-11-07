@@ -53,7 +53,7 @@ typedef struct VertexIn {
 + (int)particleCountForSystem:(void *)particleSystem;
 + (void *)particlePositionsForSystem:(void *)particleSystem;
 + (void)emptyParticleSystem:(void *)particleSystem minTime:(float)minTime maxTime:(float)maxTime;
-
++ (void) destroyParticleSystem:(void *)particleSystem;
 //colors
 + (void *)colorBufferForSystem:(void *)particleSystem;
 +(void)updateColors:(void *)particleSystem colors:(void *)color yLevels:(float *)yLevels numLevels:(int)numLevels;
@@ -103,9 +103,9 @@ typedef struct VertexIn {
 // Tube class refactor
 
 // joint test
-+ (void *)makeJointTest:(Vector2D)location
-            box1Vertices:(void *)box1Vertices box1Count:(UInt32)box1Count
-         box2Vertices:(void *)box2Vertices box2Count:(UInt32)box2Count;
+//+ (void *)makeJointTest:(Vector2D)location
+//            box1Vertices:(void *)box1Vertices box1Count:(UInt32)box1Count
+//         box2Vertices:(void *)box2Vertices box2Count:(UInt32)box2Count;
 
 + (void *)makeTube:(void *)particleSysRef
           location:(Vector2D)location
@@ -167,6 +167,7 @@ typedef struct VertexIn {
 + (void *) makeReservoir:(void *)particleSysRef
                 location:(Vector2D)location
                 vertices:(void *) vertices vertexCount:(UInt32)vertexCount;
++ (void) destroyReservoir:(void *)reservoir;
 
 + (Vector2D)getReservoirPosition:(void *)reservoir;
 + (float)getReservoirRotation:(void *)reservoir;
@@ -175,18 +176,22 @@ typedef struct VertexIn {
 + (Vector2D)getBulbPos:(void *)reservoir;
 + (Vector2D)getSegmentPos:(void *)reservoir atIndex:(long)atIndex;
 
-+ (void)removeWallPieceOnReservoir:(void *)reservoir atIndex:(long)atIndex;
-
 + (void) setVelocity:(void *)ofReservoir velocity:(Vector2D)velocity;
 + (Vector2D) getVelocity:(void *)ofReservoir;
 
 + (void) setBulbWallAngV:(void *)ofReservoir atIndex:(long)atIndex angV:(float)angV;
 + (float) getBulbWallAngle:(void *)ofReservoir atIndex:(long)atIndex;
+
++ (void*) getWallBody:(void *)onReservoir atIndex:(long)atIndex;
+
 // TK Splines
 + (void *)makeSpline:(float *)tControlPoints withControlPoints:(Vector2D *)withControlPoints controlPtsCount:(long)controlPtsCount;
 + (void) setInterpolatedValues:(void *)usingSpline tVals:(float *)tVals onXVals:(float *)onXVals onYVals:(float *)onYVals onTangents:(Vector2D *)onTangents valCount:(long)valCount;
 // pipe fixture creation / destruction
 + (void *)makePipeFixture:(void*)onReservoir lineVertices:(Vector2D *)lineVertices vertexCount:(long)vertexCount;
 + (void *)destroyPipeFixture:(void*)onReservoir lineRef:(void *)lineRef;
+// wall body rotations
++ (void)setWallAngV:(void*)onReservoir wallBodyRef:(void *)wallBodyRef angV:(float)angV;
++ (float)getWallAngle:(void*)onReservoir wallBodyRef:(void *)wallBodyRef;
 
 @end
