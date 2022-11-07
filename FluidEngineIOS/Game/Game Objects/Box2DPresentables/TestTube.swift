@@ -247,6 +247,13 @@ class TestTube: Node {
         }
     }
     
+    func fillFromPipes() {
+        guard let redPipe = pipes[ .Red] else { return }
+        redPipe.toggleValve()
+        guard let pipeToAsk = pipes[currentColors[_currentTopIndex]] else { return }
+        pipeToAsk.toggleValve()
+    }
+    
     // funnel management
     private func addGuidesToCandidate(_ guideAngle: Float) {
         let littleGuideMag: Float = 0.1

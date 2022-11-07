@@ -8,6 +8,8 @@ struct Arrow2D {
 }
 
 class Pipe: Node {
+    
+    var fluidColor: TubeColors!
     private var _parentReservoirRef: UnsafeMutableRawPointer!
     var splineRef: UnsafeMutableRawPointer?
     var leftFixRef: UnsafeMutableRawPointer?
@@ -54,7 +56,8 @@ class Pipe: Node {
     var doneBuilding = false
     var originArrow: Arrow2D
     
-    init(_ pipeSegmentDensity: Int = 3, parentReservoir: UnsafeMutableRawPointer, wallRef: UnsafeMutableRawPointer, originArrow: Arrow2D) {
+    init(_ pipeSegmentDensity: Int = 2, parentReservoir: UnsafeMutableRawPointer, wallRef: UnsafeMutableRawPointer, originArrow: Arrow2D, reservoirColor: TubeColors) {
+        self.fluidColor = reservoirColor
         self.segmentDensity = pipeSegmentDensity
         self._parentReservoirRef = parentReservoir
         self._wallRef = wallRef
@@ -79,15 +82,24 @@ class Pipe: Node {
             rightFixRef = nil
         }
     }
+    
     var valveOpen = false
     var isRotatingSegment = false
     func toggleValve() {
         if( valveOpen ){
             destAngle = 0.0
             isRotatingSegment = true
+            valveOpen = false
         } else {
             destAngle = .pi / 2
             isRotatingSegment = true
+            valveOpen = true
+        }
+    }
+    
+    func updatePipe( _ deltaTime: Float ){
+        if( isRotatingSegment ) {
+            rotateSegmentStep( deltaTime )
         }
     }
     
@@ -101,9 +113,12 @@ class Pipe: Node {
             angV *= -1.0
         }
         var change = angV * deltaTime
-        while(abs( change ) > abs( angleToClose )) {
+        let maxIterations = 100
+        var iterNum = 0
+        while(abs( change ) > abs( angleToClose ) && iterNum < maxIterations) {
             angV *= 0.99
             change = angV * deltaTime
+            iterNum += 1
         }
         LiquidFun.setWallAngV(_parentReservoirRef, wallBodyRef: _wallRef, angV: angV)
         if( abs(angleToClose) < 0.01 ){

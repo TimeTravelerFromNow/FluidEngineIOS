@@ -144,9 +144,9 @@ class DevScene : Scene {
         }
     
         let reservoirSpacing = float2(2.0, 4.0)
-        let reservoirOffset = float2(0.0, 6.0) + box2DOrigin
+        let reservoirOffset = float2(0.0, 7.0) + box2DOrigin
         let reservoirCount = colorVariety.count // need a reservoir for each color.
-        let reservoirPositions: CustomMatrix<float2?> = getCenteredPositionMatrix( reservoirOffset, reservoirSpacing, rowLength: 3, nodeCount: reservoirCount)
+        let reservoirPositions = getCenteredPositionMatrix( reservoirOffset, reservoirSpacing, rowLength: 3, nodeCount: reservoirCount)
     
         for (i, color) in colorVariety.enumerated() {
             let newPos = reservoirPositions.grid[i] ?? float2(0,0)
@@ -157,7 +157,7 @@ class DevScene : Scene {
             reservoirForColor.updateValue(newReservoir, forKey: color)
         }
         
-        var targetsArray: [ [float2] ] = []
+//        var targetsDict: [ TubeColors: [float2] ] = [:]
         for color in colorVariety {
             var currTargets: [float2] = []
             guard let indicesForThisColor = colorsToTubeIndices[ color ]
@@ -166,16 +166,10 @@ class DevScene : Scene {
                 break
             }
             for ind in indicesForThisColor {
-                let colors = tubeGrid[ind].currentColors
-                
-                if colors.contains(color) { // this tube is a target for this color reservoir
-                    currTargets.append(tubeGrid[ind].getBoxPosition() + tubeGrid[ind].getTubeHeight() / 2)
-                }
+                currTargets.append(tubeGrid[ind].getBoxPosition() + float2(0,tubeGrid[ind].getTubeHeight() / 2))
             }
-            targetsArray.append( currTargets )
-        }
-        for (i, reservoir) in reservoirs.enumerated() {
-            reservoir.targets = targetsArray[i]
+//            targetsDict.updateValue(currTargets, forKey: color)
+            reservoirForColor[ color ]!.targets = currTargets
         }
         for (color, indices) in colorsToTubeIndices {
             let currReservoir = reservoirForColor[ color ]
@@ -186,41 +180,6 @@ class DevScene : Scene {
             currReservoir?.buildPipes( currTubes )
             currReservoir?.fill()
         }
-    }
-    
-    func getCenteredPositionMatrix(_ atCenter: float2, _ spacing: float2, rowLength: Int, nodeCount: Int) -> CustomMatrix<float2?> {
-        let rowCount = Int(floor( Float(nodeCount / rowLength) )) + 1
-        var outputMat = CustomMatrix<float2?>.init(rows: rowCount, columns: rowLength, defaultValue: nil)
-        var rows: [ [float2?] ] = []
-        var currXOffset = 0.0
-        // positions according to spacings
-        var linOff = 0
-        for y in 0..<rowCount {
-            let yPos = Float(y) * spacing.y + atCenter.y
-            var currentRow = [float2?].init(repeating: nil, count: rowLength)
-            for x in 0..<rowLength {
-                if linOff == nodeCount { break }
-                outputMat[y,x] = float2( Float(x) * spacing.x + atCenter.x , yPos )
-                linOff += 1
-            }
-            rows.append(currentRow)
-        }
-        // now center each row.
-        let halfX = Float(rowLength) / 2
-        let halfY = Float(rowCount) / 2
-        var centering = float2(spacing.x * halfX, spacing.y * halfY  )
-        for y in 0..<outputMat.rows {
-            var extraCentering: Float = 0.0
-            for x in 0..<rowLength {
-                if( outputMat[y, x] != nil ) { // extra centering for rows missing some tubes.
-                    extraCentering -= spacing.x / 2
-                }
-            }
-            for x in 0..<rowLength {
-                outputMat[y, x]? -= centering + extraCentering
-            }
-        }
-        return outputMat
     }
     
     private func InitializeGrid() {
@@ -506,7 +465,7 @@ class DevScene : Scene {
         case .TestAction0:
             reservoirAction()
         case .TestAction1:
-            buildPipes()
+            reservoirs.first!.toggleTop()
         case .TestAction2:
             tubesAskForLiquid()
         case .TestAction3:
@@ -520,18 +479,13 @@ class DevScene : Scene {
         }
     }
     
-    func tubesAskForLiquid() {
+    func tubesAskForLiquid() { //MARK: Debugging state
         for tube in tubeGrid {
-            var tubeColors = tube.currentColors
-            var visualColors = tube.visualColors
-            if( tubeColors.first != .Empty ) {
-                for i in 0..<visualColors.count {
-                    if( tubeColors[i] != visualColors[i] ) {
-//                        testReservoir0.rotateBulbSegment(segmentAngle: <#T##Float#>, toAngle: <#T##Float#>)
-                    }
-                }
+            if tube.currentColors.contains(.Red) {
+                tube.fillFromPipes()
             }
         }
+        tubeGrid.first!.fillFromPipes()
     }
     
     override func touchesEnded() {

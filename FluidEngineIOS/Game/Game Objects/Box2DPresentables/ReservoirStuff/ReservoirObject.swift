@@ -79,7 +79,7 @@ class ReservoirObject: Node {
         self.origin = origin
         setScale(1 / (GameSettings.ptmRatio * 5) )
         fluidModelConstants.modelMatrix = modelMatrix
-        setPositionZ(0.1)
+        setPositionZ(0.08)
         setScale(GameSettings.stmRatio / scale)
         bulbNode = Node()
         bulbNode.setScale( bulbRadius * 2 * GameSettings.stmRatio / scale )
@@ -259,6 +259,9 @@ class ReservoirObject: Node {
         if( isRotatingTopValve ) {
             rotateSegmentStep( deltaTime )
         }
+        for p in pipes {
+            p.updatePipe( deltaTime )
+        }
     }
     
     func buildPipes(_ tubesNeedingFilling: [TestTube]) {
@@ -336,7 +339,7 @@ class ReservoirObject: Node {
         for (i, t) in targets.enumerated() {
             if ( i > sortedArrows.count - 1 ) { print("Pipe build WARN::more targets than arrows for pipes."); return}
             sortedArrows[i].target = t
-            let p = Pipe(parentReservoir: _reservoir, wallRef: LiquidFun.getWallBody(_reservoir, at: getSegmentIndex( sortedAngles[i] )), originArrow: sortedArrows[i] )
+            let p = Pipe(parentReservoir: _reservoir, wallRef: LiquidFun.getWallBody(_reservoir, at: getSegmentIndex( sortedAngles[i] )), originArrow: sortedArrows[i], reservoirColor: reservoirFluidColor)
             p.modelConstants = fluidModelConstants
             let currentControlPoints = controlPoints(sortedArrows[i])
             (p.tControlPoints, p.controlPoints) = currentControlPoints

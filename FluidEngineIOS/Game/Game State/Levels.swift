@@ -9,8 +9,8 @@ let level0: [ [ TubeColors ] ] =
     [.Red, .Blue, .Red, .Blue],
     [.Blue, .Red, .Blue, .Red],
     [.Empty,.Empty,.Empty,.Empty],
-    [.Empty,.Empty,.Empty,.Empty]
-
+    [.Empty,.Empty,.Empty,.Empty],
+    [.Green,.Empty,.Empty,.Empty]
 ]
 
 let level1: [ [TubeColors] ] =
