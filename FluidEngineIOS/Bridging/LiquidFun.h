@@ -200,5 +200,5 @@ typedef struct VertexIn {
 
 // just setting fixture filters
 + (void)shareParticleSystemFilterWithFixture:(void*)fixtureRef particleSystem:(void *)particleSystem;
-
++ (void)setDefaultFilterForFixture:(void *)fixtureRef;
 @end

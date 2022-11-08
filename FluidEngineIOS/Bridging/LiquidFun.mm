@@ -692,6 +692,13 @@ return belowPositionsCount;
     ((b2Fixture*)fixtureRef)->SetFilterData( pFilter );
 }
 
++ (void)setDefaultFilterForFixture:(void *)fixtureRef {
+    b2Filter defFilter = b2Filter();
+    defFilter.isFiltering = true;
+    defFilter.groupIndex = -1;
+    ((b2Fixture*)fixtureRef)->SetFilterData(defFilter);
+}
+
 @end
 
 

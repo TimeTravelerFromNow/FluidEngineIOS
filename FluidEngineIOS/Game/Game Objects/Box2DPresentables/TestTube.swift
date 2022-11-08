@@ -257,7 +257,10 @@ class TestTube: Node {
         pipes = [:]
     }
     
-    func fillFromPipes() {        
+    func fillFromPipes() {
+        for pipe in pipes.values {
+            pipe.resetFilter()
+        }
         guard let pipeToAsk = pipes[currentColors[_currentTopIndex]] else { return }
         pipeToAsk.attachFixtures()
         print("asking for color \(_currentTopIndex) which should be \(currentColors[_currentTopIndex])")
@@ -291,6 +294,9 @@ class TestTube: Node {
             if !(currPipe.isRotatingSegment) {
                 updatePipe = false
                 LiquidFun.deleteParticlesOutside(particleSystem, width: tubeWidth, height: tubeHeight, rotation: 0.0, position: Vector2D(x:origin.x,y:origin.y))
+                if( _currentTopIndex < totalColors - 1) {
+                _currentTopIndex += 1
+                }
             }
         }
         timeTillSafety += deltaTime

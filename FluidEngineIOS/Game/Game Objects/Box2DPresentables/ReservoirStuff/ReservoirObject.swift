@@ -55,7 +55,7 @@ class ReservoirObject: Node {
     var isMoving = false
     
     // animation
-    private let _defaultPipeBuildDelay: Float = 0.03
+    private let _defaultPipeBuildDelay: Float = 0.1
     private var _pipeBuildDelay: Float = 0.05
     private var _controlPointIndex: Int = 0
     private var _targetRange: Float = 0.3 // how close the arrow needs to be to consider at target.

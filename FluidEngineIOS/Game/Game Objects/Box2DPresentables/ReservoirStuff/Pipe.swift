@@ -83,6 +83,12 @@ class Pipe: Node {
             LiquidFun.shareParticleSystemFilter(withFixture: rightFixRef, particleSystem: withParticleSystem)
         }
     }
+    func resetFilter() {
+        if(leftFixRef != nil && rightFixRef != nil ) {
+            LiquidFun.setDefaultFilterForFixture(leftFixRef)
+            LiquidFun.setDefaultFilterForFixture(rightFixRef)
+        }
+    }
     
     func toggleFixtures() {
         if ( _leftVertices.count < 2 || _rightVertices.count < 2 ) { return }

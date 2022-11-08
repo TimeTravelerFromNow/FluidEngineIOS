@@ -7,7 +7,8 @@ Reservoir::Reservoir(b2World* worldRef,
     m_world = worldRef;
     m_particleSys = particleSysRef;
     m_filter = b2Filter();
-    m_filter.groupIndex = 10;
+    m_filter.groupIndex = -1;
+    m_filter.isFiltering = true;
     m_particleSys->filter = m_filter;
        
     b2BodyDef body1Def;

@@ -186,7 +186,6 @@ class DevScene : Scene {
             currReservoir?.buildPipes( currTubes )
             currReservoir?.fill()
             currReservoir?.fill()
-            currReservoir?.fill()
         }
     }
     
