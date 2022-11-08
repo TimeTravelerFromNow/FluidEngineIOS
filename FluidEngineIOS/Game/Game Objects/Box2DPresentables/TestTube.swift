@@ -112,8 +112,7 @@ class TestTube: Node {
     
     var sceneRepresentation: TubeVisual!
     
-    var pipes: [TubeColors: Pipe] = [:] { didSet { setFilterOnPipes() } }// the pipes the tube will use for filling
-    var reservoirs: [TubeColors: ReservoirObject] = [:]
+    var pipes: [TubeColors: Pipe] = [:] // the pipes the tube will use for filling
     
     init( origin: float2, gridId: Int, scale: Float = 50.0 ) {
         super.init()
@@ -193,13 +192,13 @@ class TestTube: Node {
     }
     
     // state variables
-    var pipeValveOpen = false
+    var updatePipe = false
+    
     override func update(deltaTime: Float) {
         
-        if pipeValveOpen {
+        if updatePipe {
             pipeRecieveStep( deltaTime )
         }
-        
         super.update()
         updateModelConstants()
         if shouldUpdateRep {
@@ -254,25 +253,50 @@ class TestTube: Node {
             print("Tube \(gridId) atRest")
         }
     }
+    func destroyPipes() {
+        pipes = [:]
+    }
     
-    func fillFromPipes() {
+    func fillFromPipes() {        
         guard let pipeToAsk = pipes[currentColors[_currentTopIndex]] else { return }
+        pipeToAsk.attachFixtures()
         print("asking for color \(_currentTopIndex) which should be \(currentColors[_currentTopIndex])")
         print("pipe color was \(pipeToAsk.fluidColor)")
-        pipeToAsk.toggleValve()
-        setFilterOnPipes() 
+        pipeToAsk.openValve()
+        pipeToAsk.shareFilter( particleSystem )
+        currentFillNum = 0
+        timeTillSafety = 0.0
+        updatePipe = true
     }
-    func setFilterOnPipes() {
-        for p in pipes.values {
-            print("sharing \(gridId) filter with pipe")
-            p.shareFilter( particleSystem )
-        }
-    }
-    
+  
+    var currentFillNum = 0
+    let quota = 300
+    let safetyTime: Float = 4.0
+    var timeTillSafety: Float = 0.0 // dont get stuck
     func pipeRecieveStep( _ deltaTime: Float ) {
+        let currColor = currentColors[ _currentTopIndex ]
+        guard let currPipe = pipes[ currColor ] else { print("no pipe for \(currColor)"); return }
         
+        if( currentFillNum < quota || timeTillSafety < 3.0)  {
+
+            currentFillNum += currPipe.transferParticles( particleSystem )
+            if currentFillNum > 0 {
+                print(currentFillNum)
+            }
+            if currentFillNum > quota {
+                currPipe.closeValve()
+            }
+        } else {
+            currPipe.closeValve()
+            if !(currPipe.isRotatingSegment) {
+                updatePipe = false
+                LiquidFun.deleteParticlesOutside(particleSystem, width: tubeWidth, height: tubeHeight, rotation: 0.0, position: Vector2D(x:origin.x,y:origin.y))
+            }
+        }
+        timeTillSafety += deltaTime
+        currPipe.updatePipe( deltaTime )
     }
-    
+
     // funnel management
     private func addGuidesToCandidate(_ guideAngle: Float) {
         let littleGuideMag: Float = 0.1

@@ -171,7 +171,7 @@ typedef struct VertexIn {
 
 + (Vector2D)getReservoirPosition:(void *)reservoir;
 + (float)getReservoirRotation:(void *)reservoir;
-+ (void)createBulbOnReservoir:(void *)reservoir  hemisphereSegments:(long)hemisphereSegments radius:(float)radius;
++ (float)createBulbOnReservoir:(void *)reservoir  hemisphereSegments:(long)hemisphereSegments radius:(float)radius;
 
 + (Vector2D)getBulbPos:(void *)reservoir;
 + (Vector2D)getSegmentPos:(void *)reservoir atIndex:(long)atIndex;
@@ -190,6 +190,10 @@ typedef struct VertexIn {
 // pipe fixture creation / destruction
 + (void *)makePipeFixture:(void*)onReservoir lineVertices:(Vector2D *)lineVertices vertexCount:(long)vertexCount;
 + (void *)destroyPipeFixture:(void*)onReservoir lineRef:(void *)lineRef;
+
+//reservoir particle transfers
++ (long) transferParticles:(void *)fromReservoir wallSegmentPosition:(Vector2D)wallPos toSystem:(void *)toSystem;
+
 // wall body rotations
 + (void)setWallAngV:(void*)onReservoir wallBodyRef:(void *)wallBodyRef angV:(float)angV;
 + (float)getWallAngle:(void*)onReservoir wallBodyRef:(void *)wallBodyRef;

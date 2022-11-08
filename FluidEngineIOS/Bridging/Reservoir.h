@@ -36,7 +36,7 @@ public:
     
     void SetValve0AngularVelocity( float angV );
     float GetValve0Rotation();
-    void CreateBulb(long hemisphereSegments, float bulbRadius);
+    float CreateBulb(long hemisphereSegments, float bulbRadius);
     b2Vec2 GetBulbPosition();
     b2Vec2 GetBulbSegmentPosition(long atIndex);
 
@@ -49,7 +49,9 @@ public:
     void SetWallPieceAngV( long atIndex, float angV );
     float GetBulbSegmentRotation( long atIndex );
     
-  
+    //particle transfers
+    long TransferParticles( void* toSystem, b2Vec2 wallPos );
+    
     void SetValveAngV( void* wallBodyRef, float angV );
     float GetWallAngle( void* wallBodyRef );
     
@@ -66,6 +68,9 @@ private:
     float32 width;
     float32 height;
     long id;
+    
+    float m_bulbRadius;
+    float m_pipeWidth;
     
     b2Filter m_filter;
     b2Fixture* m_valve0Fixture;

@@ -79,7 +79,7 @@ class ReservoirObject: Node {
         self.origin = origin
         setScale(1 / (GameSettings.ptmRatio * 5) )
         fluidModelConstants.modelMatrix = modelMatrix
-        setPositionZ(0.08)
+        setPositionZ(0.11)
         setScale(GameSettings.stmRatio / scale)
         bulbNode = Node()
         bulbNode.setScale( bulbRadius * 2 * GameSettings.stmRatio / scale )
@@ -151,9 +151,10 @@ class ReservoirObject: Node {
                          float2(1.0,2.2),
                          color: &waterColor)
     }
-    
+    var pipeWidth: Float = 0.0
     func createBulb() {
-        LiquidFun.createBulb(onReservoir: _reservoir, hemisphereSegments: hemisphereSegments, radius: bulbRadius)
+        pipeWidth = LiquidFun.createBulb(onReservoir: _reservoir, hemisphereSegments: hemisphereSegments, radius: bulbRadius)
+       
     }
     
     private func getBulbPos() -> float2 {
@@ -259,9 +260,6 @@ class ReservoirObject: Node {
         if( isRotatingTopValve ) {
             rotateSegmentStep( deltaTime )
         }
-        for p in pipes {
-            p.updatePipe( deltaTime )
-        }
     }
     
     func buildPipes(_ tubesNeedingFilling: [TestTube]) {
@@ -339,7 +337,11 @@ class ReservoirObject: Node {
         for (i, t) in targets.enumerated() {
             if ( i > sortedArrows.count - 1 ) { print("Pipe build WARN::more targets than arrows for pipes."); return}
             sortedArrows[i].target = t
-            let p = Pipe(parentReservoir: _reservoir, wallRef: LiquidFun.getWallBody(_reservoir, at: getSegmentIndex( sortedAngles[i] )), originArrow: sortedArrows[i], reservoirColor: reservoirFluidColor)
+            let p = Pipe(pipeWidth: pipeWidth,
+                         parentReservoir: _reservoir,
+                         wallRef: LiquidFun.getWallBody(_reservoir, at: getSegmentIndex( sortedAngles[i] )),
+                         originArrow: sortedArrows[i],
+                         reservoirColor: reservoirFluidColor)
             p.modelConstants = fluidModelConstants
             let currentControlPoints = controlPoints(sortedArrows[i])
             (p.tControlPoints, p.controlPoints) = currentControlPoints
@@ -403,13 +405,13 @@ class ReservoirObject: Node {
     }
     
     // MARK: refactor so that we somehow are close to pointing downwards by the time we are over the tube.
-    func controlPoints( _ arrow: Arrow2D) -> ([Float], [float2]) {
+    func controlPoints( _ arrow: Arrow2D ) -> ([Float], [float2]) {
         var destination = arrow.target
-        destination.y -= 0.6
+        destination.y -= 0.8
         var start       = arrow.tail
         var actualStart = arrow.head
-        var overDest = float2(destination.x, destination.y + 0.4)
-        var underDest = float2(destination.x, destination.y - 0.3)
+        var overDest = float2(destination.x, destination.y + 0.5)
+        var underDest = float2(destination.x, destination.y - 0.7)
         let midpoint = ( actualStart + overDest ) / 2
         let bulbNormal = actualStart + normalize( arrow.head - arrow.tail ) * 0.3
         let outArray = [ start, actualStart, bulbNormal, midpoint, overDest,  destination, underDest]
@@ -445,7 +447,6 @@ class ReservoirObject: Node {
                     pipesDone += 1
                 } else {
                     p.buildPipeSegment()
-                    p.toggleFixtures()
                 }
             }
             if(pipesDone == pipes.count) {

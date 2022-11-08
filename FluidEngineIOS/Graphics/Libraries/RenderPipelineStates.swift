@@ -15,7 +15,7 @@ enum RenderPipelineStateTypes {
     case Select
     
     case CustomBox2D // will include ptm Ratio for rendering custom quads in box2d scale.
-    
+    case SelectCustomBox2D // will use the select fragment shader
     case Text
 }
 
@@ -102,6 +102,7 @@ class RenderPipelineStates {
         generateMBETextRenderPipelineState()
         
         generateCustomBox2dRenderPipelineState()
+        generateSelectCustomBox2dRenderPipelineState()
         
         _descriptorLibrary.updateValue(VertexDescriptor, forKey: .Basic)
         _descriptorLibrary.updateValue(CustomVertexDescriptor, forKey: .Custom)
@@ -373,6 +374,29 @@ class RenderPipelineStates {
         }
         
         _library.updateValue(renderPipelineState, forKey: .CustomBox2D)
+    }
+    private static func generateSelectCustomBox2dRenderPipelineState() {
+        let vertexFunction = Engine.DefaultLibrary.makeFunction(name: "custom_box2d_vertex_shader")
+        let fragmentFunction = Engine.DefaultLibrary.makeFunction(name: "select_custom_box2d_fragment_shader")
+        
+        let renderPipelineDescriptor = MTLRenderPipelineDescriptor()
+        renderPipelineDescriptor.colorAttachments[0].pixelFormat = Preferences.MainPixelFormat
+        renderPipelineDescriptor.colorAttachments[1].pixelFormat = Preferences.MainPixelFormat
+        
+        renderPipelineDescriptor.depthAttachmentPixelFormat = Preferences.MainDepthPixelFormat
+        
+        renderPipelineDescriptor.vertexDescriptor = CustomVertexDescriptor
+        renderPipelineDescriptor.vertexFunction = vertexFunction
+        renderPipelineDescriptor.fragmentFunction = fragmentFunction
+        
+        var renderPipelineState: MTLRenderPipelineState!
+        do {
+            renderPipelineState = try Engine.Device.makeRenderPipelineState(descriptor: renderPipelineDescriptor)
+        } catch {
+            print("ERROR::RenderpiplineState::\(error)")
+        }
+        
+        _library.updateValue(renderPipelineState, forKey: .SelectCustomBox2D)
     }
     
     public static func Get(_ type: RenderPipelineStateTypes)->MTLRenderPipelineState {

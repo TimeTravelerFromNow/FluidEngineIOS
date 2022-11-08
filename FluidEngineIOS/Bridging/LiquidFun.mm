@@ -609,8 +609,8 @@ return belowPositionsCount;
     return ((Reservoir *)reservoir)->GetRotation();
 }
 
-+ (void)createBulbOnReservoir:(void *)reservoir hemisphereSegments:(long)hemisphereSegments radius:(float)radius {
-    ((Reservoir *)reservoir)->CreateBulb(hemisphereSegments, radius);
++ (float)createBulbOnReservoir:(void *)reservoir hemisphereSegments:(long)hemisphereSegments radius:(float)radius {
+    return ((Reservoir *)reservoir)->CreateBulb(hemisphereSegments, radius);
 }
 
 + (Vector2D)getBulbPos:(void *)reservoir {
@@ -669,6 +669,12 @@ return belowPositionsCount;
 + (void) destroyPipeFixture:(void*)onReservoir lineRef:(void *)lineRef {
     ((Reservoir *)onReservoir)->DestroyLineFixture( lineRef );
 }
+
+//reservoir particle transfers
++ (long) transferParticles:(void *)fromReservoir wallSegmentPosition:(b2Vec2)wallPos toSystem:(void *)toSystem {
+    return long( ((Reservoir *)fromReservoir)->TransferParticles(toSystem, wallPos) );
+}
+
 // wall body rotations
 + (void)setWallAngV:(void*)onReservoir wallBodyRef:(void *)wallBodyRef angV:(float)angV {
     ((Reservoir *)onReservoir)->SetValveAngV(wallBodyRef, angV);
@@ -679,7 +685,11 @@ return belowPositionsCount;
 
 // just setting fixture filters
 + (void)shareParticleSystemFilterWithFixture:(void*)fixtureRef particleSystem:(void *)particleSystem {
-    ((b2Fixture*)fixtureRef)->SetFilterData( ((b2ParticleSystem *)particleSystem)->filter );
+    b2Filter pFilter = ((b2ParticleSystem *)particleSystem)->filter;
+    if (pFilter.groupIndex > 0 ){
+        printf("test");
+    }
+    ((b2Fixture*)fixtureRef)->SetFilterData( pFilter );
 }
 
 @end

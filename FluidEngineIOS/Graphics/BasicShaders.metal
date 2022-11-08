@@ -56,10 +56,31 @@ vertex ColorRasterizerData custom_box2d_vertex_shader(const ColorVertex vIn [[ s
 };
 
 fragment half4 custom_box2d_fragment_shader(const ColorRasterizerData rd [[ stage_in ]],
-                                            texture2d<float> baseTexture [[ texture(0) ]]) {
+                                            texture2d<float> baseTexture [[ texture(0) ]],
+                                            const float3 selectColor) {
     float2 textureCoord = rd.textureCoordinate;
     float4 color = baseTexture.sample(sampler2d, textureCoord);
     if( color.a < 0.1) {
+        discard_fragment();
+    }
+    return half4(color);
+}
+
+// argument is one texture instead of several.
+fragment half4 select_custom_box2d_fragment_shader(ColorRasterizerData rd [[ stage_in ]],
+                                texture2d<float> baseTexture [[ texture(0) ]],
+                                     sampler sampler2d [[ sampler(0) ]],
+                                      constant float &totalGameTime [[ buffer(0) ]],
+                                      constant float3 &selectColor  [[ buffer(2) ]]
+                                      ) {
+    float2 texCoord = rd.textureCoordinate;
+    float4 color;
+    color = baseTexture.sample(sampler2d, texCoord);
+    color.r = clamp(color.r + selectColor.r * abs(0.5 * sin(texCoord.x * 10 + totalGameTime * 2)), 0.0, 1.0);
+    color.g = clamp(color.g + selectColor.g * abs(0.5 * sin(texCoord.x * 10 + totalGameTime * 2)), 0.0, 1.0);
+    color.b = clamp(color.b + selectColor.b * abs(0.5 * sin(texCoord.x * 10 + totalGameTime * 2)), 0.0, 1.0);
+    
+    if(color.a <= 0.1) {
         discard_fragment();
     }
     return half4(color);

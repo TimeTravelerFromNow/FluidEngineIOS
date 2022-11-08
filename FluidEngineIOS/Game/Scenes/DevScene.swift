@@ -116,6 +116,9 @@ class DevScene : Scene {
         for i in 0..<reservoirs.count {
             removeChild(reservoirs[i])
         }
+        for t in tubeGrid {
+            t.destroyPipes()
+        }
         reservoirs = []
     }
     func reservoirAction() {
@@ -147,7 +150,7 @@ class DevScene : Scene {
         }
     
         let reservoirSpacing = float2(2.0, 4.0)
-        let reservoirOffset = float2(0.0, 7.0) + box2DOrigin
+        let reservoirOffset = float2(2.0, 5.0) + box2DOrigin
         let reservoirCount = colorVariety.count // need a reservoir for each color.
         let reservoirPositions = getCenteredPositionMatrix( reservoirOffset, reservoirSpacing, rowLength: 3, nodeCount: reservoirCount)
     
@@ -181,6 +184,8 @@ class DevScene : Scene {
                 currTubes.append(tubeGrid[ colorsToTubeIndices[color]![i] ])
             }
             currReservoir?.buildPipes( currTubes )
+            currReservoir?.fill()
+            currReservoir?.fill()
             currReservoir?.fill()
         }
     }
@@ -460,7 +465,6 @@ class DevScene : Scene {
         case .None:
             print("let go of a button")
         case .Clear:
-            reservoirs.first!.fill()
             print("clear action now ? no testing filling")
         case .ToMenu:
             SceneManager.sceneSwitchingTo = .Menu
@@ -468,7 +472,9 @@ class DevScene : Scene {
         case .TestAction0:
             reservoirAction()
         case .TestAction1:
-            reservoirs.first!.toggleTop()
+            for r in reservoirs {
+                r.toggleTop()
+            }
         case .TestAction2:
             tubesAskForLiquid()
         case .TestAction3:
@@ -484,11 +490,8 @@ class DevScene : Scene {
     
     func tubesAskForLiquid() { //MARK: Debugging state
         for tube in tubeGrid {
-            if tube.currentColors.contains(.Red) {
                 tube.fillFromPipes()
-            }
         }
-        tubeGrid.first!.fillFromPipes()
     }
     
     override func touchesEnded() {

@@ -11,6 +11,9 @@ class Pipe: Node {
     
     var particleSystemSharing: UnsafeMutableRawPointer?
     var fluidColor: TubeColors!
+    var highlighted = false
+    var selectColor: float3!
+
     private var _parentReservoirRef: UnsafeMutableRawPointer!
     var splineRef: UnsafeMutableRawPointer?
     var leftFixRef: UnsafeMutableRawPointer?
@@ -56,8 +59,12 @@ class Pipe: Node {
     let segmentDensity: Int!
     var doneBuilding = false
     var originArrow: Arrow2D
+    var wallSegmentPosition: Vector2D!
+    private var _timeTicked: Float = 0.0
     
-    init(_ pipeSegmentDensity: Int = 2, parentReservoir: UnsafeMutableRawPointer, wallRef: UnsafeMutableRawPointer, originArrow: Arrow2D, reservoirColor: TubeColors) {
+    init(_ pipeSegmentDensity: Int = 2, pipeWidth: Float, parentReservoir: UnsafeMutableRawPointer, wallRef: UnsafeMutableRawPointer, originArrow: Arrow2D, reservoirColor: TubeColors) {
+        self.wallSegmentPosition = Vector2D(x:originArrow.head.x,y:originArrow.head.y)
+        self._pipeWidth = pipeWidth
         self.fluidColor = reservoirColor
         self.segmentDensity = pipeSegmentDensity
         self._parentReservoirRef = parentReservoir
@@ -66,6 +73,7 @@ class Pipe: Node {
         super.init()
         _mesh = CustomMesh()
         _fluidConstants = FluidConstants(ptmRatio: GameSettings.ptmRatio, pointSize: GameSettings.particleRadius)
+        selectColor = WaterColors[ reservoirColor ]?.xyz ?? float3(1.0,0.0,0.0)
     }
     
     func shareFilter(_ withParticleSystem: UnsafeMutableRawPointer) {
@@ -91,6 +99,12 @@ class Pipe: Node {
             rightFixRef = nil
         }
     }
+    func attachFixtures() {
+        toggleFixtures()
+        if( leftFixRef == nil && rightFixRef == nil ) {
+        toggleFixtures()
+        }
+    }
     
     var valveOpen = false
     var isRotatingSegment = false
@@ -106,9 +120,36 @@ class Pipe: Node {
         }
     }
     
+    func closeValve() {
+        if( valveOpen ) {
+            destAngle = 0.0
+            isRotatingSegment = true
+            highlighted = true
+            valveOpen = false
+        } else { print("valve already closed")}
+    }
+    func openValve() {
+        if( !valveOpen ) {
+            destAngle = .pi / 2
+            isRotatingSegment = true
+            highlighted = true
+            valveOpen = true
+        } else { print("valve already open")}
+    }
     func updatePipe( _ deltaTime: Float ){
         if( isRotatingSegment ) {
             rotateSegmentStep( deltaTime )
+        }
+        _timeTicked += deltaTime
+    }
+    
+    func transferParticles( _ toSystem: UnsafeMutableRawPointer ) -> Int {
+        if(particleSystemSharing == toSystem) { print("good transfer") }
+        if(_parentReservoirRef != nil ) {
+        return LiquidFun.transferParticles(_parentReservoirRef, wallSegmentPosition: wallSegmentPosition, toSystem: toSystem)
+        } else {
+            print("pipe transfer WARN::tried to transfer particles after reservoir destroyed")
+            return 0
         }
     }
     
@@ -133,6 +174,10 @@ class Pipe: Node {
         if( abs(angleToClose) < 0.01 ){
             LiquidFun.setWallAngV(_parentReservoirRef, wallBodyRef: _wallRef, angV: 0.0)
             isRotatingSegment = false
+            highlighted = false
+        }
+        if( particleSystemSharing != nil ){
+            LiquidFun.transferParticles(_parentReservoirRef, wallSegmentPosition: wallSegmentPosition, toSystem: particleSystemSharing)
         }
     }
     
@@ -223,9 +268,53 @@ class Pipe: Node {
         }
     }
     
-    override func render(_ renderCommandEncoder: MTLRenderCommandEncoder) {
+    
+    func buildPipeVertices() {
+        if( _sourceVertices.count < 2 ) { // need at least 4 vertices (from 2 source points)
+            return
+        }
+        var newLeftVertices = _sourceVertices
+        var newRightVertices = _sourceVertices // resizes both arrays
+        var customVertices = [CustomVertex].init(repeating: CustomVertex(position: float3(0),
+                                                                         color: float4(1.0,0.0,0.0,1.0),
+                                                                         textureCoordinate: float2(0)), count: _sourceVertices.count * 2)
+
+        var indices: [UInt32] = []
+        var currIndex: UInt32 = 1
+        for (i, v) in _sourceVertices.enumerated() {
+            newLeftVertices[i] = v + _perpendiculars[i] * _pipeWidth / 2
+            newRightVertices[i] = v - _perpendiculars[i] * _pipeWidth / 2
+            customVertices[ Int(currIndex) - 1 ].position = float3(newLeftVertices[i].x, newLeftVertices[i].y, 0)
+            customVertices[ Int(currIndex) - 1 ].textureCoordinate = float2(0,Float(i % 2))
+            customVertices[ Int(currIndex) ].position = float3(newRightVertices[i].x, newRightVertices[i].y, 0)
+            customVertices[ Int(currIndex) ].textureCoordinate =  float2(1, Float(i % 2))
+            if currIndex > 2 {
+                let triangle0 = [ currIndex - 3, currIndex - 2, currIndex - 1].map( { UInt32($0) } )
+                let triangle1 = [ currIndex - 2, currIndex - 1, currIndex ].map( { UInt32($0) } )
+                indices.append(contentsOf: triangle0)
+                indices.append(contentsOf: triangle1)
+            }
+            currIndex += 2
+        }
+        _leftVertices = newLeftVertices
+        _rightVertices = newRightVertices
+        _vertexCount = newLeftVertices.count + newRightVertices.count
+        _mesh.setIndices( indices )
+        _mesh.setVertices( customVertices )
+    }
+    }
+
+extension Pipe: Renderable {
+    func doRender( _ renderCommandEncoder : MTLRenderCommandEncoder ) {
         if( _vertexCount > 3 ) { // we wont have indices set until we have at least 4 vertices
-        renderCommandEncoder.setRenderPipelineState(RenderPipelineStates.Get(.CustomBox2D))
+            if highlighted {
+                renderCommandEncoder.setRenderPipelineState(RenderPipelineStates.Get(.SelectCustomBox2D))
+                renderCommandEncoder.setFragmentBytes(&_timeTicked, length : Float.size, index : 0)
+                renderCommandEncoder.setFragmentBytes(&selectColor, length : float3.size, index : 2)
+            }
+            else {
+                renderCommandEncoder.setRenderPipelineState(RenderPipelineStates.Get(.CustomBox2D))
+            }
             renderCommandEncoder.setVertexBytes(&modelConstants,
                                                 length: ModelConstants.stride,
                                                 index: 2)
@@ -235,8 +324,10 @@ class Pipe: Node {
         renderCommandEncoder.setFragmentTexture(Textures.Get(_textureType), index: 0)
         _mesh.drawPrimitives( renderCommandEncoder )
         }
+        if debugging {
         controlPointsRender( renderCommandEncoder )
         interpolatedPointsRender( renderCommandEncoder )
+        }
     }
     
     func controlPointsRender( _ renderCommandEncoder: MTLRenderCommandEncoder ) {
@@ -274,39 +365,5 @@ class Pipe: Node {
                                                 vertexStart: 0,
                                                 vertexCount: _interpolatedPointsCount)
         }
-    }
-    
-    func buildPipeVertices() {
-        if( _sourceVertices.count < 2 ) { // need at least 4 vertices (from 2 source points)
-            return
-        }
-        var newLeftVertices = _sourceVertices
-        var newRightVertices = _sourceVertices // resizes both arrays
-        var customVertices = [CustomVertex].init(repeating: CustomVertex(position: float3(0),
-                                                                         color: float4(1.0,0.0,0.0,1.0),
-                                                                         textureCoordinate: float2(0)), count: _sourceVertices.count * 2)
-
-        var indices: [UInt32] = []
-        var currIndex: UInt32 = 1
-        for (i, v) in _sourceVertices.enumerated() {
-            newLeftVertices[i] = v + _perpendiculars[i] * _pipeWidth / 2
-            newRightVertices[i] = v - _perpendiculars[i] * _pipeWidth / 2
-            customVertices[ Int(currIndex) - 1 ].position = float3(newLeftVertices[i].x, newLeftVertices[i].y, 0)
-            customVertices[ Int(currIndex) - 1 ].textureCoordinate = float2(0,Float(i % 2))
-            customVertices[ Int(currIndex) ].position = float3(newRightVertices[i].x, newRightVertices[i].y, 0)
-            customVertices[ Int(currIndex) ].textureCoordinate =  float2(1, Float(i % 2))
-            if currIndex > 2 {
-                let triangle0 = [ currIndex - 3, currIndex - 2, currIndex - 1].map( { UInt32($0) } )
-                let triangle1 = [ currIndex - 2, currIndex - 1, currIndex ].map( { UInt32($0) } )
-                indices.append(contentsOf: triangle0)
-                indices.append(contentsOf: triangle1)
-            }
-            currIndex += 2
-        }
-        _leftVertices = newLeftVertices
-        _rightVertices = newRightVertices
-        _vertexCount = newLeftVertices.count + newRightVertices.count
-        _mesh.setIndices( indices )
-        _mesh.setVertices( customVertices )
     }
 }

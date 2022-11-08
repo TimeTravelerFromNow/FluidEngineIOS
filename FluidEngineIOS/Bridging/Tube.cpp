@@ -8,13 +8,13 @@ Tube::Tube(b2World* worldRef,
            float32 tubeWidth,
            float32 tubeHeight,
            long gridId) {
-    static bool debugging = true;
     width = tubeWidth;
     height = tubeHeight;
     id = gridId;
     m_particleSys = particleSysRef;
     m_filter = b2Filter();
-    m_filter.groupIndex = gridId + 1;
+    m_filter.groupIndex = gridId;
+    m_filter.isFiltering = true;
     m_particleSys->filter = m_filter;
     
     b2BodyDef body1Def;
@@ -32,31 +32,6 @@ Tube::Tube(b2World* worldRef,
     
     m_tubeFixture = body1->CreateFixture(&fixtureDef);
     m_body = body1;
-    //sensor Body (must stay active to continue registering collision when the hitboxes and frame freeze.)
-    if (debugging) {
-        b2BodyDef sensorBodyDef;
-        sensorBodyDef.type = b2_dynamicBody;
-        sensorBodyDef.active = true;
-        sensorBodyDef.position.Set(location.x, location.y);
-        sensorBodyDef.gravityScale = 0.0;
-        
-        b2Body *sensorBody = worldRef->CreateBody(&sensorBodyDef);
-        b2PolygonShape shape1; // sensor
-        shape1.Set(sensorVertices, sensorCount);
-        b2FixtureDef sensorFixture;
-        sensorFixture.shape = &shape1;
-        sensorFixture.filter = m_filter;
-        sensorFixture.filter.categoryBits = 0x0000;
-        sensorBody->CreateFixture(&sensorFixture);
-        
-        m_sensorBody = sensorBody;
-        
-        b2WeldJointDef weldJointDef;
-        weldJointDef.bodyA = body1;
-        weldJointDef.bodyB = sensorBody;
-        weldJointDef.collideConnected = false;
-        worldRef->CreateJoint(&weldJointDef);
-    };
 }
 Tube::~Tube() {
 }

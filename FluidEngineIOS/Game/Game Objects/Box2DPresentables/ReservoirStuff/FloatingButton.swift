@@ -33,7 +33,7 @@ class FloatingButton: Node {
         self.buttonTexture = textureType
         self.setScaleX(GameSettings.stmRatio * xScale  )
         self.setScaleY(GameSettings.stmRatio * yScale )
-        self.setPositionZ(0.1)
+        self.setPositionZ(0.13)
     }
     
     func setButtonSizeFromQuad() {

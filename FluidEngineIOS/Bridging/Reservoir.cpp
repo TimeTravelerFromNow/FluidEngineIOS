@@ -59,9 +59,12 @@ Reservoir::Reservoir(b2World* worldRef,
 Reservoir::~Reservoir() {
     m_world->DestroyParticleSystem(m_particleSys);
     m_world->DestroyBody(m_body);
-    m_world->DestroyBody(m_bulbBody);
+    for( int i = 0; i < m_bulbBodies.size(); i ++ ){
+        m_world->DestroyBody( m_bulbBodies[i] );
+    }
 }
-void Reservoir::CreateBulb(long hemisphereSegments, float bulbRadius) {
+float Reservoir::CreateBulb(long hemisphereSegments, float bulbRadius) {
+    m_bulbRadius = bulbRadius;
     b2BodyDef bulbBodyDef;
     bulbBodyDef.type = b2_kinematicBody;
     bulbBodyDef.active = true;
@@ -79,8 +82,9 @@ void Reservoir::CreateBulb(long hemisphereSegments, float bulbRadius) {
         
         float y = sin( f ) * bulbRadius; // center of the line
         float x = cos( f ) * bulbRadius;
-        float xT =  sin( f ) * angleIncrement * bulbRadius * 0.6; // tangent
-        float yT =  cos( f ) * angleIncrement * bulbRadius * 0.6;
+        m_pipeWidth = angleIncrement * bulbRadius * 0.6 * 2;
+        float xT =  sin( f ) * m_pipeWidth / 2; // tangent
+        float yT =  cos( f ) * m_pipeWidth / 2;
         b2Vec2 cwVertex = b2Vec2( x + xT, y - yT);
         b2Vec2 ccwVertex = b2Vec2( x - xT, y + yT);
         bulbLine.Set(cwVertex, ccwVertex);
@@ -92,6 +96,7 @@ void Reservoir::CreateBulb(long hemisphereSegments, float bulbRadius) {
         m_bulbBody = bulbBody;
         numBulbWallPieces++;
     }
+    return m_pipeWidth * 3;
 }
 
 b2Vec2 Reservoir::GetBulbSegmentPosition(long atIndex) { //MARK: couldn't get it to work this way
@@ -127,6 +132,7 @@ void* Reservoir::MakeLineFixture( b2Vec2* lineVertices, long vertexCount ) {
     b2ChainShape lineShape;
     lineShape.CreateChain( lineVertices, vertexCount );
     lineFixtureDef.shape = &lineShape;
+    lineFixtureDef.filter.isFiltering = true;
     
     b2Fixture* fixtureOut = m_bulbBody->CreateFixture( &lineFixtureDef );
     return (void*)fixtureOut;
@@ -177,6 +183,55 @@ float Reservoir::GetValve0Rotation() {
     return m_valve0Body->GetAngle();
 }
 
+//particle transfers
+long Reservoir::TransferParticles( void* toSystem, b2Vec2 wallPos ) {
+    if(m_bulbBody) {
+        
+    } else { return 0;}
+    b2ParticleGroupDef newGroupDef;
+    
+    b2Vec2* positionBuffer = m_particleSys->GetPositionBuffer();
+    int oldPositionsCount = m_particleSys->GetParticleCount();
+    b2Vec2* velocityBuffer = m_particleSys->GetVelocityBuffer();
+    b2ParticleColor color = m_particleSys->GetColorBuffer()[0];
+    int newPositionsCount = 0;
+    b2Vec2 bulbCenter = m_bulbBody->GetPosition();
+    for(int i = 0; i<oldPositionsCount; i++) {
+        b2Vec2 c = positionBuffer[i];
+        if( b2Distance(c, bulbCenter ) > m_bulbRadius && // outside bulb and inside the pipe entrance
+           b2Distance(c, wallPos ) < m_pipeWidth ) {
+            newPositionsCount++;
+        }
+    }
+    b2Vec2 newPositions[newPositionsCount];
+    b2Vec2 newVelocities[newPositionsCount];
+    b2ParticleColor newColorBuffer[newPositionsCount];
+    int newPositionIndex = 0;
+    float avVelocityX = 0.0;
+    float avVelocityY = 0.0;
+    
+    for(int i = 0; i<oldPositionsCount; i++) {
+        b2Vec2 c = positionBuffer[i];
+        if( b2Distance(c, bulbCenter ) > m_bulbRadius &&  b2Distance(c, wallPos ) < m_pipeWidth ) {
+            newPositions[newPositionIndex] = positionBuffer[i];
+            newVelocities[newPositionIndex] = velocityBuffer[i];
+            avVelocityX += newVelocities[newPositionIndex].x;
+            avVelocityY += newVelocities[newPositionIndex].y;
+            newPositionIndex++;
+            ((b2ParticleSystem *)m_particleSys)->DestroyParticle(i, false);
+        }
+    }
+    avVelocityX = avVelocityX / float(newPositionsCount);
+    avVelocityY = avVelocityY / float(newPositionsCount);
+    newGroupDef.positionData = newPositions;
+    newGroupDef.linearVelocity = b2Vec2(avVelocityX, avVelocityY);
+    newGroupDef.particleCount = newPositionsCount;
+    newGroupDef.color = color; // MARK: comment out for debug
+    newGroupDef.flags = b2_waterParticle | b2_fixtureContactFilterParticle;
+
+    ((b2ParticleSystem *)toSystem)->CreateParticleGroup(newGroupDef);
+    return newPositionsCount;
+}
 
 void Reservoir::SetValveAngV( void* wallBodyRef, float angV ) {
     ((b2Body*)wallBodyRef)->SetAngularVelocity( angV );
