@@ -76,9 +76,9 @@ fragment half4 select_custom_box2d_fragment_shader(ColorRasterizerData rd [[ sta
     float2 texCoord = rd.textureCoordinate;
     float4 color;
     color = baseTexture.sample(sampler2d, texCoord);
-    color.r = clamp(color.r + selectColor.r * abs(0.5 * sin(texCoord.x * 10 + totalGameTime * 2)), 0.0, 1.0);
-    color.g = clamp(color.g + selectColor.g * abs(0.5 * sin(texCoord.x * 10 + totalGameTime * 2)), 0.0, 1.0);
-    color.b = clamp(color.b + selectColor.b * abs(0.5 * sin(texCoord.x * 10 + totalGameTime * 2)), 0.0, 1.0);
+    color.r = clamp(color.r + selectColor.r * 0.4 * sin(texCoord.x * 10 + totalGameTime * 3), selectColor.r, 1.0);
+    color.g = clamp(color.g + selectColor.g * 0.4 * sin(texCoord.x * 10 + totalGameTime * 5), selectColor.g, 1.0);
+    color.b = clamp(color.b + selectColor.b * 0.4 * sin(texCoord.x * 10 + totalGameTime * 4), selectColor.b, 1.0);
     
     if(color.a <= 0.1) {
         discard_fragment();

@@ -17,7 +17,6 @@
 		920603BF290C99C100C1C846 /* editTexture.png in Resources */ = {isa = PBXBuildFile; fileRef = 920603BE290C99C100C1C846 /* editTexture.png */; };
 		920603C5290DB6AD00C1C846 /* controlPoints.png in Resources */ = {isa = PBXBuildFile; fileRef = 920603C4290DB6AD00C1C846 /* controlPoints.png */; };
 		920603C7290DC54400C1C846 /* constructPipe.png in Resources */ = {isa = PBXBuildFile; fileRef = 920603C6290DC54400C1C846 /* constructPipe.png */; };
-		920603C929105F6000C1C846 /* pipeTexture.png in Resources */ = {isa = PBXBuildFile; fileRef = 920603C829105F6000C1C846 /* pipeTexture.png */; };
 		920603CB2910972D00C1C846 /* moveTexture.png in Resources */ = {isa = PBXBuildFile; fileRef = 920603CA2910972D00C1C846 /* moveTexture.png */; };
 		920603CE291217EF00C1C846 /* Pipe.swift in Sources */ = {isa = PBXBuildFile; fileRef = 920603CD291217EF00C1C846 /* Pipe.swift */; };
 		920603D02912180600C1C846 /* MoveableArrow2D.swift in Sources */ = {isa = PBXBuildFile; fileRef = 920603CF2912180600C1C846 /* MoveableArrow2D.swift */; };
@@ -187,6 +186,7 @@
 		92FD29A9291456B100DEB8CE /* bigValve.png in Resources */ = {isa = PBXBuildFile; fileRef = 92FD29A7291456B100DEB8CE /* bigValve.png */; };
 		92FD29AA291456B100DEB8CE /* smallValve.png in Resources */ = {isa = PBXBuildFile; fileRef = 92FD29A8291456B100DEB8CE /* smallValve.png */; };
 		92FD2CC32916F2DD00DEB8CE /* TKSpline.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 92FD2CC12916F2DD00DEB8CE /* TKSpline.cpp */; };
+		92FD2CC52919DD5800DEB8CE /* pipeTexture.png in Resources */ = {isa = PBXBuildFile; fileRef = 92FD2CC42919DD5800DEB8CE /* pipeTexture.png */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -200,7 +200,6 @@
 		920603BE290C99C100C1C846 /* editTexture.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = editTexture.png; sourceTree = "<group>"; };
 		920603C4290DB6AD00C1C846 /* controlPoints.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = controlPoints.png; sourceTree = "<group>"; };
 		920603C6290DC54400C1C846 /* constructPipe.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = constructPipe.png; sourceTree = "<group>"; };
-		920603C829105F6000C1C846 /* pipeTexture.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = pipeTexture.png; sourceTree = "<group>"; };
 		920603CA2910972D00C1C846 /* moveTexture.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = moveTexture.png; sourceTree = "<group>"; };
 		920603CD291217EF00C1C846 /* Pipe.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Pipe.swift; sourceTree = "<group>"; };
 		920603CF2912180600C1C846 /* MoveableArrow2D.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MoveableArrow2D.swift; sourceTree = "<group>"; };
@@ -445,6 +444,7 @@
 		92FD29A8291456B100DEB8CE /* smallValve.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = smallValve.png; sourceTree = "<group>"; };
 		92FD2CC12916F2DD00DEB8CE /* TKSpline.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = TKSpline.cpp; sourceTree = "<group>"; };
 		92FD2CC22916F2DD00DEB8CE /* TKSpline.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TKSpline.h; sourceTree = "<group>"; };
+		92FD2CC42919DD5800DEB8CE /* pipeTexture.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = pipeTexture.png; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -513,9 +513,9 @@
 		9226D32829070069007785D5 /* reservoir */ = {
 			isa = PBXGroup;
 			children = (
+				92FD2CC42919DD5800DEB8CE /* pipeTexture.png */,
 				92FD29A7291456B100DEB8CE /* bigValve.png */,
 				92FD29A8291456B100DEB8CE /* smallValve.png */,
-				920603C829105F6000C1C846 /* pipeTexture.png */,
 				920603BB290C684F00C1C846 /* missingTexture.png */,
 				920603B3290B044100C1C846 /* bulbMesh.png */,
 				920603B0290B03F400C1C846 /* bulbMesh.mtl */,
@@ -1090,6 +1090,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				92A9E40128DA6D620000A77F /* cliff.png in Resources */,
+				92FD2CC52919DD5800DEB8CE /* pipeTexture.png in Resources */,
 				92A9E40328DA6D620000A77F /* testflat.mtl in Resources */,
 				92A9E3FE28DA6D620000A77F /* cliff.mtl in Resources */,
 				92A9E43928DA72910000A77F /* menuButton.png in Resources */,
@@ -1108,7 +1109,6 @@
 				92489C032799DD0500639B52 /* LaunchScreen.storyboard in Resources */,
 				920603B4290B044100C1C846 /* bulbMesh.png in Resources */,
 				920603CB2910972D00C1C846 /* moveTexture.png in Resources */,
-				920603C929105F6000C1C846 /* pipeTexture.png in Resources */,
 				92A9E41228DA6D620000A77F /* cloud2.mtl in Resources */,
 				920603BC290C684F00C1C846 /* missingTexture.png in Resources */,
 				92A9E41628DA6D620000A77F /* beach.png in Resources */,

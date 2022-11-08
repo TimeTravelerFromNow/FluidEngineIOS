@@ -12,9 +12,9 @@ enum States {
     case AnimatingPour
 }
 
-class TestTubeScene : Scene {    
+class TestTubeScene : Scene {
     var tubeGrid: [ TestTube ] = []
-    
+    var reservoirs: [ ReservoirObject ] = []
     var buttons: [ BoxButton ] = []
     
     var debugQuad: GameObject!
@@ -22,9 +22,6 @@ class TestTubeScene : Scene {
     var tubeLevel: TubeLevel!
     
     var buttonPressed: ButtonActions?
-    
-    var testReservoir0: ReservoirObject!
-    var testReservoir1: ReservoirObject!
 
     // tube emptying
     var emptyingTubes: Bool = false
@@ -72,14 +69,32 @@ class TestTubeScene : Scene {
     var engine: CHHapticEngine!
     var player: CHHapticPatternPlayer?
     
+    func addSnapshots() {
+        let testSnapshot = SnapshotObject(box2DOrigin)
+        addChild(testSnapshot)
+    }
+    
     func addTestButton() {
         let clearButton = BoxButton(.ClearButton, .ClearButton, .Clear, center: box2DOrigin + float2(1.0,-3.0) )
         let menuButton = BoxButton(.Menu,.Menu, .ToMenu, center: box2DOrigin + float2(-1.0,-3.0), label: .MenuLabel)
+        let testButton0 = BoxButton(.Menu, .Menu, .TestAction0, center: box2DOrigin + float2(-1.0,-4.0), label: .TestLabel0)
+        let testButton1 = BoxButton(.Menu, .Menu, .TestAction1, center: box2DOrigin + float2(1.0,-4.0), label: .TestLabel1)
+        
+        let testButton2 = BoxButton(.Menu, .Menu, .TestAction2, center: box2DOrigin + float2(-1.0,-5.0), label: .TestLabel2)
+        let testButton3 = BoxButton(.Menu, .Menu, .TestAction3, center: box2DOrigin + float2(1.0,-5.0), label: .TestLabel3)
 
         buttons.append(clearButton)
         buttons.append(menuButton)
+        buttons.append(testButton0)
+        buttons.append(testButton1)
+        buttons.append(testButton2)
+        buttons.append(testButton3)
         addChild(clearButton)
         addChild(menuButton)
+        addChild(testButton0)
+        addChild(testButton1)
+        addChild(testButton2)
+        addChild(testButton3)
     }
     
     override func buildScene(){
@@ -102,14 +117,86 @@ class TestTubeScene : Scene {
         }
 
         tubeLevel = TubeLevel()
- 
-        InitializeGrid()
         
         addTestButton()
-//        addReservoirs()
+        InitializeGrid()
+//        addSnapshots()
+    }
+    
+    func destroyReservoirs() {
+        for i in 0..<reservoirs.count {
+            removeChild(reservoirs[i])
+        }
+        for t in tubeGrid {
+            t.destroyPipes()
+        }
+        reservoirs = []
+    }
+    func reservoirAction() {
+        destroyReservoirs()
+        var colorVariety: [TubeColors] = []
+        var colorsToTubeIndices: [TubeColors:[Int] ] = [:]
+        var  reservoirForColor: [TubeColors:ReservoirObject] = [:]
+        for tube in tubeGrid { // figure out how many different colors we need based on curr colors
+            for color in tube.currentColors {
+                if( !colorVariety.contains(color) && (color != .Empty) ) { // get every color
+                    colorVariety.append(color)
+                }
+            }
+        }
+        // now update the dictionary using each color value to see which test tubes needs a pipe.
+        for color in colorVariety {
+            // (there won't be .Empty color in colorVariety)
+            var tubeIndicesForThisColor: [Int] = []
+            for tube in tubeGrid {
+                for tubeColor in tube.currentColors {
+                    if color == tubeColor {
+                        if !( tubeIndicesForThisColor.contains( tube.gridId) ){ // no repeats!
+                        tubeIndicesForThisColor.append( tube.gridId )
+                        }
+                    }
+                }
+            }
+            colorsToTubeIndices.updateValue( tubeIndicesForThisColor, forKey: color)
+        }
+    
+        let reservoirSpacing = float2(2.0, 4.0)
+        let reservoirOffset = float2(2.0, 5.0) + box2DOrigin
+        let reservoirCount = colorVariety.count // need a reservoir for each color.
+        let reservoirPositions = getCenteredPositionMatrix( reservoirOffset, reservoirSpacing, rowLength: 3, nodeCount: reservoirCount)
+    
+        for (i, color) in colorVariety.enumerated() {
+            let newPos = reservoirPositions.grid[i] ?? float2(0,0)
+            let newReservoir = ReservoirObject(origin: newPos, colorType: color)
+            newReservoir.fill()
+            reservoirs.append( newReservoir )
+            addChild( newReservoir )
+            reservoirForColor.updateValue(newReservoir, forKey: color)
+        }
         
-        for tube in tubeGrid {
-            addChild(tube)
+//        var targetsDict: [ TubeColors: [float2] ] = [:]
+        for color in colorVariety {
+            var currTargets: [float2] = []
+            guard let indicesForThisColor = colorsToTubeIndices[ color ]
+            else {
+                print("reservoir action WARN::there was supposed to be indices for this color")
+                break
+            }
+            for ind in indicesForThisColor {
+                currTargets.append(tubeGrid[ind].getBoxPosition() + float2(0,tubeGrid[ind].getTubeHeight() / 2))
+            }
+//            targetsDict.updateValue(currTargets, forKey: color)
+            reservoirForColor[ color ]!.targets = currTargets
+        }
+        for (color, indices) in colorsToTubeIndices {
+            let currReservoir = reservoirForColor[ color ]
+            var currTubes: [TestTube] = []
+            for i in 0..<indices.count {
+                currTubes.append(tubeGrid[ colorsToTubeIndices[color]![i] ])
+            }
+            currReservoir?.buildPipes( currTubes )
+            currReservoir?.fill()
+            currReservoir?.fill()
         }
     }
     
@@ -143,37 +230,27 @@ class TestTubeScene : Scene {
         for (i, tubeColors) in tubeLevel.startingLevel.enumerated() {
             if(x < width) {
                 let currentTube = TestTube(origin: float2(x:x,y:y), gridId: i)
-                if tubeHeight == 0.0  {// unitialized, then initialize
+                if tubeHeight == 0.0 {// unitialized, then initialize
                     self.tubeHeight = currentTube.getTubeHeight()
                     print("initializing real tube height for collision testing")
                 }
-                currentTube.startFastFill(colors: tubeColors)
-                currentTube.setScale(2 / (GameSettings.ptmRatio * 10) )
-                currentTube.setPositionZ(1)
+                currentTube.currentColors = tubeColors
                 addChild(currentTube.sceneRepresentation)
+                addChild(currentTube)
                 tubeGrid.append(currentTube)
                 x += xSep
             } else {
                 x = 0.5
                 y -= ySep
                 let currentTube = TestTube(origin: float2(x:x,y:y), gridId: i)
-                currentTube.startFastFill(colors: tubeColors)
-                currentTube.setScale(2 / (GameSettings.ptmRatio * 10) )
-                currentTube.setPositionZ(1)
+                currentTube.currentColors = tubeColors
                 addChild(currentTube.sceneRepresentation)
+                addChild(currentTube)
                 tubeGrid.append(currentTube)
                 x += xSep
             }
         }
     }
-    
-    private func refillTubesToCurrentState() {
-        gyroVector = float2(0,-9.806)
-        for (i, tubeColors) in tubeLevel.colorStates.enumerated() {
-            tubeGrid[i].startFastFill(colors: tubeColors)
-        }
-    }
-    
     private func beginEmpty() {
         _emptyKF = 0
         tubeIsActive = false
@@ -205,7 +282,7 @@ class TestTubeScene : Scene {
             if !stillEmptying { nextEmptyKF() }
         case 3:  // done
             emptyingTubes = false
-            refillTubesToCurrentState()
+            print("execute refill")
             nextEmptyKF()
         default :
             break
@@ -303,16 +380,10 @@ class TestTubeScene : Scene {
         for button in buttons {
             button.freeze()
         }
-        for tube in tubeGrid  {
-            tube.freeze()
-        }
     }
     override func unFreeze() {
         for button in buttons {
             button.unFreeze()
-        }
-        for tube in tubeGrid  {
-            tube.unFreeze()
         }
     }
     func unSelect() {
@@ -323,17 +394,26 @@ class TestTubeScene : Scene {
         _currentState = .Idle
     }
     override func touchesBegan() {
+        let boxPos = Touches.GetBoxPos()
+        buttonPressed = boxButtonHitTest(boxPos: boxPos)
         
-        buttonPressed = boxButtonHitTest(boxPos: Touches.GetBoxPos())
+        for node in children {
+            if let testableNode = node as? Testable {
+                testableNode.touchesBegan(boxPos)
+            }
+        }
+        
         if buttonPressed != nil {
             // Stop the engine after it completes the playback.
-            engine.notifyWhenPlayersFinished { error in
-                return .stopEngine
-            }
-            do {
-            try engine.start()
-            try player?.start(atTime: 0)
-            } catch { print("haptics not working")}
+            if engine != nil {
+                engine.notifyWhenPlayersFinished { error in
+                    return .stopEngine
+                }
+                do {
+                    try engine.start()
+                    try player?.start(atTime: 0)
+                } catch { print("haptics not working")}
+            } else { print("haptic WARN::No haptic engine!")}
         }
         FluidEnvironment.Environment.debugParticleDraw(atPosition: Touches.GetBoxPos())
     
@@ -389,31 +469,41 @@ class TestTubeScene : Scene {
         }
     }
     
-    var testIndex: Int = 0
-    
     func doButtonAction() {
         if( buttonPressed != nil ) {
-            switch boxButtonHitTest(boxPos: Touches.GetBoxPos()) {
-            case .None:
-                print("let go of a button")
-            case .Clear:
-                beginEmpty()
-                print("clear action now")
-            case .ToMenu:
-                SceneManager.sceneSwitchingTo = .Menu
-                SceneManager.Get( .Menu ).unFreeze()
-            case .TestAction0:
-                testIndex += 1
-            case .TestAction1:
-                print("TestAction1 button unprogrammed")
-            case nil:
-                print("let go of no button")
-            default:
-                print("Button Action WARN::need \(boxButtonHitTest(boxPos: Touches.GetBoxPos())) action.")
-                break
+        switch boxButtonHitTest(boxPos: Touches.GetBoxPos()) {
+        case .None:
+            print("let go of a button")
+        case .Clear:
+            print("clear action now ? no testing filling")
+        case .ToMenu:
+            SceneManager.sceneSwitchingTo = .Menu
+            SceneManager.Get( .Menu ).unFreeze()
+        case .TestAction0:
+            reservoirAction()
+        case .TestAction1:
+            for r in reservoirs {
+                r.toggleTop()
             }
+        case .TestAction2:
+            tubesAskForLiquid()
+        case .TestAction3:
+            destroyReservoirs()
+        case nil:
+            print("let go of no button")
+        default:
+            print("Button Action WARN::need \(boxButtonHitTest(boxPos: Touches.GetBoxPos())) action.")
+            break
+        }
         }
     }
+    
+    func tubesAskForLiquid() { //MARK: Debugging state
+        for tube in tubeGrid {
+                tube.fillFromPipes()
+        }
+    }
+    
     override func touchesEnded() {
         
         doButtonAction()
@@ -435,6 +525,11 @@ class TestTubeScene : Scene {
             unSelect()
         default:
             print("nothing to do")
+        }
+        for n in children {
+            if let testableNode = n as? Testable {
+                testableNode.touchEnded()
+            }
         }
     }
     
@@ -479,8 +574,13 @@ class TestTubeScene : Scene {
                 break
                 print("current scene state: \(_currentState)")
             }
+            
+            for n in children {
+                if let testableNode = n as? Testable {
+                    testableNode.touchDragged(Touches.GetBoxPos())
+                }
+            }
         }
-
     }
 }
 

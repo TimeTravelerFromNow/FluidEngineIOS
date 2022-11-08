@@ -344,7 +344,7 @@ class ReservoirObject: Node {
                          reservoirColor: reservoirFluidColor)
             p.modelConstants = fluidModelConstants
             let currentControlPoints = controlPoints(sortedArrows[i])
-            (p.tControlPoints, p.controlPoints) = currentControlPoints
+            ( p.tControlPoints, p.controlPoints) = currentControlPoints
             pipes.append(p)
             tubesNeedingFilling[i].pipes.updateValue( p , forKey: reservoirFluidColor )
         }
@@ -405,7 +405,7 @@ class ReservoirObject: Node {
     }
     
     // MARK: refactor so that we somehow are close to pointing downwards by the time we are over the tube.
-    func controlPoints( _ arrow: Arrow2D ) -> ([Float], [float2]) {
+    func controlPoints( _ arrow: Arrow2D ) -> ( [Float], [float2]) {
         var destination = arrow.target
         destination.y -= 0.8
         var start       = arrow.tail
@@ -427,7 +427,7 @@ class ReservoirObject: Node {
         // MARK: tParams must be strictly increasing
         tParams = tParams.map { $0 / totalL }
         
-        return (tParams, outArray)
+        return ( tParams, outArray)
     }
     
     //animations

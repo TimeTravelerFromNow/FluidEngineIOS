@@ -91,6 +91,7 @@ float Reservoir::CreateBulb(long hemisphereSegments, float bulbRadius) {
         bulbLine.Set(cwVertex, ccwVertex);
         lineFixtureDef.shape   = &bulbLine;
         lineFixtureDef.density = 1.0;
+        lineFixtureDef.filter = m_filter;
         b2Fixture* lineFixture = bulbBody->CreateFixture(&lineFixtureDef);
         m_bulbFixtures.push_back(lineFixture);
         m_bulbBodies.push_back(bulbBody);

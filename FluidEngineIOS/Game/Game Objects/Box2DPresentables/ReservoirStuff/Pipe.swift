@@ -51,6 +51,7 @@ class Pipe: Node {
     var controlPoints: [float2] = [] { didSet { updateBox2DControlPts(); makeSpline(); updateModelConstants(); } }
     var tControlPoints: [Float] = []
     var _tSourcePoints: [Float] = []
+    
     private var _interpolatedXValues: [Float] = []
     private var _interpolatedYValues: [Float] = []
     var interpolatedPoints: [float2] = []
@@ -130,7 +131,6 @@ class Pipe: Node {
         if( valveOpen ) {
             destAngle = 0.0
             isRotatingSegment = true
-            highlighted = true
             valveOpen = false
         } else { print("valve already closed")}
     }
@@ -138,7 +138,6 @@ class Pipe: Node {
         if( !valveOpen ) {
             destAngle = .pi / 2
             isRotatingSegment = true
-            highlighted = true
             valveOpen = true
         } else { print("valve already open")}
     }
@@ -180,7 +179,6 @@ class Pipe: Node {
         if( abs(angleToClose) < 0.01 ){
             LiquidFun.setWallAngV(_parentReservoirRef, wallBodyRef: _wallRef, angV: 0.0)
             isRotatingSegment = false
-            highlighted = false
         }
         if( particleSystemSharing != nil ){
             LiquidFun.transferParticles(_parentReservoirRef, wallSegmentPosition: wallSegmentPosition, toSystem: particleSystemSharing)

@@ -262,6 +262,7 @@ class TestTube: Node {
             pipe.resetFilter()
         }
         guard let pipeToAsk = pipes[currentColors[_currentTopIndex]] else { return }
+        pipeToAsk.highlighted = true
         pipeToAsk.attachFixtures()
         print("asking for color \(_currentTopIndex) which should be \(currentColors[_currentTopIndex])")
         print("pipe color was \(pipeToAsk.fluidColor)")
@@ -280,7 +281,7 @@ class TestTube: Node {
         let currColor = currentColors[ _currentTopIndex ]
         guard let currPipe = pipes[ currColor ] else { print("no pipe for \(currColor)"); return }
         
-        if( currentFillNum < quota || timeTillSafety < 3.0)  {
+        if( currentFillNum < quota || timeTillSafety < safetyTime)  {
 
             currentFillNum += currPipe.transferParticles( particleSystem )
             if currentFillNum > 0 {
@@ -293,7 +294,8 @@ class TestTube: Node {
             currPipe.closeValve()
             if !(currPipe.isRotatingSegment) {
                 updatePipe = false
-                LiquidFun.deleteParticlesOutside(particleSystem, width: tubeWidth, height: tubeHeight, rotation: 0.0, position: Vector2D(x:origin.x,y:origin.y))
+                currPipe.highlighted = false
+                LiquidFun.deleteParticlesOutside(particleSystem, width: tubeWidth, height: tubeHeight, rotation: 0.0, position: Vector2D(x:getBoxPositionX(),y:getBoxPositionY()))
                 if( _currentTopIndex < totalColors - 1) {
                 _currentTopIndex += 1
                 }
