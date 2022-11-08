@@ -21,7 +21,7 @@ class Camera: Node {
 }
 
 class OrthoCamera: Camera {
-    private var frameSize: Float = 1.4
+    private var frameSize: Float = 1.0
     
     func setFrameSize(_ to: Float) { frameSize = to}
     func getFrameSize() -> Float { return frameSize }
