@@ -17,7 +17,7 @@ class GameSettings {
     public static var TimeScale: Float { return Float(FPS) / 60 }
     // physics
     public static var ptmRatio: Float = 200
-    public static var particleRadius: Float = 8
+    public static var particleRadius: Float = 9
     public static var BoxDimensions = float2( Renderer.ScreenSize.x / ptmRatio, Renderer.ScreenSize.y / ptmRatio )
     public static var DampingStrength: Float = 0.2 // 0.2 originally
     public static var Density: Float = 1.2  // 1.2 originally

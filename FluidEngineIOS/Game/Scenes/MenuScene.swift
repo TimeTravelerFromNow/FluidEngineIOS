@@ -44,13 +44,12 @@ class MenuScene : Scene {
     }
     
     private func addTestTube() {
-        let testTube0 = TestTube(origin: box2DOrigin + float2(x:0.9, y: 3.0), gridId: 0, scale: 20.0)
-        let testTube1 = TestTube(origin: box2DOrigin + float2(x:1.2, y: 3.0), gridId: 1, scale: 20.0)
+        let testTube0 = TestTube(origin: box2DOrigin + float2(x:1.2, y: 3.0), gridId: 0, scale: 10.0)
+        let testTube1 = TestTube(origin: box2DOrigin + float2(x:1.5, y: 3.0), gridId: 1, scale: 10.0)
         tubeGrid.append(contentsOf: [testTube0, testTube1])
         for tt in tubeGrid {
             tt.startFastFill(colors: [.Empty,.Empty,.Empty,.Empty])
             addChild(tt)
-            addChild(tt.sceneRepresentation)
         }
     }
     

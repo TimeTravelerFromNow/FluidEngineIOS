@@ -1,10 +1,8 @@
 import MetalKit
 
 enum MeshTypes {
- 
+
     case TestTube
-    case ttFlat
-    
     case Quad
     
     case Cloud0
@@ -51,29 +49,27 @@ class MeshLibrary: Library<MeshTypes, Mesh> {
     }
     
     private static func createDefaultMeshes() {
-        
-        meshes.updateValue(Mesh(modelName: "testtube", faceless : true), forKey: .TestTube)
         meshes.updateValue(Mesh(modelName: "reservoir"), forKey: .Reservoir)
 
-        meshes.updateValue(Mesh(modelName: "testflat"), forKey: .ttFlat)
+        meshes.updateValue(Mesh( modelName: "testFlat"), forKey: .TestTube )
         
-        meshes.updateValue(Mesh(modelName: "quad"), forKey: .Quad)
-        meshes.updateValue(Mesh(modelName: "cloud0"), forKey: .Cloud0)
-        meshes.updateValue(Mesh(modelName: "cloud1"), forKey: .Cloud1)
-        meshes.updateValue(Mesh(modelName: "cloud2"), forKey: .Cloud2)
-        meshes.updateValue(Mesh(modelName: "cloud3"), forKey: .Cloud3)
+        meshes.updateValue(Mesh( modelName: "quad" ), forKey: .Quad)
+        meshes.updateValue(Mesh( modelName: "cloud0" ), forKey: .Cloud0 )
+        meshes.updateValue(Mesh( modelName: "cloud1" ), forKey: .Cloud1 )
+        meshes.updateValue(Mesh( modelName: "cloud2" ), forKey: .Cloud2 )
+        meshes.updateValue(Mesh( modelName: "cloud3" ), forKey: .Cloud3 )
         
-        meshes.updateValue(Mesh(modelName: "clearButton"), forKey: .ClearButton)
-        meshes.updateValue(Mesh(modelName: "testButton"), forKey: .TestButton)
-        meshes.updateValue(Mesh(modelName: "cliff"), forKey: .Cliff)
-        meshes.updateValue(Mesh(modelName: "pineTree"), forKey: .PineTree)
-        meshes.updateValue(Mesh(modelName: "menuButton"), forKey: .Menu)
-        meshes.updateValue(Mesh(modelName: "beachButton"), forKey: .BeachButton)
-        meshes.updateValue(Mesh(modelName: "bulbMesh"), forKey: .BulbMesh)
+        meshes.updateValue( Mesh( modelName: "clearButton" ), forKey: .ClearButton )
+        meshes.updateValue( Mesh( modelName: "testButton" ), forKey: .TestButton )
+        meshes.updateValue( Mesh( modelName: "cliff" ), forKey: .Cliff)
+        meshes.updateValue( Mesh( modelName: "pineTree" ), forKey: .PineTree)
+        meshes.updateValue( Mesh( modelName: "menuButton" ), forKey: .Menu)
+        meshes.updateValue( Mesh( modelName: "beachButton" ), forKey: .BeachButton)
+        meshes.updateValue( Mesh( modelName: "bulbMesh" ), forKey: .BulbMesh)
         
-        meshes.updateValue(Mesh(modelName: "beach"), forKey: .Sand)
+        meshes.updateValue( Mesh( modelName: "beach" ), forKey: .Sand)
         
-        meshes.updateValue(NoMesh(), forKey: .NoMesh)
+        meshes.updateValue( NoMesh(), forKey: .NoMesh )
     }
     
     public static func Get(_ meshType : MeshTypes) -> Mesh {

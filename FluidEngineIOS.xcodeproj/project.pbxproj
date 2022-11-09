@@ -22,8 +22,6 @@
 		920603D02912180600C1C846 /* MoveableArrow2D.swift in Sources */ = {isa = PBXBuildFile; fileRef = 920603CF2912180600C1C846 /* MoveableArrow2D.swift */; };
 		920603D22912181E00C1C846 /* FloatingButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 920603D12912181E00C1C846 /* FloatingButton.swift */; };
 		9226D3102905E306007785D5 /* Reservoir.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9226D30E2905E306007785D5 /* Reservoir.cpp */; };
-		9226D3122905F5C4007785D5 /* testflat.obj in Resources */ = {isa = PBXBuildFile; fileRef = 9226D3112905F5C4007785D5 /* testflat.obj */; };
-		9226D3142905FA2A007785D5 /* testtube.obj in Resources */ = {isa = PBXBuildFile; fileRef = 9226D3132905FA2A007785D5 /* testtube.obj */; };
 		9226D3182905FE6B007785D5 /* ReservoirObject.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9226D3172905FE6B007785D5 /* ReservoirObject.swift */; };
 		9226D33229071212007785D5 /* reservoir.mtl in Resources */ = {isa = PBXBuildFile; fileRef = 9226D32F29071212007785D5 /* reservoir.mtl */; };
 		9226D33429071212007785D5 /* reservoir.png in Resources */ = {isa = PBXBuildFile; fileRef = 9226D33129071212007785D5 /* reservoir.png */; };
@@ -123,7 +121,6 @@
 		92A9E39428DA6CEB0000A77F /* SkyBackground.swift in Sources */ = {isa = PBXBuildFile; fileRef = 92A9E38328DA6CEB0000A77F /* SkyBackground.swift */; };
 		92A9E39528DA6CEB0000A77F /* TestTube.swift in Sources */ = {isa = PBXBuildFile; fileRef = 92A9E38428DA6CEB0000A77F /* TestTube.swift */; };
 		92A9E39628DA6CEB0000A77F /* CloudsBackground.swift in Sources */ = {isa = PBXBuildFile; fileRef = 92A9E38528DA6CEB0000A77F /* CloudsBackground.swift */; };
-		92A9E39728DA6CEB0000A77F /* TubeVisual.swift in Sources */ = {isa = PBXBuildFile; fileRef = 92A9E38628DA6CEB0000A77F /* TubeVisual.swift */; };
 		92A9E39828DA6CEB0000A77F /* FluidEnvironment.swift in Sources */ = {isa = PBXBuildFile; fileRef = 92A9E38728DA6CEB0000A77F /* FluidEnvironment.swift */; };
 		92A9E39928DA6CEB0000A77F /* GameObject.swift in Sources */ = {isa = PBXBuildFile; fileRef = 92A9E38828DA6CEB0000A77F /* GameObject.swift */; };
 		92A9E39A28DA6CEB0000A77F /* InstancedObject.swift in Sources */ = {isa = PBXBuildFile; fileRef = 92A9E38928DA6CEB0000A77F /* InstancedObject.swift */; };
@@ -149,8 +146,6 @@
 		92A9E40028DA6D620000A77F /* cliff.obj in Resources */ = {isa = PBXBuildFile; fileRef = 92A9E3D028DA6D620000A77F /* cliff.obj */; };
 		92A9E40128DA6D620000A77F /* cliff.png in Resources */ = {isa = PBXBuildFile; fileRef = 92A9E3D128DA6D620000A77F /* cliff.png */; };
 		92A9E40228DA6D620000A77F /* pineTree.png in Resources */ = {isa = PBXBuildFile; fileRef = 92A9E3D228DA6D620000A77F /* pineTree.png */; };
-		92A9E40328DA6D620000A77F /* testflat.mtl in Resources */ = {isa = PBXBuildFile; fileRef = 92A9E3D428DA6D620000A77F /* testflat.mtl */; };
-		92A9E40528DA6D620000A77F /* testflat.png in Resources */ = {isa = PBXBuildFile; fileRef = 92A9E3D628DA6D620000A77F /* testflat.png */; };
 		92A9E40828DA6D620000A77F /* cloud2.obj in Resources */ = {isa = PBXBuildFile; fileRef = 92A9E3DA28DA6D620000A77F /* cloud2.obj */; };
 		92A9E40928DA6D620000A77F /* cloud3.obj in Resources */ = {isa = PBXBuildFile; fileRef = 92A9E3DB28DA6D620000A77F /* cloud3.obj */; };
 		92A9E40A28DA6D620000A77F /* cloud1.obj in Resources */ = {isa = PBXBuildFile; fileRef = 92A9E3DC28DA6D620000A77F /* cloud1.obj */; };
@@ -183,10 +178,13 @@
 		92A9E44028DA72910000A77F /* clearButton.obj in Resources */ = {isa = PBXBuildFile; fileRef = 92A9E43428DA72910000A77F /* clearButton.obj */; };
 		92A9E44128DA72910000A77F /* beachButton.obj in Resources */ = {isa = PBXBuildFile; fileRef = 92A9E43528DA72910000A77F /* beachButton.obj */; };
 		92A9E44228DA72910000A77F /* testButton.obj in Resources */ = {isa = PBXBuildFile; fileRef = 92A9E43628DA72910000A77F /* testButton.obj */; };
+		92C1AB2A291BFF91005B90BD /* pipeTexture.png in Resources */ = {isa = PBXBuildFile; fileRef = 92C1AB29291BFF91005B90BD /* pipeTexture.png */; };
 		92FD29A9291456B100DEB8CE /* bigValve.png in Resources */ = {isa = PBXBuildFile; fileRef = 92FD29A7291456B100DEB8CE /* bigValve.png */; };
 		92FD29AA291456B100DEB8CE /* smallValve.png in Resources */ = {isa = PBXBuildFile; fileRef = 92FD29A8291456B100DEB8CE /* smallValve.png */; };
 		92FD2CC32916F2DD00DEB8CE /* TKSpline.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 92FD2CC12916F2DD00DEB8CE /* TKSpline.cpp */; };
-		92FD2CC52919DD5800DEB8CE /* pipeTexture.png in Resources */ = {isa = PBXBuildFile; fileRef = 92FD2CC42919DD5800DEB8CE /* pipeTexture.png */; };
+		92FD2CDC2919F99900DEB8CE /* testFlat.obj in Resources */ = {isa = PBXBuildFile; fileRef = 92FD2CD92919F99900DEB8CE /* testFlat.obj */; };
+		92FD2CDD2919F99900DEB8CE /* testFlat.png in Resources */ = {isa = PBXBuildFile; fileRef = 92FD2CDA2919F99900DEB8CE /* testFlat.png */; };
+		92FD2CDE2919F99900DEB8CE /* testFlat.mtl in Resources */ = {isa = PBXBuildFile; fileRef = 92FD2CDB2919F99900DEB8CE /* testFlat.mtl */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -206,8 +204,6 @@
 		920603D12912181E00C1C846 /* FloatingButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FloatingButton.swift; sourceTree = "<group>"; };
 		9226D30E2905E306007785D5 /* Reservoir.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Reservoir.cpp; sourceTree = "<group>"; };
 		9226D30F2905E306007785D5 /* Reservoir.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Reservoir.h; sourceTree = "<group>"; };
-		9226D3112905F5C4007785D5 /* testflat.obj */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = testflat.obj; sourceTree = "<group>"; };
-		9226D3132905FA2A007785D5 /* testtube.obj */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = testtube.obj; sourceTree = "<group>"; };
 		9226D3172905FE6B007785D5 /* ReservoirObject.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReservoirObject.swift; sourceTree = "<group>"; };
 		9226D32F29071212007785D5 /* reservoir.mtl */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = reservoir.mtl; sourceTree = "<group>"; };
 		9226D33129071212007785D5 /* reservoir.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = reservoir.png; sourceTree = "<group>"; };
@@ -374,7 +370,6 @@
 		92A9E38328DA6CEB0000A77F /* SkyBackground.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SkyBackground.swift; sourceTree = "<group>"; };
 		92A9E38428DA6CEB0000A77F /* TestTube.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TestTube.swift; sourceTree = "<group>"; };
 		92A9E38528DA6CEB0000A77F /* CloudsBackground.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CloudsBackground.swift; sourceTree = "<group>"; };
-		92A9E38628DA6CEB0000A77F /* TubeVisual.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TubeVisual.swift; sourceTree = "<group>"; };
 		92A9E38728DA6CEB0000A77F /* FluidEnvironment.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FluidEnvironment.swift; sourceTree = "<group>"; };
 		92A9E38828DA6CEB0000A77F /* GameObject.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GameObject.swift; sourceTree = "<group>"; };
 		92A9E38928DA6CEB0000A77F /* InstancedObject.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = InstancedObject.swift; sourceTree = "<group>"; };
@@ -400,8 +395,6 @@
 		92A9E3D028DA6D620000A77F /* cliff.obj */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = cliff.obj; sourceTree = "<group>"; };
 		92A9E3D128DA6D620000A77F /* cliff.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = cliff.png; sourceTree = "<group>"; };
 		92A9E3D228DA6D620000A77F /* pineTree.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = pineTree.png; sourceTree = "<group>"; };
-		92A9E3D428DA6D620000A77F /* testflat.mtl */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = testflat.mtl; sourceTree = "<group>"; };
-		92A9E3D628DA6D620000A77F /* testflat.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = testflat.png; sourceTree = "<group>"; };
 		92A9E3DA28DA6D620000A77F /* cloud2.obj */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = cloud2.obj; sourceTree = "<group>"; };
 		92A9E3DB28DA6D620000A77F /* cloud3.obj */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = cloud3.obj; sourceTree = "<group>"; };
 		92A9E3DC28DA6D620000A77F /* cloud1.obj */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = cloud1.obj; sourceTree = "<group>"; };
@@ -440,11 +433,14 @@
 		92A9E43428DA72910000A77F /* clearButton.obj */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = clearButton.obj; sourceTree = "<group>"; };
 		92A9E43528DA72910000A77F /* beachButton.obj */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = beachButton.obj; sourceTree = "<group>"; };
 		92A9E43628DA72910000A77F /* testButton.obj */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = testButton.obj; sourceTree = "<group>"; };
+		92C1AB29291BFF91005B90BD /* pipeTexture.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = pipeTexture.png; sourceTree = "<group>"; };
 		92FD29A7291456B100DEB8CE /* bigValve.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = bigValve.png; sourceTree = "<group>"; };
 		92FD29A8291456B100DEB8CE /* smallValve.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = smallValve.png; sourceTree = "<group>"; };
 		92FD2CC12916F2DD00DEB8CE /* TKSpline.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = TKSpline.cpp; sourceTree = "<group>"; };
 		92FD2CC22916F2DD00DEB8CE /* TKSpline.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TKSpline.h; sourceTree = "<group>"; };
-		92FD2CC42919DD5800DEB8CE /* pipeTexture.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = pipeTexture.png; sourceTree = "<group>"; };
+		92FD2CD92919F99900DEB8CE /* testFlat.obj */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = testFlat.obj; sourceTree = "<group>"; };
+		92FD2CDA2919F99900DEB8CE /* testFlat.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = testFlat.png; sourceTree = "<group>"; };
+		92FD2CDB2919F99900DEB8CE /* testFlat.mtl */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = testFlat.mtl; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -491,7 +487,6 @@
 				92A9E38228DA6CEB0000A77F /* SharedBackground.swift */,
 				9295E4CE2900B84900A33A0D /* TextObject.swift */,
 				92A9E38828DA6CEB0000A77F /* GameObject.swift */,
-				92A9E38628DA6CEB0000A77F /* TubeVisual.swift */,
 				920603B9290C585600C1C846 /* SnapshotObject.swift */,
 				92A9E38528DA6CEB0000A77F /* CloudsBackground.swift */,
 				92A9E38328DA6CEB0000A77F /* SkyBackground.swift */,
@@ -513,7 +508,7 @@
 		9226D32829070069007785D5 /* reservoir */ = {
 			isa = PBXGroup;
 			children = (
-				92FD2CC42919DD5800DEB8CE /* pipeTexture.png */,
+				92C1AB29291BFF91005B90BD /* pipeTexture.png */,
 				92FD29A7291456B100DEB8CE /* bigValve.png */,
 				92FD29A8291456B100DEB8CE /* smallValve.png */,
 				920603BB290C684F00C1C846 /* missingTexture.png */,
@@ -909,13 +904,12 @@
 		92A9E3B728DA6D620000A77F /* Res */ = {
 			isa = PBXGroup;
 			children = (
+				92FD2CCC2919EDA500DEB8CE /* TestTube */,
 				920603BD290C990000C1C846 /* Button Textures */,
 				9226D32829070069007785D5 /* reservoir */,
-				9226D3132905FA2A007785D5 /* testtube.obj */,
 				92A9E42A28DA72910000A77F /* BoxButtons */,
 				92A9E3B928DA6D620000A77F /* quad */,
 				92A9E3CC28DA6D620000A77F /* Waterfall */,
-				92A9E3D328DA6D620000A77F /* TTVisual */,
 				92A9E3D928DA6D620000A77F /* cloud */,
 				92A9E3E728DA6D620000A77F /* Beach */,
 			);
@@ -942,16 +936,6 @@
 				92A9E3D228DA6D620000A77F /* pineTree.png */,
 			);
 			path = Waterfall;
-			sourceTree = "<group>";
-		};
-		92A9E3D328DA6D620000A77F /* TTVisual */ = {
-			isa = PBXGroup;
-			children = (
-				9226D3112905F5C4007785D5 /* testflat.obj */,
-				92A9E3D428DA6D620000A77F /* testflat.mtl */,
-				92A9E3D628DA6D620000A77F /* testflat.png */,
-			);
-			path = TTVisual;
 			sourceTree = "<group>";
 		};
 		92A9E3D928DA6D620000A77F /* cloud */ = {
@@ -1032,6 +1016,16 @@
 			path = BoxButtons;
 			sourceTree = "<group>";
 		};
+		92FD2CCC2919EDA500DEB8CE /* TestTube */ = {
+			isa = PBXGroup;
+			children = (
+				92FD2CDB2919F99900DEB8CE /* testFlat.mtl */,
+				92FD2CD92919F99900DEB8CE /* testFlat.obj */,
+				92FD2CDA2919F99900DEB8CE /* testFlat.png */,
+			);
+			path = TestTube;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -1090,12 +1084,10 @@
 			buildActionMask = 2147483647;
 			files = (
 				92A9E40128DA6D620000A77F /* cliff.png in Resources */,
-				92FD2CC52919DD5800DEB8CE /* pipeTexture.png in Resources */,
-				92A9E40328DA6D620000A77F /* testflat.mtl in Resources */,
 				92A9E3FE28DA6D620000A77F /* cliff.mtl in Resources */,
 				92A9E43928DA72910000A77F /* menuButton.png in Resources */,
+				92FD2CDD2919F99900DEB8CE /* testFlat.png in Resources */,
 				9226D33629071250007785D5 /* reservoir.obj in Resources */,
-				92A9E40528DA6D620000A77F /* testflat.png in Resources */,
 				92A9E43C28DA72910000A77F /* testButton.png in Resources */,
 				92A9E3FF28DA6D620000A77F /* pineTree.obj in Resources */,
 				92A9E40028DA6D620000A77F /* cliff.obj in Resources */,
@@ -1127,12 +1119,11 @@
 				92A9E44128DA72910000A77F /* beachButton.obj in Resources */,
 				92A9E43B28DA72910000A77F /* menuButton.obj in Resources */,
 				92A9E41028DA6D620000A77F /* cloud1.mtl in Resources */,
-				9226D3122905F5C4007785D5 /* testflat.obj in Resources */,
-				9226D3142905FA2A007785D5 /* testtube.obj in Resources */,
 				92FD29A9291456B100DEB8CE /* bigValve.png in Resources */,
 				92A9E40F28DA6D620000A77F /* cloud1.png in Resources */,
 				92A9E41328DA6D620000A77F /* cloud3.mtl in Resources */,
 				92A9E41728DA6D620000A77F /* beach.obj in Resources */,
+				92C1AB2A291BFF91005B90BD /* pipeTexture.png in Resources */,
 				9226D33429071212007785D5 /* reservoir.png in Resources */,
 				92A9E43828DA72910000A77F /* beachButton.mtl in Resources */,
 				92A9E40828DA6D620000A77F /* cloud2.obj in Resources */,
@@ -1145,6 +1136,8 @@
 				92489A122799D9BD00639B52 /* Main.storyboard in Resources */,
 				92A9E43A28DA72910000A77F /* testButton.mtl in Resources */,
 				920603C7290DC54400C1C846 /* constructPipe.png in Resources */,
+				92FD2CDC2919F99900DEB8CE /* testFlat.obj in Resources */,
+				92FD2CDE2919F99900DEB8CE /* testFlat.mtl in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1157,7 +1150,6 @@
 			files = (
 				92489BBB2799DA0400639B52 /* b2StackAllocator.cpp in Sources */,
 				92489BB42799DA0400639B52 /* b2Draw.cpp in Sources */,
-				92A9E39728DA6CEB0000A77F /* TubeVisual.swift in Sources */,
 				92489BC72799DA0400639B52 /* b2CollidePolygon.cpp in Sources */,
 				92A9E42928DA6F410000A77F /* PolygonObject.cpp in Sources */,
 				92489BAD2799DA0400639B52 /* b2PulleyJoint.cpp in Sources */,
@@ -1421,6 +1413,9 @@
 				DEVELOPMENT_TEAM = BG774WWHGB;
 				HEADER_SEARCH_PATHS = "$(SRCROOT)/FluidEngineIOS/**";
 				INFOPLIST_FILE = "FluidEngineIOS/Other Files/Info.plist";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations = portrait;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = portrait;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = portrait;
 				IPHONEOS_DEPLOYMENT_TARGET = 14.1;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -1443,6 +1438,9 @@
 				DEVELOPMENT_TEAM = BG774WWHGB;
 				HEADER_SEARCH_PATHS = "$(SRCROOT)/FluidEngineIOS/**";
 				INFOPLIST_FILE = "FluidEngineIOS/Other Files/Info.plist";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations = portrait;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = portrait;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = portrait;
 				IPHONEOS_DEPLOYMENT_TARGET = 14.1;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",

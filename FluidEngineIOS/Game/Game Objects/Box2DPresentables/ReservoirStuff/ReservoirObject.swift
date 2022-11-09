@@ -153,8 +153,7 @@ class ReservoirObject: Node {
     }
     var pipeWidth: Float = 0.0
     func createBulb() {
-        pipeWidth = LiquidFun.createBulb(onReservoir: _reservoir, hemisphereSegments: hemisphereSegments, radius: bulbRadius)
-       
+        pipeWidth = LiquidFun.createBulb(onReservoir: _reservoir, hemisphereSegments: hemisphereSegments, radius: bulbRadius) / 1.5
     }
     
     private func getBulbPos() -> float2 {
@@ -163,7 +162,7 @@ class ReservoirObject: Node {
     }
     
     func getSegmentIndex(_ atAngle : Float) -> Int {
-        return Int( atAngle * Float(hemisphereSegments) / Float.pi )
+        return Int( round( atAngle * Float(hemisphereSegments) / Float.pi ) )
     }
     
     func getSegmentCenter(_ atAngle: Float) -> float2 {
@@ -271,10 +270,14 @@ class ReservoirObject: Node {
         //determine starting points (want symmetrical look)
         var numberPipeCentersOnOneSide = 1
         let oddCushion = Float.pi / 6
-        if( targetCount % 2 == 0) {
+        if( targetCount % 2 == 0) { // even case
             for i in 0..<targetCount {
                 let mod2Result: Bool = (i % 2 == 0)
-              
+                if i > 0 {
+                    if( mod2Result ) {
+                        numberPipeCentersOnOneSide += 1
+                    }
+                }
                 var angleFromBottom = segmentAngleIncrement * Float(numberPipeCentersOnOneSide)
                 if( mod2Result ) {
                     angleFromBottom *= -1
@@ -286,11 +289,6 @@ class ReservoirObject: Node {
                                         head: currCenter,
                                         direction: currNormal)
                 arrowDictionary.updateValue(evenArrow, forKey: currAngle)
-                if i > 0 {
-                    if( mod2Result ) {
-                        numberPipeCentersOnOneSide += 1
-                    }
-                }
             }
            
         } else {
@@ -305,7 +303,11 @@ class ReservoirObject: Node {
             if targetCount > 1 {
                 for i in 1..<targetCount {
                     let mod2Result: Bool = (i % 2 == 0)
-                    
+                    if i > 2 {
+                        if( mod2Result ) {
+                            numberPipeCentersOnOneSide += 1
+                        }
+                    }
                     var angleFromBottom = segmentAngleIncrement * Float(numberPipeCentersOnOneSide) + oddCushion
                     if( mod2Result ) {
                         angleFromBottom *= -1
@@ -318,17 +320,13 @@ class ReservoirObject: Node {
                                            head: currCenter,
                                            direction: currNormal)
                     arrowDictionary.updateValue( oddArrow, forKey: currAngle )
-
-                    if i > 2 {
-                        if( mod2Result ) {
-                            numberPipeCentersOnOneSide += 1
-                        }
-                    }
                 }
             }
         }
         var sortedArrows: [Arrow2D] = []
-        
+        if( targetCount > 3) {
+            print("busy reservoir")
+        }
         let sortedAngles = Array(arrowDictionary.keys).sorted(by: <)
         for angle in sortedAngles {
             sortedArrows.append( arrowDictionary[angle]! )
@@ -407,7 +405,7 @@ class ReservoirObject: Node {
     // MARK: refactor so that we somehow are close to pointing downwards by the time we are over the tube.
     func controlPoints( _ arrow: Arrow2D ) -> ( [Float], [float2]) {
         var destination = arrow.target
-        destination.y -= 0.8
+
         var start       = arrow.tail
         var actualStart = arrow.head
         var overDest = float2(destination.x, destination.y + 0.5)

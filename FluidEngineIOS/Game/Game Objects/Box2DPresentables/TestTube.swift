@@ -1,5 +1,12 @@
 import MetalKit
 
+enum TubeSelectColors {
+    case NoSelection
+    case Selected
+    case Reject
+    case Finished
+}
+
 enum TestTubeStates {
     case AtRest
     case Emptying
@@ -98,40 +105,88 @@ class TestTube: Node {
     private var _newTopIndex: Int = 0
     // more variables
     private var _previousState: TestTubeStates = .AtRest
-    var shouldUpdateRep = false
     private var selectPos: Float { return origin.y + 0.3 }
     // initial filling
     var fullNum: Int = 0
     private var _fillKeyFrame = 0
     // more important accessible variables
-    var tubeMesh: Mesh!
-    
     var mesh: Mesh!
     
     var modelConstants = ModelConstants()
-    
-    var sceneRepresentation: TubeVisual!
-    
+    var fluidModelConstants = ModelConstants()
+   var updatePipe = false
     var pipes: [TubeColors: Pipe] = [:] // the pipes the tube will use for filling
     
-    init( origin: float2, gridId: Int, scale: Float = 50.0 ) {
+    //visual states
+    var isSelected = false
+    var selectEffect: TubeSelectColors = .NoSelection
+    private var _timeTicked: Float = 0.0
+    private var _selectColors : [TubeSelectColors:float3] =  [ .Selected: float3(1.0,1.0,1.0),
+                                                             .Reject  : float3(1.0,0.0,0.0),
+                                                             .Finished: float3(1.0,1.0,0.0) ]
+    var material = CustomMaterial()
+    
+    var previousSelectState: TubeSelectColors = .NoSelection
+    
+    private var _selectCountdown: Float = 1.0
+    let defaultSelectCountdown: Float =  1.0
+    
+    private var _texture: MTLTexture!
+    
+    func conflict() {
+        isSelected = true
+        _selectCountdown = defaultSelectCountdown
+        if selectEffect != .Reject {
+            previousSelectState = selectEffect
+        }
+        selectEffect = .Reject
+    }
+    func rejectStep(_ deltaTime: Float) {
+        if _selectCountdown > 0.0 {
+        _selectCountdown -= deltaTime
+        } else {
+            _selectCountdown = defaultSelectCountdown
+            selectEffect = previousSelectState
+            isSelected = false
+        }
+    }
+    
+    func selectEffect(_ selectType: TubeSelectColors) {
+        previousSelectState = selectType
+        selectEffect = selectType
+    }
+    
+    func clearEffect() {
+        selectEffect = .NoSelection
+    }
+    
+    init( origin: float2 = float2(0,0), gridId: Int = -1, scale: Float = 5.0 ) {
         super.init()
+        if( gridId == -1 ) { print("TestTube() ADVISE::did you mean to init tube with -1? I will be test testTube.")}
         self.gridId = gridId
         self.ptmRatio = GameSettings.ptmRatio
         self.origin = origin
-        self.tubeMesh = MeshLibrary.Get(.TestTube)
-        self.setScale(1 / ( 5 * GameSettings.ptmRatio) )
+        self.mesh = MeshLibrary.Get(.TestTube)
+        setScale(1 / (GameSettings.ptmRatio * 5) )
+        self.setPositionZ(0.16)
+        fluidModelConstants.modelMatrix = modelMatrix
+        self.setScaleX( GameSettings.stmRatio * 1.3 / scale ) // particles appear to move a bit out of the fixtures
+        self.setScaleY( GameSettings.stmRatio * 1.1 / scale )
+        self.setPositionZ(0.1)
         self.scale = scale
         self.makeContainer()
-        self.sceneRepresentation = TubeVisual(tubeHeight)
         self.toForeground()
+        self._texture = Textures.Get(.TestTube)
+        self.material.useTexture = true
+        self.material.useMaterialColor = false
     }
     
     //initialization
     private func makeContainer() {
-        guard let tubeCustomMesh = tubeMesh else { fatalError("mesh of this tube was nil") }
-        (self.tubeOBJVertices, self.tubeHeight) = tubeCustomMesh.getFlatVertices(modelName: "testtube", scale: self.scale)
+        self.tubeOBJVertices = mesh.getBoxVertices( scale )
         let tubeVerticesPtr = LiquidFun.getVec2(&tubeOBJVertices, vertexCount: UInt32(tubeOBJVertices.count))
+        
+        
         var sensorVertices : [Vector2D] = [
             Vector2D(x: -tubeWidth, y:  tubeHeight * 0.5),
             Vector2D(x: -tubeWidth, y: -tubeHeight * 0.5),
@@ -190,21 +245,17 @@ class TestTube: Node {
     deinit {
         LiquidFun.destroyBody(_tube)
     }
-    
-    // state variables
-    var updatePipe = false
-    
+
     override func update(deltaTime: Float) {
         
         if updatePipe {
             pipeRecieveStep( deltaTime )
         }
-        super.update()
-        updateModelConstants()
-        if shouldUpdateRep {
-            sceneRepresentation.update(deltaTime: deltaTime)
-            shouldUpdateRep = sceneRepresentation.shouldUpdate
+        if isSelected {
+            _timeTicked += deltaTime
         }
+        super.update()
+        
         switch currentState {
         case .Emptying:
             emptyStep(deltaTime)
@@ -240,7 +291,7 @@ class TestTube: Node {
         case .Selected:
             selectStep(deltaTime)
         case .CleanupValues:
-            self.sceneRepresentation.clearEffect()
+            self.isSelected = false
             self.rotateZ(0.0)
             self.isInitialFilling = false
             self.isEmptying = false
@@ -274,7 +325,7 @@ class TestTube: Node {
     }
   
     var currentFillNum = 0
-    let quota = 300
+    let quota = 100
     let safetyTime: Float = 4.0
     var timeTillSafety: Float = 0.0 // dont get stuck
     func pipeRecieveStep( _ deltaTime: Float ) {
@@ -306,26 +357,26 @@ class TestTube: Node {
     }
 
     // funnel management
-    private func addGuidesToCandidate(_ guideAngle: Float) {
-        let littleGuideMag: Float = 0.1
-        let little = float2(abs(cos(guideAngle - 0.3) * littleGuideMag), abs(sin(guideAngle - 0.3) * littleGuideMag) )
-        let bigAng = Float.pi/3 + 0.1
-        let bigMag: Float = 1.0
-        let big = float2( cos(bigAng) * bigMag, sin(bigAng) * bigMag)
-        _guidePositions = [
-            Vector2D(x: _pourDirection * (_dividerPositions[totalColors - 1][0].x),
-                     y: _dividerPositions[totalColors - 1][0].y) ,
-
-            Vector2D(x: _pourDirection * (_dividerPositions[totalColors - 1][0].x - big.x) ,
-                     y:_dividerPositions[totalColors - 1][0].y + big.y),
-
-            Vector2D(x: _pourDirection * (_dividerPositions[totalColors - 1][1].x),
-                     y: _dividerPositions[totalColors - 1][1].y) ,
-
-            Vector2D(x: _pourDirection * (_dividerPositions[totalColors - 1][1].x + little.x ),
-                     y:_dividerPositions[totalColors - 1][1].y + little.y )
-        ]
-        LiquidFun.addGuides(_tube, vertices: &_guidePositions)
+    private func addGuidesToCandidate(_ guideAngle: Float) { //MARK: Use some vertex values from mesh or somethign
+//        let littleGuideMag: Float = 0.1
+//        let little = float2(abs(cos(guideAngle - 0.3) * littleGuideMag), abs(sin(guideAngle - 0.3) * littleGuideMag) )
+//        let bigAng = Float.pi/3 + 0.1
+//        let bigMag: Float = 1.0
+//        let big = float2( cos(bigAng) * bigMag, sin(bigAng) * bigMag)
+//        _guidePositions = [
+//            Vector2D(x: _pourDirection * (_dividerPositions[totalColors - 1][0].x),
+//                     y: _dividerPositions[totalColors - 1][0].y) ,
+//
+//            Vector2D(x: _pourDirection * (_dividerPositions[totalColors - 1][0].x - big.x) ,
+//                     y:_dividerPositions[totalColors - 1][0].y + big.y),
+//
+//            Vector2D(x: _pourDirection * (_dividerPositions[totalColors - 1][1].x),
+//                     y: _dividerPositions[totalColors - 1][1].y) ,
+//
+//            Vector2D(x: _pourDirection * (_dividerPositions[totalColors - 1][1].x + little.x ),
+//                     y:_dividerPositions[totalColors - 1][1].y + little.y )
+//        ]
+//        LiquidFun.addGuides(_tube, vertices: &_guidePositions)
     }
     private func removeGuidesFromCandidate() {
         LiquidFun.removeGuides(_tube)
@@ -411,19 +462,14 @@ class TestTube: Node {
     }
     
     func select() {
-        self.sceneRepresentation.selectEffect(.Selected)
+        isSelected = true
+        self.selectEffect = .Selected
         currentState = .Selected
-    }
-    
-    func conflict() {
-        shouldUpdateRep = true
-        sceneRepresentation.shouldUpdate = true
-        self.sceneRepresentation.conflict()
     }
     
     func returnToOrigin(_ customDelay: Float = 1.0) {
         LiquidFun.clearPourBits(_tube)
-        self.sceneRepresentation.clearEffect()
+        self.isSelected = false
         self.setFrozenDelay = customDelay
         self.isPouring = false
         self.isPourCandidate = false
@@ -816,10 +862,10 @@ class TestTube: Node {
     
     //buffer updates
     func updateModelConstants() {
+        self.setPositionX(self.getBoxPositionX() * GameSettings.stmRatio)
+        self.setPositionY(self.getBoxPositionY() * GameSettings.stmRatio)
+        self.setRotationZ( getRotationZ() )
         modelConstants.modelMatrix = modelMatrix
-        sceneRepresentation.setPositionX(self.getBoxPositionX() * GameSettings.stmRatio)
-        sceneRepresentation.setPositionY(self.getBoxPositionY() * GameSettings.stmRatio)
-        sceneRepresentation.setRotationZ( getRotationZ() )
     }
     
     func refreshVertexBuffer() {
@@ -883,16 +929,9 @@ class TestTube: Node {
             setBoxVelocity(moveDirection)
         }
     }
-    
-    override func moveX(_ delta: Float ) {
-        sceneRepresentation.moveX(delta)
-    }
-    override func moveY(_ delta: Float) {
-        sceneRepresentation.moveY(delta)
-    }
+ 
     override func rotateZ(_ value: Float) {
         LiquidFun.setAngularVelocity(_tube, angularVelocity: value)
-        self.sceneRepresentation.setRotationZ(self.getRotationZ())
     }
     func dampRotation( _ value: Float){
         LiquidFun.dampRotation(ofBody: _tube, amount: value)
@@ -941,18 +980,31 @@ class TestTube: Node {
     // zpos for visual effect
     func toForeground() {
         self.setPositionZ(0.15)
-        self.sceneRepresentation.setPositionZ(0.15)
     }
     func toBackground() {
         self.setPositionZ(0.1)
-        self.sceneRepresentation.setPositionZ(0.1)
     }
 }
 
 extension TestTube: Renderable {
     func doRender(_ renderCommandEncoder: MTLRenderCommandEncoder) {
+        updateModelConstants()
         refreshVertexBuffer()
         refreshFluidBuffer()
+        renderCommandEncoder.setDepthStencilState(DepthStencilStates.Get(.Less))
+        if isSelected {
+            renderCommandEncoder.setRenderPipelineState(RenderPipelineStates.Get(.Select))
+            renderCommandEncoder.setFragmentBytes(&_timeTicked, length : Float.size, index : 0)
+            renderCommandEncoder.setFragmentBytes(&_selectColors[ selectEffect ], length : float3.size, index : 2)
+        }
+        else {
+            renderCommandEncoder.setRenderPipelineState(RenderPipelineStates.Get(.Instanced))
+        }
+        renderCommandEncoder.setVertexBytes(&modelConstants, length : ModelConstants.stride, index: 2)
+        renderCommandEncoder.setFragmentBytes(&material, length : CustomMaterial.stride, index : 1)
+        renderCommandEncoder.setFragmentTexture(_texture, index: 0)
+        mesh.drawPrimitives(renderCommandEncoder, baseColorTextureType: .TestTube)
+        
         fluidSystemRender(renderCommandEncoder)
     }
     
@@ -964,7 +1016,7 @@ extension TestTube: Renderable {
             renderCommandEncoder.setVertexBuffer(_vertexBuffer,
                                                  offset: 0,
                                                  index: 0)
-            renderCommandEncoder.setVertexBytes(&modelConstants,
+            renderCommandEncoder.setVertexBytes(&fluidModelConstants,
                                                 length: ModelConstants.stride,
                                                 index: 2)
             renderCommandEncoder.setVertexBuffer(_fluidBuffer,

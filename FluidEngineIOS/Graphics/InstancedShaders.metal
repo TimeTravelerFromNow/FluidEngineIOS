@@ -54,14 +54,41 @@ fragment half4 select_fragment_shader(RasterizerData rd [[ stage_in ]],
     float4 color;
     if(material.useTexture){
            color = texture.sample(sampler2d, texCoord);
-        color.r = clamp(color.r + selectColor.r * abs(0.5 * sin(texCoord.x * 10 + totalGameTime * 2)), 0.0, 1.0);
-        color.g = clamp(color.g + selectColor.g * abs(0.5 * sin(texCoord.x * 10 + totalGameTime * 2)), 0.0, 1.0);
-        color.b = clamp(color.b + selectColor.b * abs(0.5 * sin(texCoord.x * 10 + totalGameTime * 2)), 0.0, 1.0);
+        color.r = clamp(color.r + selectColor.r * abs(0.5 * sin(texCoord.y * 10 + totalGameTime * 2)), 0.0, 1.0);
+        color.g = clamp(color.g + selectColor.g * abs(0.5 * sin(texCoord.y * 10 + totalGameTime * 2)), 0.0, 1.0);
+        color.b = clamp(color.b + selectColor.b * abs(0.5 * sin(texCoord.y * 10 + totalGameTime * 2)), 0.0, 1.0);
        }else if(material.useMaterialColor) {
            color = material.color;
        }else{
            color = float4(0.5,0.0,0.0,1.0);
        }
+    if(color.a <= 0.1) {
+        discard_fragment();
+    }
+    return half4(color);
+}
+
+fragment half4 radial_select_fragment_shader(RasterizerData rd [[ stage_in ]],
+                                             texture2d<float> texture [[ texture(0) ]],
+                                             sampler sampler2d [[ sampler(0) ]],
+                                             constant float &totalGameTime [[ buffer(0) ]],
+                                             constant Material &material [[ buffer(1) ]],
+                                             constant float3 &selectColor  [[ buffer(2) ]]
+                                             ) {
+    float2 texCoord = rd.textureCoordinate;
+    float2 texCenter = float2(0.5,0.5);
+    float4 color;
+    float r = distance( texCoord, texCenter );
+    if(material.useTexture){
+        color = texture.sample(sampler2d, texCoord);
+        color.r = clamp(color.r + selectColor.r * abs(0.5 * cos(r * 10 - totalGameTime * 2)), 0.0, 1.0);
+        color.g = clamp(color.g + selectColor.g * abs(0.5 * cos(r * 10 - totalGameTime * 2)), 0.0, 1.0);
+        color.b = clamp(color.b + selectColor.b * abs(0.5 * cos(r * 10 - totalGameTime * 2)), 0.0, 1.0);
+    }else if(material.useMaterialColor) {
+        color = material.color;
+    }else{
+        color = float4(0.5,0.0,0.0,1.0);
+    }
     if(color.a <= 0.1) {
         discard_fragment();
     }

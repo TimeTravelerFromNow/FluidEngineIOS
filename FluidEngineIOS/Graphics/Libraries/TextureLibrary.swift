@@ -10,7 +10,7 @@ enum TextureTypes {
     case Cloud2
     case Cloud3
     
-    case ttFlat
+    case TestTube
     
     case ClearButton
     case TestButton
@@ -48,7 +48,7 @@ class Textures {
         _library.updateValue(Texture("cloud2").texture, forKey: .Cloud2)
         _library.updateValue(Texture("cloud3").texture, forKey: .Cloud3)
 
-        _library.updateValue(Texture("testflat", ext: "png").texture, forKey: .ttFlat)
+        _library.updateValue(Texture("testFlat", ext: "png").texture, forKey: .TestTube)
         
         _library.updateValue(Texture("clearButton", ext: "png").texture, forKey: .ClearButton)
         _library.updateValue(Texture("testButton", ext: "png").texture, forKey: .TestButton)

@@ -6,9 +6,7 @@ var MyGameLevels = [  level0, level1, level2]
 
 let level0: [ [ TubeColors ] ] =
 [
-    [ .Red, .Red, .Red, .Red],
     [.Red, .Blue, .Red, .Blue],
-    [.Green,.Green,.Green,.Green],
     [.Blue, .Red, .Blue, .Red],
     [ .Empty, .Empty, .Empty, .Empty],
 ]

@@ -81,7 +81,7 @@ class BoxButton: GameObject {
         updateModelConstants()
         if _selected {
             var gameTime = GameTime.TotalGameTime
-            renderCommandEncoder.setRenderPipelineState(RenderPipelineStates.Get(.Select))
+            renderCommandEncoder.setRenderPipelineState(RenderPipelineStates.Get(.RadialSelect))
             renderCommandEncoder.setDepthStencilState(DepthStencilStates.Get(.Less))
             // Vertex
             renderCommandEncoder.setVertexBytes(&modelConstants, length : ModelConstants.stride, index: 2)

@@ -235,7 +235,7 @@ class TestTubeScene : Scene {
                     print("initializing real tube height for collision testing")
                 }
                 currentTube.currentColors = tubeColors
-                addChild(currentTube.sceneRepresentation)
+           
                 addChild(currentTube)
                 tubeGrid.append(currentTube)
                 x += xSep
@@ -244,7 +244,6 @@ class TestTubeScene : Scene {
                 y -= ySep
                 let currentTube = TestTube(origin: float2(x:x,y:y), gridId: i)
                 currentTube.currentColors = tubeColors
-                addChild(currentTube.sceneRepresentation)
                 addChild(currentTube)
                 tubeGrid.append(currentTube)
                 x += xSep

@@ -13,6 +13,7 @@ enum RenderPipelineStateTypes {
     case Points
     case Lines
     case Select
+    case RadialSelect
     
     case CustomBox2D // will include ptm Ratio for rendering custom quads in box2d scale.
     case SelectCustomBox2D // will use the select fragment shader
@@ -88,7 +89,6 @@ class RenderPipelineStates {
     }
     
     public static func Initialize() {
-        generateSelectRenderPipelineState()
         generateInstancedRenderPipelineState()
         generatePointsRenderPipelineState()
         generateLinesRenderPipelineState()
@@ -101,6 +101,9 @@ class RenderPipelineStates {
         
         generateMBETextRenderPipelineState()
         
+        generateSelectRenderPipelineState()
+        generateRadialSelectRenderPipelineState()
+
         generateCustomBox2dRenderPipelineState()
         generateSelectCustomBox2dRenderPipelineState()
         
@@ -235,6 +238,36 @@ class RenderPipelineStates {
         }
         
         _library.updateValue(renderPipelineState, forKey: .Select)
+    }
+    private static func generateRadialSelectRenderPipelineState() {
+        let vertexFunction = Engine.DefaultLibrary.makeFunction(name: "instanced_vertex_shader")
+        let fragmentFunction = Engine.DefaultLibrary.makeFunction(name: "radial_select_fragment_shader")
+        
+        let renderPipelineDescriptor = MTLRenderPipelineDescriptor()
+        renderPipelineDescriptor.colorAttachments[0].pixelFormat = Preferences.MainPixelFormat
+        renderPipelineDescriptor.colorAttachments[1].pixelFormat = Preferences.MainPixelFormat
+        
+        renderPipelineDescriptor.colorAttachments[0].isBlendingEnabled = true
+        renderPipelineDescriptor.colorAttachments[0].rgbBlendOperation = .add
+        renderPipelineDescriptor.colorAttachments[0].sourceRGBBlendFactor = .sourceAlpha
+        renderPipelineDescriptor.colorAttachments[0].sourceAlphaBlendFactor = .sourceAlpha
+        renderPipelineDescriptor.colorAttachments[0].destinationRGBBlendFactor = .oneMinusSourceAlpha
+        renderPipelineDescriptor.colorAttachments[0].destinationAlphaBlendFactor = .oneMinusSourceAlpha
+        
+        renderPipelineDescriptor.depthAttachmentPixelFormat = Preferences.MainDepthPixelFormat
+
+        renderPipelineDescriptor.vertexDescriptor = VertexDescriptor
+        renderPipelineDescriptor.vertexFunction = vertexFunction
+        renderPipelineDescriptor.fragmentFunction = fragmentFunction
+        
+        var renderPipelineState: MTLRenderPipelineState!
+        do {
+            renderPipelineState = try Engine.Device.makeRenderPipelineState(descriptor: renderPipelineDescriptor)
+        } catch {
+            print("ERROR::RENDERPIPELINESTATE::\(error)")
+        }
+        
+        _library.updateValue(renderPipelineState, forKey: .RadialSelect)
     }
     private static func CustomPipelineState() {
         let vertexFunction = Engine.DefaultLibrary.makeFunction(name: "basic_color_vertex_shader")

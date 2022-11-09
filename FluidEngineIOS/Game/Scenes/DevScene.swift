@@ -1,7 +1,8 @@
 import MetalKit
 import CoreHaptics
 
-class DevScene : Scene {    
+class DevScene : Scene {
+    var test_testTube: TestTube = TestTube()
     var tubeGrid: [ TestTube ] = []
     var reservoirs: [ ReservoirObject ] = []
     var buttons: [ BoxButton ] = []
@@ -64,13 +65,13 @@ class DevScene : Scene {
     }
     
     func addTestButton() {
-        let clearButton = BoxButton(.ClearButton, .ClearButton, .Clear, center: box2DOrigin + float2(1.0,-3.0) )
-        let menuButton = BoxButton(.Menu,.Menu, .ToMenu, center: box2DOrigin + float2(-1.0,-3.0), label: .MenuLabel)
-        let testButton0 = BoxButton(.Menu, .Menu, .TestAction0, center: box2DOrigin + float2(-1.0,-4.0), label: .TestLabel0)
-        let testButton1 = BoxButton(.Menu, .Menu, .TestAction1, center: box2DOrigin + float2(1.0,-4.0), label: .TestLabel1)
+        let clearButton = BoxButton(.ClearButton, .ClearButton, .Clear, center: box2DOrigin + float2(1.0,-1.5) )
+        let menuButton = BoxButton(.Menu,.Menu, .ToMenu, center: box2DOrigin + float2(-1.0,-1.5), label: .MenuLabel)
+        let testButton0 = BoxButton(.Menu, .Menu, .TestAction0, center: box2DOrigin + float2(-1.0,-2.5), label: .TestLabel0)
+        let testButton1 = BoxButton(.Menu, .Menu, .TestAction1, center: box2DOrigin + float2(1.0,-2.5), label: .TestLabel1)
         
-        let testButton2 = BoxButton(.Menu, .Menu, .TestAction2, center: box2DOrigin + float2(-1.0,-5.0), label: .TestLabel2)
-        let testButton3 = BoxButton(.Menu, .Menu, .TestAction3, center: box2DOrigin + float2(1.0,-5.0), label: .TestLabel3)
+        let testButton2 = BoxButton(.Menu, .Menu, .TestAction2, center: box2DOrigin + float2(-1.0,-3.5), label: .TestLabel2)
+        let testButton3 = BoxButton(.Menu, .Menu, .TestAction3, center: box2DOrigin + float2(1.0,-3.5), label: .TestLabel3)
 
         buttons.append(clearButton)
         buttons.append(menuButton)
@@ -109,7 +110,6 @@ class DevScene : Scene {
         
         addTestButton()
         InitializeGrid()
-//        addSnapshots()
     }
     
     func destroyReservoirs() {
@@ -121,6 +121,7 @@ class DevScene : Scene {
         }
         reservoirs = []
     }
+    
     func reservoirAction() {
         destroyReservoirs()
         var colorVariety: [TubeColors] = []
@@ -140,7 +141,7 @@ class DevScene : Scene {
             for tube in tubeGrid {
                 for tubeColor in tube.currentColors {
                     if color == tubeColor {
-                        if !( tubeIndicesForThisColor.contains( tube.gridId) ){ // no repeats!
+                        if !( tubeIndicesForThisColor.contains( tube.gridId) ) { // no repeats!
                         tubeIndicesForThisColor.append( tube.gridId )
                         }
                     }
@@ -150,19 +151,23 @@ class DevScene : Scene {
         }
     
         let reservoirSpacing = float2(2.0, 4.0)
-        let reservoirOffset = float2(2.0, 5.0) + box2DOrigin
+        let reservoirOffset = float2(0, 5.0) + box2DOrigin
         let reservoirCount = colorVariety.count // need a reservoir for each color.
-        let reservoirPositions = getCenteredPositionMatrix( reservoirOffset, reservoirSpacing, rowLength: 3, nodeCount: reservoirCount)
-    
-        for (i, color) in colorVariety.enumerated() {
-            let newPos = reservoirPositions.grid[i] ?? float2(0,0)
-            let newReservoir = ReservoirObject(origin: newPos, colorType: color)
-            newReservoir.fill()
-            reservoirs.append( newReservoir )
-            addChild( newReservoir )
-            reservoirForColor.updateValue(newReservoir, forKey: color)
+        let reservoirPositions = positionMatrix( reservoirOffset, withSpacing: reservoirSpacing, rowLength: 3, totalCount: reservoirCount)
+        var colorIndex = 0
+        for pos in reservoirPositions.grid {
+            if let goodPos = pos {
+                if colorIndex > colorVariety.count - 1 { print("reservoir placing WARN::index greater than num colors."); break}
+                let color = colorVariety[colorIndex]
+                let newReservoir = ReservoirObject(origin: goodPos, colorType: color )
+                newReservoir.fill()
+                reservoirs.append( newReservoir )
+                addChild( newReservoir )
+                reservoirForColor.updateValue(newReservoir, forKey: color)
+                colorIndex += 1
+            }
         }
-        
+        if( colorIndex != colorVariety.count) { print("reservoir placing WARN::num colors not matching reservoirs made."); }
 //        var targetsDict: [ TubeColors: [float2] ] = [:]
         for color in colorVariety {
             var currTargets: [float2] = []
@@ -190,55 +195,23 @@ class DevScene : Scene {
     }
     
     private func InitializeGrid() {
-        let height : Float = 2.0
-        let width  : Float = 5.0
-        let xSep : Float = 1.0
+        let xSep : Float = 0.8
         let ySep : Float = 2.0
-        var y : Float = box2DOrigin.y
-        var x : Float = box2DOrigin.x
-        let rowNum = Int(width / xSep)
-        let maxColNum = Int(height / ySep)
         
-        let tubesCount = tubeLevel.startingLevel.count
-        
-        if tubesCount > (rowNum * maxColNum ){
-            print("warning we will probably be out of bounds with this many tubes.")
-        }
-        
-        if( tubesCount <= rowNum ) {
-            if( tubesCount % 2 == 0) { // center it
-                x -= xSep * Float(tubesCount) / 2
-            }
-            else { // center it on the center tube
-                x -= xSep * floor( Float(tubesCount) / 2)
-            }
-        } else { // center it on the center tube
-            x -= xSep * floor( Float(tubesCount) / 2)
-        }
-        
-        for (i, tubeColors) in tubeLevel.startingLevel.enumerated() {
-            if(x < width) {
-                let currentTube = TestTube(origin: float2(x:x,y:y), gridId: i)
-                if tubeHeight == 0.0 {// unitialized, then initialize
-                    self.tubeHeight = currentTube.getTubeHeight()
-                    print("initializing real tube height for collision testing")
-                }
-                currentTube.currentColors = tubeColors
-                addChild(currentTube.sceneRepresentation)
+        var tGid = 0
+        let startLvl = tubeLevel.startingLevel
+        let tubePositionsMatrix = positionMatrix(box2DOrigin, withSpacing: float2(xSep, ySep), rowLength: 6, totalCount: startLvl.count)
+        for position in tubePositionsMatrix.grid {
+            if let goodPos = position {
+                if tGid > startLvl.count - 1 { print("init tubegrid WARN::index greater than starting lvl count."); break}
+                let currentTube = TestTube(origin: goodPos, gridId: tGid)
+                currentTube.currentColors = startLvl[tGid]
                 addChild(currentTube)
                 tubeGrid.append(currentTube)
-                x += xSep
-            } else {
-                x = 0.5
-                y -= ySep
-                let currentTube = TestTube(origin: float2(x:x,y:y), gridId: i)
-                currentTube.currentColors = tubeColors
-                addChild(currentTube.sceneRepresentation)
-                addChild(currentTube)
-                tubeGrid.append(currentTube)
-                x += xSep
+                tGid += 1
             }
         }
+        if( tGid != startLvl.count) { print("init tubegrid WARN::tube num not matching starting lvl count."); }
     }
     private func beginEmpty() {
         _emptyKF = 0

@@ -24,10 +24,10 @@ class BoxPolygon: GameObject {
     }
   
     func updateModelConstants() {
-        modelConstants.modelMatrix = modelMatrix
         setPositionX(self.getBoxPositionX() * GameSettings.stmRatio)
         setPositionY(self.getBoxPositionY() * GameSettings.stmRatio)
         setRotationZ( getRotationZ() )
+        modelConstants.modelMatrix = modelMatrix
     }
     
     func getBoxPositionX() -> Float {

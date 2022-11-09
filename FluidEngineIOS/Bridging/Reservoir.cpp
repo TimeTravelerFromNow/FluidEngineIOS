@@ -200,7 +200,7 @@ long Reservoir::TransferParticles( void* toSystem, b2Vec2 wallPos ) {
     b2Vec2 bulbCenter = m_bulbBody->GetPosition();
     for(int i = 0; i<oldPositionsCount; i++) {
         b2Vec2 c = positionBuffer[i];
-        if( b2Distance(c, bulbCenter ) > m_bulbRadius && // outside bulb and inside the pipe entrance
+        if( b2Distance(c, bulbCenter ) > (m_bulbRadius + 0.1) && // outside bulb and inside the pipe entrance
            b2Distance(c, wallPos ) < m_pipeWidth ) {
             newPositionsCount++;
         }
@@ -214,7 +214,7 @@ long Reservoir::TransferParticles( void* toSystem, b2Vec2 wallPos ) {
     
     for(int i = 0; i<oldPositionsCount; i++) {
         b2Vec2 c = positionBuffer[i];
-        if( b2Distance(c, bulbCenter ) > m_bulbRadius &&  b2Distance(c, wallPos ) < m_pipeWidth ) {
+        if( b2Distance(c, bulbCenter ) > (m_bulbRadius + 0.1) &&  b2Distance(c, wallPos ) < m_pipeWidth ) {
             newPositions[newPositionIndex] = positionBuffer[i];
             newVelocities[newPositionIndex] = velocityBuffer[i];
             avVelocityX += newVelocities[newPositionIndex].x;

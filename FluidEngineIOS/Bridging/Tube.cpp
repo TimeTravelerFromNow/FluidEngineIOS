@@ -38,7 +38,6 @@ Tube::~Tube() {
 //collision
 
 long Tube::GetHoverCandidateGridId() {
-    
     return 0; // MARK: if I want to do the hover logic in C++ I can, but it's up to me
 }
 
