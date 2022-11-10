@@ -404,12 +404,11 @@ class ReservoirObject: Node {
     
     // MARK: refactor so that we somehow are close to pointing downwards by the time we are over the tube.
     func controlPoints( _ arrow: Arrow2D ) -> ( [Float], [float2]) {
-        var destination = arrow.target
-
-        var start       = arrow.tail
-        var actualStart = arrow.head
-        var overDest = float2(destination.x, destination.y + 0.5)
-        var underDest = float2(destination.x, destination.y - 0.7)
+        let destination = arrow.target
+        let start       = arrow.tail
+        let actualStart = arrow.head
+        let overDest = float2(destination.x, destination.y + 0.4)
+        let underDest = float2(destination.x, destination.y - 1.0)
         let midpoint = ( actualStart + overDest ) / 2
         let bulbNormal = actualStart + normalize( arrow.head - arrow.tail ) * 0.3
         let outArray = [ start, actualStart, bulbNormal, midpoint, overDest,  destination, underDest]
@@ -423,13 +422,14 @@ class ReservoirObject: Node {
         }
         // normalize tParams
         // MARK: tParams must be strictly increasing
+        // MARK: normalizing doesnt make a difference anywhere I can tell
         tParams = tParams.map { $0 / totalL }
         
-        return ( tParams, outArray)
+        return ( tParams, outArray )
     }
     
     //animations
-    func buildPipesStep(_ deltaTime: Float){
+    private func buildPipesStep(_ deltaTime: Float){
         if( pipes.count == 0 ) {
             isBuildingPipes = false
             print("pipeBuildStep() Warning::_pipes array was size 0")

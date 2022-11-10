@@ -4,7 +4,6 @@ Tube::Tube(b2World* worldRef,
            b2ParticleSystem* particleSysRef,
            b2Vec2 location,
            b2Vec2* vertices, unsigned int count,
-           b2Vec2* sensorVertices, unsigned int sensorCount,
            float32 tubeWidth,
            float32 tubeHeight,
            long gridId) {
@@ -73,8 +72,12 @@ void Tube::AddGuides(b2Vec2* guidesVertices) {
     m_guide1 = lineFixture1;
 }
 void Tube::RemoveGuides() {
+    if(m_guide0) {
     m_body->DestroyFixture(m_guide0);
-    m_body->DestroyFixture(m_guide1);
+    }
+    if(m_guide1) {
+        m_body->DestroyFixture(m_guide1);
+    }
 }
 //movement
 void Tube::SetVelocity(b2Vec2 velocity) {

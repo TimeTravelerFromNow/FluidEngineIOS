@@ -49,8 +49,7 @@ class TestTube: Node {
     var isPourCandidate: Bool = false               // is being poured into?
     var candidateTube: TestTube!
     private var _pourKF:Int = 0
-    private var _guidePositions:  [Vector2D] = []
-    private var _guideReferences: [Int:UnsafeMutableRawPointer?] = [0:nil,1:nil]
+    private var _guidePositions:  [Vector2D]?
 
     var donePouring: Bool = false                   // done with entire pour action (including going back to origin)?
     //moving
@@ -74,13 +73,14 @@ class TestTube: Node {
     private var _colorBuffer: MTLBuffer!
     //tube geometry
     private var tubeOBJVertices: [Vector2D] = []
-    private var tubeHeight: Float32 = 0.4
-    private var tubeWidth : Float32 = 0.18
-    private var bottomFromOrigin: Float  { return tubeHeight / 2 - _dividerIncrement }
+    private var tubeHeight: Float!
+    private var tubeWidth : Float!
+    var dividerOffset: Float!
     private var _dividerIncrement: Float { return (tubeHeight) / Float(totalColors) }
     private var _dividerScale: Float = 1.9
     //game state related
-    private var totalColors: Int = 4//no. cells dont change during game.
+    private var totalColors: Int { return currentColors.count }//no. cells dont change during a level.
+    private var topMostNonEmptyIndex: Int { return (currentColors.firstIndex(where: {$0 == .Empty} )  ?? totalColors) - 1 }
     private var _initialFillProgress: Int = 0
     // determine if still needed after C++ refactor
     private var _dividerReferences: [UnsafeMutableRawPointer?]!
@@ -160,7 +160,7 @@ class TestTube: Node {
         selectEffect = .NoSelection
     }
     
-    init( origin: float2 = float2(0,0), gridId: Int = -1, scale: Float = 5.0 ) {
+    init( origin: float2 = float2(0,0), gridId: Int = -1, scale: Float = 5.0, startingColors: [TubeColors] = [.Empty] ) {
         super.init()
         if( gridId == -1 ) { print("TestTube() ADVISE::did you mean to init tube with -1? I will be test testTube.")}
         self.gridId = gridId
@@ -174,6 +174,7 @@ class TestTube: Node {
         self.setScaleY( GameSettings.stmRatio * 1.1 / scale )
         self.setPositionZ(0.1)
         self.scale = scale
+        self.currentColors = startingColors
         self.makeContainer()
         self.toForeground()
         self._texture = Textures.Get(.TestTube)
@@ -184,25 +185,26 @@ class TestTube: Node {
     //initialization
     private func makeContainer() {
         self.tubeOBJVertices = mesh.getBoxVertices( scale )
-        let tubeVerticesPtr = LiquidFun.getVec2(&tubeOBJVertices, vertexCount: UInt32(tubeOBJVertices.count))
-        
-        
-        var sensorVertices : [Vector2D] = [
-            Vector2D(x: -tubeWidth, y:  tubeHeight * 0.5),
-            Vector2D(x: -tubeWidth, y: -tubeHeight * 0.5),
-            Vector2D(x: tubeWidth , y: -tubeHeight * 0.5),
-            Vector2D(x: tubeWidth , y:  tubeHeight * 0.5)
-        ]
-
-        // MARK: I thought sensors weren't needed anymore but we could still use them later for engulfing particle code.
+        let (xVals, yVals) = ( tubeOBJVertices.map { Float($0.x) } , tubeOBJVertices.map { Float($0.y) } )
+        guard let yMax = yVals.max() else { print("TestTube() ERROR:no yMax from obj vertices"); return }
+        guard let yMin = yVals.min() else { print("TestTube() ERROR:no yMin from obj vertices"); return }
+        guard let xMax = xVals.max() else { print("TestTube() ERROR:no xMax from obj vertices"); return }
+        guard let xMin = xVals.min() else { print("TestTube() ERROR:no xMin from obj vertices"); return }
+        tubeHeight = Float( yMax - yMin )
+        let differenceUpFromOrigin = yMax - tubeHeight / 2
+        let differenceDownFromOrigin = yMin + tubeHeight / 2
+        dividerOffset = differenceUpFromOrigin
+        tubeWidth = Float( xMax - xMin )
+        initializeDividerArrays()
+        initializeDividerPositions()
         particleSystem = LiquidFun.createParticleSystem(withRadius: GameSettings.particleRadius / ptmRatio,
                                                         dampingStrength: GameSettings.DampingStrength,
                                                         gravityScale: 1,
                                                         density: GameSettings.Density)
         _tube = LiquidFun.makeTube(particleSystem,
                                    location: Vector2D(x:origin.x,y:origin.y),
-                                   vertices: tubeVerticesPtr, vertexCount: UInt32(tubeOBJVertices.count),
-                                   sensorVertices: &sensorVertices, sensorCount: 4,
+                                   vertices: &tubeOBJVertices,
+                                   vertexCount: UInt32(tubeOBJVertices.count),
                                    tubeWidth: tubeWidth,
                                    tubeHeight: tubeHeight,
                                    gridId: gridId)
@@ -218,18 +220,16 @@ class TestTube: Node {
     
     private func initializeDividerPositions() {
         for incr in 0..<totalColors {
-            let yPos = (_dividerIncrement * Float(incr)) - bottomFromOrigin
-            var dividerVertices = [Vector2D(x: -tubeWidth * _dividerScale,y:yPos ),
-                                   Vector2D(x:  tubeWidth * _dividerScale,y:yPos ) ]
+            let yPos = (_dividerIncrement * Float(incr + 1)) - tubeHeight / 2 + dividerOffset
+            var dividerVertices = [Vector2D(x: -tubeWidth * _dividerScale / 2,y:yPos ),
+                                   Vector2D(x:  tubeWidth * _dividerScale / 2,y:yPos ) ]
             _dividerPositions[incr] =  dividerVertices
             _dividerYs[incr] = yPos
         }
     }
     
     private func initializeColors(_ colors: [TubeColors]) {
-        self.totalColors = colors.count
-        self._colors = [float4].init(repeating: WaterColors[.Empty]!, count: totalColors)
-        self.currentColors = [TubeColors].init(repeating: .Empty, count: totalColors)
+        self.currentColors = [TubeColors].init(repeating: .Empty, count: colors.count)
         self.visualColors = currentColors
         _currentTopIndex = -1
         for (i,c) in colors.enumerated() {
@@ -260,7 +260,10 @@ class TestTube: Node {
         case .Emptying:
             emptyStep(deltaTime)
         case .Initializing:
-            initialFillStep(deltaTime)
+            if( updatePipe ) {
+            } else {
+//                initialFillStep(deltaTime)
+            }
         case .Pouring:
             if !isPourCandidate {
                 pourStep(deltaTime)
@@ -288,7 +291,7 @@ class TestTube: Node {
                 self.rotateZ(0.0)
                 currentState = .Moving  //allows control from outside
             }
-        case .Selected:
+        case .Selected: // drive it upwards fast
             selectStep(deltaTime)
         case .CleanupValues:
             self.isSelected = false
@@ -309,8 +312,14 @@ class TestTube: Node {
     }
     
     func fillFromPipes() {
+        skimTopParticles(_currentTopIndex - 1)
         for pipe in pipes.values {
             pipe.resetFilter()
+        }
+        if( _currentTopIndex > topMostNonEmptyIndex ) {
+            updatePipe = false
+            returnToOrigin()
+            return
         }
         guard let pipeToAsk = pipes[currentColors[_currentTopIndex]] else { return }
         pipeToAsk.highlighted = true
@@ -325,7 +334,7 @@ class TestTube: Node {
     }
   
     var currentFillNum = 0
-    let quota = 100
+    let quota = 30
     let safetyTime: Float = 4.0
     var timeTillSafety: Float = 0.0 // dont get stuck
     func pipeRecieveStep( _ deltaTime: Float ) {
@@ -341,15 +350,13 @@ class TestTube: Node {
             if currentFillNum > quota {
                 currPipe.closeValve()
             }
-        } else {
+        } else { // close pipe valve whether done or not, and stop updating the pipe when valve done rotating
             currPipe.closeValve()
             if !(currPipe.isRotatingSegment) {
-                updatePipe = false
+                refreshDividers()
                 currPipe.highlighted = false
-                LiquidFun.deleteParticlesOutside(particleSystem, width: tubeWidth, height: tubeHeight, rotation: 0.0, position: Vector2D(x:getBoxPositionX(),y:getBoxPositionY()))
-                if( _currentTopIndex < totalColors - 1) {
                 _currentTopIndex += 1
-                }
+                    fillFromPipes()
             }
         }
         timeTillSafety += deltaTime
@@ -357,27 +364,30 @@ class TestTube: Node {
     }
 
     // funnel management
-    private func addGuidesToCandidate(_ guideAngle: Float) { //MARK: Use some vertex values from mesh or somethign
-//        let littleGuideMag: Float = 0.1
-//        let little = float2(abs(cos(guideAngle - 0.3) * littleGuideMag), abs(sin(guideAngle - 0.3) * littleGuideMag) )
-//        let bigAng = Float.pi/3 + 0.1
-//        let bigMag: Float = 1.0
-//        let big = float2( cos(bigAng) * bigMag, sin(bigAng) * bigMag)
-//        _guidePositions = [
-//            Vector2D(x: _pourDirection * (_dividerPositions[totalColors - 1][0].x),
-//                     y: _dividerPositions[totalColors - 1][0].y) ,
-//
-//            Vector2D(x: _pourDirection * (_dividerPositions[totalColors - 1][0].x - big.x) ,
-//                     y:_dividerPositions[totalColors - 1][0].y + big.y),
-//
-//            Vector2D(x: _pourDirection * (_dividerPositions[totalColors - 1][1].x),
-//                     y: _dividerPositions[totalColors - 1][1].y) ,
-//
-//            Vector2D(x: _pourDirection * (_dividerPositions[totalColors - 1][1].x + little.x ),
-//                     y:_dividerPositions[totalColors - 1][1].y + little.y )
-//        ]
-//        LiquidFun.addGuides(_tube, vertices: &_guidePositions)
+    private func addGuidesToCandidate(_ guideAngle: Float) {
+        guard let leftTopVertex = tubeOBJVertices.first else { print("guide add ERROR::No tubeOBJVertices."); return }
+        guard let rightTopVertex = tubeOBJVertices.last else { print("guide add ERROR::No tubeOBJVertices."); return }
+        let littleGuideMag: Float = 0.1
+        let little = float2(abs(cos(guideAngle - 0.3) * littleGuideMag), abs(sin(guideAngle - 0.3) * littleGuideMag) )
+        let bigAng = Float.pi/3 + 0.1
+        let bigMag: Float = 1.0
+        let big = float2( cos(bigAng) * bigMag, sin(bigAng) * bigMag)
+        _guidePositions = [
+            Vector2D(x: _pourDirection * (leftTopVertex.x),
+                     y: leftTopVertex.y) ,
+
+            Vector2D(x: _pourDirection * (leftTopVertex.x - big.x) ,
+                     y: leftTopVertex.y + big.y),
+
+            Vector2D(x: _pourDirection * (rightTopVertex.x),
+                     y: rightTopVertex.y) ,
+
+            Vector2D(x: _pourDirection * (rightTopVertex.x + little.x ),
+                     y:rightTopVertex.y + little.y )
+        ]
+        LiquidFun.addGuides(_tube, vertices: &_guidePositions)
     }
+    
     private func removeGuidesFromCandidate() {
         LiquidFun.removeGuides(_tube)
     }
@@ -409,6 +419,13 @@ class TestTube: Node {
         self.isInitialFilling = true
         self.currentState = .Initializing
         if particleSystem == nil { print("particle system unitialized before initial fill.")}
+    }
+    
+    func startPipeFill( ) {
+        self.currentState = .Initializing
+        if particleSystem == nil { print("particle system unitialized before initial fill.")}
+        LiquidFun.deleteParticles(inParticleSystem: particleSystem, aboveYPosition: getBoxPositionY() - tubeHeight)
+        fillFromPipes()
     }
     
     func startPouring(newPourTubeColors: [TubeColors], newCandidateTubeColors: [TubeColors]) {
@@ -548,18 +565,7 @@ class TestTube: Node {
         refreshColorBuffer()
     }
     
-    func refreshColorBuffer() { // sets the _color buffer after pouring or initialization
-        for (i,c) in self.currentColors.enumerated() {
-            if c == .Empty {
-                if _newTopIndex < totalColors - 1 { // ensures stray particles are not gray
-                    if _newTopIndex < 0 { return }
-                    _colors[i] = WaterColors[ currentColors[ _newTopIndex ]  ]!
-                }
-            }
-            else {
-                _colors[i] = (WaterColors[c] ?? WaterColors[.Empty]!)
-            }
-        }
+    func refreshColorBuffer() {
     }
 
     //emptying animation
@@ -657,8 +663,9 @@ class TestTube: Node {
                 nextPourKF()
             }
         case 2:
+            if (_guidePositions?.count ?? -1 > 0){
             candidateTube.addGuidesToCandidate(_pourAngles[ _newTopIndex + 1 ]) // MARK: got to fix hardcoding these angles it's not clean code
-          
+            }
             nextPourKF()
         case 3:
             if( _pourDirection * self.getRotationZ() < _pourAngles[ _newTopIndex + 1 ] ) {
@@ -683,21 +690,13 @@ class TestTube: Node {
                 }
             }
         case 5:
-            nextPourKF()
-        case 6:
-            nextPourKF()
-        case 7:
-            nextPourKF()
-        case 8:
-            nextPourKF()
-        case 9:
             if( _pourDirection * self.getRotationZ() > 0 ) {
                 _pourSpeed *= 0.99
                 self.rotateZ(-_pourDirection * _pourSpeed * deltaTime * 40 * Float.pi)
             } else {
                 nextPourKF()
             }
-        case 10:
+        case 6:
             candidateTube.removeGuidesFromCandidate()
             candidateTube.returnToOrigin()
             candidateTube.setNewColors()
@@ -841,7 +840,7 @@ class TestTube: Node {
     }
     
     func skimTopParticles(_ aboveSegment: Int) {
-        let amountDeletedAbove = LiquidFun.deleteParticles(inParticleSystem: particleSystem, aboveYPosition: self.getBoxPositionY() - bottomFromOrigin + Float(aboveSegment + 1)*_dividerIncrement )
+        let amountDeletedAbove = LiquidFun.deleteParticles(inParticleSystem: particleSystem, aboveYPosition: Float(aboveSegment + 1)*_dividerIncrement + self.getBoxPositionY() - tubeHeight / 2 + dividerOffset )
         print("deleted overflow amt: \(amountDeletedAbove).")
     }
     
@@ -849,7 +848,7 @@ class TestTube: Node {
         return Int(LiquidFun.deleteParticlesOutside(particleSystem,
                                                 width: tubeWidth,
                                                 height: tubeHeight,
-                                                rotation: 0.0,
+                                                rotation: getRotationZ(),
                                                 position: Vector2D(x:self.getBoxPositionX(),y:getBoxPositionY())))
     }
     

@@ -908,14 +908,22 @@ class TKSpline { // needs to be after spline header contents included.
 public:
     TKSpline( float* tControlPoints, b2Vec2* controlPoints, long controlPointsCount );
     ~TKSpline();
-
-    float GetInterpolatedPosition(tk::spline fromSpline, float yVal);
-
     void SetInterpolatedPoints(float* tControlPoints, float* fromYVals, float* onXVals, b2Vec2* onTangentVectors, long yValCount ) ;
-    b2Vec2 GetTangentUnitVector(float t);
 private:
+    b2Vec2 GetTangentUnitVector(float t);
     tk::spline mX_spline;
     tk::spline mY_spline;
+};
+
+class TKSpline1D {
+public:
+    TKSpline1D( float* xControlPoints, float* yControlPoints, long controlPointsCount );
+    ~TKSpline1D();
+
+    void SetInterpolatedPoints(float* xControlPoints, float* onYVals, float* onSlopeVals, long valCount ) ;
+private:
+    float GetSlope(float x);
+    tk::spline m_spline;
 };
 
 #endif /* TKSpline_h */

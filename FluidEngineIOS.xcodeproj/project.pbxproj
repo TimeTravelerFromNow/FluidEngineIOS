@@ -9,7 +9,6 @@
 /* Begin PBXBuildFile section */
 		920603B1290B03F400C1C846 /* bulbMesh.obj in Resources */ = {isa = PBXBuildFile; fileRef = 920603AF290B03F400C1C846 /* bulbMesh.obj */; };
 		920603B2290B03F400C1C846 /* bulbMesh.mtl in Resources */ = {isa = PBXBuildFile; fileRef = 920603B0290B03F400C1C846 /* bulbMesh.mtl */; };
-		920603B4290B044100C1C846 /* bulbMesh.png in Resources */ = {isa = PBXBuildFile; fileRef = 920603B3290B044100C1C846 /* bulbMesh.png */; };
 		920603B6290C4E8300C1C846 /* DevScene.swift in Sources */ = {isa = PBXBuildFile; fileRef = 920603B5290C4E8300C1C846 /* DevScene.swift */; };
 		920603B8290C559600C1C846 /* Testable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 920603B7290C559600C1C846 /* Testable.swift */; };
 		920603BA290C585600C1C846 /* SnapshotObject.swift in Sources */ = {isa = PBXBuildFile; fileRef = 920603B9290C585600C1C846 /* SnapshotObject.swift */; };
@@ -24,7 +23,6 @@
 		9226D3102905E306007785D5 /* Reservoir.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9226D30E2905E306007785D5 /* Reservoir.cpp */; };
 		9226D3182905FE6B007785D5 /* ReservoirObject.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9226D3172905FE6B007785D5 /* ReservoirObject.swift */; };
 		9226D33229071212007785D5 /* reservoir.mtl in Resources */ = {isa = PBXBuildFile; fileRef = 9226D32F29071212007785D5 /* reservoir.mtl */; };
-		9226D33429071212007785D5 /* reservoir.png in Resources */ = {isa = PBXBuildFile; fileRef = 9226D33129071212007785D5 /* reservoir.png */; };
 		9226D33629071250007785D5 /* reservoir.obj in Resources */ = {isa = PBXBuildFile; fileRef = 9226D33529071250007785D5 /* reservoir.obj */; };
 		92376BE828DE6E9F007C93DB /* MBEMesh.m in Sources */ = {isa = PBXBuildFile; fileRef = 92376BCD28DE6E9F007C93DB /* MBEMesh.m */; };
 		92376BE928DE6E9F007C93DB /* MBEFontAtlas.m in Sources */ = {isa = PBXBuildFile; fileRef = 92376BCE28DE6E9F007C93DB /* MBEFontAtlas.m */; };
@@ -49,6 +47,7 @@
 		923F2BDA27A0FD7300443936 /* FluidShaders.metal in Sources */ = {isa = PBXBuildFile; fileRef = 923F2BCE27A0FD7300443936 /* FluidShaders.metal */; };
 		923F2BDB27A0FD7300443936 /* InstancedShaders.metal in Sources */ = {isa = PBXBuildFile; fileRef = 923F2BCF27A0FD7300443936 /* InstancedShaders.metal */; };
 		923F2C0E27A10CFA00443936 /* Touches.swift in Sources */ = {isa = PBXBuildFile; fileRef = 923F2C0D27A10CFA00443936 /* Touches.swift */; };
+		92465D85291D79A2001CC08B /* TKSpline1D.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 92465D83291D79A2001CC08B /* TKSpline1D.cpp */; };
 		92489A0B2799D9BD00639B52 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 92489A0A2799D9BD00639B52 /* AppDelegate.swift */; };
 		92489A0D2799D9BD00639B52 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 92489A0C2799D9BD00639B52 /* SceneDelegate.swift */; };
 		92489A122799D9BD00639B52 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 92489A102799D9BD00639B52 /* Main.storyboard */; };
@@ -109,6 +108,8 @@
 		92489BD02799DA0400639B52 /* b2Collision.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 92489B022799DA0400639B52 /* b2Collision.cpp */; };
 		92489C032799DD0500639B52 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 92489C022799DD0500639B52 /* LaunchScreen.storyboard */; };
 		9270CD9C28E1084600A5CB05 /* FontRenderable.m in Sources */ = {isa = PBXBuildFile; fileRef = 9270CD9B28E1084600A5CB05 /* FontRenderable.m */; };
+		92728470291CD06F004C0CFC /* bulbMesh.png in Resources */ = {isa = PBXBuildFile; fileRef = 9272846F291CD06E004C0CFC /* bulbMesh.png */; };
+		92728472291CD11D004C0CFC /* reservoir.png in Resources */ = {isa = PBXBuildFile; fileRef = 92728471291CD11D004C0CFC /* reservoir.png */; };
 		9295E4CD2900AFB300A33A0D /* TextLibraries.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9295E4CC2900AFB300A33A0D /* TextLibraries.swift */; };
 		9295E4CF2900B84900A33A0D /* TextObject.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9295E4CE2900B84900A33A0D /* TextObject.swift */; };
 		9295E4D12900BB2900A33A0D /* TextShaders.metal in Sources */ = {isa = PBXBuildFile; fileRef = 9295E4D02900BB2900A33A0D /* TextShaders.metal */; };
@@ -190,7 +191,6 @@
 /* Begin PBXFileReference section */
 		920603AF290B03F400C1C846 /* bulbMesh.obj */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = bulbMesh.obj; sourceTree = "<group>"; };
 		920603B0290B03F400C1C846 /* bulbMesh.mtl */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = bulbMesh.mtl; sourceTree = "<group>"; };
-		920603B3290B044100C1C846 /* bulbMesh.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = bulbMesh.png; sourceTree = "<group>"; };
 		920603B5290C4E8300C1C846 /* DevScene.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DevScene.swift; sourceTree = "<group>"; };
 		920603B7290C559600C1C846 /* Testable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Testable.swift; sourceTree = "<group>"; };
 		920603B9290C585600C1C846 /* SnapshotObject.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SnapshotObject.swift; sourceTree = "<group>"; };
@@ -206,7 +206,6 @@
 		9226D30F2905E306007785D5 /* Reservoir.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Reservoir.h; sourceTree = "<group>"; };
 		9226D3172905FE6B007785D5 /* ReservoirObject.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReservoirObject.swift; sourceTree = "<group>"; };
 		9226D32F29071212007785D5 /* reservoir.mtl */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = reservoir.mtl; sourceTree = "<group>"; };
-		9226D33129071212007785D5 /* reservoir.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = reservoir.png; sourceTree = "<group>"; };
 		9226D33529071250007785D5 /* reservoir.obj */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = reservoir.obj; sourceTree = "<group>"; };
 		92376BCD28DE6E9F007C93DB /* MBEMesh.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MBEMesh.m; sourceTree = "<group>"; };
 		92376BCE28DE6E9F007C93DB /* MBEFontAtlas.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MBEFontAtlas.m; sourceTree = "<group>"; };
@@ -237,6 +236,7 @@
 		923F2BCE27A0FD7300443936 /* FluidShaders.metal */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.metal; path = FluidShaders.metal; sourceTree = "<group>"; };
 		923F2BCF27A0FD7300443936 /* InstancedShaders.metal */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.metal; path = InstancedShaders.metal; sourceTree = "<group>"; };
 		923F2C0D27A10CFA00443936 /* Touches.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Touches.swift; sourceTree = "<group>"; };
+		92465D83291D79A2001CC08B /* TKSpline1D.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = TKSpline1D.cpp; sourceTree = "<group>"; };
 		92489A072799D9BD00639B52 /* FluidEngineIOS.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = FluidEngineIOS.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		92489A0A2799D9BD00639B52 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		92489A0C2799D9BD00639B52 /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
@@ -358,6 +358,8 @@
 		92489C022799DD0500639B52 /* LaunchScreen.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = LaunchScreen.storyboard; sourceTree = "<group>"; };
 		9270CD9B28E1084600A5CB05 /* FontRenderable.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = FontRenderable.m; sourceTree = "<group>"; };
 		9270CD9D28E10F4500A5CB05 /* FontRenderable.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = FontRenderable.h; sourceTree = "<group>"; };
+		9272846F291CD06E004C0CFC /* bulbMesh.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = bulbMesh.png; sourceTree = "<group>"; };
+		92728471291CD11D004C0CFC /* reservoir.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = reservoir.png; sourceTree = "<group>"; };
 		9295E4CC2900AFB300A33A0D /* TextLibraries.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextLibraries.swift; sourceTree = "<group>"; };
 		9295E4CE2900B84900A33A0D /* TextObject.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextObject.swift; sourceTree = "<group>"; };
 		9295E4D02900BB2900A33A0D /* TextShaders.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = TextShaders.metal; sourceTree = "<group>"; };
@@ -468,6 +470,7 @@
 		920603C0290D96D700C1C846 /* Box2DPresentables */ = {
 			isa = PBXGroup;
 			children = (
+				92A9E38428DA6CEB0000A77F /* TestTube.swift */,
 				920603CC291217CD00C1C846 /* ReservoirStuff */,
 				92A9E38B28DA6CEB0000A77F /* BoxButton.swift */,
 				92A9E38A28DA6CEB0000A77F /* WaterFallObject.swift */,
@@ -475,7 +478,6 @@
 				92A9E38728DA6CEB0000A77F /* FluidEnvironment.swift */,
 				92A9E38C28DA6CEB0000A77F /* DebugEnvironment.swift */,
 				92A9E38128DA6CEB0000A77F /* BoxPolygon.swift */,
-				92A9E38428DA6CEB0000A77F /* TestTube.swift */,
 			);
 			path = Box2DPresentables;
 			sourceTree = "<group>";
@@ -508,16 +510,16 @@
 		9226D32829070069007785D5 /* reservoir */ = {
 			isa = PBXGroup;
 			children = (
+				9272846F291CD06E004C0CFC /* bulbMesh.png */,
 				92C1AB29291BFF91005B90BD /* pipeTexture.png */,
 				92FD29A7291456B100DEB8CE /* bigValve.png */,
 				92FD29A8291456B100DEB8CE /* smallValve.png */,
 				920603BB290C684F00C1C846 /* missingTexture.png */,
-				920603B3290B044100C1C846 /* bulbMesh.png */,
 				920603B0290B03F400C1C846 /* bulbMesh.mtl */,
 				920603AF290B03F400C1C846 /* bulbMesh.obj */,
 				9226D33529071250007785D5 /* reservoir.obj */,
 				9226D32F29071212007785D5 /* reservoir.mtl */,
-				9226D33129071212007785D5 /* reservoir.png */,
+				92728471291CD11D004C0CFC /* reservoir.png */,
 			);
 			path = reservoir;
 			sourceTree = "<group>";
@@ -984,6 +986,7 @@
 				9226D30F2905E306007785D5 /* Reservoir.h */,
 				92FD2CC12916F2DD00DEB8CE /* TKSpline.cpp */,
 				92FD2CC22916F2DD00DEB8CE /* TKSpline.h */,
+				92465D83291D79A2001CC08B /* TKSpline1D.cpp */,
 			);
 			path = Bridging;
 			sourceTree = "<group>";
@@ -1099,7 +1102,6 @@
 				92A9E43E28DA72910000A77F /* beachButton.png in Resources */,
 				92A9E40E28DA6D620000A77F /* Cloud0.png in Resources */,
 				92489C032799DD0500639B52 /* LaunchScreen.storyboard in Resources */,
-				920603B4290B044100C1C846 /* bulbMesh.png in Resources */,
 				920603CB2910972D00C1C846 /* moveTexture.png in Resources */,
 				92A9E41228DA6D620000A77F /* cloud2.mtl in Resources */,
 				920603BC290C684F00C1C846 /* missingTexture.png in Resources */,
@@ -1124,7 +1126,6 @@
 				92A9E41328DA6D620000A77F /* cloud3.mtl in Resources */,
 				92A9E41728DA6D620000A77F /* beach.obj in Resources */,
 				92C1AB2A291BFF91005B90BD /* pipeTexture.png in Resources */,
-				9226D33429071212007785D5 /* reservoir.png in Resources */,
 				92A9E43828DA72910000A77F /* beachButton.mtl in Resources */,
 				92A9E40828DA6D620000A77F /* cloud2.obj in Resources */,
 				92A9E43F28DA72910000A77F /* clearButton.png in Resources */,
@@ -1132,7 +1133,9 @@
 				92A9E40C28DA6D620000A77F /* cloud3.png in Resources */,
 				92A9E40D28DA6D620000A77F /* cloud2.png in Resources */,
 				92A9E40B28DA6D620000A77F /* cloud0.obj in Resources */,
+				92728470291CD06F004C0CFC /* bulbMesh.png in Resources */,
 				92489A142799D9BF00639B52 /* Assets.xcassets in Resources */,
+				92728472291CD11D004C0CFC /* reservoir.png in Resources */,
 				92489A122799D9BD00639B52 /* Main.storyboard in Resources */,
 				92A9E43A28DA72910000A77F /* testButton.mtl in Resources */,
 				920603C7290DC54400C1C846 /* constructPipe.png in Resources */,
@@ -1242,6 +1245,7 @@
 				92A9E3B428DA6D3E0000A77F /* TextureLoader.swift in Sources */,
 				92376BEC28DE6E9F007C93DB /* MBETextureLoader.m in Sources */,
 				9295E4D12900BB2900A33A0D /* TextShaders.metal in Sources */,
+				92465D85291D79A2001CC08B /* TKSpline1D.cpp in Sources */,
 				923F2B6127A0FCE200443936 /* Preferences.swift in Sources */,
 				92489BBC2799DA0400639B52 /* b2Math.cpp in Sources */,
 				9295E4CF2900B84900A33A0D /* TextObject.swift in Sources */,

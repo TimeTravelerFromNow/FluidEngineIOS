@@ -177,7 +177,7 @@ class DevScene : Scene {
                 break
             }
             for ind in indicesForThisColor {
-                currTargets.append(tubeGrid[ind].getBoxPosition() + float2(0,tubeGrid[ind].getTubeHeight() / 2))
+                currTargets.append(tubeGrid[ind].getBoxPosition())
             }
 //            targetsDict.updateValue(currTargets, forKey: color)
             reservoirForColor[ color ]!.targets = currTargets
@@ -189,7 +189,7 @@ class DevScene : Scene {
                 currTubes.append(tubeGrid[ colorsToTubeIndices[color]![i] ])
             }
             currReservoir?.buildPipes( currTubes )
-            currReservoir?.fill()
+            
             currReservoir?.fill()
         }
     }
@@ -204,7 +204,7 @@ class DevScene : Scene {
         for position in tubePositionsMatrix.grid {
             if let goodPos = position {
                 if tGid > startLvl.count - 1 { print("init tubegrid WARN::index greater than starting lvl count."); break}
-                let currentTube = TestTube(origin: goodPos, gridId: tGid)
+                let currentTube = TestTube(origin: goodPos, gridId: tGid, startingColors: startLvl[tGid])
                 currentTube.currentColors = startLvl[tGid]
                 addChild(currentTube)
                 tubeGrid.append(currentTube)
@@ -431,38 +431,44 @@ class DevScene : Scene {
         }
     }
     
+    func startGame() {
+        for t in tubeGrid {
+            t.startPipeFill()
+        }
+    }
+    
     func doButtonAction() {
         if( buttonPressed != nil ) {
-        switch boxButtonHitTest(boxPos: Touches.GetBoxPos()) {
-        case .None:
-            print("let go of a button")
-        case .Clear:
-            print("clear action now ? no testing filling")
-        case .ToMenu:
-            SceneManager.sceneSwitchingTo = .Menu
-            SceneManager.Get( .Menu ).unFreeze()
-        case .TestAction0:
-            reservoirAction()
-        case .TestAction1:
-            for r in reservoirs {
-                r.toggleTop()
+            switch boxButtonHitTest(boxPos: Touches.GetBoxPos()) {
+            case .None:
+                print("let go of a button")
+            case .Clear:
+                print("clear action now ? no testing filling")
+            case .ToMenu:
+                SceneManager.sceneSwitchingTo = .Menu
+                SceneManager.Get( .Menu ).unFreeze()
+            case .TestAction0:
+                reservoirAction()
+            case .TestAction1:
+                for r in reservoirs {
+                    r.toggleTop()
+                }
+            case .TestAction2:
+                tubesAskForLiquid()
+            case .TestAction3:
+                destroyReservoirs()
+            case nil:
+                print("let go of no button")
+            default:
+                print("Button Action WARN::need \(boxButtonHitTest(boxPos: Touches.GetBoxPos())) action.")
+                break
             }
-        case .TestAction2:
-            tubesAskForLiquid()
-        case .TestAction3:
-            destroyReservoirs()
-        case nil:
-            print("let go of no button")
-        default:
-            print("Button Action WARN::need \(boxButtonHitTest(boxPos: Touches.GetBoxPos())) action.")
-            break
-        }
         }
     }
     
     func tubesAskForLiquid() { //MARK: Debugging state
         for tube in tubeGrid {
-                tube.fillFromPipes()
+                tube.startPipeFill()
         }
     }
     

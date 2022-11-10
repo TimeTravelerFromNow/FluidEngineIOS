@@ -132,14 +132,14 @@ class Pipe: Node {
             destAngle = 0.0
             isRotatingSegment = true
             valveOpen = false
-        } else { print("valve already closed")}
+        }
     }
     func openValve() {
         if( !valveOpen ) {
             destAngle = .pi / 2
             isRotatingSegment = true
             valveOpen = true
-        } else { print("valve already open")}
+        }
     }
     func updatePipe( _ deltaTime: Float ){
         if( isRotatingSegment ) {
@@ -218,7 +218,7 @@ class Pipe: Node {
         let maxT = trimmedControlPoints.max()!
         totalSegments = trimmedControlPoints.count * segmentDensity
         let increment = (maxT - minT) / Float( totalSegments  )
-        _tSourcePoints = Array( stride(from: minT, to: maxT + increment, by: increment ))
+        _tSourcePoints = Array( stride(from: minT, to: maxT, by: increment ))
         if !(_tSourcePoints.count == totalSegments) {
             print("param t src array WARN::trimmed totalSegments \(totalSegments) not equal to array size \(_tSourcePoints.count)")
         }

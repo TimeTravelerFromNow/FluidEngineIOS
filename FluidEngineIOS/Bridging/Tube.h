@@ -21,8 +21,8 @@ public:
     Tube(b2World* worldRef,
          b2ParticleSystem* particleSysRef,
          b2Vec2 location,
-         b2Vec2* vertices, unsigned int count,
-         b2Vec2* sensorVertices, unsigned int sensorCount,
+         b2Vec2* vertices,
+         unsigned int count,
          float32 tubeWidth,
          float32 tubeHeight,
          long gridId);
@@ -58,8 +58,8 @@ public:
     
 private:
     b2Fixture* m_topCap;
-    b2Fixture* m_guide0;
-    b2Fixture* m_guide1;
+    b2Fixture* m_guide0 = NULL;
+    b2Fixture* m_guide1 = NULL;
     b2Fixture* m_tubeFixture;
     
     b2Body* m_body;

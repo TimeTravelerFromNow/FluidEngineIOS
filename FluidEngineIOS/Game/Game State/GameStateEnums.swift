@@ -11,8 +11,8 @@ enum TubeColors {
 }
 
 let WaterColors: [TubeColors:float4] =
-    [ .Empty:float4(0.1,0.1,0.1,1.0),
-      .Red:float4(0.9, 30 / 255, 13 / 255, 255 / 255),
+    [ .Empty    :float4(0.1,0.1,0.1,1.0),
+      .Red      :float4(0.9, 30 / 255, 13 / 255, 255 / 255),
       .Green    :float4(0.4, 0.8, 0.3, 1),
       .Blue     :float4(70 / 255, 130  / 255, 245 / 255, 1),
       .Purple   :float4(140 / 255, 10  / 255, 140 / 255, 1)

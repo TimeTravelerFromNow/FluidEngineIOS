@@ -417,16 +417,16 @@ return belowPositionsCount;
 // Tube class refactor ( now the tube is constructed in C++ and game scene communication occurs in TestTube.Swift )
 + (void *)makeTube:(void *)particleSysRef
           location:(Vector2D)location
-          vertices:(void *) vertices vertexCount:(UInt32)vertexCount
-          sensorVertices:(void *)sensorVertices sensorCount:(UInt32)sensorCount
+          vertices:(void *) vertices
+          vertexCount:(UInt32)vertexCount
           tubeWidth:(float32)tubeWidth
           tubeHeight:(float32)tubeHeight
           gridId:(long)gridId {
     Tube* newTube = new Tube(world,
                              (b2ParticleSystem*) particleSysRef,
                              b2Vec2(location.x,location.y),
-                             (b2Vec2*)vertices, (unsigned int)vertexCount,
-                             (b2Vec2*)sensorVertices, (unsigned int)sensorCount,
+                             (b2Vec2*)vertices,
+                             (unsigned int)vertexCount,
                              tubeWidth,
                              tubeHeight,
                              gridId);
@@ -661,6 +661,13 @@ return belowPositionsCount;
 
 + (void) setInterpolatedValues:(void *)usingSpline tVals:(float *)tVals onXVals:(float *)onXVals onYVals:(float *)onYVals onTangents:(b2Vec2 *)onTangents valCount:(long)valCount {
     ((TKSpline *)usingSpline )->SetInterpolatedPoints(tVals, onXVals, onYVals, onTangents, valCount);
+}
++ (void *)make1DSpline:(float *)xControlPoints yControlPoints:(float *)yControlPoints controlPtsCount:(long)controlPtsCount {
+    TKSpline1D* spline = new TKSpline1D( xControlPoints, yControlPoints, controlPtsCount );
+    return spline;
+}
++ (void) set1DInterpolatedValues:(void *)using1DSpline xVals:(float *)xVals onYVals:(float *)onYVals onSlopes:(float *)onSlopes valCount:(long)valCount {
+    ((TKSpline1D *)using1DSpline)->SetInterpolatedPoints(xVals, onYVals, onSlopes, valCount);
 }
 // pipe fixture creation / destruction
 + (void *)makePipeFixture:(void*)onReservoir lineVertices:(b2Vec2 *)lineVertices vertexCount:(long)vertexCount {

@@ -109,8 +109,8 @@ typedef struct VertexIn {
 
 + (void *)makeTube:(void *)particleSysRef
           location:(Vector2D)location
-          vertices:(void *)vertices vertexCount:(UInt32)vertexCount
-          sensorVertices:(void *)sensorVertices sensorCount:(UInt32)sensorCount
+          vertices:(void *)vertices
+          vertexCount:(UInt32)vertexCount
           tubeWidth:(Float32)tubeWidth
           tubeHeight:(Float32)tubeHeight
           gridId:(long)gridId;
@@ -184,9 +184,13 @@ typedef struct VertexIn {
 
 + (void*) getWallBody:(void *)onReservoir atIndex:(long)atIndex;
 
-// TK Splines
+// TK Splines 2D
 + (void *)makeSpline:(float *)tControlPoints withControlPoints:(Vector2D *)withControlPoints controlPtsCount:(long)controlPtsCount;
 + (void) setInterpolatedValues:(void *)usingSpline tVals:(float *)tVals onXVals:(float *)onXVals onYVals:(float *)onYVals onTangents:(Vector2D *)onTangents valCount:(long)valCount;
+// 1D Spline
++ (void *)make1DSpline:(float *)xControlPoints yControlPoints:(float *)yControlPoints controlPtsCount:(long)controlPtsCount; // returns spline class
++ (void) set1DInterpolatedValues:(void *)using1DSpline xVals:(float *)xVals onYVals:(float *)onYVals onSlopes:(float)onSlopes; 
+
 // pipe fixture creation / destruction
 + (void *)makePipeFixture:(void*)onReservoir lineVertices:(Vector2D *)lineVertices vertexCount:(long)vertexCount;
 + (void *)destroyPipeFixture:(void*)onReservoir lineRef:(void *)lineRef;

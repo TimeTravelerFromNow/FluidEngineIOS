@@ -30,8 +30,8 @@ class TestTubeScene : Scene {
     
     //collision thresholding and geometries
     private var collisionThresh: Float = 0.3
-    private var tubeHeight: Float = 0.0 // can determine at run time
-    private var tubeWidth : Float = 0.18
+    private var tubeHeight: Float! // can determine at run time
+    private var tubeWidth : Float!
     // tube filling
     var tubesFilling: Bool = true
     
@@ -132,6 +132,7 @@ class TestTubeScene : Scene {
         }
         reservoirs = []
     }
+    
     func reservoirAction() {
         destroyReservoirs()
         var colorVariety: [TubeColors] = []
@@ -151,7 +152,7 @@ class TestTubeScene : Scene {
             for tube in tubeGrid {
                 for tubeColor in tube.currentColors {
                     if color == tubeColor {
-                        if !( tubeIndicesForThisColor.contains( tube.gridId) ){ // no repeats!
+                        if !( tubeIndicesForThisColor.contains( tube.gridId) ) { // no repeats!
                         tubeIndicesForThisColor.append( tube.gridId )
                         }
                     }
@@ -161,19 +162,23 @@ class TestTubeScene : Scene {
         }
     
         let reservoirSpacing = float2(2.0, 4.0)
-        let reservoirOffset = float2(2.0, 5.0) + box2DOrigin
+        let reservoirOffset = float2(0, 5.0) + box2DOrigin
         let reservoirCount = colorVariety.count // need a reservoir for each color.
-        let reservoirPositions = getCenteredPositionMatrix( reservoirOffset, reservoirSpacing, rowLength: 3, nodeCount: reservoirCount)
-    
-        for (i, color) in colorVariety.enumerated() {
-            let newPos = reservoirPositions.grid[i] ?? float2(0,0)
-            let newReservoir = ReservoirObject(origin: newPos, colorType: color)
-            newReservoir.fill()
-            reservoirs.append( newReservoir )
-            addChild( newReservoir )
-            reservoirForColor.updateValue(newReservoir, forKey: color)
+        let reservoirPositions = positionMatrix( reservoirOffset, withSpacing: reservoirSpacing, rowLength: 3, totalCount: reservoirCount)
+        var colorIndex = 0
+        for pos in reservoirPositions.grid {
+            if let goodPos = pos {
+                if colorIndex > colorVariety.count - 1 { print("reservoir placing WARN::index greater than num colors."); break}
+                let color = colorVariety[colorIndex]
+                let newReservoir = ReservoirObject(origin: goodPos, colorType: color )
+                newReservoir.fill()
+                reservoirs.append( newReservoir )
+                addChild( newReservoir )
+                reservoirForColor.updateValue(newReservoir, forKey: color)
+                colorIndex += 1
+            }
         }
-        
+        if( colorIndex != colorVariety.count) { print("reservoir placing WARN::num colors not matching reservoirs made."); }
 //        var targetsDict: [ TubeColors: [float2] ] = [:]
         for color in colorVariety {
             var currTargets: [float2] = []
@@ -183,7 +188,7 @@ class TestTubeScene : Scene {
                 break
             }
             for ind in indicesForThisColor {
-                currTargets.append(tubeGrid[ind].getBoxPosition() + float2(0,tubeGrid[ind].getTubeHeight() / 2))
+                currTargets.append(tubeGrid[ind].getBoxPosition())
             }
 //            targetsDict.updateValue(currTargets, forKey: color)
             reservoirForColor[ color ]!.targets = currTargets
@@ -195,7 +200,7 @@ class TestTubeScene : Scene {
                 currTubes.append(tubeGrid[ colorsToTubeIndices[color]![i] ])
             }
             currReservoir?.buildPipes( currTubes )
-            currReservoir?.fill()
+            
             currReservoir?.fill()
         }
     }
