@@ -54,9 +54,9 @@ fragment half4 select_fragment_shader(RasterizerData rd [[ stage_in ]],
     float4 color;
     if(material.useTexture){
            color = texture.sample(sampler2d, texCoord);
-        color.r = clamp(color.r + selectColor.r * abs(0.5 * sin(texCoord.y * 10 + totalGameTime * 2)), 0.0, 1.0);
-        color.g = clamp(color.g + selectColor.g * abs(0.5 * sin(texCoord.y * 10 + totalGameTime * 2)), 0.0, 1.0);
-        color.b = clamp(color.b + selectColor.b * abs(0.5 * sin(texCoord.y * 10 + totalGameTime * 2)), 0.0, 1.0);
+        color.r = clamp(color.r + selectColor.r * abs(0.5 * sin(totalGameTime * 2)), 0.0, 1.0);
+        color.g = clamp(color.g + selectColor.g * abs(0.5 * sin(totalGameTime * 2)), 0.0, 1.0);
+        color.b = clamp(color.b + selectColor.b * abs(0.5 * sin(totalGameTime * 2)), 0.0, 1.0);
        }else if(material.useMaterialColor) {
            color = material.color;
        }else{

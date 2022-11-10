@@ -205,26 +205,7 @@ class Pipe: Node {
             buildPipeVertices()
         }
     }
-    
-    func setSourceTVals(excludeFirstAndLast: Bool = true) {
-        if( controlPoints.count < 2 ) { print("Pipe build from control points WARN:: none or not enough control points."); return}
-        if( controlPoints.count < 4 && excludeFirstAndLast ) { print("Pipe build from control points WARN:: none or not enough control points."); return}
-        var trimmedControlPoints = tControlPoints
-        if( excludeFirstAndLast ) {
-            trimmedControlPoints.removeFirst()
-            trimmedControlPoints.removeLast()
-        }
-        let minT = trimmedControlPoints.min()!
-        let maxT = trimmedControlPoints.max()!
-        totalSegments = trimmedControlPoints.count * segmentDensity
-        let increment = (maxT - minT) / Float( totalSegments  )
-        _tSourcePoints = Array( stride(from: minT, to: maxT, by: increment ))
-        if !(_tSourcePoints.count == totalSegments) {
-            print("param t src array WARN::trimmed totalSegments \(totalSegments) not equal to array size \(_tSourcePoints.count)")
-        }
-        totalSegments = _tSourcePoints.count
-    }
-    
+        
     func setInterpolatedPositions() {
         //initialize array sizes
         let count = _tSourcePoints.count
@@ -252,10 +233,11 @@ class Pipe: Node {
     func makeSpline() {
         if controlPoints.count > 0{
             splineRef = LiquidFun.makeSpline( &tControlPoints, withControlPoints: &box2DControlPts, controlPtsCount: controlPoints.count )
-            setSourceTVals()
+            ( totalSegments, _tSourcePoints) = CustomMathMethods.getSourceTVals( tControlPoints, density: segmentDensity, excludeFirstAndLast: true )
             setInterpolatedPositions()
         }
     }
+    
     func updateModelConstants() {
         let fluidConstantsLength = FluidConstants.stride
         _fluidBuffer = Engine.Device.makeBuffer(bytes: &_fluidConstants, length: fluidConstantsLength, options: [])

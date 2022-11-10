@@ -20,6 +20,7 @@ enum TestTubeStates {
 }
 
 class TestTube: Node {
+    var testing = true
     var currentState: TestTubeStates = .AtRest
     var gridId: Int!
     
@@ -133,6 +134,14 @@ class TestTube: Node {
     
     private var _texture: MTLTexture!
     
+    private var animationControlPoints: [float2] = []
+    private var _controlPointsCount: Int { return animationControlPoints.count }
+    private var _controlPtsBuffer: MTLBuffer!
+    private var interpolatedPoints: [float2] = []
+    private var _interpolatedPtsCount: Int { return interpolatedPoints.count }
+    private var _interpolatedPtsBuffer: MTLBuffer!
+    
+    // organize this shit
     func conflict() {
         isSelected = true
         _selectCountdown = defaultSelectCountdown
@@ -247,13 +256,25 @@ class TestTube: Node {
     }
 
     override func update(deltaTime: Float) {
-        
         if updatePipe {
             pipeRecieveStep( deltaTime )
         }
         if isSelected {
             _timeTicked += deltaTime
+            switch selectEffect {
+            case .Reject:
+                rejectStep( deltaTime )
+            case .Selected:
+                selectStep( deltaTime )
+            case .NoSelection:
+                break
+            case .Finished:
+                break
+            default:
+                break
+            }
         }
+        
         super.update()
         
         switch currentState {
@@ -312,6 +333,11 @@ class TestTube: Node {
     }
     
     func fillFromPipes() {
+        if topMostNonEmptyIndex == -1 {
+            updatePipe = false
+            returnToOrigin()
+            return
+        }
         skimTopParticles(_currentTopIndex - 1)
         for pipe in pipes.values {
             pipe.resetFilter()
@@ -335,7 +361,7 @@ class TestTube: Node {
   
     var currentFillNum = 0
     let quota = 30
-    let safetyTime: Float = 4.0
+    let safetyTime: Float = 1.5
     var timeTillSafety: Float = 0.0 // dont get stuck
     func pipeRecieveStep( _ deltaTime: Float ) {
         let currColor = currentColors[ _currentTopIndex ]
@@ -401,7 +427,7 @@ class TestTube: Node {
         if isPourCandidate {
             LiquidFun.setPourBits(self._tube)
         } else {
-            print("you wanted to set pour filter bits on a candidate tube that was not marked as such.")
+            print("setFilterOfCandidate() WARN::want to set filter bits on candidate tube not marked thus.")
         }
     }
     
@@ -433,7 +459,7 @@ class TestTube: Node {
         self._newColorTypes = newPourTubeColors
         self.candidateTube._newColorTypes = newCandidateTubeColors
         
-        determinePourDirection()
+        determinePourNavigation()
         
         resetPouringParameters()
         
@@ -444,12 +470,30 @@ class TestTube: Node {
         self._pourKF = 0
     }
     
-    func determinePourDirection() { // determines from where to pour based on respective origins
+    func determinePourNavigation() { // determines from where to pour based on respective origins
         if( candidateTube.origin.x < self.origin.x) {
             _pourDirection = 1
             candidateTube._pourDirection = 1
         } else { _pourDirection = -1
             candidateTube._pourDirection = -1
+        }
+        
+        let start = getBoxPosition()
+        guard let target = candidateTube.origin else { print("pourNavigation() WARN::No target candidate!"); return}
+        let xOffset = _pourDirection * sin( _pourAngles[0] ) * tubeHeight / 2
+        let yOffset = tubeHeight / 2
+        let heightFirst = float2( start.x, target.y + yOffset )
+        let destination = float2( target.x + xOffset, target.y + yOffset )
+        animationControlPoints = [ start, heightFirst, destination ]
+        let tParams = CustomMathMethods.tParameterArray(animationControlPoints)
+        let (sourceCount,tSourcePts) = CustomMathMethods.getSourceTVals( tParams, density: 3)
+        interpolatedPoints = [float2].init(repeating: float2(0,0), count: sourceCount)
+        LiquidFun.setInterpolatedValues(_splineRef, tVals: <#T##UnsafeMutablePointer<Float>!#>, onXVals: <#T##UnsafeMutablePointer<Float>!#>, onYVals: <#T##UnsafeMutablePointer<Float>!#>, onTangents: <#T##UnsafeMutablePointer<Vector2D>!#>, valCount: <#T##Int#>)
+    }
+    private var _splineRef: UnsafeMutableRawPointer?
+    func makeSpline() {
+        if( _splineRef == nil ){
+            
         }
     }
     
@@ -602,6 +646,23 @@ class TestTube: Node {
         }
     }
     
+    //pouring animation
+    private var travelingToPourPos = false
+    private var isTipping = false
+    private var finishingTubePour = false
+    func pourStep(_ deltaTime: Float) {
+        let candidatePosition = float2(x:self.candidateTube.getBoxPositionX(),y:self.candidateTube.getBoxPositionY())
+        let currPos = float2(x:self.getBoxPositionX(), y:self.getBoxPositionY())
+       
+        if( finishingTubePour ) {
+            candidateTube.removeGuidesFromCandidate()
+            candidateTube.returnToOrigin()
+            candidateTube.setNewColors()
+            candidateTube.engulfParticles( particleSystem )
+            self.returnToOrigin()
+            finishingTubePour = false
+        }
+    }
     // uprighting animation
     func rotateUprightStep(deltaTime: Float, angularVelocity: Float = 40.0) -> Bool { // smart righting (will determine angular change)
         var angV = angularVelocity
@@ -627,86 +688,6 @@ class TestTube: Node {
         
         return false
     }
-    
-    //pouring animation
-    func pourStep(_ deltaTime: Float) {
-        self.isPouring = true
-        let candidatePosition = float2(x:self.candidateTube.getBoxPositionX(),y:self.candidateTube.getBoxPositionY())
-        let currPos = float2(x:self.getBoxPositionX(), y:self.getBoxPositionY())
-        switch _pourKF {
-        case 0:
-            let pos0 =  candidatePosition + float2(_pourDirection * 0.8,0.8)
-            if( distance(currPos, pos0) > 1.0) {
-                setBoxVelocity( vector(pos0 - currPos, mag: _pourSpeed) )
-            } else {
-                nextPourKF()
-            }
-        case 1:
-            let pos0 =  candidatePosition + float2(_pourPositions[0].x, _pourPositions[0].y)
-            var needsToSlow = false
-            let velX = self.getVelocityX()
-            let velY = self.getVelocityY()
-            if( abs( velX * deltaTime) > abs(pos0.x - currPos.x) )
-            {
-                self.setBoxVelocityX(velX * 0.98)
-                needsToSlow = true
-            }
-            if( abs(velY * deltaTime) > abs(pos0.y - currPos.y) )
-            {
-                self.setBoxVelocityY(velY * 0.98)
-                needsToSlow = true
-            }
-            if( !needsToSlow ) {
-                self.setBoxVelocity(vector(pos0 - currPos, mag: _pourSpeed) )
-            }
-            if( distance(currPos, pos0) < 0.1) {
-                nextPourKF()
-            }
-        case 2:
-            if (_guidePositions?.count ?? -1 > 0){
-            candidateTube.addGuidesToCandidate(_pourAngles[ _newTopIndex + 1 ]) // MARK: got to fix hardcoding these angles it's not clean code
-            }
-            nextPourKF()
-        case 3:
-            if( _pourDirection * self.getRotationZ() < _pourAngles[ _newTopIndex + 1 ] ) {
-                self.rotateZ(_pourDirection * _pourSpeed * deltaTime * 62)
-            } else {
-                candidateTube.refreshColorBuffer()
-                LiquidFun.setPourBits(_tube)
-                candidateTube.setFilterOfCandidate()
-                nextPourKF()
-            }
-        case 4:
-            if _pourDelay > 0.0 {
-                _pourDelay -= deltaTime
-            } else {
-                candidateTube.refreshColorBuffer()
-                if _amountToPour > 0 {
-                    removeDivider()
-                    _amountToPour -= 1
-                    _pourDelay = _defaultPourDelay
-                } else {
-                    nextPourKF() // done with all amounts
-                }
-            }
-        case 5:
-            if( _pourDirection * self.getRotationZ() > 0 ) {
-                _pourSpeed *= 0.99
-                self.rotateZ(-_pourDirection * _pourSpeed * deltaTime * 40 * Float.pi)
-            } else {
-                nextPourKF()
-            }
-        case 6:
-            candidateTube.removeGuidesFromCandidate()
-            candidateTube.returnToOrigin()
-            candidateTube.setNewColors()
-            candidateTube.engulfParticles( particleSystem )
-            self.returnToOrigin()
-        default:
-            print("default _pourKF: \(_pourKF)")
-        }
-    }
-    
     func returnToOriginStep(_ deltaTime: Float) { // MARK: Maybe refactor
         let currPos = getBoxPosition()
         var moveDirection = float2(x:(origin.x - currPos.x)*2,y: (origin.y - currPos.y)*2)
@@ -865,6 +846,15 @@ class TestTube: Node {
         self.setPositionY(self.getBoxPositionY() * GameSettings.stmRatio)
         self.setRotationZ( getRotationZ() )
         modelConstants.modelMatrix = modelMatrix
+
+        if _controlPointsCount > 0 {
+            let controlPointsSize = float2.stride( _controlPointsCount )
+            _controlPtsBuffer = Engine.Device.makeBuffer(bytes: animationControlPoints, length: controlPointsSize, options: [])
+        }
+        if _interpolatedPtsCount > 0 {
+            let interpPtsSize = float2.stride( _interpolatedPtsCount )
+            _controlPtsBuffer = Engine.Device.makeBuffer(bytes: interpolatedPoints, length: interpPtsSize, options: [])
+        }
     }
     
     func refreshVertexBuffer() {
@@ -1005,6 +995,7 @@ extension TestTube: Renderable {
         mesh.drawPrimitives(renderCommandEncoder, baseColorTextureType: .TestTube)
         
         fluidSystemRender(renderCommandEncoder)
+        controlPointsRender( renderCommandEncoder )
     }
     
     func fluidSystemRender( _ renderCommandEncoder: MTLRenderCommandEncoder ) {
@@ -1029,6 +1020,43 @@ extension TestTube: Renderable {
             renderCommandEncoder.drawPrimitives(type: .point,
                                                 vertexStart: 0,
                                                 vertexCount: particleCount)
+        }
+    }
+    
+    func controlPointsRender( _ renderCommandEncoder: MTLRenderCommandEncoder ) {
+        if _controlPointsCount > 0 {
+            renderCommandEncoder.setRenderPipelineState(RenderPipelineStates.Get(.Points))
+            renderCommandEncoder.setDepthStencilState(DepthStencilStates.Get(.Less))
+            renderCommandEncoder.setVertexBuffer(_controlPtsBuffer,
+                                                 offset: 0,
+                                                 index: 0)
+            renderCommandEncoder.setVertexBytes(&fluidModelConstants,
+                                                length: ModelConstants.stride,
+                                                index: 2)
+            renderCommandEncoder.setVertexBuffer(_fluidBuffer,
+                                                 offset: 0,
+                                                 index: 3)
+            renderCommandEncoder.drawPrimitives(type: .point,
+                                                vertexStart: 0,
+                                                vertexCount: _controlPointsCount)
+        }
+    }
+    func interpolatedPointsRender( _ renderCommandEncoder: MTLRenderCommandEncoder ) {
+        if _interpolatedPtsCount > 0 {
+            renderCommandEncoder.setRenderPipelineState(RenderPipelineStates.Get(.Points))
+            renderCommandEncoder.setDepthStencilState(DepthStencilStates.Get(.Less))
+            renderCommandEncoder.setVertexBuffer(_interpolatedPtsBuffer,
+                                                 offset: 0,
+                                                 index: 0)
+            renderCommandEncoder.setVertexBytes(&fluidModelConstants,
+                                                length: ModelConstants.stride,
+                                                index: 2)
+            renderCommandEncoder.setVertexBuffer(_fluidBuffer,
+                                                 offset: 0,
+                                                 index: 3)
+            renderCommandEncoder.drawPrimitives(type: .point,
+                                                vertexStart: 0,
+                                                vertexCount: _interpolatedPtsCount)
         }
     }
 }

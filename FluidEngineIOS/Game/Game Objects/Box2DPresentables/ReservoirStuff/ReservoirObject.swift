@@ -412,22 +412,10 @@ class ReservoirObject: Node {
         let midpoint = ( actualStart + overDest ) / 2
         let bulbNormal = actualStart + normalize( arrow.head - arrow.tail ) * 0.3
         let outArray = [ start, actualStart, bulbNormal, midpoint, overDest,  destination, underDest]
-        
-        var totalL: Float = 0.0
-        var tParams: [Float] = [ totalL ]
-        // assign tParams to calculated lengths
-        for i in 1..<outArray.count {
-            totalL += length( outArray[i] - outArray[i - 1] )
-            tParams.append( totalL)
-        }
-        // normalize tParams
-        // MARK: tParams must be strictly increasing
-        // MARK: normalizing doesnt make a difference anywhere I can tell
-        tParams = tParams.map { $0 / totalL }
-        
+        let tParams = CustomMathMethods.tParameterArray( outArray )
         return ( tParams, outArray )
     }
-    
+  
     //animations
     private func buildPipesStep(_ deltaTime: Float){
         if( pipes.count == 0 ) {

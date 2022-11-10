@@ -164,7 +164,7 @@ class TestTubeScene : Scene {
         let reservoirSpacing = float2(2.0, 4.0)
         let reservoirOffset = float2(0, 5.0) + box2DOrigin
         let reservoirCount = colorVariety.count // need a reservoir for each color.
-        let reservoirPositions = positionMatrix( reservoirOffset, withSpacing: reservoirSpacing, rowLength: 3, totalCount: reservoirCount)
+        let reservoirPositions = CustomMathMethods.positionsMatrix( reservoirOffset, withSpacing: reservoirSpacing, rowLength: 3, totalCount: reservoirCount)
         var colorIndex = 0
         for pos in reservoirPositions.grid {
             if let goodPos = pos {

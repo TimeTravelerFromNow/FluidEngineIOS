@@ -153,7 +153,7 @@ class DevScene : Scene {
         let reservoirSpacing = float2(2.0, 4.0)
         let reservoirOffset = float2(0, 5.0) + box2DOrigin
         let reservoirCount = colorVariety.count // need a reservoir for each color.
-        let reservoirPositions = positionMatrix( reservoirOffset, withSpacing: reservoirSpacing, rowLength: 3, totalCount: reservoirCount)
+        let reservoirPositions = CustomMathMethods.positionsMatrix( reservoirOffset, withSpacing: reservoirSpacing, rowLength: 3, totalCount: reservoirCount)
         var colorIndex = 0
         for pos in reservoirPositions.grid {
             if let goodPos = pos {
@@ -200,7 +200,7 @@ class DevScene : Scene {
         
         var tGid = 0
         let startLvl = tubeLevel.startingLevel
-        let tubePositionsMatrix = positionMatrix(box2DOrigin, withSpacing: float2(xSep, ySep), rowLength: 6, totalCount: startLvl.count)
+        let tubePositionsMatrix = CustomMathMethods.positionsMatrix(box2DOrigin, withSpacing: float2(xSep, ySep), rowLength: 6, totalCount: startLvl.count)
         for position in tubePositionsMatrix.grid {
             if let goodPos = position {
                 if tGid > startLvl.count - 1 { print("init tubegrid WARN::index greater than starting lvl count."); break}

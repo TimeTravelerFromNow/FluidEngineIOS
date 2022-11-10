@@ -27,35 +27,69 @@ typealias TestTubeMatrix = CustomMatrix<TestTube>
 
 typealias TestTubeLevelMatrix = CustomMatrix<[TubeColors]>
 
-func positionMatrix( _ atCenter: float2, withSpacing: float2, rowLength: Int, totalCount: Int ) -> CustomMatrix<float2?> {
-    let rowCount = Int(ceil( Float(totalCount) / Float(rowLength) ))
-    if( rowCount == 0 ) {
-        print("positionMatrix() WARN::asked for a matrix with zero elements")
-        return CustomMatrix<float2?>.init(rows: 0, columns: 0, defaultValue: nil)
-    }
-    var firstRowCount = totalCount % rowLength // remainder is last row number, if zero, it is eq to row L
-    if(firstRowCount == 0) { firstRowCount = rowLength }
-    var outputMat = CustomMatrix<float2?>.init(rows: rowCount, columns: rowLength, defaultValue: float2(0,0))
-    let xSep = withSpacing.x
-    let ySep = withSpacing.y
-    let x_center = atCenter.x - Float(rowLength) * xSep / 2
-    let y_center = atCenter.y - Float(rowCount - 1) * ySep / 2
-    let firstR_x_center = atCenter.x - Float( firstRowCount - 1 ) * xSep / 2
-    
-    for x in 0..<rowLength {
-        if x < firstRowCount {
-            outputMat[0, x] = float2( xSep * Float(x) + firstR_x_center, y_center)
+final class CustomMathMethods {
+    public static func positionsMatrix( _ atCenter: float2, withSpacing: float2, rowLength: Int, totalCount: Int ) -> CustomMatrix<float2?> {
+        let rowCount = Int(ceil( Float(totalCount) / Float(rowLength) ))
+        if( rowCount == 0 ) {
+            print("positionMatrix() WARN::asked for a matrix with zero elements")
+            return CustomMatrix<float2?>.init(rows: 0, columns: 0, defaultValue: nil)
         }
-        else{
-            outputMat[0, x] = nil
-        }
-    }
-    
-    for y in 1..<rowCount {
+        var firstRowCount = totalCount % rowLength // remainder is last row number, if zero, it is eq to row L
+        if(firstRowCount == 0) { firstRowCount = rowLength }
+        var outputMat = CustomMatrix<float2?>.init(rows: rowCount, columns: rowLength, defaultValue: float2(0,0))
+        let xSep = withSpacing.x
+        let ySep = withSpacing.y
+        let x_center = atCenter.x - Float(rowLength) * xSep / 2
+        let y_center = atCenter.y - Float(rowCount - 1) * ySep / 2
+        let firstR_x_center = atCenter.x - Float( firstRowCount - 1 ) * xSep / 2
+        
         for x in 0..<rowLength {
-            outputMat[y, x] = float2( xSep * Float(x) + x_center, ySep * Float(y) + y_center )
+            if x < firstRowCount {
+                outputMat[0, x] = float2( xSep * Float(x) + firstR_x_center, y_center)
+            }
+            else{
+                outputMat[0, x] = nil
+            }
         }
+        
+        for y in 1..<rowCount {
+            for x in 0..<rowLength {
+                outputMat[y, x] = float2( xSep * Float(x) + x_center, ySep * Float(y) + y_center )
+            }
+        }
+        
+        return outputMat
     }
     
-    return outputMat
+    public static func tParameterArray( _ forArray: [float2] ) -> [ Float ] {
+        // MARK: tParams must be strictly increasing
+        var totalL: Float = 0.0
+        var tParams: [Float] = [ totalL ]
+        // assign tParams to calculated lengths
+        for i in 1..<forArray.count {
+            totalL += length( forArray[i] - forArray[i - 1] )
+            tParams.append( totalL)
+        }
+        return tParams
+    }
+    
+    public static func getSourceTVals( _ fromControlPts: [Float], density: Int, excludeFirstAndLast: Bool = false ) -> ( Int, [Float] ){
+        if( fromControlPts.count < 2 ) { print("Pipe build from control points WARN:: none or not enough control points."); return (0, [])}
+        if( fromControlPts.count < 4 && excludeFirstAndLast ) { print("Pipe build from control points WARN:: none or not enough control points."); return (0, [])}
+        var trimmedControlPoints = fromControlPts
+        if( excludeFirstAndLast ) {
+            trimmedControlPoints.removeFirst()
+            trimmedControlPoints.removeLast()
+        }
+        let minT = trimmedControlPoints.min()!
+        let maxT = trimmedControlPoints.max()!
+        var segmentCount = trimmedControlPoints.count * density
+        let increment = (maxT - minT) / Float( segmentCount  )
+        let outputArr = Array( stride(from: minT, to: maxT, by: increment ))
+        if !(outputArr.count == segmentCount) {
+            print("param t src array WARN::trimmed totalSegments \(segmentCount) not equal to array size \(outputArr.count)")
+        }
+        segmentCount = outputArr.count
+        return ( segmentCount, outputArr )
+    }
 }
