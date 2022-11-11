@@ -2,7 +2,7 @@ import MetalKit
 
 enum TubeSelectColors {
     case NoSelection
-    case Selected
+    case SelectHighlight
     case Reject
     case Finished
 }
@@ -48,7 +48,7 @@ class TestTube: Node {
     var isPouring: Bool = false                     // is the one pouring
     var systemPouringInto: UnsafeMutableRawPointer!
     var isPourCandidate: Bool = false               // is being poured into?
-    var candidateTube: TestTube!
+    var candidateTube: TestTube?
     private var _pourKF:Int = 0
     private var _guidePositions:  [Vector2D]?
 
@@ -95,12 +95,10 @@ class TestTube: Node {
     private var _colors: [float4] = []
     
     //pouring animation constants
-    private let _pourAngles: [Float] = [ Float.pi / 1.7,Float.pi/1.8,Float.pi/1.9,Float.pi/2.0]
+    private let _pourAngles: [Float] = [ Float.pi / 6,Float.pi/4,Float.pi/3,Float.pi/2]
     private var _pourPositions: [float2] { return [ float2(_pourDirection * tubeWidth * 7, tubeHeight * 1.5), float2(_pourDirection * 0.1, tubeHeight * 1.5) ,float2(_pourDirection * 0.6,tubeHeight * 1.5) , float2(_pourDirection * 0.7,tubeHeight * 1.5)  ] }
 
     private var _amountToPour: Int = 0
-    private var _pourDelay: Float = 0.7
-    private let _defaultPourDelay: Float = 0.2
     
     private var _currentTopIndex: Int = 0 // 0 is no cap gameSegments should be top most cap index
     private var _newTopIndex: Int = 0
@@ -122,7 +120,7 @@ class TestTube: Node {
     var isSelected = false
     var selectEffect: TubeSelectColors = .NoSelection
     private var _timeTicked: Float = 0.0
-    private var _selectColors : [TubeSelectColors:float3] =  [ .Selected: float3(1.0,1.0,1.0),
+    private var _selectColors : [TubeSelectColors:float3] =  [ .SelectHighlight: float3(1.0,1.0,1.0),
                                                              .Reject  : float3(1.0,0.0,0.0),
                                                              .Finished: float3(1.0,1.0,0.0) ]
     var material = CustomMaterial()
@@ -135,12 +133,19 @@ class TestTube: Node {
     private var _texture: MTLTexture!
     
     private var animationControlPoints: [float2] = []
+    private var _b2AnimationControlPts: [Vector2D] = []
+    private var _animationControlPtsY: [Float] = []
     private var _controlPointsCount: Int { return animationControlPoints.count }
     private var _controlPtsBuffer: MTLBuffer!
     private var interpolatedPoints: [float2] = []
+    private var _interpolatedPtsX: [Float] = []
+    private var _interpolatedPtsY: [Float] = []
+    private var _sourceTPoints: [Float] = []
+    private var _sourceTPointCount: Int = 0
     private var _interpolatedPtsCount: Int { return interpolatedPoints.count }
     private var _interpolatedPtsBuffer: MTLBuffer!
-    
+    private var _interpolatedTangents: [Vector2D] = []
+    private var _tParams: [Float] = []
     // organize this shit
     func conflict() {
         isSelected = true
@@ -261,18 +266,6 @@ class TestTube: Node {
         }
         if isSelected {
             _timeTicked += deltaTime
-            switch selectEffect {
-            case .Reject:
-                rejectStep( deltaTime )
-            case .Selected:
-                selectStep( deltaTime )
-            case .NoSelection:
-                break
-            case .Finished:
-                break
-            default:
-                break
-            }
         }
         
         super.update()
@@ -401,13 +394,10 @@ class TestTube: Node {
         _guidePositions = [
             Vector2D(x: _pourDirection * (leftTopVertex.x),
                      y: leftTopVertex.y) ,
-
             Vector2D(x: _pourDirection * (leftTopVertex.x - big.x) ,
                      y: leftTopVertex.y + big.y),
-
             Vector2D(x: _pourDirection * (rightTopVertex.x),
                      y: rightTopVertex.y) ,
-
             Vector2D(x: _pourDirection * (rightTopVertex.x + little.x ),
                      y:rightTopVertex.y + little.y )
         ]
@@ -455,22 +445,23 @@ class TestTube: Node {
     }
     
     func startPouring(newPourTubeColors: [TubeColors], newCandidateTubeColors: [TubeColors]) {
-        self.candidateTube.toForeground()
-        self._newColorTypes = newPourTubeColors
-        self.candidateTube._newColorTypes = newCandidateTubeColors
-        
+        self.candidateTube?.toForeground()
+        _newColorTypes = newPourTubeColors
+    
         determinePourNavigation()
-        
-        resetPouringParameters()
-        
-        calcNewTopIndex()
-        self._amountToPour = _currentTopIndex - _newTopIndex
-        
-        candidateTube.resetCandidateParameters()
-        self._pourKF = 0
+        currentState = .Pouring
+        selectEffect = .NoSelection
+        travelingToPourPos = true
+        _paramTravelInd = 0
+        if( _paramTravelInd + 2 > interpolatedPoints.count ) {
+            print("start pour WARN::less than 2 interpolated points")
+            return
+        }
+        setBoxVelocity( vector( interpolatedPoints[ _paramTravelInd + 1] - getBoxPosition(), mag: _speed) )
     }
     
     func determinePourNavigation() { // determines from where to pour based on respective origins
+        guard let candidateTube = candidateTube else { print("determine Pour navigation ERROR:: no candidate tube"); return}
         if( candidateTube.origin.x < self.origin.x) {
             _pourDirection = 1
             candidateTube._pourDirection = 1
@@ -481,19 +472,31 @@ class TestTube: Node {
         let start = getBoxPosition()
         guard let target = candidateTube.origin else { print("pourNavigation() WARN::No target candidate!"); return}
         let xOffset = _pourDirection * sin( _pourAngles[0] ) * tubeHeight / 2
-        let yOffset = tubeHeight / 2
+        let yOffset = tubeHeight / 1
         let heightFirst = float2( start.x, target.y + yOffset )
         let destination = float2( target.x + xOffset, target.y + yOffset )
         animationControlPoints = [ start, heightFirst, destination ]
-        let tParams = CustomMathMethods.tParameterArray(animationControlPoints)
-        let (sourceCount,tSourcePts) = CustomMathMethods.getSourceTVals( tParams, density: 3)
-        interpolatedPoints = [float2].init(repeating: float2(0,0), count: sourceCount)
-        LiquidFun.setInterpolatedValues(_splineRef, tVals: <#T##UnsafeMutablePointer<Float>!#>, onXVals: <#T##UnsafeMutablePointer<Float>!#>, onYVals: <#T##UnsafeMutablePointer<Float>!#>, onTangents: <#T##UnsafeMutablePointer<Vector2D>!#>, valCount: <#T##Int#>)
+        _tParams = CustomMathMethods.tParameterArray(animationControlPoints)
+        
+        makeSpline()
+
+        (_sourceTPointCount, _sourceTPoints) = CustomMathMethods.getSourceTVals( _tParams, density: 3 )
+        interpolatedPoints = [float2].init(repeating: float2(0,0), count: _sourceTPointCount)
+        _interpolatedTangents = interpolatedPoints.map { Vector2D(x:$0.x,y:$0.y) }
+        _interpolatedPtsX = _sourceTPoints
+        _interpolatedPtsY = _sourceTPoints
+        if( _splineRef != nil ) {
+            LiquidFun.setInterpolatedValues(_splineRef, tVals: &_sourceTPoints, onXVals: &_interpolatedPtsX, onYVals: &_interpolatedPtsY, onTangents: &_interpolatedTangents, valCount: _sourceTPointCount)
+            for i in 0..<_sourceTPointCount {
+                interpolatedPoints[i] = float2( _interpolatedPtsX[i], _interpolatedPtsY[i] )
+            }
+        }
     }
     private var _splineRef: UnsafeMutableRawPointer?
     func makeSpline() {
         if( _splineRef == nil ){
-            
+            _b2AnimationControlPts = animationControlPoints.map { Vector2D(x:$0.x,y:$0.y) }
+            _splineRef = LiquidFun.makeSpline(&_tParams, withControlPoints: &_b2AnimationControlPts, controlPtsCount: _controlPointsCount)
         }
     }
     
@@ -502,7 +505,6 @@ class TestTube: Node {
         self.isPourCandidate = false
         self.donePouring = false
         self.isPouring = true
-        self._pourDelay = _defaultPourDelay
         self.beingMoved = false
     }
     func resetCandidateParameters() {
@@ -524,7 +526,7 @@ class TestTube: Node {
     
     func select() {
         isSelected = true
-        self.selectEffect = .Selected
+        self.selectEffect = .SelectHighlight
         currentState = .Selected
     }
     
@@ -650,16 +652,91 @@ class TestTube: Node {
     private var travelingToPourPos = false
     private var isTipping = false
     private var finishingTubePour = false
-    func pourStep(_ deltaTime: Float) {
-        let candidatePosition = float2(x:self.candidateTube.getBoxPositionX(),y:self.candidateTube.getBoxPositionY())
-        let currPos = float2(x:self.getBoxPositionX(), y:self.getBoxPositionY())
-       
+    private var _defaultPointTravelTime: Float = 0.5
+    private var _currentTravelTime: Float = 0.0
+    private var _paramTravelInd: Int = 0
+    private var _speed: Float = 2.0
+    private func willArrive( _ mag: Float, _ deltaTime: Float ) -> Bool {
+        if !( _paramTravelInd < interpolatedPoints.count ) {// this controls the transition to tipping
+            startTipping()
+            setBoxVelocity()
+            return false
+        }
+        let pos = interpolatedPoints[ _paramTravelInd ]
+        let difference =  pos - getBoxPosition()
+        let distance = length( difference )
+        let distanceWillJump = deltaTime * length( getBoxVelocity() )
+  
+        let willPass = distanceWillJump > distance
+        
+        return willPass // means it will pass current position if true
+    }
+    
+    private var _rotControlAngles: [Float] = []
+    private var _rotTControlPoints: [Float] = []
+    private var _interpRotTs: [Float] = []
+    private var _interpolatedAngles: [Float] = []
+    private var _interpSlopes: [Float] = [] // we use slopes (will directly set angular velocity)
+    private let _defaultRotationTime: Float = 1.0
+    private var _rotStepTime: Float = 0.0
+    private var _rotDelay: Float = 0.0
+    private var _rotInd = 0
+    private var _rotSpline: UnsafeMutableRawPointer?
+    
+    private func startTipping(resolution: Int = 10) {
+        travelingToPourPos = false
+        isTipping = true
+        _rotStepTime = 1 / ( _defaultRotationTime * Float(resolution) )
+        _rotInd = 0
+        _rotDelay = 0.0
+        // initialize a sin function for interpolating angles.
+        // we need to interpolate since derivatives are built into the spline function :)
+        let numControlPoints = 5
+        let max: Float = .pi / 2
+        let sinControlAngles = Array( stride(from: 0.0, to: _pourDirection * max, by: _pourDirection * max / Float(numControlPoints) ) ) // just for initializing interpolation values
+        _rotTControlPoints = sinControlAngles.map { _pourDirection * $0 * _defaultRotationTime / max } // strictly increasing
+        _rotControlAngles  = sinControlAngles.map { _pourAngles[ topMostNonEmptyIndex ] * sin( $0 ) }
+        _rotSpline = LiquidFun.make1DSpline(&_rotTControlPoints, yControlPoints: &_rotControlAngles, controlPtsCount: _rotControlAngles.count)
+        if( _rotSpline != nil ) {
+            _interpRotTs = [Float].init(repeating: 0.0, count: Int( Float(resolution) * _defaultRotationTime ) )
+            _interpolatedAngles = _interpRotTs
+            _interpSlopes = _interpRotTs // angular Velocities
+            LiquidFun.set1DInterpolatedValues(_rotSpline, xVals: &_interpRotTs, onYVals: &_interpolatedAngles, onSlopes: &_interpSlopes, valCount: _interpRotTs.count)
+        }
+    }
+    
+    private func pourStep(_ deltaTime: Float) {
+        if( travelingToPourPos ) {
+            if( willArrive( _speed, deltaTime )) {
+                _paramTravelInd += 1
+                if _paramTravelInd < interpolatedPoints.count {
+                    setBoxVelocity( vector( interpolatedPoints[ _paramTravelInd ] - getBoxPosition(), mag: _speed) )
+                }
+            }
+        }
+        
+        if( isTipping ) {
+            if( _rotDelay > 0.0 ) {
+                _rotDelay -= deltaTime
+            } else {
+                if _rotInd < _interpSlopes.count {
+                    LiquidFun.setAngularVelocity(_tube, angularVelocity: _interpSlopes[ _rotInd ])
+                    _rotInd += 1
+                    _rotDelay = _rotStepTime
+                } else {
+                    isTipping = false
+                    finishingTubePour = true
+                    LiquidFun.setAngularVelocity(_tube, angularVelocity: 0)
+                }
+            }
+        }
+        
         if( finishingTubePour ) {
-            candidateTube.removeGuidesFromCandidate()
-            candidateTube.returnToOrigin()
-            candidateTube.setNewColors()
-            candidateTube.engulfParticles( particleSystem )
-            self.returnToOrigin()
+            candidateTube?.removeGuidesFromCandidate()
+            candidateTube?.returnToOrigin()
+//            candidateTube?.setNewColors()
+            candidateTube?.engulfParticles( particleSystem )
+//            self.returnToOrigin()
             finishingTubePour = false
         }
     }
@@ -797,14 +874,6 @@ class TestTube: Node {
         self.rotateZ(0.0)
     }
     
-    func nextPourKF() {
-        _pourDelay = _defaultPourDelay
-        _pourSpeed = pourSpeedDefault
-        self.rotateZ(0)
-        setBoxVelocity()
-        _pourKF += 1
-    }
-    
     // particle management
     func clearTube() {
         LiquidFun.destroyParticles(inSystem: particleSystem)
@@ -853,7 +922,7 @@ class TestTube: Node {
         }
         if _interpolatedPtsCount > 0 {
             let interpPtsSize = float2.stride( _interpolatedPtsCount )
-            _controlPtsBuffer = Engine.Device.makeBuffer(bytes: interpolatedPoints, length: interpPtsSize, options: [])
+            _interpolatedPtsBuffer = Engine.Device.makeBuffer(bytes: interpolatedPoints, length: interpPtsSize, options: [])
         }
     }
     
@@ -886,12 +955,12 @@ class TestTube: Node {
         return nil
     }
     
-    func unitDirection(_ direction: float2) -> float2 {
+    func unitDirection(_ direction: float2) -> float2 { // MARK: it's not an inverse square root?
         let norm =  (pow(direction.x,2) + pow(direction.y, 2)).invSqrt
         return float2(x: direction.x * norm, y: direction.y * norm)
     }
     
-    func vector(_ direction: float2, mag: Float) -> float2 {
+    func vector(_ direction: float2, mag: Float) -> float2 { // MARK: is this right?
         let norm =  (pow(direction.x,2) + pow(direction.y, 2)).invSqrt
         return float2(x: direction.x * mag * norm, y: direction.y * mag * norm)
     }
@@ -936,7 +1005,9 @@ class TestTube: Node {
         let currV = LiquidFun.getTubeVelocity(_tube)
         LiquidFun.setTubeVelocity(_tube, velocity: Vector2D(x: Float32(currV.x), y: Float32(to)))
     }
-    
+    func setBoxVelocity(_ velocity: Vector2D ) {
+        LiquidFun.setTubeVelocity(_tube, velocity: Vector2D(x: Float32(velocity.x), y: Float32(velocity.y)))
+    }
     func getBoxVelocity() -> float2 {
         float2(x: LiquidFun.getTubeVelocity(_tube).x, y: LiquidFun.getTubeVelocity(_tube).y)
     }
@@ -994,8 +1065,9 @@ extension TestTube: Renderable {
         renderCommandEncoder.setFragmentTexture(_texture, index: 0)
         mesh.drawPrimitives(renderCommandEncoder, baseColorTextureType: .TestTube)
         
-        fluidSystemRender(renderCommandEncoder)
+        fluidSystemRender( renderCommandEncoder )
         controlPointsRender( renderCommandEncoder )
+        interpolatedPointsRender( renderCommandEncoder )
     }
     
     func fluidSystemRender( _ renderCommandEncoder: MTLRenderCommandEncoder ) {

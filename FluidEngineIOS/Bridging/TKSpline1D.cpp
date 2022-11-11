@@ -19,6 +19,6 @@ void TKSpline1D::SetInterpolatedPoints( float* fromXVals, float* onYVals, float*
 }
 
 float TKSpline1D::GetSlope(float x) {
-    float xSlope = m_spline.deriv(1, x);
-    return xSlope;
+    float slope = m_spline.deriv(1, x);
+    return slope;
 }

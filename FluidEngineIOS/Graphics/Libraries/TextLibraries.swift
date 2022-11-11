@@ -54,7 +54,7 @@ class ButtonLabels: Library<ButtonLabelTypes, TextObject> {
         textObjects.updateValue(TextObject(.NewGameText, "new game"), forKey: .NewGameLabel)
         textObjects.updateValue(TextObject(.TestText0, " make \n reservoirs"), forKey: .TestLabel0)
         textObjects.updateValue(TextObject(.TestText1, "open \n valve 0"), forKey: .TestLabel1)
-        textObjects.updateValue(TextObject(.TestText0, "fill red"), forKey: .TestLabel2)
+        textObjects.updateValue(TextObject(.TestText0, "autofill \n action"), forKey: .TestLabel2)
         textObjects.updateValue(TextObject(.TestText1, "test3"), forKey: .TestLabel3)
 
         textObjects.updateValue(TextObject(.DevText, "developer"), forKey: .DevSceneLabel)

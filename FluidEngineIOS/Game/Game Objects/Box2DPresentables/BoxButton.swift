@@ -2,7 +2,7 @@
 import MetalKit
 
 class BoxButton: GameObject {
-    private var _selectColors : [TubeSelectColors:float3] =  [ .Selected: float3(1.0,1.0,1.0),
+    private var _selectColors : [TubeSelectColors:float3] =  [ .SelectHighlight: float3(1.0,1.0,1.0),
                                                              .Reject  : float3(1.0,0.0,0.0),
                                                              .Finished: float3(1.0,1.0,0.0) ]
     private var _boxRef: UnsafeMutableRawPointer!
@@ -88,7 +88,7 @@ class BoxButton: GameObject {
             //Fragment
             renderCommandEncoder.setFragmentBytes(&gameTime, length : Float.size, index : 0)
             renderCommandEncoder.setFragmentBytes(&material, length : CustomMaterial.stride, index : 1)
-            renderCommandEncoder.setFragmentBytes(&_selectColors[.Selected], length : float3.size, index : 2)
+            renderCommandEncoder.setFragmentBytes(&_selectColors[.SelectHighlight], length : float3.size, index : 2)
             
             mesh.drawPrimitives(renderCommandEncoder)
         } else {
