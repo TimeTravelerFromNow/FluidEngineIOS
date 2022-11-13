@@ -8,7 +8,8 @@ struct Arrow2D {
 }
 
 class Pipe: Node {
-    
+    var isTesting = false
+    var isShowingMiniMenu = false
     var particleSystemSharing: UnsafeMutableRawPointer?
     var fluidColor: TubeColors!
     var highlighted = false
@@ -44,7 +45,6 @@ class Pipe: Node {
     private var _interpolatedPointsCount: Int = 0
     
     private var _pipeWidth: Float = 0.4
-    var debugging = false
     var segmentIndex = 0
     var totalSegments = 0
     
@@ -160,7 +160,11 @@ class Pipe: Node {
     }
     
     func transferParticles( _ toSystem: UnsafeMutableRawPointer ) -> Int {
-        if(particleSystemSharing == toSystem) { print("good transfer") }
+        if(particleSystemSharing == toSystem) {
+            if( isTesting ) {
+            print("good transfer")
+            }
+        }
         if(parentReservoirRef != nil ) {
         return LiquidFun.transferParticles(parentReservoirRef, wallSegmentPosition: wallSegmentPosition, toSystem: toSystem)
         } else {
@@ -321,11 +325,36 @@ extension Pipe: Renderable {
         renderCommandEncoder.setFragmentTexture(Textures.Get(_textureType), index: 0)
         _mesh.drawPrimitives( renderCommandEncoder )
         }
-        if debugging {
-        controlPointsRender( renderCommandEncoder )
-        interpolatedPointsRender( renderCommandEncoder )
+        if isTesting {
+            testingRender( renderCommandEncoder )
         }
     }
+    
+    
+}
+
+extension Pipe: Testable {
+
+    func touchesBegan(_ boxPos: float2) {
+        
+    }
+    
+    func touchDragged(_ boxPos: float2) {
+        
+    }
+    
+    func touchEnded() {
+        
+    }
+    
+    func testingRender(_ renderCommandEncoder: MTLRenderCommandEncoder) {
+        if(isTesting) {
+            controlPointsRender( renderCommandEncoder )
+            interpolatedPointsRender( renderCommandEncoder )
+        }
+    }
+    
+    
     
     func controlPointsRender( _ renderCommandEncoder: MTLRenderCommandEncoder ) {
         if _controlPointsCount > 0 {

@@ -29,8 +29,8 @@ class Touches {
             lastTouchPosition.y = Float(loc.y)
             startTouch()
         }
-        print("screensize: \(Renderer.ScreenSize)")
-        print("view bounds: \(view.bounds)")
+//        print("screensize: \(Renderer.ScreenSize)")
+//        print("view bounds: \(view.bounds)")
     }
     
     public static func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {

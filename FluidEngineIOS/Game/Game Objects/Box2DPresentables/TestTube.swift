@@ -377,38 +377,6 @@ class TestTube: Node {
         timeTillSafety += deltaTime
         currPipe.updatePipe( deltaTime )
     }
-
-    // funnel management
-    private func addGuidesToCandidate(_ guideAngle: Float) {
-        guard var leftTopVertex = tubeOBJVertices.last else { print("guide add ERROR::No tubeOBJVertices."); return }
-        guard var rightTopVertex = tubeOBJVertices.first else { print("guide add ERROR::No tubeOBJVertices."); return }
-        leftTopVertex = Vector2D(x:-tubeWidth / 2,y: tubeHeight / 2)
-        rightTopVertex = Vector2D(x:tubeWidth / 2,y: tubeHeight / 2)
-        let littleGuideMag: Float = 0.1
-        let little = float2(littleGuideMag,  littleGuideMag)
-        let bigMag: Float = 1.0
-        let big = float2( bigMag, bigMag)
-        var left2nd: float2!
-        var right2nd: float2!
-        if( _pourDirection <= 0.0 ) {
-            left2nd = big
-            right2nd = little
-        } else {
-            left2nd = little
-            right2nd = big
-        }
-        _guidePositions = [
-            Vector2D(x:leftTopVertex.x,y:leftTopVertex.y),
-            Vector2D(x:leftTopVertex.x - left2nd.x,y:leftTopVertex.y + left2nd.y),
-            Vector2D(x:rightTopVertex.x,y: rightTopVertex.y),
-            Vector2D(x:rightTopVertex.x + right2nd.x,y:rightTopVertex.y + right2nd.y)
-        ]
-        LiquidFun.addGuides(_tube, vertices: &_guidePositions)
-    }
-    
-    private func removeGuidesFromCandidate() {
-        LiquidFun.removeGuides(_tube)
-    }
     
     func setFilterOfCandidate() {
         if isPourCandidate {
@@ -627,7 +595,6 @@ class TestTube: Node {
         isTipping = true
         LiquidFun.setPourBits(_tube)
         candidateTube?.setFilterOfCandidate()
-        candidateTube?.addGuidesToCandidate( pourAngle )
         _rotStepTime = _defaultRotationTime / Float(resolution)
         // initialize a sin function for interpolating angles.
         // we can to interpolate since derivatives are built into the spline function :)
@@ -719,7 +686,6 @@ class TestTube: Node {
         }
         
         if( finishingTubePour ) {
-            candidateTube?.removeGuidesFromCandidate()
             candidateTube?.returnToOrigin()
             candidateTube?.engulfParticles( particleSystem )
             self.returnToOrigin()
