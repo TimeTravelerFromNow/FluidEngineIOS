@@ -31,7 +31,7 @@ class TubeLevel: GameLevel {
         _moves = 0
     }
     
-    init(_ level: Int = 2) {
+    init(_ level: Int = 0) {
         self.levelNo = level
         if levelNo > MyGameLevels.count {
             print("only \(MyGameLevels.count) levels programmed, asked for \(levelNo).")

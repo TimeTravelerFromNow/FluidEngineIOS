@@ -56,7 +56,7 @@ class DebugEnvironment : Node {
     }
     
     override func update(deltaTime: Float) {
-        LiquidFun.worldStep(CFTimeInterval(deltaTime * GameSettings.TimeScale), velocityIterations: 8, positionIterations: 3)
+        LiquidFun.worldStep(CFTimeInterval(deltaTime), velocityIterations: 8 * Int32(GameTime.TimeScale), positionIterations: 3 * Int32(GameTime.TimeScale))
         updateModelConstants()
     }
     

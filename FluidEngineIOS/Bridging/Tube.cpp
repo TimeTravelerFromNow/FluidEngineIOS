@@ -56,14 +56,15 @@ void Tube::removeDivider(b2Fixture* dividerRef) {
 
 //pour guides
 void Tube::AddGuides(b2Vec2* guidesVertices) {
+    if(!( m_guide0 == NULL && m_guide1 == NULL)) { return; }
     b2FixtureDef fixtureDef0;
     b2FixtureDef fixtureDef1;
     fixtureDef0.filter = m_filter;
     fixtureDef1.filter = m_filter;
     b2EdgeShape line0;
     b2EdgeShape line1;
-    line0.Set(((b2Vec2 *)guidesVertices)[0], ((b2Vec2 *)guidesVertices)[1]);
-    line1.Set(((b2Vec2 *)guidesVertices)[2], ((b2Vec2 *)guidesVertices)[3]);
+    line0.Set((guidesVertices)[0], (guidesVertices)[1]);
+    line1.Set((guidesVertices)[2], (guidesVertices)[3]);
     fixtureDef0.shape = &line0;
     fixtureDef1.shape = &line1;
     b2Fixture* lineFixture0 = m_body->CreateFixture(&fixtureDef0);
@@ -72,11 +73,11 @@ void Tube::AddGuides(b2Vec2* guidesVertices) {
     m_guide1 = lineFixture1;
 }
 void Tube::RemoveGuides() {
-    if(m_guide0) {
-    m_body->DestroyFixture(m_guide0);
-    }
-    if(m_guide1) {
+    if(m_guide0 != NULL && m_guide1 != NULL) {
+        m_body->DestroyFixture(m_guide0);
+        m_guide0 = NULL;
         m_body->DestroyFixture(m_guide1);
+        m_guide1 = NULL;
     }
 }
 //movement
@@ -98,20 +99,13 @@ b2Vec2 Tube::GetVelocity() {
 }
 
 bool Tube::IsAtPosition(b2Vec2 position) {
-    bool inBox = true;
     b2Vec2 currentPosition = m_body->GetPosition();
-    float32 left   = currentPosition.x - width;
-    float32 right  = currentPosition.x + width;
-    float32 top    = currentPosition.y + height;
-    float32 bottom = currentPosition.y - height;
+    float32 left   = currentPosition.x - width / 2;
+    float32 right  = currentPosition.x + width / 2;
+    float32 top    = currentPosition.y + height / 2 + 0.2;
+    float32 bottom = currentPosition.y - height / 2 - 0.2;
     
-    if ( position.x < right && position.x > left ) {
-        
-    } else { inBox = false; }
-    if ( position.y < top && position.y > bottom ) {
-        
-    } else { inBox = false; }
-    return inBox;
+    return ( ( position.x < right && position.x > left ) && ( position.y < top && position.y > bottom ) );
 }
 
 void Tube::SetPourBits() {
@@ -159,7 +153,7 @@ int Tube::EngulfParticles( b2ParticleSystem* originalSystem ) {
     int newPositionIndex = 0;
     float avVelocityX = 0.0;
     float avVelocityY = 0.0;
-    
+    b2ParticleColor transferredColor;
     for(int i = 0; i<oldPositionsCount; i++) {
         b2Vec2 c = positionBuffer[i];
         if ( IsAtPosition( c ) ) {
@@ -169,6 +163,7 @@ int Tube::EngulfParticles( b2ParticleSystem* originalSystem ) {
             avVelocityY += newVelocities[newPositionIndex].y;
             newPositionIndex++;
             originalSystem->DestroyParticle(i, false);
+            transferredColor = oldColors[ i ];
         }
     }
     avVelocityX = avVelocityX / float(newPositionsCount);
@@ -177,7 +172,7 @@ int Tube::EngulfParticles( b2ParticleSystem* originalSystem ) {
     newGroupDef.linearVelocity = b2Vec2(avVelocityX, avVelocityY);
     newGroupDef.particleCount = newPositionsCount;
     newGroupDef.flags = b2_waterParticle | b2_fixtureContactFilterParticle;
-    newGroupDef.color = oldColors[0];
+    newGroupDef.color = transferredColor;
     
     m_particleSys->CreateParticleGroup(newGroupDef);
     return newPositionsCount;

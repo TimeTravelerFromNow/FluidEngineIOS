@@ -70,6 +70,7 @@ final class CustomMathMethods {
             totalL += length( forArray[i] - forArray[i - 1] )
             tParams.append( totalL)
         }
+        tParams.map { $0 / totalL } // for drawing different shades
         return tParams
     }
     

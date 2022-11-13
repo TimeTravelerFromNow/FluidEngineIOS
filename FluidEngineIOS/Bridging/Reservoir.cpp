@@ -187,16 +187,21 @@ float Reservoir::GetValve0Rotation() {
 
 //particle transfers
 long Reservoir::TransferParticles( void* toSystem, b2Vec2 wallPos ) {
-    if(m_bulbBody) {
-        
-    } else { return 0;}
-    b2ParticleGroupDef newGroupDef;
-    
+    if(m_bulbBody == NULL) {
+        return 0;
+    }
+   
     b2Vec2* positionBuffer = m_particleSys->GetPositionBuffer();
-    int oldPositionsCount = m_particleSys->GetParticleCount();
+    int oldPositionsCount  = m_particleSys->GetParticleCount();
     b2Vec2* velocityBuffer = m_particleSys->GetVelocityBuffer();
-    b2ParticleColor color = m_particleSys->GetColorBuffer()[0];
+    b2ParticleColor color  = m_particleSys->GetColorBuffer()[0];
     int newPositionsCount = 0;
+    
+    b2Vec2* returnPositionBuffer = ((b2ParticleSystem*)toSystem)->GetPositionBuffer();
+    int     returnOldPositionsCount =  ((b2ParticleSystem*)toSystem)->GetParticleCount();
+    b2Vec2* returnVelocityBuffer =  ((b2ParticleSystem*)toSystem)->GetVelocityBuffer();
+    b2ParticleColor returnColor;
+    int newReturnPositionsCount = 0;
     b2Vec2 bulbCenter = m_bulbBody->GetPosition();
     for(int i = 0; i<oldPositionsCount; i++) {
         b2Vec2 c = positionBuffer[i];
@@ -205,12 +210,29 @@ long Reservoir::TransferParticles( void* toSystem, b2Vec2 wallPos ) {
             newPositionsCount++;
         }
     }
+    int lastIndexToReturn = 0;
+    for(int i = 0; i<returnOldPositionsCount; i++ ){
+        b2Vec2 d = returnPositionBuffer[i];
+        if( b2Distance(d, bulbCenter) < (m_bulbRadius - 0.1) ) {
+            newReturnPositionsCount++;
+            lastIndexToReturn = i;
+        }
+    }
+    returnColor = ((b2ParticleSystem*)toSystem)->GetColorBuffer()[ lastIndexToReturn ];
+    
     b2Vec2 newPositions[newPositionsCount];
     b2Vec2 newVelocities[newPositionsCount];
     b2ParticleColor newColorBuffer[newPositionsCount];
     int newPositionIndex = 0;
     float avVelocityX = 0.0;
     float avVelocityY = 0.0;
+    
+    b2Vec2 newReturnPositions[newReturnPositionsCount];
+    b2Vec2 newReturnVelocities[newReturnPositionsCount];
+    b2ParticleColor newReturnColorBuffer[newReturnPositionsCount];
+    int newReturnPositionIndex = 0;
+    float avReturnVelocityX = 0.0;
+    float avReturnVelocityY = 0.0;
     
     for(int i = 0; i<oldPositionsCount; i++) {
         b2Vec2 c = positionBuffer[i];
@@ -223,6 +245,21 @@ long Reservoir::TransferParticles( void* toSystem, b2Vec2 wallPos ) {
             ((b2ParticleSystem *)m_particleSys)->DestroyParticle(i, false);
         }
     }
+    for(int i = 0; i<returnOldPositionsCount; i++) {
+        b2Vec2 d = returnPositionBuffer[i];
+        if( b2Distance(d, bulbCenter ) < (m_bulbRadius - 0.1) ) {
+            newReturnPositions[newReturnPositionIndex] = returnPositionBuffer[i];
+            newReturnVelocities[newReturnPositionIndex] = returnVelocityBuffer[i];
+            avReturnVelocityX += newReturnVelocities[newReturnPositionIndex].x;
+            avReturnVelocityY += newReturnVelocities[newReturnPositionIndex].y;
+            newReturnPositionIndex++;
+            ((b2ParticleSystem *)toSystem)->DestroyParticle(i, false);
+        }
+    }
+    
+    b2ParticleGroupDef newGroupDef;
+    b2ParticleGroupDef newReturnGroupDef;
+    
     avVelocityX = avVelocityX / float(newPositionsCount);
     avVelocityY = avVelocityY / float(newPositionsCount);
     newGroupDef.positionData = newPositions;
@@ -231,8 +268,17 @@ long Reservoir::TransferParticles( void* toSystem, b2Vec2 wallPos ) {
     newGroupDef.color = color; // MARK: comment out for debug
     newGroupDef.flags = b2_waterParticle | b2_fixtureContactFilterParticle;
 
+    avReturnVelocityX = avReturnVelocityX / float(newReturnPositionsCount);
+    avReturnVelocityY = avReturnVelocityY / float(newReturnPositionsCount);
+    newReturnGroupDef.positionData = newReturnPositions;
+    newReturnGroupDef.linearVelocity = b2Vec2(avReturnVelocityX, avReturnVelocityY);
+    newReturnGroupDef.particleCount = newReturnPositionsCount;
+    newReturnGroupDef.color = returnColor; // MARK: comment out for debug
+    newReturnGroupDef.flags = b2_waterParticle | b2_fixtureContactFilterParticle;
+    
     ((b2ParticleSystem *)toSystem)->CreateParticleGroup(newGroupDef);
-    return newPositionsCount;
+    ((b2ParticleSystem *)m_particleSys)->CreateParticleGroup(newReturnGroupDef);
+    return newPositionsCount - newReturnPositionsCount;
 }
 
 void Reservoir::SetValveAngV( void* wallBodyRef, float angV ) {

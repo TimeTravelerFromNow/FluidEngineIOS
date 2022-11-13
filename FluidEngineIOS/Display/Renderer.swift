@@ -62,7 +62,7 @@ extension Renderer: MTKViewDelegate{
     }
     
     func mtkView(_ view: MTKView, drawableSizeWillChange size: CGSize) {
-        view.preferredFramesPerSecond = GameSettings.FPS // used to scale physical behavior timescale
+        view.preferredFramesPerSecond = GameSettings.FPS // should set programatically to match device.
         updateScreenSize(view: view)
     }
     

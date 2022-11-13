@@ -67,11 +67,6 @@ struct Material: sizeable{
     var shininess: Float = 2
 }
 
-struct GridConstants: sizeable {
-    var cellCount: float2 = GameSettings.GridSize
-    var lineWidth: Float = GameSettings.GridLinesWidth
-}
-
 struct CustomMaterial : sizeable {
     var color = float4(0.8,0.8,0.8,1.0)
     var useMaterialColor : Bool = false

@@ -7,6 +7,11 @@ enum FontRenderableTypes {
     case TestText0
     case TestText1
     case DevText
+    
+    case TubePouring
+    case TubeReject
+    case TubeDone
+    case TubeFilling
 }
 enum ButtonLabelTypes {
     case NewGameLabel
@@ -16,6 +21,11 @@ enum ButtonLabelTypes {
     case TestLabel2
     case TestLabel3
     case DevSceneLabel
+    
+    case TubePouringLabel
+    case TubeRejectLabel
+    case TubeDoneLabel
+    case TubeFillingLabel
     
     case None
 }
@@ -34,6 +44,11 @@ class FontRenderables: Library<FontRenderableTypes, FontRenderable> {
         fontRenderables.updateValue(FontRenderable(device: Engine.Device), forKey: .TestText0)
         fontRenderables.updateValue(FontRenderable(device: Engine.Device), forKey: .TestText1)
         fontRenderables.updateValue(FontRenderable(device: Engine.Device), forKey: .DevText)
+        
+        fontRenderables.updateValue(FontRenderable(device: Engine.Device), forKey: .TubePouring  )
+        fontRenderables.updateValue(FontRenderable(device: Engine.Device), forKey: .TubeReject  )
+        fontRenderables.updateValue(FontRenderable(device: Engine.Device), forKey: .TubeDone  )
+        fontRenderables.updateValue(FontRenderable(device: Engine.Device), forKey: .TubeFilling  )
     }
     
     public static func Get(_ fontType : FontRenderableTypes) -> FontRenderable {
@@ -56,7 +71,14 @@ class ButtonLabels: Library<ButtonLabelTypes, TextObject> {
         textObjects.updateValue(TextObject(.TestText1, "open \n valve 0"), forKey: .TestLabel1)
         textObjects.updateValue(TextObject(.TestText0, "autofill \n action"), forKey: .TestLabel2)
         textObjects.updateValue(TextObject(.TestText1, "test3"), forKey: .TestLabel3)
+        
+        textObjects.updateValue(TextObject(.TestText1, "test3"), forKey: .TestLabel3)
 
+        textObjects.updateValue(TextObject(.TubePouring, "this tube is pouring!" ), forKey: .TubePouringLabel)
+        textObjects.updateValue(TextObject(.TubeReject , "top colors not matching" ), forKey:  .TubeRejectLabel)
+        textObjects.updateValue(TextObject(.TubeDone   , "this tube is complete!" ), forKey:    .TubeDoneLabel)
+        textObjects.updateValue(TextObject(.TubeFilling, "this tube is filling" ), forKey: .TubeFillingLabel)
+        
         textObjects.updateValue(TextObject(.DevText, "developer"), forKey: .DevSceneLabel)
     }
     

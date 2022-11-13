@@ -14,7 +14,7 @@ class Pipe: Node {
     var highlighted = false
     var selectColor: float3!
 
-    private var _parentReservoirRef: UnsafeMutableRawPointer!
+    var parentReservoirRef: UnsafeMutableRawPointer?
     var splineRef: UnsafeMutableRawPointer?
     var leftFixRef: UnsafeMutableRawPointer?
     var rightFixRef: UnsafeMutableRawPointer?
@@ -63,12 +63,12 @@ class Pipe: Node {
     var wallSegmentPosition: Vector2D!
     private var _timeTicked: Float = 0.0
     
-    init(_ pipeSegmentDensity: Int = 2, pipeWidth: Float, parentReservoir: UnsafeMutableRawPointer, wallRef: UnsafeMutableRawPointer, originArrow: Arrow2D, reservoirColor: TubeColors) {
+    init(_ pipeSegmentDensity: Int = 2, pipeWidth: Float, parentReservoir: UnsafeMutableRawPointer?, wallRef: UnsafeMutableRawPointer, originArrow: Arrow2D, reservoirColor: TubeColors) {
         self.wallSegmentPosition = Vector2D(x:originArrow.head.x,y:originArrow.head.y)
         self._pipeWidth = pipeWidth
         self.fluidColor = reservoirColor
         self.segmentDensity = pipeSegmentDensity
-        self._parentReservoirRef = parentReservoir
+        self.parentReservoirRef = parentReservoir
         self._wallRef = wallRef
         self.originArrow = originArrow
         super.init()
@@ -76,40 +76,51 @@ class Pipe: Node {
         _fluidConstants = FluidConstants(ptmRatio: GameSettings.ptmRatio, pointSize: GameSettings.particleRadius)
         selectColor = WaterColors[ reservoirColor ]?.xyz ?? float3(1.0,0.0,0.0)
     }
+    deinit {
+        if( leftFixRef != nil && rightFixRef != nil && parentReservoirRef != nil){
+            LiquidFun.destroyPipeFixture(parentReservoirRef, lineRef: leftFixRef)
+            LiquidFun.destroyPipeFixture(parentReservoirRef, lineRef: rightFixRef)
+        }
+    }
     
     func shareFilter(_ withParticleSystem: UnsafeMutableRawPointer) {
         particleSystemSharing = withParticleSystem
-        if(leftFixRef != nil && rightFixRef != nil ) {
+        if(leftFixRef != nil && rightFixRef != nil && parentReservoirRef != nil) {
             LiquidFun.shareParticleSystemFilter(withFixture: leftFixRef, particleSystem: withParticleSystem)
             LiquidFun.shareParticleSystemFilter(withFixture: rightFixRef, particleSystem: withParticleSystem)
         }
     }
     func resetFilter() {
-        if(leftFixRef != nil && rightFixRef != nil ) {
+        if(leftFixRef != nil && rightFixRef != nil && parentReservoirRef != nil ) {
             LiquidFun.setDefaultFilterForFixture(leftFixRef)
             LiquidFun.setDefaultFilterForFixture(rightFixRef)
         }
     }
     
     func toggleFixtures() {
+        if( parentReservoirRef == nil ) { return }
         if ( _leftVertices.count < 2 || _rightVertices.count < 2 ) { return }
-        let bulbPos = LiquidFun.getBulbPos(_parentReservoirRef)
+        let bulbPos = LiquidFun.getBulbPos(parentReservoirRef)
         _b2leftVertices = _leftVertices.map { Vector2D(x:$0.x - bulbPos.x,y:$0.y - bulbPos.y) }
         _b2rightVertices = _rightVertices.map { Vector2D(x:$0.x - bulbPos.x,y:$0.y - bulbPos.y) }
         if(leftFixRef == nil && rightFixRef == nil) {
-            leftFixRef = LiquidFun.makePipeFixture(_parentReservoirRef, lineVertices: &_b2leftVertices, vertexCount: _leftVertices.count)
-            rightFixRef = LiquidFun.makePipeFixture(_parentReservoirRef, lineVertices: &_b2rightVertices, vertexCount: _rightVertices.count)
+            leftFixRef = LiquidFun.makePipeFixture(parentReservoirRef, lineVertices: &_b2leftVertices, vertexCount: _leftVertices.count)
+            rightFixRef = LiquidFun.makePipeFixture(parentReservoirRef, lineVertices: &_b2rightVertices, vertexCount: _rightVertices.count)
         } else {
-            LiquidFun.destroyPipeFixture(_parentReservoirRef, lineRef: leftFixRef)
-            LiquidFun.destroyPipeFixture(_parentReservoirRef, lineRef: rightFixRef)
+            LiquidFun.destroyPipeFixture(parentReservoirRef, lineRef: leftFixRef)
+            LiquidFun.destroyPipeFixture(parentReservoirRef, lineRef: rightFixRef)
             leftFixRef = nil
             rightFixRef = nil
         }
     }
     func attachFixtures() {
-        toggleFixtures()
         if( leftFixRef == nil && rightFixRef == nil ) {
-        toggleFixtures()
+            toggleFixtures()
+        }
+    }
+    func destroyFixtures() {
+        if( leftFixRef != nil && rightFixRef != nil ) {
+            toggleFixtures()
         }
     }
     
@@ -150,8 +161,8 @@ class Pipe: Node {
     
     func transferParticles( _ toSystem: UnsafeMutableRawPointer ) -> Int {
         if(particleSystemSharing == toSystem) { print("good transfer") }
-        if(_parentReservoirRef != nil ) {
-        return LiquidFun.transferParticles(_parentReservoirRef, wallSegmentPosition: wallSegmentPosition, toSystem: toSystem)
+        if(parentReservoirRef != nil ) {
+        return LiquidFun.transferParticles(parentReservoirRef, wallSegmentPosition: wallSegmentPosition, toSystem: toSystem)
         } else {
             print("pipe transfer WARN::tried to transfer particles after reservoir destroyed")
             return 0
@@ -162,7 +173,7 @@ class Pipe: Node {
     func rotateSegmentStep(_ deltaTime: Float) {
         var angV: Float = 4.0
         
-        let currAngle = LiquidFun.getWallAngle(_parentReservoirRef, wallBodyRef: _wallRef)
+        let currAngle = LiquidFun.getWallAngle(parentReservoirRef, wallBodyRef: _wallRef)
         let angleToClose = destAngle - currAngle
         if( angleToClose < 0.0 ) {
             angV *= -1.0
@@ -175,13 +186,13 @@ class Pipe: Node {
             change = angV * deltaTime
             iterNum += 1
         }
-        LiquidFun.setWallAngV(_parentReservoirRef, wallBodyRef: _wallRef, angV: angV)
+        LiquidFun.setWallAngV(parentReservoirRef, wallBodyRef: _wallRef, angV: angV)
         if( abs(angleToClose) < 0.01 ){
-            LiquidFun.setWallAngV(_parentReservoirRef, wallBodyRef: _wallRef, angV: 0.0)
+            LiquidFun.setWallAngV(parentReservoirRef, wallBodyRef: _wallRef, angV: 0.0)
             isRotatingSegment = false
         }
-        if( particleSystemSharing != nil ){
-            LiquidFun.transferParticles(_parentReservoirRef, wallSegmentPosition: wallSegmentPosition, toSystem: particleSystemSharing)
+        if( particleSystemSharing != nil && parentReservoirRef != nil ){
+            LiquidFun.transferParticles(parentReservoirRef, wallSegmentPosition: wallSegmentPosition, toSystem: particleSystemSharing)
         }
     }
     

@@ -25,7 +25,7 @@ class ReservoirObject: Node {
     var hemisphereSegments = 8
     var bulbRadius: Float = 0.4
 
-    private var _reservoir: UnsafeMutableRawPointer!
+    private var _reservoir: UnsafeMutableRawPointer?
     private var _topSegmentRef: UnsafeMutableRawPointer?
     var particleSystem: UnsafeMutableRawPointer!
     
@@ -91,7 +91,12 @@ class ReservoirObject: Node {
     }
     
     deinit  {
+        for p in pipes {
+            p.destroyFixtures()
+            p.parentReservoirRef = nil
+        }
         LiquidFun.destroyReservoir(_reservoir)
+        _reservoir = nil
     }
     
     //initialization
@@ -361,13 +366,25 @@ class ReservoirObject: Node {
         }
     }
     
+    func openTop() {
+        if(!topStateOpen) {
+            toggleTop()
+        }
+    }
+    
+    func closeTop() {
+        if( topStateOpen ){
+            toggleTop()
+        }
+    }
+    
     var topStateOpen = false
     func toggleTop() {
         if( topStateOpen ) {
-            rotateTop( 0.0)
+            rotateTop( 0.0 )
             topStateOpen = false
         } else {
-            rotateTop( .pi/2)
+            rotateTop( .pi/2 )
             topStateOpen = true
         }
     }

@@ -50,9 +50,9 @@ bool b2ContactFilter::ShouldCollide(b2Fixture *fixture, b2ParticleSystem *partic
             return true;
         }
         
-//        if( (fixtureFilter.categoryBits & tube_isPouring) && (particleSystemFilter.categoryBits & tube_isPouring) ) {
-//            return true;
-//        }
+        if( (fixtureFilter.categoryBits & tube_isPouring) && (particleSystemFilter.categoryBits & tube_isPouring) ) {
+            return true;
+        }
         
         return false; // in this case we were filtering, so make sure to avoid collision
     }

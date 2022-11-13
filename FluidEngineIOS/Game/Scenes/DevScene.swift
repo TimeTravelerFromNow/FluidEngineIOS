@@ -65,7 +65,7 @@ class DevScene : Scene {
     }
     
     func addTestButton() {
-        let clearButton = BoxButton(.ClearButton, .ClearButton, .Clear, center: box2DOrigin + float2(1.0,-1.5) )
+       
         let menuButton = BoxButton(.Menu,.Menu, .ToMenu, center: box2DOrigin + float2(-1.0,-1.5), label: .MenuLabel)
         let testButton0 = BoxButton(.Menu, .Menu, .TestAction0, center: box2DOrigin + float2(-1.0,-2.5), label: .TestLabel0)
         let testButton1 = BoxButton(.Menu, .Menu, .TestAction1, center: box2DOrigin + float2(1.0,-2.5), label: .TestLabel1)
@@ -73,13 +73,11 @@ class DevScene : Scene {
         let testButton2 = BoxButton(.Menu, .Menu, .TestAction2, center: box2DOrigin + float2(-1.0,-3.5), label: .TestLabel2)
         let testButton3 = BoxButton(.Menu, .Menu, .TestAction3, center: box2DOrigin + float2(1.0,-3.5), label: .TestLabel3)
 
-        buttons.append(clearButton)
         buttons.append(menuButton)
         buttons.append(testButton0)
         buttons.append(testButton1)
         buttons.append(testButton2)
         buttons.append(testButton3)
-        addChild(clearButton)
         addChild(menuButton)
         addChild(testButton0)
         addChild(testButton1)
@@ -113,11 +111,11 @@ class DevScene : Scene {
     }
     
     func destroyReservoirs() {
-        for i in 0..<reservoirs.count {
-            removeChild(reservoirs[i])
-        }
         for t in tubeGrid {
             t.destroyPipes()
+        }
+        for i in 0..<reservoirs.count {
+            removeChild(reservoirs[i])
         }
         reservoirs = []
     }
@@ -128,7 +126,7 @@ class DevScene : Scene {
         var colorsToTubeIndices: [TubeColors:[Int] ] = [:]
         var  reservoirForColor: [TubeColors:ReservoirObject] = [:]
         for tube in tubeGrid { // figure out how many different colors we need based on curr colors
-            for color in tube.currentColors {
+            for color in tube.newColors {
                 if( !colorVariety.contains(color) && (color != .Empty) ) { // get every color
                     colorVariety.append(color)
                 }
@@ -139,7 +137,7 @@ class DevScene : Scene {
             // (there won't be .Empty color in colorVariety)
             var tubeIndicesForThisColor: [Int] = []
             for tube in tubeGrid {
-                for tubeColor in tube.currentColors {
+                for tubeColor in tube.newColors {
                     if color == tubeColor {
                         if !( tubeIndicesForThisColor.contains( tube.gridId) ) { // no repeats!
                         tubeIndicesForThisColor.append( tube.gridId )
@@ -203,9 +201,8 @@ class DevScene : Scene {
         let tubePositionsMatrix = CustomMathMethods.positionsMatrix(box2DOrigin, withSpacing: float2(xSep, ySep), rowLength: 6, totalCount: startLvl.count)
         for position in tubePositionsMatrix.grid {
             if let goodPos = position {
-                if tGid > startLvl.count - 1 { print("init tubegrid WARN::index greater than starting lvl count."); break}
+                if tGid > startLvl.count - 1 { print("init tubegrid WARN::matrix index greater than starting lvl count."); break}
                 let currentTube = TestTube(origin: goodPos, gridId: tGid, startingColors: startLvl[tGid])
-                currentTube.currentColors = startLvl[tGid]
                 addChild(currentTube)
                 tubeGrid.append(currentTube)
                 tGid += 1
@@ -292,13 +289,13 @@ class DevScene : Scene {
     
     func pourTubes() {
         _currentState = .AnimatingPour
-        self.selectedTube!.setCandidateTube( self.pourCandidate! )
         var newPouringTubeColors = [TubeColors].init(repeating: .Empty, count: 4)
         var newCandidateTubeColors = [TubeColors].init(repeating: .Empty, count: 4)
         
         (newPouringTubeColors, newCandidateTubeColors) = tubeLevel.pourTube(pouringTubeIndex: self.selectedTube!.gridId, pourCandidateIndex: self.pourCandidate!.gridId)
         self.selectedTube!.startPouring( newPourTubeColors: newPouringTubeColors,
-                                         newCandidateTubeColors: newCandidateTubeColors)
+                                         newCandidateTubeColors: newCandidateTubeColors,
+                                         cTube: self.pourCandidate)
     }
     
     func hoverSelect(_ boxPos: float2, deltaTime: Float, excludeMoving: Int) {

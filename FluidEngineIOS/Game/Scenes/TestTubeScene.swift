@@ -333,14 +333,20 @@ class TestTubeScene : Scene {
     }
     
     func pourTubes() {
+        guard let pouringTube = self.selectedTube else { print("pourTubes WARN::No selected tube"); return }
+        guard let candidate = self.pourCandidate  else { print("pourTubes WARN::No candidate tube"); return }
         _currentState = .AnimatingPour
-        self.selectedTube!.setCandidateTube( self.pourCandidate! )
         var newPouringTubeColors = [TubeColors].init(repeating: .Empty, count: 4)
         var newCandidateTubeColors = [TubeColors].init(repeating: .Empty, count: 4)
-        
-        (newPouringTubeColors, newCandidateTubeColors) = tubeLevel.pourTube(pouringTubeIndex: self.selectedTube!.gridId, pourCandidateIndex: self.pourCandidate!.gridId)
+        let oldColors = tubeLevel.colorStates[ pouringTube.gridId ]
+        if( pouringTube.currentColors != oldColors ) {
+            print("pourTubes ADVISE::attempting to pour an uninitialized tube color states of level dont match filled: \n levelColors: \(oldColors) \n tubeColors: \( pouringTube.currentColors )");
+            return
+        }
+        (newPouringTubeColors, newCandidateTubeColors) = tubeLevel.pourTube(pouringTubeIndex: pouringTube.gridId, pourCandidateIndex: candidate.gridId)
         self.selectedTube!.startPouring( newPourTubeColors: newPouringTubeColors,
-                                         newCandidateTubeColors: newCandidateTubeColors)
+                                         newCandidateTubeColors: newCandidateTubeColors,
+                                         cTube: self.pourCandidate)
     }
     
     func hoverSelect(_ boxPos: float2, deltaTime: Float, excludeMoving: Int) {
@@ -439,7 +445,7 @@ class TestTubeScene : Scene {
         case .Filling:
             var oneFilling = false
             for tube in tubeGrid {
-                oneFilling = (tube.isEmptying || oneFilling)
+                oneFilling = (tube.currentState == .Initializing || oneFilling)
             }
             if !oneFilling {
                 _currentState = .Idle
