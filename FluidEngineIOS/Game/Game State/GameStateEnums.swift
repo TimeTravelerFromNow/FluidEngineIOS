@@ -17,6 +17,14 @@ let WaterColors: [TubeColors:float4] =
       .Blue     :float4(70 / 255, 130  / 255, 245 / 255, 1),
       .Purple   :float4(140 / 255, 10  / 255, 140 / 255, 1)
 ]
+//XMas ?
+//let WaterColors: [TubeColors:float4] =
+//    [ .Empty    :float4(0.1,0.1,0.1,1.0),
+//      .Red      :float4(0.9, 30 / 255, 13 / 255, 255 / 255),
+//      .Green    :float4(0.4, 0.8, 0.3, 1),
+//      .Blue     :float4(1, 1, 1, 1),
+//      .Purple   :float4(120 / 255, 70  / 255, 40 / 255, 1)
+//]
 
 protocol GameLevel {
     func goBackMoves(_ numMoves: Int) -> Bool
@@ -31,7 +39,7 @@ class TubeLevel: GameLevel {
         _moves = 0
     }
     
-    init(_ level: Int = 0) {
+    init(_ level: Int = 1) {
         self.levelNo = level
         if levelNo > MyGameLevels.count {
             print("only \(MyGameLevels.count) levels programmed, asked for \(levelNo).")
@@ -44,7 +52,7 @@ class TubeLevel: GameLevel {
     let numTubes: Int8 = 0
     private var _moves: Int = 0
     var levelNo : Int = 0
-    var startingLevel : [ [ TubeColors ] ] = [] // [ [TubeData] for each tube ]
+    var startingLevel : [ [ TubeColors ] ] = [] // Colors for each tube
     var maxHistory:Int = 5
     
     var colorStates:  [ [TubeColors] ] = []

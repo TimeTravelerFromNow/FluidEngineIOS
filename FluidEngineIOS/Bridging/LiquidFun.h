@@ -114,6 +114,8 @@ typedef struct VertexIn {
           tubeWidth:(Float32)tubeWidth
           tubeHeight:(Float32)tubeHeight
           gridId:(long)gridId;
+
++ (void)destroyTube:(void *)tubeRef;
 //hover candidate
 + (long)hoverCandidate:(void *)tube;
 

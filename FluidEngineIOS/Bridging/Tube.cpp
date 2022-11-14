@@ -31,8 +31,10 @@ Tube::Tube(b2World* worldRef,
     
     m_tubeFixture = body1->CreateFixture(&fixtureDef);
     m_body = body1;
+    m_world = worldRef;
 }
 Tube::~Tube() {
+    m_world->DestroyBody(m_body);
 }
 //collision
 

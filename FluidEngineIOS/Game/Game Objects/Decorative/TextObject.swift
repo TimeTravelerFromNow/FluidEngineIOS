@@ -57,7 +57,9 @@ class TextObject: Node {
         modelConstants.modelMatrix = modelMatrix
         super.update()
     }
-    
+    func setScaleFactor(_ to: Float) {
+        self.setScale(1 / (GameSettings.ptmRatio * 5 * to))
+    }
 }
 
 extension TextObject: Renderable {

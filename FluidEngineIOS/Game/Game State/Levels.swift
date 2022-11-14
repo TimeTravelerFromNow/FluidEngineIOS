@@ -1,7 +1,7 @@
 import Foundation
 
 
-var MyGameLevels = [  level0, level1, level2]
+var MyGameLevels = [  level0, level1, level2, level3]
 
 
 let level0: [ [ TubeColors ] ] =
@@ -33,4 +33,22 @@ let level2: [ [TubeColors] ] =
         [ .Empty, .Empty, .Empty, .Empty]
 
         
+    ]
+let level3: [ [TubeColors] ] =
+    [
+        
+            [ .Green, .Red, .Green, .Red],
+            [  .Blue, .Purple, .Purple, .Blue ],
+            [  .Blue, .Red, .Empty, .Empty],
+        [ .Empty, .Empty, .Empty, .Empty],
+        [ .Red, .Blue, .Red, .Blue],
+        [ .Empty, .Empty, .Empty, .Empty],
+
+            
+                [ .Green, .Red, .Green, .Red],
+                [  .Blue, .Purple, .Purple, .Blue ],
+                [  .Blue, .Red, .Empty, .Empty],
+            [ .Empty, .Empty, .Empty, .Empty],
+            [ .Red, .Blue, .Red, .Blue],
+            [ .Empty, .Empty, .Empty, .Empty]
     ]

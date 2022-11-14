@@ -424,7 +424,7 @@ class ReservoirObject: Node {
         let destination = arrow.target
         let start       = arrow.tail
         let actualStart = arrow.head
-        let overDest = float2(destination.x, destination.y + 0.4)
+        let overDest = float2(destination.x, destination.y + 1.0)
         let underDest = float2(destination.x, destination.y - 1.0)
         let midpoint = ( actualStart + overDest ) / 2
         let bulbNormal = actualStart + normalize( arrow.head - arrow.tail ) * 0.3

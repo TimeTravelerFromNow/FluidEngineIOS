@@ -13,22 +13,30 @@ class BoxButton: GameObject {
     
     private var _textObject: TextObject?
     private var _selected: Bool = false
-    
+    let isStatic: Bool!
     init(_ meshType: MeshTypes,
          _ texture: TextureTypes,
          _ action: ButtonActions = .None,
          center: float2,
-         label: ButtonLabelTypes = .None) {
+         label: ButtonLabelTypes = .None,
+         scale: Float = 1.5,
+         staticButton: Bool = true) {
+        isStatic = staticButton
         super.init(meshType)
+       
         if( label != .None ) {
             _textObject = ButtonLabels.Get(label)
+            _textObject?.setScaleFactor(scale)
         }
         setTexture(texture)
         renderPipelineStateType = .Basic
-        boxVertices = getBoxVertices(1.0)
-        self.setScale(GameSettings.stmRatio)
+        boxVertices = getBoxVertices( scale )
+        self.setScale(GameSettings.stmRatio / scale )
         self.setPositionZ(0.11)
         _boxRef = LiquidFun.makeBoxButton(&boxVertices, location: Vector2D(x: center.x, y: center.y))
+        if( staticButton ){
+            freeze()
+        }
         updateModelConstants()
         buttonAction = action
     }
@@ -45,8 +53,14 @@ class BoxButton: GameObject {
     func deSelect() { _selected = false }
     func select() { _selected = true }
     
-    func freeze() { LiquidFun.freezeButton(_boxRef) }
-    func unFreeze() { LiquidFun.unFreezeButton(_boxRef)}
+    func freeze() {
+        LiquidFun.freezeButton(_boxRef)
+    }
+    func unFreeze() {
+        if( !isStatic ) {
+        LiquidFun.unFreezeButton(_boxRef)
+        }
+        }
     
     func updateModelConstants() {
         setPositionX(self.getBoxPositionX() * GameSettings.stmRatio)

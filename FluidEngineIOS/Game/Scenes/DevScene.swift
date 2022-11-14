@@ -2,7 +2,7 @@ import MetalKit
 import CoreHaptics
 
 class DevScene : Scene {
-    var test_testTube: TestTube = TestTube()
+    var test_testTube: TestTube? = TestTube()
     var tubeGrid: [ TestTube ] = []
     var reservoirs: [ ReservoirObject ] = []
     var buttons: [ BoxButton ] = []
@@ -13,6 +13,27 @@ class DevScene : Scene {
     
     var buttonPressed: ButtonActions?
 
+    // message text
+    let defaultMessageDelay: Float = 1.1
+    private var _messageDelay: Float = 0.0
+    private var isMessageShowing = false
+    var messageText: TextObject?
+    var currentMessageLabel: FontRenderableTypes? {
+        didSet {
+            if( currentMessageLabel != nil ){
+                _messageDelay = defaultMessageDelay
+                messageText = TextObject( currentMessageLabel! )
+                addChild(messageText!)
+                isMessageShowing = true
+            }  else {
+                if( messageText != nil ) {
+                 removeChild(messageText!)
+                }
+                messageText = nil
+                
+            }
+        }
+    }
     // tube emptying
     var emptyingTubes: Bool = false
     private var _emptyDuration: Float = 1.0
@@ -23,7 +44,7 @@ class DevScene : Scene {
     private var tubeHeight: Float = 0.0 // can determine at run time
     private var tubeWidth : Float = 0.18
     // tube filling
-    var tubesFilling: Bool = true
+    var tubesFilling: Bool = false
     
     // tube moving
     var tubeIsActive: Bool = false
@@ -35,10 +56,23 @@ class DevScene : Scene {
     var startedHovering: Bool = false
     let hoverSelectTime: Float = 0.6 // when we reach 0.0, pourCandidate becomes the tube we are hovering over.
     var hasCommittedtoPour: Bool = false
+    
+    
+    // pipe fill animation constants
+    var preparingToFill = false
+    let defaultAskForLiquidDelay: Float = 1.5
+    private var _askForLiquidDelay: Float = 0.0
+    
+    // zoom when done initializing
+    var zoomingAfterComplete = false { didSet { _currentZoom = (currentCamera as? OrthoCamera)?.getFrameSize() ?? 1.0 } }
+    let defaultZoom: Float = 1.0
+    let largeZoom: Float = 1.5
+    private var _currentZoom: Float = 2.0
+    
     //geometry
     let tubeDimensions: float2 = float2(0.4,1)
     
-    private var _currentState: States = .Filling
+    private var touchStatus: States = .Filling
     
     private var _holdDelay: Float = 0.2
     private let _defaultHoldTime: Float = 0.2
@@ -59,30 +93,15 @@ class DevScene : Scene {
     var engine: CHHapticEngine!
     var player: CHHapticPatternPlayer?
     
-    func addSnapshots() {
-        let testSnapshot = SnapshotObject(box2DOrigin)
-        addChild(testSnapshot)
-    }
-    
     func addTestButton() {
-       
-        let menuButton = BoxButton(.Menu,.Menu, .ToMenu, center: box2DOrigin + float2(-1.0,-1.5), label: .MenuLabel)
-        let testButton0 = BoxButton(.Menu, .Menu, .TestAction0, center: box2DOrigin + float2(-1.0,-2.5), label: .TestLabel0)
-        let testButton1 = BoxButton(.Menu, .Menu, .TestAction1, center: box2DOrigin + float2(1.0,-2.5), label: .TestLabel1)
+        let menuButton = BoxButton(.Menu,.Menu, .ToMenu, center: box2DOrigin + float2(1.5,4.0), label: .MenuLabel, scale: 1.1)
+        let startButton = BoxButton(.Menu, .Menu, .StartGameAction, center: box2DOrigin + float2(-1.5,4.0), label: .StartGameLabel, scale: 1.1)
         
-        let testButton2 = BoxButton(.Menu, .Menu, .TestAction2, center: box2DOrigin + float2(-1.0,-3.5), label: .TestLabel2)
-        let testButton3 = BoxButton(.Menu, .Menu, .TestAction3, center: box2DOrigin + float2(1.0,-3.5), label: .TestLabel3)
-
         buttons.append(menuButton)
-        buttons.append(testButton0)
-        buttons.append(testButton1)
-        buttons.append(testButton2)
-        buttons.append(testButton3)
+        buttons.append(startButton)
+        
         addChild(menuButton)
-        addChild(testButton0)
-        addChild(testButton1)
-        addChild(testButton2)
-        addChild(testButton3)
+        addChild(startButton)
     }
     
     override func buildScene(){
@@ -108,6 +127,7 @@ class DevScene : Scene {
         
         addTestButton()
         InitializeGrid()
+        (currentCamera as? OrthoCamera)?.setFrameSize( largeZoom )
     }
     
     func destroyReservoirs() {
@@ -149,9 +169,9 @@ class DevScene : Scene {
         }
     
         let reservoirSpacing = float2(2.0, 4.0)
-        let reservoirOffset = float2(0, 5.0) + box2DOrigin
+        let reservoirOffset = float2(0, 4.0) + box2DOrigin
         let reservoirCount = colorVariety.count // need a reservoir for each color.
-        let reservoirPositions = CustomMathMethods.positionsMatrix( reservoirOffset, withSpacing: reservoirSpacing, rowLength: 3, totalCount: reservoirCount)
+        let reservoirPositions = CustomMathMethods.positionsMatrix( reservoirOffset, withSpacing: reservoirSpacing, rowLength: 4, totalCount: reservoirCount)
         var colorIndex = 0
         for pos in reservoirPositions.grid {
             if let goodPos = pos {
@@ -175,7 +195,7 @@ class DevScene : Scene {
                 break
             }
             for ind in indicesForThisColor {
-                currTargets.append(tubeGrid[ind].getBoxPosition())
+                currTargets.append(tubeGrid[ind].getBoxPosition() + float2(0,0))
             }
 //            targetsDict.updateValue(currTargets, forKey: color)
             reservoirForColor[ color ]!.targets = currTargets
@@ -187,18 +207,26 @@ class DevScene : Scene {
                 currTubes.append(tubeGrid[ colorsToTubeIndices[color]![i] ])
             }
             currReservoir?.buildPipes( currTubes )
-            
             currReservoir?.fill()
+        }
+        for r in reservoirs {
+            r.toggleTop()
         }
     }
     
     private func InitializeGrid() {
-        let xSep : Float = 0.8
-        let ySep : Float = 2.0
-        
+        if( test_testTube == nil ) {
+            test_testTube = TestTube()
+        }
+        let xSep : Float = test_testTube!.getTubeWidth() * 1.4
+        let ySep : Float = test_testTube!.getTubeHeight() * 1.1
+        if( test_testTube != nil ) {
+            test_testTube = nil
+        }
         var tGid = 0
         let startLvl = tubeLevel.startingLevel
-        let tubePositionsMatrix = CustomMathMethods.positionsMatrix(box2DOrigin, withSpacing: float2(xSep, ySep), rowLength: 6, totalCount: startLvl.count)
+        let tubesCenter = float2(0,-2)
+        let tubePositionsMatrix = CustomMathMethods.positionsMatrix(box2DOrigin + tubesCenter, withSpacing: float2(xSep, ySep), rowLength: 6, totalCount: startLvl.count)
         for position in tubePositionsMatrix.grid {
             if let goodPos = position {
                 if tGid > startLvl.count - 1 { print("init tubegrid WARN::matrix index greater than starting lvl count."); break}
@@ -210,12 +238,13 @@ class DevScene : Scene {
         }
         if( tGid != startLvl.count) { print("init tubegrid WARN::tube num not matching starting lvl count."); }
     }
+    
     private func beginEmpty() {
         _emptyKF = 0
         tubeIsActive = false
         _emptyDuration = defaultEmptyTime
         emptyingTubes = true
-        _currentState = .Emptying
+        touchStatus = .Emptying
     }
     
     private func EmptyTubesStep(_ deltaTime: Float) {
@@ -288,7 +317,7 @@ class DevScene : Scene {
     }
     
     func pourTubes() {
-        _currentState = .AnimatingPour
+        touchStatus = .AnimatingPour
         var newPouringTubeColors = [TubeColors].init(repeating: .Empty, count: 4)
         var newCandidateTubeColors = [TubeColors].init(repeating: .Empty, count: 4)
         
@@ -316,7 +345,7 @@ class DevScene : Scene {
                     print("Committed to pOUR!")
                     hasCommittedtoPour = true
                     pourTubes()
-                    _currentState = .Idle
+                    touchStatus = .Idle
                 } else {
                     print("I want to commit to pour, but this candidate is not resting, instead \(pourCandidate?.currentState).")
                 }
@@ -340,20 +369,43 @@ class DevScene : Scene {
             button.freeze()
         }
     }
+    
     override func unFreeze() {
         for button in buttons {
             button.unFreeze()
         }
     }
+    
     func unSelect() {
         print("let go of tube")
+        selectedTube?.reCaptured = false
         selectedTube?.returnToOrigin()
         selectedTube = nil
         _holdDelay = _defaultHoldTime
-        _currentState = .Idle
+        touchStatus = .Idle
     }
+    
+    private func playHaptic() {
+        // Stop the engine after it completes the playback.
+        if engine != nil {
+            engine.notifyWhenPlayersFinished { error in
+                return .stopEngine
+            }
+            do {
+                try engine.start()
+                try player?.start(atTime: 0)
+            } catch { print("haptics not working")}
+        } else { print("haptic WARN::No haptic engine!")}
+    }
+    
     override func touchesBegan() {
         let boxPos = Touches.GetBoxPos()
+        let tubeHitResult = boxHitTest(boxPos: boxPos, excludeDragging: -1)
+
+        if selectedTube?.gridId == tubeHitResult?.gridId  {
+            unSelect()
+        }
+        selectedTube = tubeHitResult
         buttonPressed = boxButtonHitTest(boxPos: boxPos)
         
         for node in children {
@@ -362,21 +414,13 @@ class DevScene : Scene {
             }
         }
         
-        if buttonPressed != nil {
-            // Stop the engine after it completes the playback.
-            if engine != nil {
-                engine.notifyWhenPlayersFinished { error in
-                    return .stopEngine
-                }
-                do {
-                    try engine.start()
-                    try player?.start(atTime: 0)
-                } catch { print("haptics not working")}
-            } else { print("haptic WARN::No haptic engine!")}
+        if buttonPressed != nil || selectedTube != nil {
+            playHaptic()
         }
+        
         FluidEnvironment.Environment.debugParticleDraw(atPosition: Touches.GetBoxPos())
     
-        switch _currentState {
+        switch touchStatus {
         case .HoldInterval:
             print("grabbed tube, determining hold status")
             selectedTube?.select()
@@ -389,7 +433,7 @@ class DevScene : Scene {
                 oneEmptying = (tube.isEmptying || oneEmptying)
             }
             if !oneEmptying {
-                _currentState = .Filling
+                touchStatus = .Filling
             }
         case .Filling:
             var oneFilling = false
@@ -397,7 +441,7 @@ class DevScene : Scene {
                 oneFilling = (tube.isEmptying || oneFilling)
             }
             if !oneFilling {
-                _currentState = .Idle
+                touchStatus = .Idle
             }
         case .Selected:
             guard let nodeAt = kineticHitTest() else {
@@ -405,23 +449,34 @@ class DevScene : Scene {
                 return
             }
             if nodeAt.gridId == selectedTube?.gridId { // we clicked the same selected tube
-                _currentState = .Moving
+                touchStatus = .Moving
             } else { // pour into nodeAt
                 pourCandidate = nodeAt
                 if !(tubeLevel.pourConflict(pouringTubeIndex: selectedTube?.gridId ?? -1, pouringCandidateIndex: nodeAt.gridId ) ) && (nodeAt.currentState == .AtRest){
                     pourTubes()
-                    _currentState = .Idle
+                    touchStatus = .Idle
                 } else { // red highlights Flash
+                    currentMessageLabel = .TubeReject
                     pourCandidate?.conflict()
                     unSelect()
                 }
             }
         case .Idle:
-            guard let nodeAt = boxHitTest(boxPos: Touches.GetBoxPos(), excludeDragging: -1) else { return }
+            guard let nodeAt = boxHitTest(boxPos: Touches.GetBoxPos(), excludeDragging: -1) else {
+                unSelect();
+                return
+            }
             if nodeAt.currentState == .AtRest {
                 selectedTube = nodeAt
                 selectedTube?.select()
-                _currentState = .HoldInterval
+                touchStatus = .HoldInterval
+                _holdDelay = _defaultHoldTime
+            } else if nodeAt.currentState == .ReturningToOrigin {
+                selectedTube = nodeAt
+                selectedTube?.select()
+                selectedTube?.reCaptured = true  // hard interrupts origin return
+                touchStatus = .HoldInterval
+                _holdDelay = _defaultHoldTime
             }
         default:
             print("nothing to do")
@@ -429,9 +484,9 @@ class DevScene : Scene {
     }
     
     func startGame() {
-        for t in tubeGrid {
-            t.startPipeFill()
-        }
+        reservoirAction()
+        preparingToFill = true
+        _askForLiquidDelay = defaultAskForLiquidDelay
     }
     
     func doButtonAction() {
@@ -444,14 +499,10 @@ class DevScene : Scene {
             case .ToMenu:
                 SceneManager.sceneSwitchingTo = .Menu
                 SceneManager.Get( .Menu ).unFreeze()
-            case .TestAction0:
-                reservoirAction()
-            case .TestAction1:
-                for r in reservoirs {
-                    r.toggleTop()
-                }
+            case .StartGameAction:
+                startGame()
             case .TestAction2:
-                tubesAskForLiquid()
+                break
             case .TestAction3:
                 destroyReservoirs()
             case nil:
@@ -463,9 +514,9 @@ class DevScene : Scene {
         }
     }
     
-    func tubesAskForLiquid() { //MARK: Debugging state
+    func tubesAskForLiquid() {
         for tube in tubeGrid {
-                tube.startPipeFill()
+            tube.startPipeFill()
         }
     }
     
@@ -478,11 +529,11 @@ class DevScene : Scene {
         for b in buttons {
             b.deSelect()
         }
-        switch _currentState {
+        switch touchStatus {
         case .HoldInterval:
             if _holdDelay > 0.0 {
                 selectedTube?.currentState = .Selected
-                _currentState = .Selected
+                touchStatus = .Selected
             } else {
                 unSelect()
             }
@@ -497,18 +548,54 @@ class DevScene : Scene {
             }
         }
     }
-    
+   
     override func update(deltaTime : Float) {
         super.update(deltaTime: deltaTime)
         
-        shouldUpdateGyro = false
-        if _currentState ==  .Emptying {
+        if touchStatus ==  .Emptying {
             EmptyTubesStep(deltaTime)
         }
         
-        if shouldUpdateGyro {
-            LiquidFun.setGravity(Vector2D(x: gyroVector.x, y: gyroVector.y))
+        if isMessageShowing {
+            if( _messageDelay > 0.0 ) {
+            _messageDelay -= deltaTime
+            } else {
+                currentMessageLabel = nil
+                isMessageShowing = false
+            }
         }
+       
+        if preparingToFill {
+            if( _askForLiquidDelay > 0.0 ){
+                _askForLiquidDelay -= deltaTime
+            } else {
+                preparingToFill = false
+                tubesFilling = true
+                tubesAskForLiquid()
+            }
+        }
+        
+        if tubesFilling {
+            var stillFilling = false
+            for t in tubeGrid {
+                stillFilling = stillFilling || t.isInitialFilling
+            }
+            if !stillFilling {
+                tubesFilling = false
+                zoomingAfterComplete = true
+            }
+        }
+        
+        if zoomingAfterComplete  {
+            if( _currentZoom > defaultZoom ) {
+                _currentZoom -= deltaTime
+                (currentCamera as? OrthoCamera)?.setFrameSize( _currentZoom )
+            } else {
+                zoomingAfterComplete = false
+                destroyReservoirs()
+            }
+        }
+        
         
         if (Touches.IsDragging) {
             if buttonPressed != nil {
@@ -519,7 +606,7 @@ class DevScene : Scene {
                     }
                 }
             }
-            switch _currentState {
+            switch touchStatus {
             case .HoldInterval:
                 if _holdDelay == _defaultHoldTime {
                     selectedTube?.select()
@@ -528,7 +615,7 @@ class DevScene : Scene {
                     _holdDelay -= deltaTime
                 }
                 else {
-                    _currentState = .Moving
+                    touchStatus = .Moving
                 }
             case .Moving:
                 let boxPos = Touches.GetBoxPos()
@@ -537,7 +624,7 @@ class DevScene : Scene {
                 hoverSelect(boxPos, deltaTime: deltaTime, excludeMoving: selectId)
             default:
                 break
-                print("current scene state: \(_currentState)")
+                print("current scene state: \(touchStatus)")
             }
             
             for n in children {

@@ -172,7 +172,6 @@ class SceneManager: Library<SceneTypes, Scene> {
             scene.freeze()
         }
         currentScene.unFreeze()
-        FluidEnvironment.Environment.isDebugging = true
     }
     
     private static func createScenes() {

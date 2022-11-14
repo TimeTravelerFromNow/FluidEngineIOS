@@ -2,7 +2,7 @@ import MetalKit
 
 class DebugEnvironment : Node {
     
-    var isDebugging = true
+    var isDebugging = false
     var particleCount: Int = 0
     var waterColor: float4 = float4(0.1,0.1,0.9,1.0)
     private var ptmRatio: Float!
@@ -133,6 +133,7 @@ class DebugEnvironment : Node {
     }
     
     func debugParticleDraw(atPosition: float2) {
+        if !isDebugging { return }
         if particleSystem != nil {
             print("debugParticleDraw at: x: \(atPosition.x), \(atPosition.y)")
         LiquidFun.createParticleBox(forSystem: particleSystem,

@@ -122,66 +122,6 @@ class Mesh {
         return boxVertices
     }
     
-    //MARK: could be refactored if vertices are indexed in order in Blender.
-    // this function gets 2D vertex data for the creation of Box2D physical world objects from vertex positions made in Blender, also returns height. (it's counter clockwise starting from the top left.)
-    func getFlatVertices(modelName: String, scale: Float) -> ([Vector2D], Float) {
-        var output2DPositions : [Vector2D] = [Vector2D(x: 3, y: 3), Vector2D(x:-3,y:-3), Vector2D(x:-1,y:-1)] // just a line so it doesnt crash
-        var outputHeight: Float  = 0.0
-        guard let assetURL = Bundle.main.url(forResource: modelName, withExtension: "obj") else {
-            fatalError("Asset \(modelName) does not exist.")
-        }
-        let objLoader = OBJLoader(url: assetURL)
-        objLoader.parse()
-        let myVertices = objLoader.vertices
-        let vertexCount = objLoader.vertexCount
-        output2DPositions = [Vector2D].init(repeating: Vector2D(x: 0, y: 0), count: vertexCount)
-        //order them from  left to right, top to bottom, assuming equal number of vertices on right and left
-        var left_YVals = [Float].init(repeating: 0.0, count: vertexCount/2)
-        var right_YVals = left_YVals
-        var left_Vertices = [Vector2D].init(repeating: Vector2D(), count: vertexCount / 2)
-        var right_Vertices = left_Vertices
-        var leftIter = 0
-        var rightIter = 0
-        let ptmR = GameSettings.ptmRatio
-        for i in 0..<vertexCount {
-            let v = myVertices[i]
-            if (v.z <= 0) {
-                left_YVals[leftIter] = v.y * scale / ptmR
-                left_Vertices[leftIter] = Vector2D(x: v.z * scale / ptmR, y: v.y * scale / GameSettings.ptmRatio)
-                leftIter += 1
-            } else {
-                right_YVals[rightIter] = v.y * scale / ptmR
-                right_Vertices[rightIter] = Vector2D(x: v.z * scale / ptmR, y: v.y * scale / GameSettings.ptmRatio)
-                rightIter += 1
-            }
-        }
-        let reversedSortedLeftVals = left_YVals.sorted().reversed()
-        let sortedLeftVals = reversedSortedLeftVals.map { Float($0)}
-        let sortedRightVals = right_YVals.sorted()
-        if let bottomVal = sortedLeftVals.last {
-        outputHeight = sortedLeftVals[0] - bottomVal
-        } else { print("warning the bottom value of sorted obj vertices was undefined, output height set to 0.0")}
-        
-        var sortedLeftVec2Ds = [Vector2D].init(repeating: Vector2D(), count: vertexCount/2)
-        var sortedRightVec2Ds = [Vector2D].init(repeating: Vector2D(), count: vertexCount/2)
-        for (i, val) in left_YVals.enumerated() {
-            var sortedIndex = 0
-            while( val != sortedLeftVals[sortedIndex]) {
-                sortedIndex += 1
-            }
-            sortedLeftVec2Ds[sortedIndex] = left_Vertices[i]
-        }
-        for (i, val) in right_YVals.enumerated() {
-            var sortedIndex = 0
-            while( val != sortedRightVals[sortedIndex]) {
-                sortedIndex += 1
-            }
-            sortedRightVec2Ds[sortedIndex] = right_Vertices[i]
-        }
-        output2DPositions =  sortedLeftVec2Ds + sortedRightVec2Ds
-        return (output2DPositions, outputHeight)
-    }
-    
     func createMesh() { }
     
     private func createBuffer() {

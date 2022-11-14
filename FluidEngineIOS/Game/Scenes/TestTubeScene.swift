@@ -77,7 +77,7 @@ class TestTubeScene : Scene {
     func addTestButton() {
         let clearButton = BoxButton(.ClearButton, .ClearButton, .Clear, center: box2DOrigin + float2(1.0,-3.0) )
         let menuButton = BoxButton(.Menu,.Menu, .ToMenu, center: box2DOrigin + float2(-1.0,-3.0), label: .MenuLabel)
-        let testButton0 = BoxButton(.Menu, .Menu, .TestAction0, center: box2DOrigin + float2(-1.0,-4.0), label: .TestLabel0)
+        let testButton0 = BoxButton(.Menu, .Menu, .StartGameAction, center: box2DOrigin + float2(-1.0,-4.0), label: .StartGameLabel)
         let testButton1 = BoxButton(.Menu, .Menu, .TestAction1, center: box2DOrigin + float2(1.0,-4.0), label: .TestLabel1)
         
         let testButton2 = BoxButton(.Menu, .Menu, .TestAction2, center: box2DOrigin + float2(-1.0,-5.0), label: .TestLabel2)
@@ -425,6 +425,7 @@ class TestTubeScene : Scene {
                 } catch { print("haptics not working")}
             } else { print("haptic WARN::No haptic engine!")}
         }
+        
         FluidEnvironment.Environment.debugParticleDraw(atPosition: Touches.GetBoxPos())
     
         switch _currentState {
@@ -479,6 +480,15 @@ class TestTubeScene : Scene {
         }
     }
     
+    func startGame() {
+        reservoirAction()
+        preparingToFill = true
+        _askForLiquidDelay = defaultAskForLiquidDelay
+    }
+    
+    var preparingToFill = false
+    let defaultAskForLiquidDelay: Float = 0.5
+    private var _askForLiquidDelay: Float = 0.0
     func doButtonAction() {
         if( buttonPressed != nil ) {
         switch boxButtonHitTest(boxPos: Touches.GetBoxPos()) {
@@ -489,8 +499,8 @@ class TestTubeScene : Scene {
         case .ToMenu:
             SceneManager.sceneSwitchingTo = .Menu
             SceneManager.Get( .Menu ).unFreeze()
-        case .TestAction0:
-            reservoirAction()
+        case .StartGameAction:
+            startGame()
         case .TestAction1:
             for r in reservoirs {
                 r.toggleTop()
@@ -510,7 +520,7 @@ class TestTubeScene : Scene {
     
     func tubesAskForLiquid() { //MARK: Debugging state
         for tube in tubeGrid {
-                tube.fillFromPipes()
+            tube.fillFromPipes()
         }
     }
     
@@ -553,6 +563,15 @@ class TestTubeScene : Scene {
         
         if shouldUpdateGyro {
             LiquidFun.setGravity(Vector2D(x: gyroVector.x, y: gyroVector.y))
+        }
+        if preparingToFill {
+            if( _askForLiquidDelay > 0.0 ){
+                _askForLiquidDelay -= deltaTime
+            } else {
+                preparingToFill = false
+                tubesAskForLiquid()
+                tubesFilling = true
+            }
         }
         
         if (Touches.IsDragging) {

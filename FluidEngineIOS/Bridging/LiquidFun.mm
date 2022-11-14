@@ -433,6 +433,11 @@ return belowPositionsCount;
     tubes.push_back(newTube);
     return newTube;
 }
+
++ (void)destroyTube:(void *)tubeRef {
+    ((Tube*)tubeRef)->~Tube();
+}
+
 //hover candidate testing
 + (long)hoverCandidate:(void *)tube {
     return ((Tube *)tube)->GetHoverCandidateGridId();

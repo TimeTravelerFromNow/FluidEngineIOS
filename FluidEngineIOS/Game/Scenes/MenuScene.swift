@@ -7,7 +7,7 @@ enum ButtonActions {
     case ToBeach
     case ToDev
     
-    case TestAction0
+    case StartGameAction
     case TestAction1
     case TestAction2
     case TestAction3

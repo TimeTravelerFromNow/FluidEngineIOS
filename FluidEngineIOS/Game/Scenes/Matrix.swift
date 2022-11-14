@@ -61,7 +61,7 @@ final class CustomMathMethods {
         return outputMat
     }
     
-    public static func tParameterArray( _ forArray: [float2] ) -> [ Float ] {
+    public static func tParameterArray( _ forArray: [float2] ) -> [ Float ] { // for control points
         // MARK: tParams must be strictly increasing
         var totalL: Float = 0.0
         var tParams: [Float] = [ totalL ]

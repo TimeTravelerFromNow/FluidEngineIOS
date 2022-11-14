@@ -8,7 +8,7 @@ struct Arrow2D {
 }
 
 class Pipe: Node {
-    var isTesting = false
+    var isTesting = true
     var isShowingMiniMenu = false
     var particleSystemSharing: UnsafeMutableRawPointer?
     var fluidColor: TubeColors!
@@ -26,7 +26,7 @@ class Pipe: Node {
     private var _rightVertices: [float2] = []
     private var _b2leftVertices: [Vector2D] = []
     private var _b2rightVertices: [Vector2D] = []
-    private var _sourceVertices: [float2] = [] // path vertices
+    private var _sourceVertices: [float2] = [] // source path vertices
     private var _sourceTangents: [Vector2D] = [] // perpendicular vector at each source vertex
     private var _perpendiculars: [float2] = []
     
@@ -39,22 +39,25 @@ class Pipe: Node {
     private var _vertexBuffer: MTLBuffer!
     private var _vertexCount: Int = 0
     private var _controlPointsVertexBuffer: MTLBuffer!
-    private var _controlPointsCount: Int = 0
+    private var _controlPointsCount: Int { return controlPoints.count }
+    private var _cPtsColors: [float4] = []
+    private var _cPtsColorBuffer: MTLBuffer!
     
     private var _interpolatedPointsBuffer: MTLBuffer!
-    private var _interpolatedPointsCount: Int = 0
+    private var _interpolatedPointsCount: Int { return _tSourcePoints.count }
+    private var _interpPtsColors: [float4] = []
+    private var _interpPtsColorBuffer: MTLBuffer!
     
     private var _pipeWidth: Float = 0.4
     var segmentIndex = 0
-    var totalSegments = 0
     
-    var controlPoints: [float2] = [] { didSet { updateBox2DControlPts(); makeSpline(); updateModelConstants(); } }
+    var controlPoints: [float2] = [] { didSet { updateBox2DControlPts(); makeSpline(); _cPtsColors = [float4].init(repeating: float4(1,0,0,1), count: _controlPointsCount); updateModelConstants(); } }
     var tControlPoints: [Float] = []
-    var _tSourcePoints: [Float] = []
     
+    var _tSourcePoints: [Float] = []
     private var _interpolatedXValues: [Float] = []
     private var _interpolatedYValues: [Float] = []
-    var interpolatedPoints: [float2] = []
+    var interpolatedPoints: [float2] = [] { didSet { _interpPtsColors = [float4].init(repeating: float4(0,1,0,1), count: _interpolatedPointsCount); updateModelConstants(); }}
     
     var box2DControlPts: [Vector2D] = []
     let segmentDensity: Int!
@@ -201,7 +204,7 @@ class Pipe: Node {
     }
     
     func buildPipeSegment() {
-        if segmentIndex < totalSegments - 1 {
+        if segmentIndex < _interpolatedPointsCount  {
             _sourceVertices = [float2].init( repeating: float2(0), count: segmentIndex )
             for i in 0..<segmentIndex {
                 _sourceVertices[i] = interpolatedPoints[i]
@@ -211,19 +214,19 @@ class Pipe: Node {
         }
     }
     func unBuildPipeSegment() {
-        if segmentIndex < totalSegments && ( segmentIndex > -1 ) {
+        if segmentIndex < _interpolatedPointsCount + 1 && ( segmentIndex > 0 ) {
+            segmentIndex -= 1
             _sourceVertices = [float2].init( repeating: float2(0), count: segmentIndex )
             for i in 0..<segmentIndex {
                 _sourceVertices[i] = interpolatedPoints[i]
             }
-            segmentIndex -= 1
             buildPipeVertices()
         }
     }
         
     func setInterpolatedPositions() {
         //initialize array sizes
-        let count = _tSourcePoints.count
+        let count = _interpolatedPointsCount
         _interpolatedXValues = _tSourcePoints
         _interpolatedYValues = _tSourcePoints
         _sourceTangents = [Vector2D].init(repeating: Vector2D(x:0,y:0), count: count)
@@ -248,7 +251,7 @@ class Pipe: Node {
     func makeSpline() {
         if controlPoints.count > 0{
             splineRef = LiquidFun.makeSpline( &tControlPoints, withControlPoints: &box2DControlPts, controlPtsCount: controlPoints.count )
-            ( totalSegments, _tSourcePoints) = CustomMathMethods.getSourceTVals( tControlPoints, density: segmentDensity, excludeFirstAndLast: true )
+            ( _, _tSourcePoints) = CustomMathMethods.getSourceTVals( tControlPoints, density: segmentDensity, excludeFirstAndLast: true )
             setInterpolatedPositions()
         }
     }
@@ -257,20 +260,24 @@ class Pipe: Node {
         let fluidConstantsLength = FluidConstants.stride
         _fluidBuffer = Engine.Device.makeBuffer(bytes: &_fluidConstants, length: fluidConstantsLength, options: [])
         
-        _controlPointsCount = controlPoints.count
         if _controlPointsCount > 0 {
             let controlPointsLength = float2.stride( _controlPointsCount )
+            let controlPtsColorSize = float4.stride( _controlPointsCount )
             _controlPointsVertexBuffer = Engine.Device.makeBuffer(bytes: &controlPoints, length: controlPointsLength, options: [])
+            _cPtsColorBuffer = Engine.Device.makeBuffer(bytes: &_cPtsColors, length: controlPtsColorSize, options: [])
+
         }
-        _interpolatedPointsCount = interpolatedPoints.count
+
         if _interpolatedPointsCount > 0 {
             let interpPointsSize = float2.stride( _interpolatedPointsCount )
+            let interpPtsColorSize = float4.stride( _interpolatedPointsCount )
             _interpolatedPointsBuffer = Engine.Device.makeBuffer(bytes: &interpolatedPoints, length: interpPointsSize, options: [])
+            _interpPtsColorBuffer = Engine.Device.makeBuffer(bytes: &_interpPtsColors, length: interpPtsColorSize ,options: [])
         }
     }
     
     
-    func buildPipeVertices() {
+    func buildPipeVertices() { // MARK: Unsafe (could have vertices too close together).
         if( _sourceVertices.count < 2 ) { // need at least 4 vertices (from 2 source points)
             return
         }
@@ -369,6 +376,9 @@ extension Pipe: Testable {
             renderCommandEncoder.setVertexBuffer(_fluidBuffer,
                                                  offset: 0,
                                                  index: 3)
+            renderCommandEncoder.setVertexBuffer(_cPtsColorBuffer,
+                                                 offset: 0,
+                                                 index: 4)
             renderCommandEncoder.drawPrimitives(type: .point,
                                                 vertexStart: 0,
                                                 vertexCount: _controlPointsCount)
@@ -387,6 +397,9 @@ extension Pipe: Testable {
             renderCommandEncoder.setVertexBuffer(_fluidBuffer,
                                                  offset: 0,
                                                  index: 3)
+            renderCommandEncoder.setVertexBuffer(_interpPtsColorBuffer,
+                                                 offset: 0,
+                                                 index: 4)
             renderCommandEncoder.drawPrimitives(type: .point,
                                                 vertexStart: 0,
                                                 vertexCount: _interpolatedPointsCount)

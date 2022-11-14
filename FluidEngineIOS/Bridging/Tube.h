@@ -71,6 +71,7 @@ private:
     
     b2Filter m_filter;
     
+    b2World* m_world;
 };
 
 static std::vector<Tube*> tubes;

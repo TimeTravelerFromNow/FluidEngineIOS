@@ -56,7 +56,7 @@ class TestTube: Node {
 
     var donePouring: Bool = false                   // done with entire pour action (including going back to origin)?
     //moving
-    var beingMoved = false // stores whether the tube has been recently touched, could be returning to origin, but this allows it to be re-grabbable if true.
+    var reCaptured = false // stores whether the tube has been recently touched, could be returning to origin, but this allows it to be re-grabbable if true.
     var topSquareSpeed: Float = 3.0
     private var isActive: Bool = true
     
@@ -80,7 +80,7 @@ class TestTube: Node {
     private var _cPtsColors: [float4] = []
     private var _interpPtsColors: [float4] = []
     private var animationControlPoints: [float2] = []
-    private var _tParams: [Float] = [] { didSet { _cPtsColors = _tParams.map { float4( $0, 0, 0, 1 ) } } }
+    private var _tParams: [Float] = [] { didSet { _cPtsColors = [float4].init(repeating:float4( 1, 0, 0, 1 ), count: _controlPointsCount)  } }
 
     private var _b2AnimationControlPts: [Vector2D] = []
     private var _animationControlPtsY: [Float] = []
@@ -88,10 +88,11 @@ class TestTube: Node {
     private var interpolatedPoints: [float2] = []
     private var _interpolatedPtsX: [Float] = []
     private var _interpolatedPtsY: [Float] = []
-    private var _sourceTPoints: [Float] = [] { didSet { _interpPtsColors = _sourceTPoints.map { float4( 0, 0, $0, 1) } } }
-    private var _sourceTPointCount: Int = 0
-    private var _interpolatedPtsCount: Int { return interpolatedPoints.count }
+    private var _sourceTPoints: [Float] = [] { didSet { _interpPtsColors = [float4].init(repeating: float4(0,0,1,1), count: _interpolatedPtsCount) } }
+    private var _interpolatedPtsCount: Int { return _sourceTPoints.count }
     private var _interpolatedTangents: [Vector2D] = []
+    
+    private var _splineRef: UnsafeMutableRawPointer?
     
     //tube geometry
     private var tubeOBJVertices: [Vector2D] = []
@@ -141,6 +142,7 @@ class TestTube: Node {
     
     //visual states
     var isSelected = false
+    var isRejected = false
     var selectEffect: TubeSelectColors = .NoSelection
     private var _timeTicked: Float = 0.0
     private var _selectColors : [TubeSelectColors:float3] = [ .SelectHighlight: float3(1.0,1.0,1.0),
@@ -171,9 +173,9 @@ class TestTube: Node {
     private var _rotSpline: UnsafeMutableRawPointer?
     
     //pouring animation
-    private var travelingToPourPos = false
+    private var isTravelingToPourPos = false
     private var isTipping = false
-    private var finishingTubePour = false
+    private var isFinishingTubePour = false
     private var _currentTravelTime: Float = 0.0
     private var _paramTravelInd: Int = 0
     private var _speed: Float = 2.0
@@ -206,7 +208,6 @@ class TestTube: Node {
         self.scale = scale
         initializeColors(startingColors)
         self.makeContainer()
-        self.toForeground()
         self._texture = Textures.Get(.TestTube)
         self.material.useTexture = true
         self.material.useMaterialColor = false
@@ -265,15 +266,18 @@ class TestTube: Node {
     
     //destruction
     deinit {
-        LiquidFun.destroyBody(_tube)
+        LiquidFun.destroyTube(_tube)
     }
 
     override func update(deltaTime: Float) {
         if updatePipe {
             pipeRecieveStep( deltaTime )
         }
-        if isSelected {
+        if isSelected { // any selection effect should set this true so that the color pulses.
             _timeTicked += deltaTime
+        }
+        if isRejected {
+            rejectStep(deltaTime)
         }
         
         super.update()
@@ -293,14 +297,13 @@ class TestTube: Node {
         case .Moving:
             toForeground()
         case .ReturningToOrigin:
-            if !beingMoved {
-                returnToOriginStep(deltaTime)
-            }
-            else {
+            if reCaptured {
                 toForeground()
                 self.rotateZ(0.0)
                 currentState = .Moving  //allows control from outside
+                break
             }
+            returnToOriginStep(deltaTime)
         case .Selected: // drive it upwards fast
             selectStep(deltaTime)
         case .CleanupValues:
@@ -309,7 +312,8 @@ class TestTube: Node {
             self.isInitialFilling = false
             self.isEmptying = false
             self.donePouring = true
-            self.beingMoved = false
+            self.reCaptured = false
+            skimTopParticles()
             self.currentState = .AtRest
         case .AtRest:
             break
@@ -333,14 +337,16 @@ class TestTube: Node {
         if( _currentTopIndex > totalColors - 2 ) {
             updatePipe = false
             returnToOrigin()
+            isInitialFilling = false
             return
         }
         if( currentColors == newColors) { // all good
             updatePipe = false
+            isInitialFilling = false
             returnToOrigin()
             return
         }
-        guard let pipeToAsk = pipes[newColors[ _currentTopIndex + 1 ]] else { updatePipe = false; returnToOrigin(); return;  }
+        guard let pipeToAsk = pipes[newColors[ _currentTopIndex + 1 ]] else { updatePipe = false; isInitialFilling = false; returnToOrigin(); return;  }
         selectEffect = .FillingEffect
         isSelected = true
         _selectColors.updateValue( (WaterColors[ newColors[ _currentTopIndex + 1] ]?.xyz ?? _selectColors[.SelectHighlight])!, forKey: .FillingEffect)
@@ -407,12 +413,14 @@ class TestTube: Node {
         if particleSystem == nil { print("particle system unitialized before initial fill.")}
         LiquidFun.deleteParticles(inParticleSystem: particleSystem, aboveYPosition: getBoxPositionY() - tubeHeight)
         fillFromPipes()
+        isInitialFilling = true
     }
     
     func startPouring(newPourTubeColors: [TubeColors], newCandidateTubeColors: [TubeColors], cTube: TestTube?) {
         self.candidateTube = cTube
         candidateTube?.isPourCandidate = true
         self.candidateTube?.toForeground()
+        self.candidateTube?.currentState = .Pouring
         newColors = newPourTubeColors
         candidateTube?.newColors = newCandidateTubeColors
         if( newColors == currentColors ) { print("Start Pour WARN::newColors same as old colors") }
@@ -420,7 +428,7 @@ class TestTube: Node {
         resetPipeFilters()
         currentState = .Pouring
         selectEffect = .NoSelection
-        travelingToPourPos = true
+        isTravelingToPourPos = true
         _rotInd = 0
         _rotateDelay = 0.0
         _paramTravelInd = 0
@@ -451,19 +459,19 @@ class TestTube: Node {
         
         makeSpline()
 
-        (_sourceTPointCount, _sourceTPoints) = CustomMathMethods.getSourceTVals( _tParams, density: 3 )
-        interpolatedPoints = [float2].init(repeating: float2(0,0), count: _sourceTPointCount)
+        (_, _sourceTPoints) = CustomMathMethods.getSourceTVals( _tParams, density: 3 )
+        interpolatedPoints = [float2].init(repeating: float2(0,0), count: _interpolatedPtsCount) // _sourceTPoints count
         _interpolatedTangents = interpolatedPoints.map { Vector2D(x:$0.x,y:$0.y) }
         _interpolatedPtsX = _sourceTPoints
         _interpolatedPtsY = _sourceTPoints
         if( _splineRef != nil ) {
-            LiquidFun.setInterpolatedValues(_splineRef, tVals: &_sourceTPoints, onXVals: &_interpolatedPtsX, onYVals: &_interpolatedPtsY, onTangents: &_interpolatedTangents, valCount: _sourceTPointCount)
-            for i in 0..<_sourceTPointCount {
+            LiquidFun.setInterpolatedValues(_splineRef, tVals: &_sourceTPoints, onXVals: &_interpolatedPtsX, onYVals: &_interpolatedPtsY, onTangents: &_interpolatedTangents, valCount: _interpolatedPtsCount)
+            for i in 0..<_interpolatedPtsCount {
                 interpolatedPoints[i] = float2( _interpolatedPtsX[i], _interpolatedPtsY[i] )
             }
         }
     }
-    private var _splineRef: UnsafeMutableRawPointer?
+    
     func makeSpline(resetRecursion: Bool = false) {
         if( _splineRef == nil ){
             _b2AnimationControlPts = animationControlPoints.map { Vector2D(x:$0.x,y:$0.y) }
@@ -479,11 +487,12 @@ class TestTube: Node {
         self.isPourCandidate = false
         self.donePouring = false
         self.isPouring = true
-        self.beingMoved = false
+        self.reCaptured = false
     }
+    
     func resetCandidateParameters() {
         self.currentState = .Pouring
-        self.beingMoved = false
+        self.reCaptured = false
         self.isPourCandidate = true
     }
     
@@ -506,6 +515,7 @@ class TestTube: Node {
     
     func returnToOrigin() {
         LiquidFun.clearPourBits(_tube)
+        toBackground()
         self.isSelected = false
         self.isPouring = false
         self.isPourCandidate = false
@@ -567,7 +577,7 @@ class TestTube: Node {
             nextEmptyKF()
             }
         case 3:
-            beingMoved = false
+            reCaptured = false
             LiquidFun.emptyParticleSystem(particleSystem,minTime: 3.0,maxTime: 3.4) // destroy particles
             self.returnToOrigin()
         default:
@@ -577,7 +587,7 @@ class TestTube: Node {
     
     private func willArrive( _ mag: Float, _ deltaTime: Float ) -> Bool {
         if !( _paramTravelInd < interpolatedPoints.count ) {// this controls the transition to tipping
-            travelingToPourPos = false
+            isTravelingToPourPos = false
             setBoxVelocity()
             return false
         }
@@ -614,7 +624,7 @@ class TestTube: Node {
     }
     
     private func pourStep(_ deltaTime: Float) {
-        if( travelingToPourPos ) {
+        if( isTravelingToPourPos ) { // could refactor to be less complicated.
             if( willArrive( _speed, deltaTime )) {
                 _paramTravelInd += 1
                 if _paramTravelInd == Int(_interpolatedPtsCount / 2) {
@@ -629,8 +639,14 @@ class TestTube: Node {
                 _travelTime -= deltaTime
             }
              else {
+                 if !( willArrive( _speed, deltaTime )) {// it wont arrive so we have to tell it to go to destination.
+                     if( _paramTravelInd < _interpolatedPtsCount - 1) {
+                     setBoxVelocity( vector( interpolatedPoints[ _paramTravelInd ] - getBoxPosition(), mag: _speed) )
+                     _paramTravelInd += 1
+                 }
+                 }
                  _travelTime = defaultTravelSafetyTime
-                 if( _paramTravelInd < _interpolatedPtsCount - 1) {
+                 if( _paramTravelInd < _interpolatedPtsCount - 2) {
                      _paramTravelInd += 1
                  }
             }
@@ -646,7 +662,7 @@ class TestTube: Node {
                     _rotateDelay = _rotStepTime
                 } else { // now open and let particles go to next tube
                     isTipping = false
-                    isReleasing = !travelingToPourPos
+                    isReleasing = !isTravelingToPourPos
                     _releaseTime = 0.0
                     _recieveTime = _defaultReleaseDelay
                     LiquidFun.setAngularVelocity(_tube, angularVelocity: 0)
@@ -661,7 +677,7 @@ class TestTube: Node {
             } else {
                 if( currentColors == newColors && !isRecieving ){
                     isReleasing = false
-                    finishingTubePour = true
+                    isFinishingTubePour = true
                 } else {
                 if( _currentTopIndex < totalColors && _currentTopIndex > -1 && !isRecieving ) { //make sure not to unleash until previous recieved
                     if( currentColors[_currentTopIndex] != newColors[_currentTopIndex]) {
@@ -685,11 +701,11 @@ class TestTube: Node {
             }
         }
         
-        if( finishingTubePour ) {
+        if( isFinishingTubePour ) {
             candidateTube?.returnToOrigin()
             candidateTube?.engulfParticles( particleSystem )
             self.returnToOrigin()
-            finishingTubePour = false
+            isFinishingTubePour = false
         }
     }
     
@@ -727,6 +743,7 @@ class TestTube: Node {
         
         return false
     }
+    
     func returnToOriginStep(_ deltaTime: Float) { // MARK: Maybe refactor
         let currPos = getBoxPosition()
         var moveDirection = float2(x:(origin.x - currPos.x)*2,y: (origin.y - currPos.y)*2)
@@ -841,6 +858,7 @@ class TestTube: Node {
     // selection
     func conflict() {
         isSelected = true
+        isRejected = true
         _selectCountdown = defaultSelectCountdown
         if selectEffect != .Reject {
             previousSelectState = selectEffect
@@ -854,6 +872,7 @@ class TestTube: Node {
             _selectCountdown = defaultSelectCountdown
             selectEffect = previousSelectState
             isSelected = false
+            isRejected = false
         }
     }
     
@@ -882,8 +901,13 @@ class TestTube: Node {
                                numLevels: 4)
     }
     
-    func skimTopParticles(_ aboveSegment: Int) {
-        let amountDeletedAbove = LiquidFun.deleteParticles(inParticleSystem: particleSystem, aboveYPosition: Float(aboveSegment + 1)*_dividerIncrement + self.getBoxPositionY() - tubeHeight / 2 + dividerOffset )
+    func skimTopParticles(_ aboveSegment: Int = -1) {
+        var above = aboveSegment
+        if (aboveSegment == -1)
+        {
+            above = _currentTopIndex
+        }
+        let amountDeletedAbove = LiquidFun.deleteParticles(inParticleSystem: particleSystem, aboveYPosition: Float(above + 1)*_dividerIncrement + self.getBoxPositionY() - tubeHeight / 2 + dividerOffset )
         print("deleted overflow amt: \(amountDeletedAbove).")
     }
     
@@ -952,7 +976,7 @@ class TestTube: Node {
         return nil
     }
     
-    func unitDirection(_ direction: float2) -> float2 { // MARK: it's not an inverse square root?
+    func unitDirection(_ direction: float2) -> float2 { // MARK: maybe it's not an inverse square root?
         let norm =  (pow(direction.x,2) + pow(direction.y, 2)).invSqrt
         return float2(x: direction.x * norm, y: direction.y * norm)
     }
