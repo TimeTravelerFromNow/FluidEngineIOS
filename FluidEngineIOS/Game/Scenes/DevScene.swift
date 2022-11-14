@@ -400,12 +400,6 @@ class DevScene : Scene {
     
     override func touchesBegan() {
         let boxPos = Touches.GetBoxPos()
-        let tubeHitResult = boxHitTest(boxPos: boxPos, excludeDragging: -1)
-
-        if selectedTube?.gridId == tubeHitResult?.gridId  {
-            unSelect()
-        }
-        selectedTube = tubeHitResult
         buttonPressed = boxButtonHitTest(boxPos: boxPos)
         
         for node in children {
@@ -414,7 +408,7 @@ class DevScene : Scene {
             }
         }
         
-        if buttonPressed != nil || selectedTube != nil {
+        if buttonPressed != nil {
             playHaptic()
         }
         
@@ -449,7 +443,7 @@ class DevScene : Scene {
                 return
             }
             if nodeAt.gridId == selectedTube?.gridId { // we clicked the same selected tube
-                touchStatus = .Moving
+                unSelect()
             } else { // pour into nodeAt
                 pourCandidate = nodeAt
                 if !(tubeLevel.pourConflict(pouringTubeIndex: selectedTube?.gridId ?? -1, pouringCandidateIndex: nodeAt.gridId ) ) && (nodeAt.currentState == .AtRest){
@@ -461,7 +455,7 @@ class DevScene : Scene {
                     unSelect()
                 }
             }
-        case .Idle:
+        case .Idle: // here's where grabbing during returning can take place.
             guard let nodeAt = boxHitTest(boxPos: Touches.GetBoxPos(), excludeDragging: -1) else {
                 unSelect();
                 return

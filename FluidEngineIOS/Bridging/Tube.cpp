@@ -34,6 +34,10 @@ Tube::Tube(b2World* worldRef,
     m_world = worldRef;
 }
 Tube::~Tube() {
+// https://stackoverflow.com/questions/57356480/erase-element-from-std-array
+    unsigned long tubeCount = tubes.size();
+    auto newEnd = std::remove( tubes.begin(), tubes.end(), this);
+    for (auto iter = tubes.begin(); iter != newEnd; ++iter);
     m_world->DestroyBody(m_body);
 }
 //collision
