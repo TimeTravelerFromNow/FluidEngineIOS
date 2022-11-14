@@ -18,14 +18,14 @@ class BoxButton: GameObject {
          _ texture: TextureTypes,
          _ action: ButtonActions = .None,
          center: float2,
-         label: ButtonLabelTypes = .None,
+         label: TextLabelTypes = .None,
          scale: Float = 1.5,
          staticButton: Bool = true) {
         isStatic = staticButton
         super.init(meshType)
        
         if( label != .None ) {
-            _textObject = ButtonLabels.Get(label)
+            _textObject = TextLabels.Get(label)
             _textObject?.setScaleFactor(scale)
         }
         setTexture(texture)

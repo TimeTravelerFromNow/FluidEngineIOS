@@ -30,7 +30,7 @@ class Engine {
         
         FontRenderables.Initialize()
         
-        ButtonLabels.Initialize()
+        TextLabels.Initialize()
         
         FluidEnvironment.Initialize()
         

@@ -20,7 +20,6 @@ class TextObject: Node {
         self.setRotationY(2 * .pi)
         self.setRotationX(.pi)
         self.setScale(1 / (GameSettings.ptmRatio * 5))
-        
         _fontType = fontType
         _fontRenderable = FontRenderables.Get(_fontType)
         if let startingText = text {
@@ -30,6 +29,10 @@ class TextObject: Node {
         refreshBuffers()
     }
     
+    func setBoxPos(_ pos: float2) {
+        setPositionX(pos.x / 5)
+        setPositionY(pos.y / 5)
+    }
     func setText(_ text: String) {
         currentText = text
         _fontRenderable.setText(text)

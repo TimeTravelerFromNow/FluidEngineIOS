@@ -13,8 +13,11 @@ enum FontRenderableTypes {
     case TubeDone
     case TubeFull
     case TubeFilling
+    
+    case LevelTime
+    case LevelScore
 }
-enum ButtonLabelTypes {
+enum TextLabelTypes {
     case NewGameLabel
     case MenuLabel
     
@@ -29,6 +32,9 @@ enum ButtonLabelTypes {
     case TubeDoneLabel
     case TubeFullLabel
     case TubeFillingLabel
+    
+    case LevelTimeLabel
+    case LevelScoreLabel
     
     case None
 }
@@ -53,6 +59,9 @@ class FontRenderables: Library<FontRenderableTypes, FontRenderable> {
         fontRenderables.updateValue(FontRenderable(device: Engine.Device), forKey: .TubeDone  )
         fontRenderables.updateValue(FontRenderable(device: Engine.Device), forKey: .TubeFull )
         fontRenderables.updateValue(FontRenderable(device: Engine.Device), forKey: .TubeFilling  )
+        
+        fontRenderables.updateValue(FontRenderable(device: Engine.Device), forKey: .LevelTime  )
+        fontRenderables.updateValue(FontRenderable(device: Engine.Device), forKey: .LevelScore  )
     }
     
     public static func Get(_ fontType : FontRenderableTypes) -> FontRenderable {
@@ -61,9 +70,9 @@ class FontRenderables: Library<FontRenderableTypes, FontRenderable> {
     
 }
 
-class ButtonLabels: Library<ButtonLabelTypes, TextObject> {
+class TextLabels: Library<TextLabelTypes, TextObject> {
 
-    private static var textObjects : [ButtonLabelTypes : TextObject] = [:]
+    private static var textObjects : [TextLabelTypes : TextObject] = [:]
     
     public static func Initialize( ) {
         createDefaultButtonLabels()
@@ -75,17 +84,19 @@ class ButtonLabels: Library<ButtonLabelTypes, TextObject> {
         textObjects.updateValue(TextObject(.TestText1, "open \n valve 0"), forKey: .TestLabel1)
         textObjects.updateValue(TextObject(.TestText1, "autofill \n action"), forKey: .TestLabel2)
         textObjects.updateValue(TextObject(.TestText1, "test3"), forKey: .TestLabel3)
-                
+        textObjects.updateValue(TextObject(.DevText, "developer" ), forKey: .DevSceneLabel)
+        
         textObjects.updateValue(TextObject(.TubePouring, "this tube is pouring!" ), forKey: .TubePouringLabel)
         textObjects.updateValue(TextObject(.TubeReject , "top colors not matching" ), forKey:  .TubeRejectLabel)
         textObjects.updateValue(TextObject(.TubeDone   , "this tube is complete!" ), forKey:    .TubeDoneLabel)
         textObjects.updateValue(TextObject(.TubeFull   , "this tube is full!" ), forKey:    .TubeFullLabel)
         textObjects.updateValue(TextObject(.TubeFilling, "this tube is filling" ), forKey: .TubeFillingLabel)
         
-        textObjects.updateValue(TextObject(.DevText, "developer"), forKey: .DevSceneLabel)
+        textObjects.updateValue(TextObject(.LevelTime, "time: 0"), forKey: .LevelTimeLabel)
+        textObjects.updateValue(TextObject(.LevelScore, "score: 0"), forKey:  .LevelScoreLabel)
     }
     
-    public static func Get(_ labelType : ButtonLabelTypes) -> TextObject {
+    public static func Get(_ labelType : TextLabelTypes) -> TextObject {
         return textObjects[labelType]!
     }
 }

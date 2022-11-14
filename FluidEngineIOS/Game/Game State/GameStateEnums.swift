@@ -15,15 +15,15 @@ let WaterColors: [TubeColors:float4] =
       .Red      :float4(0.9, 30 / 255, 13 / 255, 255 / 255),
       .Green    :float4(0.4, 0.8, 0.3, 1),
       .Blue     :float4(70 / 255, 130  / 255, 245 / 255, 1),
-      .Purple   :float4(140 / 255, 10  / 255, 140 / 255, 1)
+      .Purple   :float4(48 / 255, 30  / 255, 80 / 255, 1)
 ]
 //XMas ?
 //let WaterColors: [TubeColors:float4] =
 //    [ .Empty    :float4(0.1,0.1,0.1,1.0),
-//      .Red      :float4(0.9, 30 / 255, 13 / 255, 255 / 255),
-//      .Green    :float4(0.4, 0.8, 0.3, 1),
-//      .Blue     :float4(1, 1, 1, 1),
-//      .Purple   :float4(120 / 255, 70  / 255, 40 / 255, 1)
+//      .Red      :float4(213/255, 5/255, 0, 1),
+//      .Green    :float4(7/255, 213/255, 0, 1),
+//    .Blue     :float4(0.55, 0.9, 1.0, 1),
+//    .Purple   :float4(0.71 , 0.55, 1.0, 1)
 //]
 
 protocol GameLevel {

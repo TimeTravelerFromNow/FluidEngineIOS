@@ -14,11 +14,11 @@ let level0: [ [ TubeColors ] ] =
 let level1: [ [TubeColors] ] =
     [
         
-            [ .Blue, .Red, .Green, .Red],
-            [  .Green, .Red, .Blue, .Empty ],
-            [  .Red, .Empty, .Empty, .Empty],
-        [ .Empty, .Empty, .Empty, .Empty],
-        [ .Red, .Red, .Red, .Red]
+            [ .Blue, .Green, .Empty, .Empty],
+            [  .Green, .Purple, .Blue, .Empty ],
+            [  .Purple, .Blue, .Blue, .Green],
+        [ .Green, .Empty, .Empty, .Empty],
+        [ .Purple, .Red, .Purple, .Red]
         
     ]
 

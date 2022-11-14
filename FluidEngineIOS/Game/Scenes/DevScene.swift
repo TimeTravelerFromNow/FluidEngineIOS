@@ -2,7 +2,7 @@ import MetalKit
 import CoreHaptics
 
 class DevScene : Scene {
-    var test_testTube: TestTube? = TestTube()
+    var measureTube: TestTube? = TestTube()
     var tubeGrid: [ TestTube ] = []
     var reservoirs: [ ReservoirObject ] = []
     var buttons: [ BoxButton ] = []
@@ -18,27 +18,28 @@ class DevScene : Scene {
     private var _messageDelay: Float = 0.0
     private var isMessageShowing = false
     var messageText: TextObject?
-    var currentMessageLabel: FontRenderableTypes? {
+    var currentMessageLabel: TextLabelTypes? {
         didSet {
-            if( currentMessageLabel != nil ){
+            if( messageText == nil ){
+                if currentMessageLabel != nil {
                 _messageDelay = defaultMessageDelay
-                messageText = TextObject( currentMessageLabel! )
+                messageText = TextLabels.Get( currentMessageLabel! )
                 addChild(messageText!)
                 isMessageShowing = true
-            }  else {
-                if( messageText != nil ) {
-                 removeChild(messageText!)
                 }
+            }  else {
+                removeChild(messageText!)
                 messageText = nil
-                
             }
         }
     }
+    
     // tube emptying
     var emptyingTubes: Bool = false
     private var _emptyDuration: Float = 1.0
     private let defaultEmptyTime: Float = 1.0
     
+    var isPlaying = false
     //collision thresholding and geometries
     private var collisionThresh: Float = 0.3
     private var tubeHeight: Float = 0.0 // can determine at run time
@@ -56,7 +57,6 @@ class DevScene : Scene {
     var startedHovering: Bool = false
     let hoverSelectTime: Float = 0.6 // when we reach 0.0, pourCandidate becomes the tube we are hovering over.
     var hasCommittedtoPour: Bool = false
-    
     
     // pipe fill animation constants
     var preparingToFill = false
@@ -93,6 +93,25 @@ class DevScene : Scene {
     var engine: CHHapticEngine!
     var player: CHHapticPatternPlayer?
     
+    var timeCounter: TextObject!
+    var scoreCounter: TextObject!
+    var levelTime: Int = 0 {
+        didSet {
+            let seconds = levelTime % 60
+            let minutes = Int(floor( Float(levelTime) / 60 ))
+            if minutes > 0 {
+                timeCounter?.setText("time: \(minutes)m \(seconds)s")
+            } else {
+                timeCounter?.setText("time: \(seconds)s")
+            }
+        }
+    }
+    var levelScore: Int = 0 {
+        didSet {
+            scoreCounter?.setText("score: \(levelScore)")
+        }
+    }
+    
     func addTestButton() {
         let menuButton = BoxButton(.Menu,.Menu, .ToMenu, center: box2DOrigin + float2(1.5,4.0), label: .MenuLabel, scale: 1.1)
         let startButton = BoxButton(.Menu, .Menu, .StartGameAction, center: box2DOrigin + float2(-1.5,4.0), label: .StartGameLabel, scale: 1.1)
@@ -102,6 +121,17 @@ class DevScene : Scene {
         
         addChild(menuButton)
         addChild(startButton)
+    }
+    
+    func addCounters() {
+        timeCounter = TextLabels.Get(.LevelTimeLabel)
+        scoreCounter = TextLabels.Get(.LevelScoreLabel)
+        let timeCenter =  box2DOrigin + float2(0,4.0)
+        let scoreCenter =  box2DOrigin + float2(0,3.5)
+        timeCounter.setBoxPos(timeCenter)
+        scoreCounter.setBoxPos(scoreCenter)
+        self.addChild(timeCounter)
+        self.addChild(scoreCounter)
     }
     
     override func buildScene(){
@@ -124,10 +154,11 @@ class DevScene : Scene {
         }
 
         tubeLevel = TubeLevel()
-        
+       
+        (currentCamera as? OrthoCamera)?.setFrameSize( largeZoom )
         addTestButton()
         InitializeGrid()
-        (currentCamera as? OrthoCamera)?.setFrameSize( largeZoom )
+        addCounters()
     }
     
     func destroyReservoirs() {
@@ -215,13 +246,13 @@ class DevScene : Scene {
     }
     
     private func InitializeGrid() {
-        if( test_testTube == nil ) {
-            test_testTube = TestTube()
+        if( measureTube == nil ) {
+            measureTube = TestTube()
         }
-        let xSep : Float = test_testTube!.getTubeWidth() * 1.4
-        let ySep : Float = test_testTube!.getTubeHeight() * 1.1
-        if( test_testTube != nil ) {
-            test_testTube = nil
+        let xSep : Float = measureTube!.getTubeWidth() * 1.4
+        let ySep : Float = measureTube!.getTubeHeight() * 1.1
+        if( measureTube != nil ) {
+            measureTube = nil
         }
         var tGid = 0
         let startLvl = tubeLevel.startingLevel
@@ -450,7 +481,7 @@ class DevScene : Scene {
                     pourTubes()
                     touchStatus = .Idle
                 } else { // red highlights Flash
-                    currentMessageLabel = .TubeReject
+                    currentMessageLabel = .TubeRejectLabel
                     pourCandidate?.conflict()
                     unSelect()
                 }
@@ -543,6 +574,7 @@ class DevScene : Scene {
         }
     }
    
+    var _miliSeconds: Float = 1.0
     override func update(deltaTime : Float) {
         super.update(deltaTime: deltaTime)
         
@@ -554,8 +586,8 @@ class DevScene : Scene {
             if( _messageDelay > 0.0 ) {
             _messageDelay -= deltaTime
             } else {
-                currentMessageLabel = nil
                 isMessageShowing = false
+                currentMessageLabel = nil
             }
         }
        
@@ -586,10 +618,20 @@ class DevScene : Scene {
                 (currentCamera as? OrthoCamera)?.setFrameSize( _currentZoom )
             } else {
                 zoomingAfterComplete = false
+                isPlaying = true
+                _miliSeconds = 1.0
                 destroyReservoirs()
             }
         }
         
+        if isPlaying {
+            if(_miliSeconds > 0.0 ) {
+                _miliSeconds -= deltaTime
+            } else {
+                levelTime += 1
+                _miliSeconds = 1.0
+            }
+        }
         
         if (Touches.IsDragging) {
             if buttonPressed != nil {
