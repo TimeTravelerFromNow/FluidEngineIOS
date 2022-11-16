@@ -87,6 +87,6 @@ private:
     b2World* m_world;
 };
 
-static std::vector<Reservoir*> reservoirs;
+//static std::vector<Reservoir*> reservoirs;
 
 #endif /* Pipe_h */

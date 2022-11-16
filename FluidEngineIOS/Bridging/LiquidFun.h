@@ -207,4 +207,8 @@ typedef struct VertexIn {
 // just setting fixture filters
 + (void)shareParticleSystemFilterWithFixture:(void*)fixtureRef particleSystem:(void *)particleSystem;
 + (void)setDefaultFilterForFixture:(void *)fixtureRef;
+
+// Alien class
++ (void *)makeAlien:(Vector2D)position vertices:(Vector2D*)vertices vertexCount:(long)vertexCount;
+
 @end

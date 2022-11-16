@@ -36,6 +36,9 @@ enum TextureTypes {
     case SmallValveTexture
     
     case ReservoirSnapShot
+    
+    case AlienTexture
+    case AsteroidTexture
 }
 
 class Textures {
@@ -69,6 +72,9 @@ class Textures {
         _library.updateValue(Texture("moveTexture", ext: "png").texture, forKey: .MoveObjectTexture)
         _library.updateValue(Texture("bigValve", ext: "png").texture, forKey: .BigValveTexture)
         _library.updateValue(Texture("smallValve", ext: "png").texture, forKey: .SmallValveTexture)
+        
+        _library.updateValue(Texture("Alien", ext: "png").texture, forKey: .AlienTexture)
+        _library.updateValue(Texture("Asteroid", ext: "png").texture, forKey: .AsteroidTexture)
 
     }
     

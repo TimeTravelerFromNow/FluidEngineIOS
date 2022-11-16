@@ -1,4 +1,4 @@
-import MetalKit
+import Foundation
 import CoreHaptics
 
 class DevScene : Scene {
@@ -34,18 +34,25 @@ class DevScene : Scene {
         }
     }
     
+    // MARK: top level states
+    var isPlaying = false
+    var isWaitingToFill = false {
+        didSet { _askForLiquidDelay = defaultAskForLiquidDelay }
+    }
+    var isGridFilling: Bool = false
+    var isZooming = false { didSet { _currentZoom = (currentCamera as? OrthoCamera)?.getFrameSize() ?? 1.0 } }
+    var isGridEmptying = false
+    var fillQueued = false // for refilling automatically
+    
     // tube emptying
-    var emptyingTubes: Bool = false
     private var _emptyDuration: Float = 1.0
     private let defaultEmptyTime: Float = 1.0
     
-    var isPlaying = false
     //collision thresholding and geometries
     private var collisionThresh: Float = 0.3
     private var tubeHeight: Float = 0.0 // can determine at run time
     private var tubeWidth : Float = 0.18
     // tube filling
-    var tubesFilling: Bool = false
     
     // tube moving
     var tubeIsActive: Bool = false
@@ -59,12 +66,10 @@ class DevScene : Scene {
     var hasCommittedtoPour: Bool = false
     
     // pipe fill animation constants
-    var preparingToFill = false
     let defaultAskForLiquidDelay: Float = 1.5
     private var _askForLiquidDelay: Float = 0.0
     
     // zoom when done initializing
-    var zoomingAfterComplete = false { didSet { _currentZoom = (currentCamera as? OrthoCamera)?.getFrameSize() ?? 1.0 } }
     let defaultZoom: Float = 1.0
     let largeZoom: Float = 1.5
     private var _currentZoom: Float = 2.0
@@ -112,27 +117,17 @@ class DevScene : Scene {
         }
     }
     
-    func addTestButton() {
-        let menuButton = BoxButton(.Menu,.Menu, .ToMenu, center: box2DOrigin + float2(1.5,4.0), label: .MenuLabel, scale: 1.1)
-        let startButton = BoxButton(.Menu, .Menu, .StartGameAction, center: box2DOrigin + float2(-1.5,4.0), label: .StartGameLabel, scale: 1.1)
-        
-        buttons.append(menuButton)
-        buttons.append(startButton)
-        
-        addChild(menuButton)
-        addChild(startButton)
+    var isShowingCleanDescription = false {
+        didSet {
+            guard let label = cleanBugLabel else { return }
+            if( isShowingCleanDescription ) {
+                addChild(label)
+            } else {
+               removeChild(label) //MARK: maybe unsafe
+            }
+        }
     }
-    
-    func addCounters() {
-        timeCounter = TextLabels.Get(.LevelTimeLabel)
-        scoreCounter = TextLabels.Get(.LevelScoreLabel)
-        let timeCenter =  box2DOrigin + float2(0,4.0)
-        let scoreCenter =  box2DOrigin + float2(0,3.5)
-        timeCounter.setBoxPos(timeCenter)
-        scoreCounter.setBoxPos(scoreCenter)
-        self.addChild(timeCounter)
-        self.addChild(scoreCounter)
-    }
+    var cleanBugLabel: TextObject!
     
     override func buildScene(){
         do {
@@ -159,6 +154,35 @@ class DevScene : Scene {
         addTestButton()
         InitializeGrid()
         addCounters()
+        
+        cleanBugLabel = TextLabels.Get(.CleanDescription)
+        cleanBugLabel.setBoxPos( box2DOrigin )
+    }
+    
+    
+    
+    func addTestButton() {
+        let menuButton = BoxButton(.Menu,.Menu, .ToMenu, center: box2DOrigin + float2(1.5,4.0), label: .MenuLabel, scale: 1.1)
+        let startButton = BoxButton(.Menu, .Menu, .StartGameAction, center: box2DOrigin + float2(-1.5,4.0), label: .StartGameLabel, scale: 1.1)
+        let cleanButton = BoxButton(.Menu, .Menu, .Clear, center: box2DOrigin + float2(-1.5,3), label: .TestLabel2, scale: 1.2 )
+        buttons.append(menuButton)
+        buttons.append(startButton)
+        buttons.append(cleanButton)
+        
+        addChild(menuButton)
+        addChild(startButton)
+        addChild(cleanButton)
+    }
+    
+    func addCounters() {
+        timeCounter = TextLabels.Get(.LevelTimeLabel)
+        scoreCounter = TextLabels.Get(.LevelScoreLabel)
+        let timeCenter =  box2DOrigin + float2(0,4.0)
+        let scoreCenter =  box2DOrigin + float2(0,3.5)
+        timeCounter.setBoxPos(timeCenter)
+        scoreCounter.setBoxPos(scoreCenter)
+        self.addChild(timeCounter)
+        self.addChild(scoreCounter)
     }
     
     func destroyReservoirs() {
@@ -274,7 +298,7 @@ class DevScene : Scene {
         _emptyKF = 0
         tubeIsActive = false
         _emptyDuration = defaultEmptyTime
-        emptyingTubes = true
+        isGridEmptying = true
         touchStatus = .Emptying
     }
     
@@ -300,7 +324,7 @@ class DevScene : Scene {
             }
             if !stillEmptying { nextEmptyKF() }
         case 3:  // done
-            emptyingTubes = false
+            isGridEmptying = false
             print("execute refill")
             nextEmptyKF()
         default :
@@ -441,6 +465,9 @@ class DevScene : Scene {
         
         if buttonPressed != nil {
             playHaptic()
+            if buttonPressed == .Clear {
+                isShowingCleanDescription = true
+            }
         }
         
         FluidEnvironment.Environment.debugParticleDraw(atPosition: Touches.GetBoxPos())
@@ -510,9 +537,22 @@ class DevScene : Scene {
     
     func startGame() {
         reservoirAction()
-        preparingToFill = true
-        _askForLiquidDelay = defaultAskForLiquidDelay
+        isWaitingToFill = true
     }
+    
+    func emptyTubes() {
+        for tube in tubeGrid {
+            tube.BeginEmpty()
+        }
+        touchStatus = .Emptying
+    }
+    
+    func rePourTubes() {
+        isGridEmptying = true
+        fillQueued = true
+        emptyTubes()
+    }
+    
     
     func doButtonAction() {
         if( buttonPressed != nil ) {
@@ -520,12 +560,14 @@ class DevScene : Scene {
             case .None:
                 print("let go of a button")
             case .Clear:
-                print("clear action now ? no testing filling")
+               rePourTubes()
             case .ToMenu:
                 SceneManager.sceneSwitchingTo = .Menu
                 SceneManager.Get( .Menu ).unFreeze()
             case .StartGameAction:
                 startGame()
+            case .TestAction1:
+                emptyTubes()
             case .TestAction2:
                 break
             case .TestAction3:
@@ -533,15 +575,21 @@ class DevScene : Scene {
             case nil:
                 print("let go of no button")
             default:
-                print("Button Action WARN::need \(boxButtonHitTest(boxPos: Touches.GetBoxPos())) action.")
+                print("Button Action ADVISE::need \(boxButtonHitTest(boxPos: Touches.GetBoxPos())) action.")
                 break
             }
         }
     }
     
-    func tubesAskForLiquid() {
+    func StartGridPipeFill() {
         for tube in tubeGrid {
             tube.startPipeFill()
+        }
+    }
+    
+    func StartGridFastFill() {
+        for tube in tubeGrid {
+            tube.startFastFill()
         }
     }
     
@@ -549,6 +597,9 @@ class DevScene : Scene {
         
         doButtonAction()
         
+        if buttonPressed == .Clear {
+            isShowingCleanDescription = false
+        }
         buttonPressed = nil
         
         for b in buttons {
@@ -578,10 +629,6 @@ class DevScene : Scene {
     override func update(deltaTime : Float) {
         super.update(deltaTime: deltaTime)
         
-        if touchStatus ==  .Emptying {
-            EmptyTubesStep(deltaTime)
-        }
-        
         if isMessageShowing {
             if( _messageDelay > 0.0 ) {
             _messageDelay -= deltaTime
@@ -591,33 +638,50 @@ class DevScene : Scene {
             }
         }
        
-        if preparingToFill {
+        if isWaitingToFill {
             if( _askForLiquidDelay > 0.0 ){
                 _askForLiquidDelay -= deltaTime
             } else {
-                preparingToFill = false
-                tubesFilling = true
-                tubesAskForLiquid()
+                isWaitingToFill = false
+                isGridFilling = true
+                if( isPlaying ) { // in progress, dont repeat animation, just fill them.
+                    StartGridFastFill()
+                } else {
+                    StartGridPipeFill()
+                }
             }
         }
         
-        if tubesFilling {
+        if isGridFilling {
             var stillFilling = false
             for t in tubeGrid {
                 stillFilling = stillFilling || t.isInitialFilling
             }
             if !stillFilling {
-                tubesFilling = false
-                zoomingAfterComplete = true
+                isGridFilling = false
+                isZooming = true
             }
         }
         
-        if zoomingAfterComplete  {
+        if isGridEmptying {
+            var stillEmptying = false
+            for t in tubeGrid {
+                stillEmptying = stillEmptying || t.isEmptying
+            }
+            if !stillEmptying {
+                isGridEmptying = false
+                isZooming = true && !fillQueued
+                isWaitingToFill = fillQueued
+                fillQueued = false
+            }
+        }
+        
+        if isZooming  {
             if( _currentZoom > defaultZoom ) {
                 _currentZoom -= deltaTime
                 (currentCamera as? OrthoCamera)?.setFrameSize( _currentZoom )
             } else {
-                zoomingAfterComplete = false
+                isZooming = false
                 isPlaying = true
                 _miliSeconds = 1.0
                 destroyReservoirs()
@@ -639,6 +703,7 @@ class DevScene : Scene {
                 if buttonPressed == nil {
                     for b in buttons {
                         b.deSelect()
+                        isShowingCleanDescription = false
                     }
                 }
             }

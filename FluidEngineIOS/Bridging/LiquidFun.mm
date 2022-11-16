@@ -5,6 +5,7 @@
 #import "PolygonObject.h"
 #import "Reservoir.h"
 #import "TKSpline.h"
+#import "Alien.h"
 
 static b2World *world;
 
@@ -579,7 +580,6 @@ return belowPositionsCount;
 }
 
 // Reservoir Class
-
 + (void *) makeReservoir:(void *)particleSysRef
                 location:(Vector2D)location
                 vertices:(void *) vertices vertexCount:(UInt32)vertexCount {
@@ -587,7 +587,7 @@ return belowPositionsCount;
                              (b2ParticleSystem*) particleSysRef,
                              b2Vec2(location.x,location.y),
                              (b2Vec2*)vertices, (unsigned int)vertexCount);
-    reservoirs.push_back(newReservoir);
+//    reservoirs.push_back(newReservoir);
     return newReservoir;
 }
 
@@ -709,6 +709,15 @@ return belowPositionsCount;
     defFilter.isFiltering = true;
     defFilter.groupIndex = -1;
     ((b2Fixture*)fixtureRef)->SetFilterData(defFilter);
+}
+
+// Alien class
++ (void *)makeAlien:(b2Vec2)position vertices:(b2Vec2*)vertices vertexCount:(long)vertexCount {
+    Alien* newAlien = new Alien(world,
+                                position,
+                                vertices,
+                                vertexCount);
+    return newAlien;
 }
 
 @end

@@ -1,14 +1,24 @@
 import MetalKit
+import CoreHaptics
 
-class BeachScene : Scene {
+class AlienScene : Scene {
     
     var buttons: [ BoxButton ] = []
     
     private func addTestButtons() {
-        let menuButton = BoxButton(.Menu,.Menu, .ToMenu, center: box2DOrigin + float2(0.0, 3.0), label: .MenuLabel)
-        
+        let menuButton = BoxButton(.Menu,.Menu, .ToMenu, center: box2DOrigin + float2(0.0, 3.0), label: .MenuLabel, staticButton: false)
+        let testButton = BoxButton(.Menu,.Menu, .TestAction1, center: box2DOrigin + float2(1.0, 3.0), label: .TestLabel1, staticButton: false)
+
         buttons.append(menuButton)
         addChild(menuButton)
+        
+        buttons.append(testButton)
+        addChild(testButton)
+    }
+    
+    private func addEnemies() {
+        let testEnemy = AlienEnemy(position: box2DOrigin + float2(0.0, 1.0), meshType: .Alien, textureType: .AlienTexture, scale: 2.0)
+        addChild(testEnemy)
     }
     
     override func buildScene(){
@@ -17,7 +27,12 @@ class BeachScene : Scene {
         addTestButtons()
                 
         freeze()
-
+     
+        SharedBackground.Background.skyBG.cmesh.updateVertexColor(float4(0,0,0.1,1.0), atIndex: 0)
+        SharedBackground.Background.skyBG.cmesh.updateVertexColor(float4(0,0.1,0.0,1.0), atIndex: 1)
+        SharedBackground.Background.skyBG.cmesh.updateVertexColor(float4(0,0.1,0.0,1.0), atIndex: 2)
+        SharedBackground.Background.skyBG.cmesh.updateVertexColor(float4(0,0.0,0.1,1.0), atIndex: 3)
+        addEnemies()
     }
     
     override func freeze() {
@@ -79,6 +94,10 @@ class BeachScene : Scene {
             print("let go of a button")
         case .ToMenu:
             SceneManager.sceneSwitchingTo = .Menu
+        case .TestAction1:
+            print("test something")
+            addEnemies()
+            shouldUpdateGyro = true
         case nil:
             print("let go of no button")
         default:

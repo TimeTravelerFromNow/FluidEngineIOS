@@ -36,17 +36,12 @@ class TestTube: Node {
     var isEmptying = false
     var emptyKeyFrame = 0
     // initial pour animation
-    var isInitialFilling = true
-    var timeToSkim : Float = GameSettings.CapPlaceDelay
-    private let capPlaceDelay : Float = GameSettings.CapPlaceDelay
-    var particleGroupPlaced = false
+    var isInitialFilling: Bool { return currentState == .Initializing }
+    private var skimDelay : Float = 0.53
+    private let defaultSkimDelay : Float = 0.53
     private var _colorsFilled : [TubeColors] = []
-    private let _groupScaleY: Float = GameSettings.GroupScaleY // factors to multiply fluid box dimensions by
-    private let _groupScaleX: Float = GameSettings.GroupScaleX
     //pouring mechanics variables, consider refactoring into keyframing
     private var _pourDirection: Float = -1
-    private var _pourSpeed: Float =  GameSettings.PourSpeed
-    private let pourSpeedDefault: Float = GameSettings.PourSpeed
     var isPouring: Bool = false                     // is the one pouring
     var systemPouringInto: UnsafeMutableRawPointer!
     var isPourCandidate: Bool = false               // is being poured into?
@@ -99,12 +94,10 @@ class TestTube: Node {
     private var tubeHeight: Float!
     private var tubeWidth : Float!
     var dividerOffset: Float!
-    private var bottomOffset: Float = 0.0 // determine how to offset the first cell a little to match the sizes of the other cells.
     private var _dividerIncrement: Float { return (tubeHeight) / Float(totalColors) }
     private var _dividerScale: Float = 1.5
     //game state related
     private var totalColors: Int { return currentColors.count }//no. cells dont change during a level.
-    private var _initialFillProgress: Int = 0
     // determine if still needed after C++ refactor
     private var _dividerReferences: [UnsafeMutableRawPointer?] = []
     private var _dividerPositions: [ [Vector2D] ]!
@@ -113,19 +106,25 @@ class TestTube: Node {
     private var _groupReferences:   UnsafeMutableRawPointer!
     
     var currentColors: [TubeColors] = [] {
-        didSet { refreshDividers() }
+        didSet {
+            refreshDividers();
+            skimDelay = defaultSkimDelay;
+        }
     } // what we will see, what dividers are computed on
-    var newColors: [TubeColors] = [] // state we are trying to achieve with animation
+    var newColors: [TubeColors] = [] { didSet
+        {
+            _colors = newColors.map { WaterColors[ $0 ]! }
+        }
+    }// state we are trying to achieve with animation
     private var _currentTopIndex: Int { // zero is completely empty
-        return (currentColors.firstIndex(where: {$0 == .Empty} ) ?? totalColors) - 1
+        return  (currentColors.firstIndex(where: {$0 == .Empty} ) ?? totalColors) - 1;
     }
     
     // more variables
     private var _previousState: TestTubeStates = .AtRest
     private var selectPos: Float { return origin.y + 0.3 }
     // initial filling
-    var fullNum: Int = 0
-    private var _fillKeyFrame = 0
+    
     // more important accessible variables
     var mesh: Mesh!
     
@@ -133,6 +132,7 @@ class TestTube: Node {
     var fluidModelConstants = ModelConstants()
     
     // filling animation variables
+    var isFastFilling = false
     var updatePipe = false
     var pipes: [TubeColors: Pipe] = [:] // the pipes the tube will use for filling
     var currentFillNum = 0
@@ -181,12 +181,13 @@ class TestTube: Node {
     private var _speed: Float = 2.0
     // translation step data
     private var isReleasing = false
+    private var _defaultRecieveDelay: Float = 1.5
     private var _defaultReleaseDelay: Float = 1.5
     private var _releaseTime: Float = 0.0
     private var _recieveTime: Float = 0.0
 //    private var _defaultRecieveDelay
     private var _pouredColor: TubeColors = .Empty
-    private var isRecieving = false
+    private var isRecieving = false { didSet { _recieveTime = _defaultRecieveDelay; skimDelay = defaultSkimDelay } }
     
     private let defaultTravelSafetyTime: Float = 1.0
     private var _travelTime: Float = 0.0
@@ -271,7 +272,7 @@ class TestTube: Node {
 
     override func update(deltaTime: Float) {
         if updatePipe {
-            pipeRecieveStep( deltaTime )
+            pipeUpdateStep( deltaTime )
         }
         if isSelected { // any selection effect should set this true so that the color pulses.
             _timeTicked += deltaTime
@@ -286,9 +287,10 @@ class TestTube: Node {
         case .Emptying:
             emptyStep(deltaTime)
         case .Initializing:
-            if( updatePipe ) {
+            if( isFastFilling ) {
+                fastFillStep(deltaTime)
             } else {
-//                initialFillStep(deltaTime)
+                pipeRecieveStep(deltaTime)
             }
         case .Pouring:
             if !isPourCandidate {
@@ -309,7 +311,6 @@ class TestTube: Node {
         case .CleanupValues:
             self.isSelected = false
             self.rotateZ(0.0)
-            self.isInitialFilling = false
             self.isEmptying = false
             self.donePouring = true
             self.reCaptured = false
@@ -337,16 +338,14 @@ class TestTube: Node {
         if( _currentTopIndex > totalColors - 2 ) {
             updatePipe = false
             returnToOrigin()
-            isInitialFilling = false
             return
         }
-        if( currentColors == newColors) { // all good
+        if( currentColors == newColors) { // all good / finished
             updatePipe = false
-            isInitialFilling = false
             returnToOrigin()
             return
         }
-        guard let pipeToAsk = pipes[newColors[ _currentTopIndex + 1 ]] else { updatePipe = false; isInitialFilling = false; returnToOrigin(); return;  }
+        guard let pipeToAsk = pipes[newColors[ _currentTopIndex + 1 ]] else { updatePipe = false; returnToOrigin(); return;  }
         selectEffect = .FillingEffect
         isSelected = true
         _selectColors.updateValue( (WaterColors[ newColors[ _currentTopIndex + 1] ]?.xyz ?? _selectColors[.SelectHighlight])!, forKey: .FillingEffect)
@@ -361,8 +360,17 @@ class TestTube: Node {
         updatePipe = true
     }
   
-    func pipeRecieveStep( _ deltaTime: Float ) {
+    var pipeColorsToUpdate: [TubeColors] = []
+    private func pipeUpdateStep( _ deltaTime: Float ) {
+        for pipeColor in pipeColorsToUpdate {
+            pipes[ pipeColor ]?.updatePipe( deltaTime )
+        }
+    }
+    private func pipeRecieveStep( _ deltaTime: Float ) {
         let newColor = newColors[ _currentTopIndex + 1 ]
+        if !( pipeColorsToUpdate.contains( newColor )) {
+            pipeColorsToUpdate.append(newColor)
+        }
         guard let currPipe = pipes[ newColor ] else { print("no pipe for \(newColor)"); return }
         
         if( currentFillNum < quota || timeTillSafety < safetyTime)  {
@@ -378,10 +386,10 @@ class TestTube: Node {
                 currPipe.highlighted = false
                 currentColors[ _currentTopIndex + 1 ] = newColor
                 fillFromPipes()
+                pipeColorsToUpdate.removeAll { $0 == newColor }
             }
         }
         timeTillSafety += deltaTime
-        currPipe.updatePipe( deltaTime )
     }
     
     func setFilterOfCandidate() {
@@ -393,27 +401,21 @@ class TestTube: Node {
     }
     
     //begin animations
-    func startFastFill(colors: [TubeColors] ) {
+    func startFastFill( ) {
         self.currentState = .Initializing
-        _fillKeyFrame = 0
-        timeToSkim = capPlaceDelay
-        _initialFillProgress = 0
-        initializeColors(colors)
+        if particleSystem == nil { print("startFill WARN::particle system unitialized before initial fill.")}
         
-        initializeDividerArrays()
-        initializeDividerPositions()
-        
-        self.isInitialFilling = true
+        self.isFastFilling = true
         self.currentState = .Initializing
-        if particleSystem == nil { print("particle system unitialized before initial fill.")}
+        _defaultRecieveDelay = 0.2
     }
     
     func startPipeFill( ) {
         self.currentState = .Initializing
-        if particleSystem == nil { print("particle system unitialized before initial fill.")}
+        if particleSystem == nil { print("startFill WARN::particle system unitialized before initial fill.")}
         LiquidFun.deleteParticles(inParticleSystem: particleSystem, aboveYPosition: getBoxPositionY() - tubeHeight)
         fillFromPipes()
-        isInitialFilling = true
+        isFastFilling = false
     }
     
     func startPouring(newPourTubeColors: [TubeColors], newCandidateTubeColors: [TubeColors], cTube: TestTube?) {
@@ -501,7 +503,6 @@ class TestTube: Node {
         print("rotation before empty: \(self.getRotationZ())")
         LiquidFun.beginEmpty( _tube )
         self.emptyKeyFrame = 0
-        self._pourSpeed = pourSpeedDefault
         self.isEmptying = true
         self._emptyIncrement = _emptyDelay
         self.currentState = .Emptying
@@ -513,7 +514,10 @@ class TestTube: Node {
         currentState = .Selected
     }
     
-    func returnToOrigin() {
+    func returnToOrigin(_ optionalEngulf: UnsafeMutableRawPointer? = nil ) {
+        if( optionalEngulf != nil) {
+            LiquidFun.engulfParticles(_tube, originalParticleSystem: optionalEngulf)
+        }
         LiquidFun.clearPourBits(_tube)
         toBackground()
         self.isSelected = false
@@ -580,6 +584,7 @@ class TestTube: Node {
             reCaptured = false
             LiquidFun.emptyParticleSystem(particleSystem,minTime: 3.0,maxTime: 3.4) // destroy particles
             self.returnToOrigin()
+            self.currentColors = [TubeColors].init(repeating: .Empty, count: totalColors)
         default:
             print("not supposed to get here (empty animation step \(emptyKeyFrame) not defined).")
         }
@@ -603,8 +608,6 @@ class TestTube: Node {
     
     private func startTipping(resolution: Int = 30) {
         isTipping = true
-        LiquidFun.setPourBits(_tube)
-        candidateTube?.setFilterOfCandidate()
         _rotStepTime = _defaultRotationTime / Float(resolution)
         // initialize a sin function for interpolating angles.
         // we can to interpolate since derivatives are built into the spline function :)
@@ -664,8 +667,9 @@ class TestTube: Node {
                     isTipping = false
                     isReleasing = !isTravelingToPourPos
                     _releaseTime = 0.0
-                    _recieveTime = _defaultReleaseDelay
                     LiquidFun.setAngularVelocity(_tube, angularVelocity: 0)
+                    LiquidFun.setPourBits(_tube) // set the pour bits so that both systems collide
+                    candidateTube?.setFilterOfCandidate()
                 }
             }
         }
@@ -691,11 +695,10 @@ class TestTube: Node {
             }
         }
         
-        if( isRecieving ){
+        if( isRecieving ){ // for the candidate
             if( _recieveTime > 0.0 ) {
                 _recieveTime -= deltaTime
             } else {
-                _recieveTime = _defaultReleaseDelay
                 candidateTube?.recieveNewColor( _pouredColor )
                 isRecieving = false
             }
@@ -710,9 +713,7 @@ class TestTube: Node {
     }
     
     func recieveNewColor( _ color: TubeColors ) {
-        if( isPourCandidate ) {
-            currentColors[_currentTopIndex + 1] = color
-        } else { print("pourNewColor WARN::called on non-candidate tube.")}
+        currentColors[_currentTopIndex + 1] = color
     }
     
     // uprighting animation
@@ -789,69 +790,46 @@ class TestTube: Node {
         }
     }
     
-    func initialFillStep(_ deltaTime: Float) {
-        switch _fillKeyFrame {
-        case 0:
-            if _initialFillProgress < totalColors {
-                let currentColor = currentColors[_initialFillProgress]
-                var color = _colors[_initialFillProgress]
-                
-                if timeToSkim > 0.0 {
-                    if currentColor != .Empty {
-                        if !particleGroupPlaced {
-                            let yPos = (_dividerIncrement * 1.4 - tubeHeight / 2) + GameSettings.DropHeight
-                            let groupSpawnPosition = Vector2D(x: self.getBoxPositionX(),
-                                                              y: self.getBoxPositionY() + yPos - _dividerIncrement/2)
-                            let groupSize = Size2D(width: tubeWidth * _groupScaleX,
-                                                   height: _groupScaleY * _dividerIncrement)
-                            spawnParticleBox(groupSpawnPosition,
-                                             groupSize,
-                                             color: &color)
-                            particleGroupPlaced = true
-                            _initialFillProgress += 1
-                            
-                            timeToSkim = capPlaceDelay
-                        }
-                    }
-                    else {
-                        _initialFillProgress += 1
-                    }
-                    timeToSkim -= deltaTime
-                } else {
-                    timeToSkim = capPlaceDelay
-                    skimTopParticles(_currentTopIndex)                     //delete overflows
-                    particleGroupPlaced = false
-                }
-            }
-            else {
-                toBackground()
-                nextFillKF()
-            }
-        case 1:
-            if timeToSkim > 0.0 {
-                timeToSkim -= deltaTime
-            }
-            else { nextFillKF() }
-        case 2:
-            skimTopParticles(_currentTopIndex - 1)
-            let outsidesDelet = deleteOutside()
-            print("deleted \(outsidesDelet) particles outside.")
-            self.returnToOrigin()
-            refreshDividers()
-        default:
-            print("unknown fill key frame \(_fillKeyFrame)")
+    func fastFillStep(_ deltaTime: Float) {
+        if( currentColors == newColors ) { // done
+            returnToOrigin()
+            _defaultRecieveDelay = 1.5
         }
-    }
-    
-    // keyframe advances
-    func nextFillKF() {
-        _fillKeyFrame += 1
-        timeToSkim = capPlaceDelay
+        if( _recieveTime > 0.0 ) {
+            _recieveTime -= deltaTime
+        } else {
+            if( !isRecieving ) {
+                let yPos = (2 * _dividerIncrement * Float(_currentTopIndex + 1) - tubeHeight / 2 + dividerOffset)
+                let groupSpawnPosition = Vector2D(x: self.getBoxPositionX(),
+                                                  y: self.getBoxPositionY() + yPos)
+                let groupSize = Size2D(width: tubeWidth,
+                                       height: _dividerIncrement * 2 )
+                if( _currentTopIndex + 1 < _colors.count  && _currentTopIndex > -2 ) {
+                    spawnParticleBox(groupSpawnPosition,
+                                     groupSize,
+                                     color: &_colors[_currentTopIndex + 1])
+                } else {
+                    print("fastFillStep WARN:: new color index out of color buffer range.")
+                }
+                isRecieving = true
+            }
+        }
+        
+        if( isRecieving ){
+            if( skimDelay > 0.0 ) {
+                skimDelay -= deltaTime
+            } else {
+                let color = newColors[_currentTopIndex + 1]
+                isRecieving = false
+                recieveNewColor(color)
+                skimTopParticles()
+            }
+        }
+        
     }
     
     func nextEmptyKF() {
         emptyKeyFrame += 1
-        _pourSpeed = pourSpeedDefault
         _emptyIncrement = _emptyDelay
         self.rotateZ(0.0)
     }

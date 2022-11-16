@@ -39,6 +39,7 @@ class CustomMesh {
     func updateVertexColor(_ color: float4, atIndex: Int) {
         if atIndex > _vertices.count - 1 { print("warning tried to update index out of range"); return}
         _vertices[ atIndex ].color = color
+        buildBuffers()
     }
     
     internal func addVertex(position: float3,
@@ -67,7 +68,7 @@ class CustomMesh {
     
     private func buildBuffers() {
         _vertexBuffer = Engine.Device.makeBuffer(bytes: self._vertices,
-                                                 length: Vertex.stride(self._vertices.count),
+                                                 length: CustomVertex.stride(self._vertices.count),
                                                  options: [])
         
         _indexBuffer = Engine.Device.makeBuffer(bytes: _indices,

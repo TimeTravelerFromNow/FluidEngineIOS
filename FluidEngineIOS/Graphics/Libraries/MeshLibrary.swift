@@ -22,6 +22,9 @@ enum MeshTypes {
     case Reservoir
     case BulbMesh
     
+    case Alien
+    case Asteroid
+    
     case NoMesh
 }
 
@@ -69,6 +72,8 @@ class MeshLibrary: Library<MeshTypes, Mesh> {
         
         meshes.updateValue( Mesh( modelName: "beach" ), forKey: .Sand)
         
+        meshes.updateValue( Mesh( modelName: "Alien" ), forKey: .Alien)
+
         meshes.updateValue( NoMesh(), forKey: .NoMesh )
     }
     

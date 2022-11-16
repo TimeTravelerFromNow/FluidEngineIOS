@@ -48,51 +48,12 @@ class MenuScene : Scene {
         let testTube1 = TestTube(origin: box2DOrigin + float2(x:1.5, y: 3.0), gridId: 1, scale: 10.0)
         tubeGrid.append(contentsOf: [testTube0, testTube1])
         for tt in tubeGrid {
-            tt.startFastFill(colors: [.Empty,.Empty,.Empty,.Empty])
             addChild(tt)
-        }
-    }
-    
-    override func update(deltaTime: Float) {
-        super.update(deltaTime: deltaTime)
-        
-        if shouldUpdateGyro {
-            LiquidFun.setGravity(Vector2D(x: gyroVector.x, y: gyroVector.y))
-        }
-        if (Touches.IsDragging) {
-            if(buttonPressed != nil) {
-                let boxPos = Touches.GetBoxPos()
-                buttonPressed = boxButtonHitTest(boxPos: boxPos)
-                if buttonPressed == nil {
-                    deselectButtons()
-                }
-            }
-            switch _currentState {
-            case .HoldInterval:
-                if _holdDelay == _defaultHoldTime {
-                    selectedTube?.select()
-                }
-                if _holdDelay >= 0.0 {
-                    _holdDelay -= deltaTime
-                }
-                else {
-                    _currentState = .Moving
-                }
-            case .Moving:
-                let boxPos = Touches.GetBoxPos()
-                selectedTube?.moveToCursor(boxPos)
-                guard let selectId = selectedTube?.gridId else { return }
-//                hoverSelect(boxPos, deltaTime: deltaTime, excludeMoving: selectId)
-            default:
-                break
-                print("current scene state: \(_currentState)")
-            }
         }
     }
     
     override func buildScene() {
         addTestButtons()
-        addTestTube()
         
         waterFall = WaterFallObject(center: float2(x:-2.5, y: -1.0) + box2DOrigin)
     
@@ -103,6 +64,7 @@ class MenuScene : Scene {
             addChild(pine)
         }
         sceneSizeWillChange()
+        addTestTube()
     }
     
     override func freeze() {
@@ -250,7 +212,7 @@ class MenuScene : Scene {
     
     func unSelect() {
         print("let go of tube")
-        selectedTube?.returnToOrigin()
+        selectedTube?.returnToOrigin( waterFall.particleSystem )
         selectedTube = nil
         _holdDelay = _defaultHoldTime
         _currentState = .Idle
@@ -272,5 +234,43 @@ class MenuScene : Scene {
             b.deSelect()
         }
     }
+    
+    override func update(deltaTime: Float) {
+        super.update(deltaTime: deltaTime)
+        
+        if shouldUpdateGyro {
+            LiquidFun.setGravity(Vector2D(x: gyroVector.x, y: gyroVector.y))
+        }
+        if (Touches.IsDragging) {
+            if(buttonPressed != nil) {
+                let boxPos = Touches.GetBoxPos()
+                buttonPressed = boxButtonHitTest(boxPos: boxPos)
+                if buttonPressed == nil {
+                    deselectButtons()
+                }
+            }
+            switch _currentState {
+            case .HoldInterval:
+                if _holdDelay == _defaultHoldTime {
+                    selectedTube?.select()
+                }
+                if _holdDelay >= 0.0 {
+                    _holdDelay -= deltaTime
+                }
+                else {
+                    _currentState = .Moving
+                }
+            case .Moving:
+                let boxPos = Touches.GetBoxPos()
+                selectedTube?.moveToCursor(boxPos)
+                guard let selectId = selectedTube?.gridId else { return }
+//                hoverSelect(boxPos, deltaTime: deltaTime, excludeMoving: selectId)
+            default:
+                break
+                print("current scene state: \(_currentState)")
+            }
+        }
+    }
+    
 }
 
