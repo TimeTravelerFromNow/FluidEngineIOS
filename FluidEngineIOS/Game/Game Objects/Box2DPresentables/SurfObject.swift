@@ -34,7 +34,7 @@ class SurfObject: Node {
         self.setPositionZ(0.1)
 
         self.setScale(2 / (GameSettings.ptmRatio * 10))
-        sandObject = BoxPolygon(.Sand, .Sand, center: center)
+        sandObject = BoxPolygon( center: center, .Sand, .Sand)
         sandObject.updateModelConstants()
   
                 

@@ -95,7 +95,7 @@ class TextLabels: Library<TextLabelTypes, TextObject> {
         textObjects.updateValue(TextObject(.BadInfoMessage   , "this tube is full!" ), forKey:    .TubeFullLabel)
         textObjects.updateValue(TextObject(.BadInfoMessage, "this tube is filling" ), forKey: .TubeFillingLabel)
         
-        textObjects.updateValue(TextObject(.GenericInfoMessage, "Clean bugs refills all the tubes \n to the current game state. \n Use when something looks off." ), forKey: .CleanDescription)
+        textObjects.updateValue(TextObject(.GenericInfoMessage, "Clean bugs refills all the tubes to the current game state. \n Use this button when something looks off." ), forKey: .CleanDescription)
         
         textObjects.updateValue(TextObject(.LevelTime, "time: 0"), forKey: .LevelTimeLabel)
         textObjects.updateValue(TextObject(.LevelScore, "score: 0"), forKey:  .LevelScoreLabel)

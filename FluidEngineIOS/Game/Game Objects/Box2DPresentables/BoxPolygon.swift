@@ -8,21 +8,19 @@ class BoxPolygon: GameObject {
     var polygonVertices: [Vector2D]!
     
     
-    init(_ meshType: MeshTypes,
-         _ texture: TextureTypes,
-         center: float2) {
+    init(center: float2, scale: Float = 1.0, _ meshType: MeshTypes, _ texture: TextureTypes) {
         super.init(meshType)
         setTexture(texture)
         renderPipelineStateType = .Basic
-        polygonVertices = getBoxVertices(1.0)
+        polygonVertices = getBoxVertices(scale)
         let polygonVerticesCount = polygonVertices.count
         self.setPositionZ(0.11)
-        self.setScale( GameSettings.stmRatio )
-
+        self.setScale( GameSettings.stmRatio / scale )
+        
         _polygonRef = LiquidFun.makePolygon(&polygonVertices, vertexCount: Int32(polygonVerticesCount), location: Vector2D(x: center.x, y: center.y) )
         updateModelConstants()
     }
-  
+    
     func updateModelConstants() {
         setPositionX(self.getBoxPositionX() * GameSettings.stmRatio)
         setPositionY(self.getBoxPositionY() * GameSettings.stmRatio)

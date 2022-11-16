@@ -13,7 +13,7 @@ enum States {
 }
 
 class TestTubeScene : Scene {
-    var measureTube: TestTube? = TestTube()
+    var measureTube: TestTube?
     var tubeGrid: [ TestTube ] = []
     var reservoirs: [ ReservoirObject ] = []
     var buttons: [ BoxButton ] = []
@@ -35,6 +35,7 @@ class TestTubeScene : Scene {
                 if currentMessageLabel != nil {
                 _messageDelay = defaultMessageDelay
                 messageText = TextLabels.Get( currentMessageLabel! )
+                    messageText?.setBoxPos( box2DOrigin )
                 addChild(messageText!)
                 isMessageShowing = true
                 }

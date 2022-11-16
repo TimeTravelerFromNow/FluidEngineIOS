@@ -18,6 +18,14 @@ class DevScene : Scene {
         addTestButtons()
                 
         freeze()
+        
+        let alien = BoxPolygon(center: box2DOrigin, scale: 2.0, .Alien, .AlienTexture )
+        addChild(alien)
+
+        CustomMeshes.Get(.SkyQuad).updateVertexColor(float4(0,0,0.1,1), atIndex: 0)
+        CustomMeshes.Get(.SkyQuad).updateVertexColor(float4(0,0.1,0,1), atIndex: 1)
+        CustomMeshes.Get(.SkyQuad).updateVertexColor(float4(0,0.1,0,1), atIndex: 2)
+        CustomMeshes.Get(.SkyQuad).updateVertexColor(float4(0,0,0.1,1), atIndex: 3)
 
     }
     

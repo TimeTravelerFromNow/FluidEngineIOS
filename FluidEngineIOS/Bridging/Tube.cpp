@@ -38,6 +38,7 @@ Tube::~Tube() {
     auto newEnd = std::remove( tubes.begin(), tubes.end(), this);
     for (auto iter = tubes.begin(); iter != newEnd; ++iter)
     m_world->DestroyBody(m_body);
+    m_body->DestroyFixture(m_tubeFixture);
 }
 //collision
 

@@ -31,7 +31,7 @@ class WaterFallObject: Node {
         self.setPositionZ(0.1)
 
         self.setScale(2 / (GameSettings.ptmRatio * 10))
-        cliff = BoxPolygon(.Cliff, .Cliff, center: center)
+        cliff = BoxPolygon( center: center, .Cliff, .Cliff)
         cliff.setScale(GameSettings.stmRatio)
         cliff.updateModelConstants()
         
