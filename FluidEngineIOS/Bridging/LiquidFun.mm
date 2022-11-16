@@ -712,12 +712,13 @@ return belowPositionsCount;
 }
 
 // Alien class
-+ (void *)makeAlien:(b2Vec2)position vertices:(b2Vec2*)vertices vertexCount:(long)vertexCount {
-    Alien* newAlien = new Alien(world,
-                                position,
-                                vertices,
-                                vertexCount);
-    return newAlien;
++ (void)makeAlien:(b2Vec2)position vertices:(b2Vec2*)vertices vertexCount:(long)vertexCount {
+//    Alien* newAlien = new Alien(world,
+//                                position,
+//                                vertices,
+//                                vertexCount);
+//    return newAlien;
+    return ;
 }
 
 @end
