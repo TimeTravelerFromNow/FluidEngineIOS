@@ -23,6 +23,7 @@ class FloatingButton: Node {
     
     var isSelected = false
     var selectTime: Float = 0.0
+    var selectColor = float4(0.3,0.4,0.1,1.0)
     
     init(_ boxPos: float2, size: float2, action: MiniMenuActions = .None, sceneAction: ButtonActions = .None, textureType: TextureTypes = .Missing) {
         super.init()
@@ -35,7 +36,10 @@ class FloatingButton: Node {
         self.buttonTexture = textureType
         self.setScaleX(GameSettings.stmRatio * xScale  )
         self.setScaleY(GameSettings.stmRatio * yScale )
-        self.setPositionZ(0.13)
+        self.setPositionX( boxPos.x / 5)
+        self.setPositionY( boxPos.y / 5)
+        self.setPositionZ(0.1)
+        refreshModelConstants()
     }
     
     func setButtonSizeFromQuad() {
@@ -48,6 +52,10 @@ class FloatingButton: Node {
     
     func releaseButton( closure: () -> Void ) {
         isSelected = false
+    }
+    
+    func refreshModelConstants() {
+        modelConstants.modelMatrix = modelMatrix
     }
     
     func miniMenuHitTest(_ parentOffset: float2, _ atPos: float2) -> MiniMenuActions? {
@@ -66,6 +74,13 @@ class FloatingButton: Node {
         }
         return nil
     }
+    
+    override func update(deltaTime: Float) {
+        super.update(deltaTime: deltaTime)
+        if isSelected {
+        selectTime += deltaTime
+        }
+    }
 }
 
 extension FloatingButton: Renderable {
@@ -73,8 +88,7 @@ extension FloatingButton: Renderable {
         renderCommandEncoder.setRenderPipelineState(RenderPipelineStates.Get(.Instanced))
         renderCommandEncoder.setDepthStencilState(DepthStencilStates.Get(.Less))
         if( isSelected ) {
-            var selectColor = float4(0.3,0.4,0.1,1.0)
-            renderCommandEncoder.setRenderPipelineState(RenderPipelineStates.Get(.Select))
+            renderCommandEncoder.setRenderPipelineState(RenderPipelineStates.Get(.RadialSelect))
             renderCommandEncoder.setFragmentBytes(&selectColor, length: float4.size, index: 2)
             renderCommandEncoder.setFragmentBytes(&selectTime, length : Float.size, index : 0)
         }

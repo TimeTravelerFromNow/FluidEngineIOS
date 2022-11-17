@@ -4,6 +4,7 @@ class CloudsBackground: Node {
     private var _timeTicked: Float = 0
     var clouds: [Clouds] = []
     var skyBG = SkyBackground(.SkyQuad)
+    var shouldUpdate = true { didSet { setCloudFreeze() } }
     
     override init() {
         super.init()
@@ -20,9 +21,15 @@ class CloudsBackground: Node {
         skyBG.setScale(1)
         addChild(skyBG)
     }
+    func setCloudFreeze() {
+        for cloud in clouds {
+            cloud.shouldUpdate = shouldUpdate
+        }
+    }
 }
 
 class Clouds: InstancedObject {
+    var shouldUpdate = true
     var doneAnimatingStart = false
     var cloudsPerMinute: Float = 20
     var cloudsPerMinRatio: Float { return cloudsPerMinute * Renderer.ScreenSize.x * 0.001 / 60  }
@@ -53,6 +60,7 @@ class Clouds: InstancedObject {
         }
     }
     override func update(deltaTime : Float) {
+        if shouldUpdate {
         for (index, node) in _nodes.enumerated() {
                     node.moveX(-deltaTime * cloudsPerMinRatio * _speedBuffer[index])
             if node.getPositionX() < hRange[0] {
@@ -61,5 +69,6 @@ class Clouds: InstancedObject {
         }
             
             super.update(deltaTime: deltaTime)
+        }
     }
 }

@@ -233,26 +233,34 @@ return belowPositionsCount;
 
 }
 + (void *)createEdgeBoxWithOrigin:(Vector2D)origin size:(Size2D)size {
+    
   // create the body
   b2BodyDef bodyDef;
+    bodyDef.type = b2_kinematicBody;
   bodyDef.position.Set(origin.x, origin.y);
   b2Body *body = world->CreateBody(&bodyDef);
-
     b2EdgeShape shape;
-  // bottom
-  shape.Set(b2Vec2(-size.width / 2, - size.height / 2), b2Vec2(size.width / 2, - size.height / 2));
-  body->CreateFixture(&shape, 0);
-  // top
-  shape.Set(b2Vec2(-size.width / 2, size.height / 2), b2Vec2(size.width, size.height));
-  body->CreateFixture(&shape, 0);
-  
-  // left
-  shape.Set(b2Vec2(-size.width / 2, -size.height / 2), b2Vec2(-size.width / 2, size.height / 2));
-  body->CreateFixture(&shape, 0);
-  
-  // right
-  shape.Set(b2Vec2(size.width / 2, -size.height / 2), b2Vec2(size.width / 2, size.height / 2));
-  body->CreateFixture(&shape, 0);
+    b2Filter filter;
+    filter.maskBits = 0x0001;
+    filter.categoryBits = 0x0001;
+    // bottom
+    shape.Set(b2Vec2(-size.width / 2, - size.height / 2), b2Vec2(size.width / 2, - size.height / 2));
+    b2Fixture* f0 = body->CreateFixture(&shape, 0);
+    f0->SetFilterData(filter);
+    // top
+    shape.Set(b2Vec2(-size.width / 2, size.height / 2), b2Vec2(size.width / 2, size.height / 2));
+    b2Fixture* f1 = body->CreateFixture(&shape, 0);
+    f1->SetFilterData(filter);
+    
+    // left
+    shape.Set(b2Vec2(-size.width / 2, -size.height / 2), b2Vec2(-size.width / 2, size.height / 2));
+    b2Fixture* f2 = body->CreateFixture(&shape, 0);
+    f2->SetFilterData(filter);
+    // right
+    shape.Set(b2Vec2(size.width / 2, -size.height / 2), b2Vec2(size.width / 2, size.height / 2));
+    b2Fixture* f3 = body->CreateFixture(&shape, 0);
+    f3->SetFilterData(filter);
+    
   return body;
 }
 

@@ -43,7 +43,7 @@ class BoxPolygon: GameObject {
     }
     
     override func render(_ renderCommandEncoder: MTLRenderCommandEncoder) {
-
+        updateModelConstants()
         renderCommandEncoder.setRenderPipelineState(RenderPipelineStates.Get(renderPipelineStateType))
         renderCommandEncoder.setDepthStencilState(DepthStencilStates.Get(.Less))
         

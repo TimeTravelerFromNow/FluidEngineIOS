@@ -40,6 +40,8 @@ enum TextureTypes {
     case AlienTexture
     case AsteroidTexture
     case BarrelTexture
+    
+    case PauseTexture
 }
 
 
@@ -78,6 +80,7 @@ class Textures {
         _library.updateValue(Texture("Alien", ext: "png").texture, forKey: .AlienTexture)
         _library.updateValue(Texture("Asteroid", ext: "png").texture, forKey: .AsteroidTexture)
         _library.updateValue(Texture("Barrel", ext: "png").texture, forKey: .BarrelTexture)
+        _library.updateValue(Texture("pauseButton", ext: "png").texture, forKey: .PauseTexture)
     }
     
     public static func Get(_ type: TextureTypes)->MTLTexture {

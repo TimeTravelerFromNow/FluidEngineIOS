@@ -2,6 +2,7 @@ import MetalKit
 
 class DebugEnvironment : Node {
     
+    var shouldUpdate = true
     var isDebugging = false
     var particleCount: Int = 0
     var waterColor: float4 = float4(0.1,0.1,0.9,1.0)
@@ -56,8 +57,10 @@ class DebugEnvironment : Node {
     }
     
     override func update(deltaTime: Float) {
+        if shouldUpdate {
         LiquidFun.worldStep(CFTimeInterval(deltaTime), velocityIterations: 8 * Int32(GameTime.TimeScale), positionIterations: 3 * Int32(GameTime.TimeScale))
         updateModelConstants()
+        }
     }
     
     func setGravity( x: Float, y: Float) {
