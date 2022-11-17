@@ -15,6 +15,7 @@ class FloatingButton: Node {
     var b2BodyRef: UnsafeMutableRawPointer? // MARK: I know i said it wouldn't be represented, but it's kinda cool wat im doin
     var buttonQuad: Mesh = MeshLibrary.Get(.Quad)
     var buttonTexture: TextureTypes!
+    var selectTexture: TextureTypes?
     var action: MiniMenuActions!
     var sceneAction: ButtonActions!
     var modelConstants = ModelConstants()
@@ -25,7 +26,7 @@ class FloatingButton: Node {
     var selectTime: Float = 0.0
     var selectColor = float4(0.3,0.4,0.1,1.0)
     
-    init(_ boxPos: float2, size: float2, action: MiniMenuActions = .None, sceneAction: ButtonActions = .None, textureType: TextureTypes = .Missing) {
+    init(_ boxPos: float2, size: float2, action: MiniMenuActions = .None, sceneAction: ButtonActions = .None, textureType: TextureTypes = .Missing, selectTexture: TextureTypes? = nil) {
         super.init()
         box2DPos = boxPos
         self.size = size
@@ -34,6 +35,7 @@ class FloatingButton: Node {
         self.action = action
         self.sceneAction = sceneAction
         self.buttonTexture = textureType
+        self.selectTexture = selectTexture
         self.setScaleX(GameSettings.stmRatio * xScale  )
         self.setScaleY(GameSettings.stmRatio * yScale )
         self.setPositionX( boxPos.x / 5)
@@ -94,7 +96,7 @@ extension FloatingButton: Renderable {
         }
         
         renderCommandEncoder.setVertexBytes(&modelConstants, length : ModelConstants.stride, index: 2)
-        buttonQuad.drawPrimitives(renderCommandEncoder, baseColorTextureType: buttonTexture)
+        buttonQuad.drawPrimitives(renderCommandEncoder, baseColorTextureType: isSelected ? (selectTexture ?? buttonTexture) : buttonTexture )
     }
     
 }

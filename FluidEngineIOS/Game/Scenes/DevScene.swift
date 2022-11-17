@@ -3,22 +3,28 @@ import CoreHaptics
 
 class DevScene : Scene {
     
+    var Enemies: [ BoxPolygon ] = []
     var buttons: [ BoxButton ] = []
     var floatingButtons: [ FloatingButton ] = []
     var particleSystem: UnsafeMutableRawPointer?
     
-    var alien: BoxPolygon!
+    var testAlien: BoxPolygon!
     var barrel: BoxPolygon!
     var environmentBox: EdgeBox!
     
     var pauseButton: FloatingButton!
+    var fireButton: FloatingButton!
     
     var buttonPressed: ButtonActions!
     
     override func buildScene() {
             
-        alien = BoxPolygon(center: box2DOrigin, scale: 3.0, .Alien, .AlienTexture )
-        addChild(alien)
+        testAlien = BoxPolygon(center: box2DOrigin, scale: 3.0, .Alien, .AlienTexture )
+        addChild(testAlien)
+        let asteroid = BoxPolygon(center: box2DOrigin + float2(0.2,-0.3), scale: 3.0, .Asteroid, .AsteroidTexture )
+        
+        addChild(asteroid)
+        Enemies.append(asteroid)
         
         barrel = BoxPolygon(center: box2DOrigin + float2(0,-4), scale: 1.0, .Barrel, .BarrelTexture )
         addChild(barrel)
@@ -33,20 +39,28 @@ class DevScene : Scene {
                                                         gravityScale: 1, density: GameSettings.Density)
         
         environmentBox = EdgeBox(center: box2DOrigin,
-                                 size: float2(3,6),
+                                 size: float2(4.6,9),
                                  meshType: .Asteroid,
                                  textureType: .AsteroidTexture,
                                  particleSystem: particleSystem)
-        LiquidFun.setGravity(Vector2D(x:0,y:0))
+        
         addChild(environmentBox)
         
         let menuButton = BoxButton(.Menu,.Menu, .ToMenu, center: box2DOrigin + float2(-1.9, 4.0), label: .MenuLabel)
         
         buttons.append(menuButton)
         addChild(menuButton)
+      
         pauseButton = FloatingButton(box2DOrigin + float2(-1.9, 3.0), size: float2(0.35,0.35), sceneAction: .Pause, textureType: .PauseTexture)
+        fireButton = FloatingButton(box2DOrigin + float2(-1.2, -3.0), size: float2(0.35,0.35), sceneAction: .Fire, textureType: .FireButtonUp, selectTexture: .FireButton)
+        
         addChild(pauseButton)
+        addChild(fireButton)
+
         floatingButtons.append(pauseButton)
+        floatingButtons.append(fireButton)
+
+        LiquidFun.setGravity(Vector2D(x:0,y:0))
     }
     
     override func freeze() {
@@ -100,7 +114,7 @@ class DevScene : Scene {
         buttonPressed = boxButtonHitTest(boxPos: Touches.GetBoxPos())
         
         FluidEnvironment.Environment.debugParticleDraw(atPosition: Touches.GetBoxPos())
-        LiquidFun.createParticleBall(forSystem: particleSystem, position: Vector2D(x:box2DOrigin.x,y:box2DOrigin.y - 2.6), velocity: Vector2D(x:0,y:210), angV: -3, radius: 0.3, color: &pColor)
+      
     }
     
     private func deselectButtons() {
@@ -120,6 +134,8 @@ class DevScene : Scene {
         case .Pause:
             FluidEnvironment.Environment.shouldUpdate.toggle()
             SharedBackground.Background.shouldUpdate.toggle()
+        case .Fire:
+            LiquidFun.createParticleBall(forSystem: particleSystem, position: Vector2D(x:box2DOrigin.x,y:box2DOrigin.y - 2.6), velocity: Vector2D(x:0,y:210), angV: -3, radius: 0.3, color: &pColor)
         case nil:
             print("let go of no button")
         default:
