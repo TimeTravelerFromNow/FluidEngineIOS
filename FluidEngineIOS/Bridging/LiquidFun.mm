@@ -103,7 +103,7 @@ static b2World *world;
     return ((b2Body *)bodyReference)->IsActive();
 }
 
-
+// particle creation
 + (void)createParticleBoxForSystem:(void *)particleSystem position:(Vector2D)position size:(Size2D)size color:(void *)color {
     b2PolygonShape shape;
     shape.SetAsBox(size.width * 0.5f, size.height * 0.5f);
@@ -119,6 +119,22 @@ static b2World *world;
     ((b2ParticleSystem *)particleSystem)->CreateParticleGroup(particleGroupDef);
 }
 
++ (void)createParticleBallForSystem:(void *)particleSystem position:(b2Vec2)position velocity:(b2Vec2)velocity angV:(float)angV radius:(float)radius color:(void *)color {
+    b2CircleShape shape;
+    shape.m_radius = radius;
+    
+    b2ParticleGroupDef pGroupDef;
+    pGroupDef.flags = b2_waterParticle;
+    pGroupDef.position.Set(position.x, position.y);
+    pGroupDef.shape = &shape;
+    b2ParticleColor pColor;
+    Color* inColor = (Color*)color;
+    pColor.Set(uint8( inColor->r * 255 ), uint8(inColor->g * 255), uint8(inColor->b * 255), uint8( inColor->a * 255 ));
+    pGroupDef.color = pColor;
+    pGroupDef.linearVelocity = velocity;
+    pGroupDef.angularVelocity = angV;
+    ((b2ParticleSystem*)particleSystem)->CreateParticleGroup(pGroupDef);
+}
 
 + (int)particleCountForSystem:(void *)particleSystem {
   return ((b2ParticleSystem *)particleSystem)->GetParticleCount();
@@ -224,18 +240,18 @@ return belowPositionsCount;
 
     b2EdgeShape shape;
   // bottom
-  shape.Set(b2Vec2(0, 0), b2Vec2(size.width, 0));
+  shape.Set(b2Vec2(-size.width / 2, - size.height / 2), b2Vec2(size.width / 2, - size.height / 2));
   body->CreateFixture(&shape, 0);
   // top
-  shape.Set(b2Vec2(0, size.height), b2Vec2(size.width, size.height));
+  shape.Set(b2Vec2(-size.width / 2, size.height / 2), b2Vec2(size.width, size.height));
   body->CreateFixture(&shape, 0);
   
   // left
-  shape.Set(b2Vec2(0, size.height), b2Vec2(0, 0));
+  shape.Set(b2Vec2(-size.width / 2, -size.height / 2), b2Vec2(-size.width / 2, size.height / 2));
   body->CreateFixture(&shape, 0);
   
   // right
-  shape.Set(b2Vec2(size.width, size.height), b2Vec2(size.width, 0));
+  shape.Set(b2Vec2(size.width / 2, -size.height / 2), b2Vec2(size.width / 2, size.height / 2));
   body->CreateFixture(&shape, 0);
   return body;
 }

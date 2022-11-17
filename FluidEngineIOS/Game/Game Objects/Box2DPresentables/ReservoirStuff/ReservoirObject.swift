@@ -6,7 +6,7 @@ class ReservoirObject: Node {
     var buttons: [FloatingButton] = []
     var valves: [FloatingButton] = []
     var topValve: FloatingButton!
-    var buttonPressed: FloatingButton?
+    var buttonPressed: MiniMenuActions?
     
     var isTesting: Bool = true
     var isShowingMiniMenu: Bool = false
@@ -483,16 +483,20 @@ class ReservoirObject: Node {
         return Float(LiquidFun.getReservoirRotation(_reservoir))
     }
     
-    func getButtonAtPos(_ atPos: float2 ) -> FloatingButton? {
+    
+    func floatingButtonHitTest(_ atPos: float2 ) -> MiniMenuActions? {
         let boxPos = self.getBoxPosition()
-        for b in buttons {
-            let boxCenter = b.box2DPos + boxPos
-            if ( ( ( (boxCenter.x - b.size.x) < atPos.x) && (atPos.x < (boxCenter.x + b.size.x) ) ) &&
-                 ( ( (boxCenter.y - b.size.y) < atPos.y) && (atPos.y < (boxCenter.y + b.size.y) ) )  ){
-                return b
+        var hits: [MiniMenuActions] = []
+        for fB in buttons {
+            if let hitAction = fB.miniMenuHitTest(boxPos, atPos) {
+                hits.append(hitAction)
             }
         }
-        return nil
+        if hits.count > 0 {
+            return hits.first!
+        } else {
+         return nil
+        }
     }
 }
 
@@ -515,7 +519,10 @@ extension ReservoirObject: Renderable {
         for i in 0..<pipes.count{
             pipes[i].render( renderCommandEncoder )
         }
-        valvesRender( renderCommandEncoder )
+        topValve?.doRender( renderCommandEncoder )
+        for v in valves {
+            v.doRender( renderCommandEncoder )
+        }
         testingRender( renderCommandEncoder )
     }
     
@@ -543,57 +550,21 @@ extension ReservoirObject: Renderable {
                                                 vertexCount: particleCount)
         }
     }
-    
-    func valvesRender( _ renderCommandEncoder: MTLRenderCommandEncoder ) {
-        renderCommandEncoder.setRenderPipelineState(RenderPipelineStates.Get(.Instanced))
-        renderCommandEncoder.setDepthStencilState(DepthStencilStates.Get(.Less))
-        if( topValve.isSelected  ) {
-            var selectColor = float4(0.3,0.4,0.1,1.0)
-            renderCommandEncoder.setRenderPipelineState(RenderPipelineStates.Get(.Select))
-            renderCommandEncoder.setFragmentBytes(&selectColor, length: float4.size, index: 2)
-            renderCommandEncoder.setFragmentBytes(&selectTime, length : Float.size, index : 0)
-        }
-        
-        renderCommandEncoder.setVertexBytes(&topValve.modelConstants, length : ModelConstants.stride, index: 2)
-        topValve.buttonQuad.drawPrimitives(renderCommandEncoder, baseColorTextureType: topValve.buttonTexture)
-        for i in 0..<valves.count {
-            // Vertex
-            if( valves[i].isSelected ) {
-                var selectColor = float4(0.3,0.4,0.1,1.0)
-                renderCommandEncoder.setRenderPipelineState(RenderPipelineStates.Get(.Select))
-                renderCommandEncoder.setFragmentBytes(&selectColor, length: float4.size, index: 2)
-                renderCommandEncoder.setFragmentBytes(&selectTime, length : Float.size, index : 0)
-            }
-            
-            renderCommandEncoder.setVertexBytes(&valves[i].modelConstants, length : ModelConstants.stride, index: 2)
-            valves[i].buttonQuad.drawPrimitives(renderCommandEncoder, baseColorTextureType: valves[i].buttonTexture)
-        }
-        
-    }
 }
 
 extension ReservoirObject: Testable {
     func touchesBegan(_ boxPos: float2) {
-        buttonPressed = getButtonAtPos( boxPos )
-        if let pressed = buttonPressed {
-            switch pressed.action {
+        if let actionHit = floatingButtonHitTest( boxPos ) {
+            switch actionHit {
             case .ToggleMiniMenu:
                 isShowingMiniMenu.toggle()
-                pressed.isSelected.toggle()
-                if(!pressed.isSelected) { closeAllButtons() }
+                if !isShowingMiniMenu { closeAllButtons() }
             case .ToggleControlPoints:
-                pressed.isSelected.toggle()
                 isPlacingControlPoints.toggle()
-            case .ConstructPipe:
-                pressed.isSelected.toggle()
-               
             case .MoveObject:
                 isMoving = true
             default:
-                print("unprogrammed floating button action! button at \(pressed.box2DPos + self.getBoxPosition())")
-            }
-        } else {
-            if isPlacingControlPoints {
+                print("unprogrammed floating button action! button at \(boxPos)")
             }
         }
     }
@@ -606,7 +577,7 @@ extension ReservoirObject: Testable {
     
     func touchDragged(_ boxPos: float2) {
         if buttonPressed != nil {
-        print(buttonPressed?.id)
+        
         }
         if( isMoving ) {
             let newV = boxPos - getBoxPosition() - moveButtonOffset

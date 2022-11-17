@@ -150,6 +150,7 @@ class Scene: Node {
 }
 
 class SceneManager: Library<SceneTypes, Scene> {
+    
     private static var scenes : [SceneTypes : Scene] = [:]
     
     public static var currentScene: Scene!

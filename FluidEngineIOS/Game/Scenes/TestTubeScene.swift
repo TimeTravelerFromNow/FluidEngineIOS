@@ -23,7 +23,7 @@ class TestTubeScene : Scene {
     var tubeLevel: TubeLevel!
     
     var buttonPressed: ButtonActions?
-
+  
     // message text
     let defaultMessageDelay: Float = 1.1
     private var _messageDelay: Float = 0.0
@@ -564,7 +564,6 @@ class TestTubeScene : Scene {
         fillQueued = true
         emptyTubes()
     }
-    
     
     func doButtonAction() {
         if( buttonPressed != nil ) {

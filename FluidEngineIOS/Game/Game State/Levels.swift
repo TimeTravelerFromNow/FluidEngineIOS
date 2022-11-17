@@ -17,7 +17,8 @@ let level1: [ [TubeColors] ] =
         [  .Green, .Purple, .Blue, .Empty ],
         [  .Purple, .Blue, .Blue, .Green],
         [ .Green, .Red, .Empty, .Empty],
-        [ .Purple, .Red, .Purple, .Red]
+        [ .Purple, .Red, .Purple, .Red],
+        [.Empty,.Empty,.Empty,.Empty]
     ]
 
 let level2: [ [TubeColors] ] =

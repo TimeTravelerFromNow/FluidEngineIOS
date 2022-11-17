@@ -49,7 +49,10 @@ typedef struct VertexIn {
 + (void *)createParticleSystemWithRadius:(float)radius dampingStrength:(float)dampingStrength gravityScale:(float)gravityScale density:(float)density;
 + (void *)createFlaggedParticleSystem:(float)radius dampingStrength:(float)dampingStrength gravityScale:(float)gravityScale density:(float)density flagBuffer:(UInt32*)flagBuffer flagCount:(int)flagCount;
 
+//particle creation
 + (void)createParticleBoxForSystem:(void *)particleSystem position:(Vector2D)position size:(Size2D)size color:(void *)color;
++ (void)createParticleBallForSystem:(void *)particleSystem position:(Vector2D)position velocity:(Vector2D)velocity angV:(float)angV radius:(float)radius color:(void *)color;
+    
 + (int)particleCountForSystem:(void *)particleSystem;
 + (void *)particlePositionsForSystem:(void *)particleSystem;
 + (void)emptyParticleSystem:(void *)particleSystem minTime:(float)minTime maxTime:(float)maxTime;

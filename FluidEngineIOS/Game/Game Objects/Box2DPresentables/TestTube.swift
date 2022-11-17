@@ -197,17 +197,19 @@ class TestTube: Node {
         super.init()
         if( gridId == -1 ) { print("TestTube() ADVISE::did you mean to init tube with -1? I will be test testTube.")}
         self.gridId = gridId
+        initializeColors(startingColors)
         self.ptmRatio = GameSettings.ptmRatio
         self.origin = origin
         self.mesh = MeshLibrary.Get(.TestTube)
         setScale(1 / (GameSettings.ptmRatio * 5) )
         self.setPositionZ(0.16)
         fluidModelConstants.modelMatrix = modelMatrix
+        refreshFluidBuffer()
+        
         self.setScaleX( GameSettings.stmRatio * 1.3 / scale ) // particles appear to move a bit out of the fixtures
-        self.setScaleY( GameSettings.stmRatio * 1.1 / scale )
+        self.setScaleY( GameSettings.stmRatio * 1.1 / scale * Float(totalColors) / 4 )
         self.setPositionZ(0.1)
         self.scale = scale
-        initializeColors(startingColors)
         self.makeContainer()
         self._texture = Textures.Get(.TestTube)
         self.material.useTexture = true
@@ -217,6 +219,7 @@ class TestTube: Node {
     //initialization
     private func makeContainer() {
         self.tubeOBJVertices = mesh.getBoxVertices( scale )
+        self.tubeOBJVertices = tubeOBJVertices.map { Vector2D(x: $0.x,y: $0.y * Float(totalColors) / 4 ) }
         let (xVals, yVals) = ( tubeOBJVertices.map { Float($0.x) } , tubeOBJVertices.map { Float($0.y) } )
         guard let yMax = yVals.max() else { print("TestTube() ERROR:no yMax from obj vertices"); return }
         guard let yMin = yVals.min() else { print("TestTube() ERROR:no yMin from obj vertices"); return }
@@ -1049,7 +1052,6 @@ extension TestTube: Renderable {
     func doRender(_ renderCommandEncoder: MTLRenderCommandEncoder) {
         updateModelConstants()
         refreshVertexBuffer()
-        refreshFluidBuffer()
         renderCommandEncoder.setDepthStencilState(DepthStencilStates.Get(.Less))
         if isSelected {
             renderCommandEncoder.setRenderPipelineState(RenderPipelineStates.Get(.Select))
