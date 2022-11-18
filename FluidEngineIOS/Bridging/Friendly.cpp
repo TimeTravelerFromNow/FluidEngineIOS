@@ -1,6 +1,6 @@
-#include "Alien.h"
+#include "Friendly.h"
 
-Alien::Alien(b2World* worldRef,
+Friendly::Friendly(b2World* worldRef,
                     b2Vec2 location,
                     b2Vec2* vertices,
                     long vertexCount) {
@@ -22,19 +22,18 @@ Alien::Alien(b2World* worldRef,
     fixtureDef.filter.categoryBits = 0x0001;
     fixtureDef.filter.maskBits = 0x0001;
     body->CreateFixture(&fixtureDef);
-    body->SetUserData(this);
     m_body = body;
 };
 
-void Alien::SetVelocity(b2Vec2 velocity) {
+void Friendly::SetVelocity(b2Vec2 velocity) {
     m_body->SetLinearVelocity(velocity);
 }
 
 
-b2Vec2 Alien::GetPosition() {
+b2Vec2 Friendly::GetPosition() {
     return m_body->GetPosition();
 }
 
-float Alien::GetRotation() {
+float Friendly::GetRotation() {
     return m_body->GetAngle();
 }

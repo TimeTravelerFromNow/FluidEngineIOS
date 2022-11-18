@@ -40,8 +40,8 @@ class DevScene : Scene {
         
         environmentBox = EdgeBox(center: box2DOrigin,
                                  size: float2(4.6,9),
-                                 meshType: .Asteroid,
-                                 textureType: .AsteroidTexture,
+                                 meshType: .NoMesh,
+                                 textureType: .None,
                                  particleSystem: particleSystem)
         
         addChild(environmentBox)
@@ -135,7 +135,7 @@ class DevScene : Scene {
             FluidEnvironment.Environment.shouldUpdate.toggle()
             SharedBackground.Background.shouldUpdate.toggle()
         case .Fire:
-            LiquidFun.createParticleBall(forSystem: particleSystem, position: Vector2D(x:box2DOrigin.x,y:box2DOrigin.y - 2.6), velocity: Vector2D(x:0,y:210), angV: -3, radius: 0.3, color: &pColor)
+            LiquidFun.createParticleBall(forSystem: particleSystem, position: Vector2D(x:box2DOrigin.x,y:box2DOrigin.y - 2.6), velocity: Vector2D(x:0,y:10), angV: -10, radius: 0.3, color: &pColor)
         case nil:
             print("let go of no button")
         default:

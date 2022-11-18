@@ -6,6 +6,7 @@
 #import "Reservoir.h"
 #import "TKSpline.h"
 #import "Alien.h"
+#import "Friendly.h"
 
 static b2World *world;
 
@@ -736,14 +737,24 @@ return belowPositionsCount;
 }
 
 // Alien class
-+ (void)makeAlien:(b2Vec2)position vertices:(b2Vec2*)vertices vertexCount:(long)vertexCount {
-//    Alien* newAlien = new Alien(world,
-//                                position,
-//                                vertices,
-//                                vertexCount);
-//    return newAlien;
-    return ;
++ (void *)makeAlien:(b2Vec2)position vertices:(b2Vec2*)vertices vertexCount:(long)vertexCount {
+    Alien* newAlien = new Alien(world,
+                                position,
+                                vertices,
+                                vertexCount);
+    return newAlien;
 }
+
+// Friendly class
++ (void *)makeFriendly:(b2Vec2)position vertices:(b2Vec2*)vertices vertexCount:(long)vertexCount {
+    Friendly* newFriendly = new Friendly(world,
+                                position,
+                                vertices,
+                                vertexCount);
+    return newFriendly;
+}
+
+
 
 @end
 

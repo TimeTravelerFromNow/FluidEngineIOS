@@ -214,4 +214,7 @@ typedef struct VertexIn {
 // Alien class
 + (void *)makeAlien:(Vector2D)position vertices:(Vector2D*)vertices vertexCount:(long)vertexCount;
 
+// Friendly class
++ (void *)makeFriendly:(Vector2D)position vertices:(Vector2D*)vertices vertexCount:(long)vertexCount;
+
 @end

@@ -1,16 +1,16 @@
-#ifndef Alien_h
-#define Alien_h
+#ifndef Friendly_h
+#define Friendly_h
 
 #include <stdio.h>
 #include "Box2D.h"
-class Alien {
+class Friendly {
 
 public:
-    Alien(b2World* worldRef,
+    Friendly(b2World* worldRef,
           b2Vec2 location,
           b2Vec2* vertices,
           long vertexCount);
-    ~Alien();
+    ~Friendly();
     
     b2Vec2 GetPosition();
     float GetRotation();
@@ -21,5 +21,5 @@ private:
     b2World* m_world;
 };
 
-#endif /* Alien_h */
+#endif /* Friendly_h */
 
