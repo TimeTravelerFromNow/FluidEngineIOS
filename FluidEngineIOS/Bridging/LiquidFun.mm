@@ -134,6 +134,8 @@ static b2World *world;
     pGroupDef.color = pColor;
     pGroupDef.linearVelocity = velocity;
     pGroupDef.angularVelocity = angV;
+    pGroupDef.lifetime = 4;
+    ((b2ParticleSystem*)particleSystem)->SetGravityScale(0);
     ((b2ParticleSystem*)particleSystem)->CreateParticleGroup(pGroupDef);
 }
 
@@ -571,8 +573,8 @@ return belowPositionsCount;
 }
 
 // custom polygons
-+ (void *)makePolygon:( Vector2D* )withVertices vertexCount:( int32 )vertexCount location:(Vector2D)location {
-    PolygonObject* polygonObject = new PolygonObject(world, (b2Vec2*)withVertices, vertexCount, b2Vec2(location.x, location.y));
++ (void *)makePolygon:( Vector2D* )withVertices vertexCount:( int32 )vertexCount location:(Vector2D)location asStaticChain:(bool)asStaticChain {
+    PolygonObject* polygonObject = new PolygonObject(world, (b2Vec2*)withVertices, vertexCount, b2Vec2(location.x, location.y), asStaticChain);
     return polygonObject;
 }
 + (Vector2D)getPolygonPosition:(void *)polygonRef {
@@ -764,13 +766,19 @@ return belowPositionsCount;
 }
 
 // Friendly class
-+ (void *)makeFriendly:(b2Vec2)position vertices:(b2Vec2*)vertices vertexCount:(long)vertexCount density:(float)density health:(float)health crashDamage:(float)crashDamage categoryBits:(uint16)categoryBits maskBits:(uint16)maskBits groupIndex:(int16)groupIndex {
++ (void *)makeFriendly:(b2Vec2)position
+               density:(float)density
+                restitution:(float)restition
+                health:(float)health
+           crashDamage:(float)crashDamage
+          categoryBits:(uint16)categoryBits
+              maskBits:(uint16)maskBits
+            groupIndex:(int16)groupIndex {
     Friendly* newFriendly = new Friendly( world,
                                 //           b2ParticleSystem* particleSystem,
                                 position,
-                                vertices,
-                                vertexCount,
                                 density,
+                                restition,
                                 health,
                                 crashDamage, // damage of crash on friendly
                                 //           long crashParticleCount, // explosive particle effect
@@ -780,14 +788,44 @@ return belowPositionsCount;
                                 groupIndex);
     return newFriendly;
 }
++ (void)setFriendlyPolygon:(void *)friendlyRef vertices:(b2Vec2*)vertices vertexCount:(long)vertexCount {
+    ((Friendly*) friendlyRef)->SetAsPolygonShape(vertices, vertexCount);
+}
++ (void)setFriendlyCircle:(void *)friendlyRef radius:(float)radius {
+    ((Friendly *) friendlyRef)->SetAsCircleShape(radius);
+}
+
++ (void)setFriendlyFixedRotation:(void*)friendlyRef to:(bool)to {
+    ((Friendly *) friendlyRef)->SetFixedRotation(to);
+}
+
++ (void)impulseFriendly:(void*)friendlyRef imp:(b2Vec2)imp atPt:(b2Vec2)atPt {
+    ((Friendly *)friendlyRef)->Impulse(imp, atPt);
+}
+
++ (void)torqueFriendly:(void*)friendlyRef amt:(float)amt {
+    ((Friendly *)friendlyRef)->Torque(amt);
+}
+
 + (b2Vec2)getFriendlyPosition:(void *)friendlyRef {
     return ((Friendly*)friendlyRef)->GetPosition();
 }
 + (float) getFriendlyRotation:(void *)friendlyRef {
     return ((Friendly*)friendlyRef)->GetRotation();
 }
++ (float) getFriendlyAngV:(void *)friendlyRef {
+    return ((Friendly*)friendlyRef)->GetAngV();
+}
 + (void) setFriendlyVelocity:(void *)friendlyRef velocity:(b2Vec2)velocity {
     ((Friendly*)friendlyRef)->SetVelocity(velocity);
+}
+
++ (void) setFriendlyAngularVelocity:(void *)friendlyRef angV:(float)angV {
+    ((Friendly*)friendlyRef)->SetAngularVelocity(angV);
+}
+
++ (void) weldJointFriendlies:(void *)friendly0 friendly1:(void *)friendly1 weldPos:(b2Vec2)weldPos stiffness:(float)stiffness {
+    ((Friendly*)friendly0)->WeldFriendly( (Friendly *)friendly1, weldPos, stiffness );
 }
 
 

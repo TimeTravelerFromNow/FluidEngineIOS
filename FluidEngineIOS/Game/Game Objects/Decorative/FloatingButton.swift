@@ -7,6 +7,7 @@ enum MiniMenuActions {
     
     case MoveObject
     
+    case FireGun
     case None
 }
 
@@ -28,7 +29,7 @@ class FloatingButton: Node {
     
     init(_ boxPos: float2, size: float2, action: MiniMenuActions = .None, sceneAction: ButtonActions = .None, textureType: TextureTypes = .Missing, selectTexture: TextureTypes? = nil) {
         super.init()
-        box2DPos = boxPos
+        self.box2DPos = boxPos
         self.size = size
         let xScale = size.x
         let yScale = size.y
@@ -38,8 +39,6 @@ class FloatingButton: Node {
         self.selectTexture = selectTexture
         self.setScaleX(GameSettings.stmRatio * xScale  )
         self.setScaleY(GameSettings.stmRatio * yScale )
-        self.setPositionX( boxPos.x / 5)
-        self.setPositionY( boxPos.y / 5)
         self.setPositionZ(0.1)
         refreshModelConstants()
     }
@@ -57,9 +56,10 @@ class FloatingButton: Node {
     }
     
     func refreshModelConstants() {
+        self.setPositionX( box2DPos.x / 5)
+        self.setPositionY( box2DPos.y / 5)
         modelConstants.modelMatrix = modelMatrix
     }
-    
     func miniMenuHitTest(_ parentOffset: float2, _ atPos: float2) -> MiniMenuActions? {
         let boxCenter = box2DPos + parentOffset
         if ( ( ( (boxCenter.x - size.x) < atPos.x) && (atPos.x < (boxCenter.x + size.x) ) ) &&

@@ -340,7 +340,7 @@ extension Pipe: Renderable {
     
 }
 
-extension Pipe: Testable {
+extension Pipe: Touchable {
 
     func touchesBegan(_ boxPos: float2) {
         

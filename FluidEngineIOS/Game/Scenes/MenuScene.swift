@@ -14,6 +14,8 @@ enum ButtonActions {
     
     case Pause
     case Fire
+    case TruckLeft
+    case TruckRight
     case None
 }
 

@@ -552,7 +552,7 @@ extension ReservoirObject: Renderable {
     }
 }
 
-extension ReservoirObject: Testable {
+extension ReservoirObject: Touchable {
     func touchesBegan(_ boxPos: float2) {
         if let actionHit = floatingButtonHitTest( boxPos ) {
             switch actionHit {

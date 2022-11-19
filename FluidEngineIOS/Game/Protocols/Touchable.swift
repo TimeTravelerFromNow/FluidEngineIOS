@@ -1,4 +1,4 @@
-protocol Testable {
+protocol Touchable {
     
     var isTesting: Bool { get set }
     

@@ -10,7 +10,7 @@
 		920603B1290B03F400C1C846 /* bulbMesh.obj in Resources */ = {isa = PBXBuildFile; fileRef = 920603AF290B03F400C1C846 /* bulbMesh.obj */; };
 		920603B2290B03F400C1C846 /* bulbMesh.mtl in Resources */ = {isa = PBXBuildFile; fileRef = 920603B0290B03F400C1C846 /* bulbMesh.mtl */; };
 		920603B6290C4E8300C1C846 /* DevScene.swift in Sources */ = {isa = PBXBuildFile; fileRef = 920603B5290C4E8300C1C846 /* DevScene.swift */; };
-		920603B8290C559600C1C846 /* Testable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 920603B7290C559600C1C846 /* Testable.swift */; };
+		920603B8290C559600C1C846 /* Touchable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 920603B7290C559600C1C846 /* Touchable.swift */; };
 		920603BA290C585600C1C846 /* SnapshotObject.swift in Sources */ = {isa = PBXBuildFile; fileRef = 920603B9290C585600C1C846 /* SnapshotObject.swift */; };
 		920603BC290C684F00C1C846 /* missingTexture.png in Resources */ = {isa = PBXBuildFile; fileRef = 920603BB290C684F00C1C846 /* missingTexture.png */; };
 		920603BF290C99C100C1C846 /* editTexture.png in Resources */ = {isa = PBXBuildFile; fileRef = 920603BE290C99C100C1C846 /* editTexture.png */; };
@@ -108,6 +108,9 @@
 		92489BCF2799DA0400639B52 /* b2CollideEdge.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 92489B012799DA0400639B52 /* b2CollideEdge.cpp */; };
 		92489BD02799DA0400639B52 /* b2Collision.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 92489B022799DA0400639B52 /* b2Collision.cpp */; };
 		92489C032799DD0500639B52 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 92489C022799DD0500639B52 /* LaunchScreen.storyboard */; };
+		9254F4AB2929654800B8B9FF /* Truck.png in Resources */ = {isa = PBXBuildFile; fileRef = 9254F4AA2929654800B8B9FF /* Truck.png */; };
+		9254F4AE2929680E00B8B9FF /* leftArrow.png in Resources */ = {isa = PBXBuildFile; fileRef = 9254F4AC2929680E00B8B9FF /* leftArrow.png */; };
+		9254F4AF2929680E00B8B9FF /* rightArrow.png in Resources */ = {isa = PBXBuildFile; fileRef = 9254F4AD2929680E00B8B9FF /* rightArrow.png */; };
 		9270CD9C28E1084600A5CB05 /* FontRenderable.m in Sources */ = {isa = PBXBuildFile; fileRef = 9270CD9B28E1084600A5CB05 /* FontRenderable.m */; };
 		92728470291CD06F004C0CFC /* bulbMesh.png in Resources */ = {isa = PBXBuildFile; fileRef = 9272846F291CD06E004C0CFC /* bulbMesh.png */; };
 		92728472291CD11D004C0CFC /* reservoir.png in Resources */ = {isa = PBXBuildFile; fileRef = 92728471291CD11D004C0CFC /* reservoir.png */; };
@@ -138,6 +141,14 @@
 		92A75C1329284D4E00653F36 /* house.mtl in Resources */ = {isa = PBXBuildFile; fileRef = 92A75C1029284D4E00653F36 /* house.mtl */; };
 		92A75C1429284D4E00653F36 /* house.obj in Resources */ = {isa = PBXBuildFile; fileRef = 92A75C1129284D4E00653F36 /* house.obj */; };
 		92A75C1629284ED200653F36 /* GunObject.swift in Sources */ = {isa = PBXBuildFile; fileRef = 92A75C1529284ED200653F36 /* GunObject.swift */; };
+		92A75C182928650100653F36 /* mount.png in Resources */ = {isa = PBXBuildFile; fileRef = 92A75C172928650100653F36 /* mount.png */; };
+		92A75C242929570700653F36 /* tire.png in Resources */ = {isa = PBXBuildFile; fileRef = 92A75C232929570700653F36 /* tire.png */; };
+		92A75C262929572A00653F36 /* TruckObject.swift in Sources */ = {isa = PBXBuildFile; fileRef = 92A75C252929572A00653F36 /* TruckObject.swift */; };
+		92A75C2A292958A500653F36 /* Island.mtl in Resources */ = {isa = PBXBuildFile; fileRef = 92A75C27292958A500653F36 /* Island.mtl */; };
+		92A75C2B292958A500653F36 /* Island.obj in Resources */ = {isa = PBXBuildFile; fileRef = 92A75C28292958A500653F36 /* Island.obj */; };
+		92A75C2C292958A500653F36 /* Island.png in Resources */ = {isa = PBXBuildFile; fileRef = 92A75C29292958A500653F36 /* Island.png */; };
+		92A75C3129295A2200653F36 /* Truck.obj in Resources */ = {isa = PBXBuildFile; fileRef = 92A75C2E29295A2200653F36 /* Truck.obj */; };
+		92A75C3229295A2200653F36 /* Truck.mtl in Resources */ = {isa = PBXBuildFile; fileRef = 92A75C2F29295A2200653F36 /* Truck.mtl */; };
 		92A9E38E28DA6CEB0000A77F /* Renderable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 92A9E37A28DA6CEB0000A77F /* Renderable.swift */; };
 		92A9E38F28DA6CEB0000A77F /* Camera.swift in Sources */ = {isa = PBXBuildFile; fileRef = 92A9E37C28DA6CEB0000A77F /* Camera.swift */; };
 		92A9E39028DA6CEB0000A77F /* Levels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 92A9E37E28DA6CEB0000A77F /* Levels.swift */; };
@@ -213,7 +224,7 @@
 		920603AF290B03F400C1C846 /* bulbMesh.obj */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = bulbMesh.obj; sourceTree = "<group>"; };
 		920603B0290B03F400C1C846 /* bulbMesh.mtl */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = bulbMesh.mtl; sourceTree = "<group>"; };
 		920603B5290C4E8300C1C846 /* DevScene.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DevScene.swift; sourceTree = "<group>"; };
-		920603B7290C559600C1C846 /* Testable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Testable.swift; sourceTree = "<group>"; };
+		920603B7290C559600C1C846 /* Touchable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Touchable.swift; sourceTree = "<group>"; };
 		920603B9290C585600C1C846 /* SnapshotObject.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SnapshotObject.swift; sourceTree = "<group>"; };
 		920603BB290C684F00C1C846 /* missingTexture.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = missingTexture.png; sourceTree = "<group>"; };
 		920603BE290C99C100C1C846 /* editTexture.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = editTexture.png; sourceTree = "<group>"; };
@@ -378,6 +389,9 @@
 		92489B012799DA0400639B52 /* b2CollideEdge.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = b2CollideEdge.cpp; sourceTree = "<group>"; };
 		92489B022799DA0400639B52 /* b2Collision.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = b2Collision.cpp; sourceTree = "<group>"; };
 		92489C022799DD0500639B52 /* LaunchScreen.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = LaunchScreen.storyboard; sourceTree = "<group>"; };
+		9254F4AA2929654800B8B9FF /* Truck.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = Truck.png; path = "../../../../../../Meshes/Fluid-Engine/Alien-Infiltrators/Truck/Truck.png"; sourceTree = "<group>"; };
+		9254F4AC2929680E00B8B9FF /* leftArrow.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = leftArrow.png; sourceTree = "<group>"; };
+		9254F4AD2929680E00B8B9FF /* rightArrow.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = rightArrow.png; sourceTree = "<group>"; };
 		9270CD9B28E1084600A5CB05 /* FontRenderable.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = FontRenderable.m; sourceTree = "<group>"; };
 		9270CD9D28E10F4500A5CB05 /* FontRenderable.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = FontRenderable.h; sourceTree = "<group>"; };
 		9272846F291CD06E004C0CFC /* bulbMesh.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = bulbMesh.png; sourceTree = "<group>"; };
@@ -411,6 +425,14 @@
 		92A75C1029284D4E00653F36 /* house.mtl */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = house.mtl; sourceTree = "<group>"; };
 		92A75C1129284D4E00653F36 /* house.obj */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = house.obj; sourceTree = "<group>"; };
 		92A75C1529284ED200653F36 /* GunObject.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GunObject.swift; sourceTree = "<group>"; };
+		92A75C172928650100653F36 /* mount.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = mount.png; sourceTree = "<group>"; };
+		92A75C232929570700653F36 /* tire.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = tire.png; sourceTree = "<group>"; };
+		92A75C252929572A00653F36 /* TruckObject.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TruckObject.swift; sourceTree = "<group>"; };
+		92A75C27292958A500653F36 /* Island.mtl */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = Island.mtl; sourceTree = "<group>"; };
+		92A75C28292958A500653F36 /* Island.obj */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = Island.obj; sourceTree = "<group>"; };
+		92A75C29292958A500653F36 /* Island.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Island.png; sourceTree = "<group>"; };
+		92A75C2E29295A2200653F36 /* Truck.obj */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = Truck.obj; sourceTree = "<group>"; };
+		92A75C2F29295A2200653F36 /* Truck.mtl */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = Truck.mtl; sourceTree = "<group>"; };
 		92A9E37A28DA6CEB0000A77F /* Renderable.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Renderable.swift; sourceTree = "<group>"; };
 		92A9E37C28DA6CEB0000A77F /* Camera.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Camera.swift; sourceTree = "<group>"; };
 		92A9E37E28DA6CEB0000A77F /* Levels.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Levels.swift; sourceTree = "<group>"; };
@@ -517,6 +539,8 @@
 		920603C0290D96D700C1C846 /* Box2DPresentables */ = {
 			isa = PBXGroup;
 			children = (
+				92A9E38128DA6CEB0000A77F /* BoxPolygon.swift */,
+				92A75C252929572A00653F36 /* TruckObject.swift */,
 				92A75C1529284ED200653F36 /* GunObject.swift */,
 				92A75C0C29284ABD00653F36 /* Friendly.swift */,
 				92A75C06292839D200653F36 /* Alien.swift */,
@@ -528,7 +552,6 @@
 				92A9E38D28DA6CEB0000A77F /* SurfObject.swift */,
 				92A9E38728DA6CEB0000A77F /* FluidEnvironment.swift */,
 				92A9E38C28DA6CEB0000A77F /* DebugEnvironment.swift */,
-				92A9E38128DA6CEB0000A77F /* BoxPolygon.swift */,
 			);
 			path = Box2DPresentables;
 			sourceTree = "<group>";
@@ -536,6 +559,7 @@
 		920603C3290D973100C1C846 /* Decorative */ = {
 			isa = PBXGroup;
 			children = (
+				920603D12912181E00C1C846 /* FloatingButton.swift */,
 				92A9E38928DA6CEB0000A77F /* InstancedObject.swift */,
 				92A9E38228DA6CEB0000A77F /* SharedBackground.swift */,
 				9295E4CE2900B84900A33A0D /* TextObject.swift */,
@@ -553,7 +577,6 @@
 				9226D3172905FE6B007785D5 /* ReservoirObject.swift */,
 				920603CD291217EF00C1C846 /* Pipe.swift */,
 				920603CF2912180600C1C846 /* MoveableArrow2D.swift */,
-				920603D12912181E00C1C846 /* FloatingButton.swift */,
 			);
 			path = ReservoirStuff;
 			sourceTree = "<group>";
@@ -906,22 +929,25 @@
 		92A75BE129255ED900653F36 /* AlienInfiltrators */ = {
 			isa = PBXGroup;
 			children = (
+				92A75C2D292958A700653F36 /* Island */,
+				92A75C1C2929550C00653F36 /* Truck */,
 				92A75C0E29284D4900653F36 /* House */,
 				92A75BCA2924A66300653F36 /* Alien */,
 				92A75BE329255EEF00653F36 /* Asteroid */,
-				92A75BE229255EE700653F36 /* Barrel */,
+				92A75BE229255EE700653F36 /* Gun */,
 			);
 			path = AlienInfiltrators;
 			sourceTree = "<group>";
 		};
-		92A75BE229255EE700653F36 /* Barrel */ = {
+		92A75BE229255EE700653F36 /* Gun */ = {
 			isa = PBXGroup;
 			children = (
 				92A75BDC29255ED000653F36 /* Barrel.mtl */,
+				92A75C172928650100653F36 /* mount.png */,
 				92A75BDD29255ED000653F36 /* Barrel.obj */,
 				92A75BDB29255ED000653F36 /* Barrel.png */,
 			);
-			path = Barrel;
+			path = Gun;
 			sourceTree = "<group>";
 		};
 		92A75BE329255EEF00653F36 /* Asteroid */ = {
@@ -944,11 +970,34 @@
 			path = House;
 			sourceTree = "<group>";
 		};
+		92A75C1C2929550C00653F36 /* Truck */ = {
+			isa = PBXGroup;
+			children = (
+				9254F4AC2929680E00B8B9FF /* leftArrow.png */,
+				9254F4AD2929680E00B8B9FF /* rightArrow.png */,
+				9254F4AA2929654800B8B9FF /* Truck.png */,
+				92A75C2F29295A2200653F36 /* Truck.mtl */,
+				92A75C2E29295A2200653F36 /* Truck.obj */,
+				92A75C232929570700653F36 /* tire.png */,
+			);
+			path = Truck;
+			sourceTree = "<group>";
+		};
+		92A75C2D292958A700653F36 /* Island */ = {
+			isa = PBXGroup;
+			children = (
+				92A75C27292958A500653F36 /* Island.mtl */,
+				92A75C28292958A500653F36 /* Island.obj */,
+				92A75C29292958A500653F36 /* Island.png */,
+			);
+			path = Island;
+			sourceTree = "<group>";
+		};
 		92A9E37928DA6CEB0000A77F /* Protocols */ = {
 			isa = PBXGroup;
 			children = (
 				92A9E37A28DA6CEB0000A77F /* Renderable.swift */,
-				920603B7290C559600C1C846 /* Testable.swift */,
+				920603B7290C559600C1C846 /* Touchable.swift */,
 			);
 			path = Protocols;
 			sourceTree = "<group>";
@@ -1194,6 +1243,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				92A9E40128DA6D620000A77F /* cliff.png in Resources */,
+				9254F4AE2929680E00B8B9FF /* leftArrow.png in Resources */,
 				92A75C1329284D4E00653F36 /* house.mtl in Resources */,
 				92A9E3FE28DA6D620000A77F /* cliff.mtl in Resources */,
 				9226D33629071250007785D5 /* reservoir.obj in Resources */,
@@ -1204,6 +1254,8 @@
 				92A75BD32924A69800653F36 /* Asteroid.png in Resources */,
 				920603B2290B03F400C1C846 /* bulbMesh.mtl in Resources */,
 				92A75C0B29283D5200653F36 /* Alien.mtl in Resources */,
+				92A75C3129295A2200653F36 /* Truck.obj in Resources */,
+				92A75C242929570700653F36 /* tire.png in Resources */,
 				92A9E3EC28DA6D620000A77F /* quad.mtl in Resources */,
 				92A75C1429284D4E00653F36 /* house.obj in Resources */,
 				92A9E40A28DA6D620000A77F /* cloud1.obj in Resources */,
@@ -1226,10 +1278,13 @@
 				92A9E3FD28DA6D620000A77F /* pineTree.mtl in Resources */,
 				92A9E44228DA72910000A77F /* testButton.obj in Resources */,
 				920603BF290C99C100C1C846 /* editTexture.png in Resources */,
+				92A75C2C292958A500653F36 /* Island.png in Resources */,
 				92A9E40228DA6D620000A77F /* pineTree.png in Resources */,
 				92A9E3ED28DA6D620000A77F /* quad.obj in Resources */,
 				92FD29AA291456B100DEB8CE /* smallValve.png in Resources */,
+				9254F4AB2929654800B8B9FF /* Truck.png in Resources */,
 				92A75BDE29255ED000653F36 /* Barrel.png in Resources */,
+				9254F4AF2929680E00B8B9FF /* rightArrow.png in Resources */,
 				92A75BD52924A69800653F36 /* Asteroid.obj in Resources */,
 				920603B1290B03F400C1C846 /* bulbMesh.obj in Resources */,
 				92A9E43728DA72910000A77F /* clearButton.mtl in Resources */,
@@ -1241,7 +1296,10 @@
 				92A9E40F28DA6D620000A77F /* cloud1.png in Resources */,
 				9218AAF4291F1A2D0007617D /* menuButton.png in Resources */,
 				92A75BED2926F13900653F36 /* fireButtonUp.png in Resources */,
+				92A75C3229295A2200653F36 /* Truck.mtl in Resources */,
+				92A75C2B292958A500653F36 /* Island.obj in Resources */,
 				92A75BE92926C7B300653F36 /* pauseButton.png in Resources */,
+				92A75C182928650100653F36 /* mount.png in Resources */,
 				92A9E41328DA6D620000A77F /* cloud3.mtl in Resources */,
 				92A9E41728DA6D620000A77F /* beach.obj in Resources */,
 				92A75BEC2926F13900653F36 /* fireButton.png in Resources */,
@@ -1261,6 +1319,7 @@
 				92728472291CD11D004C0CFC /* reservoir.png in Resources */,
 				92489A122799D9BD00639B52 /* Main.storyboard in Resources */,
 				92A9E43A28DA72910000A77F /* testButton.mtl in Resources */,
+				92A75C2A292958A500653F36 /* Island.mtl in Resources */,
 				920603C7290DC54400C1C846 /* constructPipe.png in Resources */,
 				92A75BAB2921658900653F36 /* testFlat.obj in Resources */,
 			);
@@ -1337,6 +1396,7 @@
 				923F2BD527A0FD7300443936 /* Samplers.swift in Sources */,
 				92A9E39328DA6CEB0000A77F /* SharedBackground.swift in Sources */,
 				92A9E42628DA6F410000A77F /* LiquidFun.mm in Sources */,
+				92A75C262929572A00653F36 /* TruckObject.swift in Sources */,
 				92489BA82799DA0400639B52 /* b2MotorJoint.cpp in Sources */,
 				92489BAF2799DA0400639B52 /* b2Island.cpp in Sources */,
 				92489A0B2799D9BD00639B52 /* AppDelegate.swift in Sources */,
@@ -1398,7 +1458,7 @@
 				92489BA12799DA0400639B52 /* b2Contact.cpp in Sources */,
 				92489BA52799DA0400639B52 /* b2FrictionJoint.cpp in Sources */,
 				92A75BE5292564B000653F36 /* EdgeBox.swift in Sources */,
-				920603B8290C559600C1C846 /* Testable.swift in Sources */,
+				920603B8290C559600C1C846 /* Touchable.swift in Sources */,
 				92376BF428DE6E9F007C93DB /* MBETextMesh.m in Sources */,
 				92A75C07292839D200653F36 /* Alien.swift in Sources */,
 				92489BC52799DA0400639B52 /* b2Distance.cpp in Sources */,

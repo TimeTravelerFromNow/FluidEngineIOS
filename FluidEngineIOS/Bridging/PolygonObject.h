@@ -9,7 +9,8 @@ public:
     PolygonObject(b2World* worldRef,
                   b2Vec2* vertices,
                   int32 verticesCount,
-                  b2Vec2 location);
+                  b2Vec2 location,
+                  bool asStaticChain);
     ~PolygonObject();
     
     b2Vec2 GetPosition();

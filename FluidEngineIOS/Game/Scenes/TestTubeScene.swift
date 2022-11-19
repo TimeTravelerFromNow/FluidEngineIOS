@@ -470,7 +470,7 @@ class TestTubeScene : Scene {
         buttonPressed = boxButtonHitTest(boxPos: boxPos)
         
         for node in children {
-            if let testableNode = node as? Testable {
+            if let testableNode = node as? Touchable {
                 testableNode.touchesBegan(boxPos)
             }
         }
@@ -630,7 +630,7 @@ class TestTubeScene : Scene {
             print("nothing to do")
         }
         for n in children {
-            if let testableNode = n as? Testable {
+            if let testableNode = n as? Touchable {
                 testableNode.touchEnded()
             }
         }
@@ -740,7 +740,7 @@ class TestTubeScene : Scene {
             }
             
             for n in children {
-                if let testableNode = n as? Testable {
+                if let testableNode = n as? Touchable {
                     testableNode.touchDragged(Touches.GetBoxPos())
                 }
             }

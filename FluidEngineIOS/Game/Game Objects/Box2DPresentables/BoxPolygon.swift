@@ -7,8 +7,7 @@ class BoxPolygon: GameObject {
     var getPolygonRef: UnsafeMutableRawPointer! { return _polygonRef }
     var polygonVertices: [Vector2D]!
     
-    
-    init(center: float2, scale: Float = 1.0, _ meshType: MeshTypes, _ texture: TextureTypes) {
+    init(center: float2, scale: Float = 1.0, _ meshType: MeshTypes, _ texture: TextureTypes, asStaticChain: Bool = true) {
         super.init(meshType)
         setTexture(texture)
         renderPipelineStateType = .Basic
@@ -17,7 +16,11 @@ class BoxPolygon: GameObject {
         self.setPositionZ(0.11)
         self.setScale( GameSettings.stmRatio / scale )
         
-        _polygonRef = LiquidFun.makePolygon(&polygonVertices, vertexCount: Int32(polygonVerticesCount), location: Vector2D(x: center.x, y: center.y) )
+        _polygonRef = LiquidFun.makePolygon(&polygonVertices,
+                                            vertexCount: Int32(polygonVerticesCount),
+                                            location: Vector2D(x: center.x, y: center.y),
+                                            asStaticChain: asStaticChain )
+
         updateModelConstants()
     }
     

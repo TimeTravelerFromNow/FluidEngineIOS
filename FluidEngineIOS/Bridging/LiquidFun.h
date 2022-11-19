@@ -160,7 +160,7 @@ typedef struct VertexIn {
 
 
 //custom polygons
-+ (void *)makePolygon:( Vector2D* )withVertices vertexCount:( int )vertexCount location:(Vector2D)location;
++ (void *)makePolygon:( Vector2D* )withVertices vertexCount:( int )vertexCount location:(Vector2D)location  asStaticChain:(bool)asStaticChain;
 + (Vector2D)getPolygonPosition:(void *)polygonRef;
 + (float) getPolygonRotation:(void *)polygonRef;
 + (void) setPolygonVelocity:(void *)polygonRef velocity:(Vector2D)velocity;
@@ -217,9 +217,18 @@ typedef struct VertexIn {
 + (float) getAlienRotation:(void *)alienRef;
 + (void) setAlienVelocity:(void *)alienRef velocity:(Vector2D)velocity;
 // Friendly class
-+ (void *)makeFriendly:(Vector2D)position vertices:(Vector2D*)vertices vertexCount:(long)vertexCount density:(float)density health:(float)health crashDamage:(float)crashDamage categoryBits:(UInt32)categoryBits maskBits:(UInt16)maskBits groupIndex:(int16_t)groupIndex;
++ (void *)makeFriendly:(Vector2D)position density:(float)density restitution:(float)restition health:(float)health crashDamage:(float)crashDamage categoryBits:(UInt32)categoryBits maskBits:(UInt16)maskBits groupIndex:(int16_t)groupIndex;
++ (void)setFriendlyPolygon:(void *)friendlyRef vertices:(Vector2D*)vertices vertexCount:(long)vertexCount;
++ (void)setFriendlyCircle:(void *)friendlyRef radius:(float)radius;
++ (void)setFriendlyFixedRotation:(void*)friendlyRef to:(bool)to;
++ (void)impulseFriendly:(void*)friendlyRef imp:(Vector2D)imp atPt:(Vector2D)atPt;
++ (void)torqueFriendly:(void*)friendlyRef amt:(float)amt;
 + (Vector2D)getFriendlyPosition:(void *)friendlyRef;
 + (float) getFriendlyRotation:(void *)friendlyRef;
++ (float) getFriendlyAngV:(void *)friendlyRef;
 + (void) setFriendlyVelocity:(void *)friendlyRef velocity:(Vector2D)velocity;
++ (void) setFriendlyAngularVelocity:(void *)friendlyRef angV:(float)angV;
++ (void) weldJointFriendlies:(void *)friendly0 friendly1:(void *)friendly1 weldPos:(Vector2D)weldPos stiffness:(float)stiffness;
+
 @end
 

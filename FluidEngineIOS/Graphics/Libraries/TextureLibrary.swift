@@ -41,10 +41,17 @@ enum TextureTypes {
     case AsteroidTexture
     case BarrelTexture
     case HouseTexture
+    case MountTexture
+    case TruckTexture
+    case TruckTireTexture
+    case IslandTexture
     
+    // Alien floating butttons
     case PauseTexture
     case FireButton
     case FireButtonUp
+    case LeftArrowTexture
+    case RightArrowTexture
 }
 
 
@@ -84,12 +91,17 @@ class Textures {
         _library.updateValue(Texture("Asteroid", ext: "png").texture, forKey: .AsteroidTexture)
         _library.updateValue(Texture("Barrel", ext: "png").texture, forKey: .BarrelTexture)
         _library.updateValue(Texture("house", ext: "png").texture, forKey: .HouseTexture)
+        _library.updateValue(Texture("mount", ext: "png").texture, forKey: .MountTexture)
+        _library.updateValue(Texture("Truck", ext: "png").texture, forKey: .TruckTexture)
+        _library.updateValue(Texture("tire", ext: "png").texture, forKey: .TruckTireTexture)
+        _library.updateValue(Texture("Island", ext: "png").texture, forKey: .IslandTexture)
         
         _library.updateValue(Texture("pauseButton", ext: "png").texture, forKey: .PauseTexture)
         
         _library.updateValue(Texture("fireButton", ext: "png").texture, forKey: .FireButton)
         _library.updateValue(Texture("fireButtonUp", ext: "png").texture, forKey: .FireButtonUp)
-        
+        _library.updateValue(Texture("leftArrow", ext: "png").texture, forKey: .LeftArrowTexture)
+        _library.updateValue(Texture("rightArrow", ext: "png").texture, forKey: .RightArrowTexture)
     }
     
     public static func Get(_ type: TextureTypes)->MTLTexture {

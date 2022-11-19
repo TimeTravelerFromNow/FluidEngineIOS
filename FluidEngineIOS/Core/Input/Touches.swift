@@ -9,7 +9,7 @@ class Touches {
     private static var lastTouchPosition = float2(0,0)
 
     public static var IsDragging: Bool { return touchList[ touchIndex ] }
-    
+    public static var DeltaPos: float2 { return GetBoxPos() - lastTouchPosition }
     public static func startTouch() {
         if touchIndex < MAX_TOUCHES_COUNT - 1 {
             touchIndex += 1
