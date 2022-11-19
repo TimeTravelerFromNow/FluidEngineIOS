@@ -708,10 +708,14 @@ class TestTube: Node {
         }
         
         if( isFinishingTubePour ) {
+            if( skimDelay > 0.0 ) {
+                skimDelay -= deltaTime
+            } else {
             candidateTube?.returnToOrigin()
             candidateTube?.engulfParticles( particleSystem )
             self.returnToOrigin()
             isFinishingTubePour = false
+            }
         }
     }
     

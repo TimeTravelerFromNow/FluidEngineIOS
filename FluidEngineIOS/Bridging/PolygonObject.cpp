@@ -7,13 +7,13 @@ PolygonObject::PolygonObject(b2World* worldRef,
     m_world = worldRef;
     
     b2BodyDef bodyDef;
-    bodyDef.type = b2_dynamicBody;
+    bodyDef.type = b2_staticBody;
     bodyDef.gravityScale = 0.0;
     bodyDef.position.Set(location.x, location.y);
     b2Body *body = m_world->CreateBody(&bodyDef);
-    b2PolygonShape shape;
+    b2ChainShape shape;
     b2FixtureDef fixtureDef;
-    shape.Set(vertices, verticesCount);
+    shape.CreateLoop(vertices, verticesCount);
 
     fixtureDef.shape = &shape;
     fixtureDef.density = 1.0f;

@@ -117,10 +117,8 @@
 		92A75BAB2921658900653F36 /* testFlat.obj in Resources */ = {isa = PBXBuildFile; fileRef = 92A75BA82921658800653F36 /* testFlat.obj */; };
 		92A75BAC2921658900653F36 /* testFlat.mtl in Resources */ = {isa = PBXBuildFile; fileRef = 92A75BA92921658800653F36 /* testFlat.mtl */; };
 		92A75BAF2921668200653F36 /* testFlat.png in Resources */ = {isa = PBXBuildFile; fileRef = 92A75BAE2921668200653F36 /* testFlat.png */; };
-		92A75BD12924A69800653F36 /* Alien.obj in Resources */ = {isa = PBXBuildFile; fileRef = 92A75BCB2924A69800653F36 /* Alien.obj */; };
 		92A75BD22924A69800653F36 /* Asteroid.mtl in Resources */ = {isa = PBXBuildFile; fileRef = 92A75BCC2924A69800653F36 /* Asteroid.mtl */; };
 		92A75BD32924A69800653F36 /* Asteroid.png in Resources */ = {isa = PBXBuildFile; fileRef = 92A75BCD2924A69800653F36 /* Asteroid.png */; };
-		92A75BD42924A69800653F36 /* Alien.mtl in Resources */ = {isa = PBXBuildFile; fileRef = 92A75BCE2924A69800653F36 /* Alien.mtl */; };
 		92A75BD52924A69800653F36 /* Asteroid.obj in Resources */ = {isa = PBXBuildFile; fileRef = 92A75BCF2924A69800653F36 /* Asteroid.obj */; };
 		92A75BD62924A69800653F36 /* Alien.png in Resources */ = {isa = PBXBuildFile; fileRef = 92A75BD02924A69800653F36 /* Alien.png */; };
 		92A75BDE29255ED000653F36 /* Barrel.png in Resources */ = {isa = PBXBuildFile; fileRef = 92A75BDB29255ED000653F36 /* Barrel.png */; };
@@ -132,6 +130,14 @@
 		92A75BED2926F13900653F36 /* fireButtonUp.png in Resources */ = {isa = PBXBuildFile; fileRef = 92A75BEB2926F13900653F36 /* fireButtonUp.png */; };
 		92A75BF42926F69B00653F36 /* Alien.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 92A75BF22926F69B00653F36 /* Alien.cpp */; };
 		92A75BF72926F93F00653F36 /* Friendly.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 92A75BF52926F93F00653F36 /* Friendly.cpp */; };
+		92A75C07292839D200653F36 /* Alien.swift in Sources */ = {isa = PBXBuildFile; fileRef = 92A75C06292839D200653F36 /* Alien.swift */; };
+		92A75C0929283CD600653F36 /* Alien.obj in Resources */ = {isa = PBXBuildFile; fileRef = 92A75C0829283CD600653F36 /* Alien.obj */; };
+		92A75C0B29283D5200653F36 /* Alien.mtl in Resources */ = {isa = PBXBuildFile; fileRef = 92A75C0A29283D5200653F36 /* Alien.mtl */; };
+		92A75C0D29284ABD00653F36 /* Friendly.swift in Sources */ = {isa = PBXBuildFile; fileRef = 92A75C0C29284ABD00653F36 /* Friendly.swift */; };
+		92A75C1229284D4E00653F36 /* house.png in Resources */ = {isa = PBXBuildFile; fileRef = 92A75C0F29284D4E00653F36 /* house.png */; };
+		92A75C1329284D4E00653F36 /* house.mtl in Resources */ = {isa = PBXBuildFile; fileRef = 92A75C1029284D4E00653F36 /* house.mtl */; };
+		92A75C1429284D4E00653F36 /* house.obj in Resources */ = {isa = PBXBuildFile; fileRef = 92A75C1129284D4E00653F36 /* house.obj */; };
+		92A75C1629284ED200653F36 /* GunObject.swift in Sources */ = {isa = PBXBuildFile; fileRef = 92A75C1529284ED200653F36 /* GunObject.swift */; };
 		92A9E38E28DA6CEB0000A77F /* Renderable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 92A9E37A28DA6CEB0000A77F /* Renderable.swift */; };
 		92A9E38F28DA6CEB0000A77F /* Camera.swift in Sources */ = {isa = PBXBuildFile; fileRef = 92A9E37C28DA6CEB0000A77F /* Camera.swift */; };
 		92A9E39028DA6CEB0000A77F /* Levels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 92A9E37E28DA6CEB0000A77F /* Levels.swift */; };
@@ -382,10 +388,8 @@
 		92A75BA82921658800653F36 /* testFlat.obj */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = testFlat.obj; sourceTree = "<group>"; };
 		92A75BA92921658800653F36 /* testFlat.mtl */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = testFlat.mtl; sourceTree = "<group>"; };
 		92A75BAE2921668200653F36 /* testFlat.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = testFlat.png; sourceTree = "<group>"; };
-		92A75BCB2924A69800653F36 /* Alien.obj */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = Alien.obj; sourceTree = "<group>"; };
 		92A75BCC2924A69800653F36 /* Asteroid.mtl */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = Asteroid.mtl; sourceTree = "<group>"; };
 		92A75BCD2924A69800653F36 /* Asteroid.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Asteroid.png; sourceTree = "<group>"; };
-		92A75BCE2924A69800653F36 /* Alien.mtl */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = Alien.mtl; sourceTree = "<group>"; };
 		92A75BCF2924A69800653F36 /* Asteroid.obj */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = Asteroid.obj; sourceTree = "<group>"; };
 		92A75BD02924A69800653F36 /* Alien.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Alien.png; sourceTree = "<group>"; };
 		92A75BDB29255ED000653F36 /* Barrel.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Barrel.png; sourceTree = "<group>"; };
@@ -399,6 +403,14 @@
 		92A75BF32926F69B00653F36 /* Alien.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Alien.h; sourceTree = "<group>"; };
 		92A75BF52926F93F00653F36 /* Friendly.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Friendly.cpp; sourceTree = "<group>"; };
 		92A75BF62926F93F00653F36 /* Friendly.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Friendly.h; sourceTree = "<group>"; };
+		92A75C06292839D200653F36 /* Alien.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Alien.swift; sourceTree = "<group>"; };
+		92A75C0829283CD600653F36 /* Alien.obj */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = Alien.obj; sourceTree = "<group>"; };
+		92A75C0A29283D5200653F36 /* Alien.mtl */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = Alien.mtl; sourceTree = "<group>"; };
+		92A75C0C29284ABD00653F36 /* Friendly.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Friendly.swift; sourceTree = "<group>"; };
+		92A75C0F29284D4E00653F36 /* house.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = house.png; sourceTree = "<group>"; };
+		92A75C1029284D4E00653F36 /* house.mtl */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = house.mtl; sourceTree = "<group>"; };
+		92A75C1129284D4E00653F36 /* house.obj */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = house.obj; sourceTree = "<group>"; };
+		92A75C1529284ED200653F36 /* GunObject.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GunObject.swift; sourceTree = "<group>"; };
 		92A9E37A28DA6CEB0000A77F /* Renderable.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Renderable.swift; sourceTree = "<group>"; };
 		92A9E37C28DA6CEB0000A77F /* Camera.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Camera.swift; sourceTree = "<group>"; };
 		92A9E37E28DA6CEB0000A77F /* Levels.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Levels.swift; sourceTree = "<group>"; };
@@ -505,6 +517,9 @@
 		920603C0290D96D700C1C846 /* Box2DPresentables */ = {
 			isa = PBXGroup;
 			children = (
+				92A75C1529284ED200653F36 /* GunObject.swift */,
+				92A75C0C29284ABD00653F36 /* Friendly.swift */,
+				92A75C06292839D200653F36 /* Alien.swift */,
 				92A75BE4292564B000653F36 /* EdgeBox.swift */,
 				92A9E38428DA6CEB0000A77F /* TestTube.swift */,
 				920603CC291217CD00C1C846 /* ReservoirStuff */,
@@ -881,8 +896,8 @@
 		92A75BCA2924A66300653F36 /* Alien */ = {
 			isa = PBXGroup;
 			children = (
-				92A75BCE2924A69800653F36 /* Alien.mtl */,
-				92A75BCB2924A69800653F36 /* Alien.obj */,
+				92A75C0829283CD600653F36 /* Alien.obj */,
+				92A75C0A29283D5200653F36 /* Alien.mtl */,
 				92A75BD02924A69800653F36 /* Alien.png */,
 			);
 			path = Alien;
@@ -891,6 +906,7 @@
 		92A75BE129255ED900653F36 /* AlienInfiltrators */ = {
 			isa = PBXGroup;
 			children = (
+				92A75C0E29284D4900653F36 /* House */,
 				92A75BCA2924A66300653F36 /* Alien */,
 				92A75BE329255EEF00653F36 /* Asteroid */,
 				92A75BE229255EE700653F36 /* Barrel */,
@@ -916,6 +932,16 @@
 				92A75BCD2924A69800653F36 /* Asteroid.png */,
 			);
 			path = Asteroid;
+			sourceTree = "<group>";
+		};
+		92A75C0E29284D4900653F36 /* House */ = {
+			isa = PBXGroup;
+			children = (
+				92A75C1029284D4E00653F36 /* house.mtl */,
+				92A75C1129284D4E00653F36 /* house.obj */,
+				92A75C0F29284D4E00653F36 /* house.png */,
+			);
+			path = House;
 			sourceTree = "<group>";
 		};
 		92A9E37928DA6CEB0000A77F /* Protocols */ = {
@@ -956,13 +982,13 @@
 		92A9E39F28DA6D1F0000A77F /* Scenes */ = {
 			isa = PBXGroup;
 			children = (
+				920603B5290C4E8300C1C846 /* DevScene.swift */,
 				92A9E3A028DA6D1F0000A77F /* Scene.swift */,
 				92A9E3A128DA6D1F0000A77F /* TestTubeScene.swift */,
 				92A9E3A228DA6D1F0000A77F /* Matrix.swift */,
 				92A9E3A328DA6D1F0000A77F /* BeachScene.swift */,
 				92A9E3A528DA6D1F0000A77F /* MenuScene.swift */,
 				92A9E3A628DA6D1F0000A77F /* Node.swift */,
-				920603B5290C4E8300C1C846 /* DevScene.swift */,
 			);
 			path = Scenes;
 			sourceTree = "<group>";
@@ -1168,6 +1194,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				92A9E40128DA6D620000A77F /* cliff.png in Resources */,
+				92A75C1329284D4E00653F36 /* house.mtl in Resources */,
 				92A9E3FE28DA6D620000A77F /* cliff.mtl in Resources */,
 				9226D33629071250007785D5 /* reservoir.obj in Resources */,
 				92A9E43C28DA72910000A77F /* testButton.png in Resources */,
@@ -1176,12 +1203,13 @@
 				92A9E40028DA6D620000A77F /* cliff.obj in Resources */,
 				92A75BD32924A69800653F36 /* Asteroid.png in Resources */,
 				920603B2290B03F400C1C846 /* bulbMesh.mtl in Resources */,
+				92A75C0B29283D5200653F36 /* Alien.mtl in Resources */,
 				92A9E3EC28DA6D620000A77F /* quad.mtl in Resources */,
+				92A75C1429284D4E00653F36 /* house.obj in Resources */,
 				92A9E40A28DA6D620000A77F /* cloud1.obj in Resources */,
 				92A75BE029255ED000653F36 /* Barrel.obj in Resources */,
 				92A9E43D28DA72910000A77F /* menuButton.mtl in Resources */,
 				92A9E44028DA72910000A77F /* clearButton.obj in Resources */,
-				92A75BD12924A69800653F36 /* Alien.obj in Resources */,
 				92A9E43E28DA72910000A77F /* beachButton.png in Resources */,
 				92A9E40E28DA6D620000A77F /* Cloud0.png in Resources */,
 				92489C032799DD0500639B52 /* LaunchScreen.storyboard in Resources */,
@@ -1210,7 +1238,6 @@
 				92A9E41028DA6D620000A77F /* cloud1.mtl in Resources */,
 				92A75BDF29255ED000653F36 /* Barrel.mtl in Resources */,
 				92FD29A9291456B100DEB8CE /* bigValve.png in Resources */,
-				92A75BD42924A69800653F36 /* Alien.mtl in Resources */,
 				92A9E40F28DA6D620000A77F /* cloud1.png in Resources */,
 				9218AAF4291F1A2D0007617D /* menuButton.png in Resources */,
 				92A75BED2926F13900653F36 /* fireButtonUp.png in Resources */,
@@ -1220,9 +1247,11 @@
 				92A75BEC2926F13900653F36 /* fireButton.png in Resources */,
 				92A75BAF2921668200653F36 /* testFlat.png in Resources */,
 				92C1AB2A291BFF91005B90BD /* pipeTexture.png in Resources */,
+				92A75C0929283CD600653F36 /* Alien.obj in Resources */,
 				92A9E43828DA72910000A77F /* beachButton.mtl in Resources */,
 				92A9E40828DA6D620000A77F /* cloud2.obj in Resources */,
 				92A9E43F28DA72910000A77F /* clearButton.png in Resources */,
+				92A75C1229284D4E00653F36 /* house.png in Resources */,
 				920603C5290DB6AD00C1C846 /* controlPoints.png in Resources */,
 				92A9E40C28DA6D620000A77F /* cloud3.png in Resources */,
 				92A9E40D28DA6D620000A77F /* cloud2.png in Resources */,
@@ -1276,10 +1305,12 @@
 				92489B4E2799DA0400639B52 /* GameView.swift in Sources */,
 				923F2B6327A0FCE200443936 /* GameSettings.swift in Sources */,
 				92489BA72799DA0400639B52 /* b2WheelJoint.cpp in Sources */,
+				92A75C0D29284ABD00653F36 /* Friendly.swift in Sources */,
 				92489BCB2799DA0400639B52 /* b2CircleShape.cpp in Sources */,
 				92376BE928DE6E9F007C93DB /* MBEFontAtlas.m in Sources */,
 				92A9E3B628DA6D3E0000A77F /* ColorUtil.swift in Sources */,
 				92489BC92799DA0400639B52 /* b2ChainShape.cpp in Sources */,
+				92A75C1629284ED200653F36 /* GunObject.swift in Sources */,
 				92489BCC2799DA0400639B52 /* b2PolygonShape.cpp in Sources */,
 				920603D22912181E00C1C846 /* FloatingButton.swift in Sources */,
 				92489BAE2799DA0400639B52 /* b2RopeJoint.cpp in Sources */,
@@ -1369,6 +1400,7 @@
 				92A75BE5292564B000653F36 /* EdgeBox.swift in Sources */,
 				920603B8290C559600C1C846 /* Testable.swift in Sources */,
 				92376BF428DE6E9F007C93DB /* MBETextMesh.m in Sources */,
+				92A75C07292839D200653F36 /* Alien.swift in Sources */,
 				92489BC52799DA0400639B52 /* b2Distance.cpp in Sources */,
 				92A9E3A728DA6D1F0000A77F /* Scene.swift in Sources */,
 			);

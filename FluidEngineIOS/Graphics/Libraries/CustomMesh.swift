@@ -35,6 +35,11 @@ class CustomMesh {
         buildMesh()
         buildBuffers()
     }
+    init(_ vertices: [CustomVertex], _ indices: [UInt32] ){
+        self._vertices = vertices
+        self._indices = indices
+        buildBuffers()
+    }
     
     func updateVertexColor(_ color: float4, atIndex: Int) {
         if atIndex > _vertices.count - 1 { print("warning tried to update index out of range"); return}
@@ -67,11 +72,15 @@ class CustomMesh {
     }
     
     private func buildBuffers() {
+        if( _vertices.count == 0 || _indices.count == 0) {
+            print("CustomMesh buildBuffers WARN::\(_vertices.count) _vertices and \(_indices.count) _indices.")
+            return
+        }
         _vertexBuffer = Engine.Device.makeBuffer(bytes: self._vertices,
                                                  length: CustomVertex.stride(self._vertices.count),
                                                  options: [])
         
-        _indexBuffer = Engine.Device.makeBuffer(bytes: _indices,
+        _indexBuffer = Engine.Device.makeBuffer(bytes: self._indices,
                                                 length: UInt32.stride(self._indices.count),
                                                 options: [])
     }

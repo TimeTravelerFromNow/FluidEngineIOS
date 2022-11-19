@@ -25,6 +25,7 @@ enum MeshTypes {
     case Alien
     case Asteroid
     case Barrel
+    case House
     
     case NoMesh
 }
@@ -87,7 +88,8 @@ class MeshLibrary: Library<MeshTypes, Mesh> {
 
 // Vertex Information
 class Mesh {
-    private var _vertices: [Vertex] = []
+    private var _vertices: [Vertex] = [] // should only be custom (most data is held in the submeshes.
+    private var _indices: [UInt32] = [] // only custom
     private var _vertexCount: Int = 0
     private var _vertexBuffer: MTLBuffer! = nil
     private var _instanceCount: Int = 1
@@ -105,6 +107,13 @@ class Mesh {
         }
     }
     
+    func getCustomVerticesAndIndices() -> ([CustomVertex], [UInt32]) {
+        if _vertices.count == 0 || _indices.count == 0 {
+            print("getCustomVertices() WARN::no vertices or indices, try to run getBoxVertices first.")
+        }
+        return (_vertices.map { CustomVertex( position: $0.position, color: $0.color, textureCoordinate: $0.textureCoordinate ) }, _indices)
+    }
+    
     func getBoxVertices(_ scale: Float) -> [Vector2D] {
         var boxVertices : [Vector2D] =    [Vector2D(x: 1.2, y:1.0),
                                                  Vector2D(x: 1.2, y: -1.0),
@@ -117,7 +126,23 @@ class Mesh {
         
         let objLoader = OBJLoader(url: assetURL)
         objLoader.parse()
+        
         let vertexData = objLoader.vertices
+        let textureCoordData = objLoader.vertexTextures
+        _indices = objLoader.indices
+        _vertices = [Vertex].init(repeating: Vertex(position: float3(0),
+                                                    textureCoordinate: float2(0),
+                                                    normal: float3(0,1,0),
+                                                    tangent: float3(1,0,0),
+                                                    bitangent:  float3(0,0,1)),
+                                  count: vertexData.count)
+        for i in 0..<vertexData.count {
+            let v = vertexData[i]
+            let texCoord = textureCoordData[i]
+            _vertices[i].position = float3(v.x / scale, v.y / scale, v.z / scale )
+            _vertices[i].textureCoordinate = float2(texCoord.u, texCoord.v)
+        }
+        
         let vertexCount = objLoader.vertexCount
 
         if boxVertices.count != vertexCount  { // resize array.
@@ -356,6 +381,10 @@ class Submesh {
                         customMaterial: Material?) {
         var mat = customMaterial == nil ? _material : customMaterial
         renderCommandEncoder.setFragmentBytes(&mat, length: Material.stride, index: 1)
+    }
+    
+    func getIndices() -> [UInt32] {
+        return _indices
     }
 }
 

@@ -1,9 +1,18 @@
 #include "Alien.h"
 
-Alien::Alien(b2World* worldRef,
-                    b2Vec2 location,
-                    b2Vec2* vertices,
-                    long vertexCount) {
+Alien::Alien( b2World* worldRef,
+             //           b2ParticleSystem* particleSystem,
+             b2Vec2 location,
+             b2Vec2* vertices,
+             long vertexCount,
+             float density,
+             float health,
+             float crashDamage, // damage of crash on anything ( even other enemies if possible )
+             //           long crashParticleCount, // explosive particle effect
+             //           float crashParticleDamage, // damage each particle will do
+             uint16 categoryBits,
+             uint16 maskBits,
+             int16 groupIndex) {
     m_world = worldRef;
     
     b2BodyDef bodyDef;
@@ -16,12 +25,13 @@ Alien::Alien(b2World* worldRef,
     shape.Set(vertices, vertexCount);
 
     fixtureDef.shape = &shape;
-    fixtureDef.density = 1.0f;
+    fixtureDef.density = density;
     fixtureDef.restitution = 1.0f;
     fixtureDef.filter = b2Filter();
-    fixtureDef.filter.categoryBits = 0x0001;
-    fixtureDef.filter.maskBits = 0x0001;
-    body->CreateFixture(&fixtureDef);
+    fixtureDef.filter.categoryBits = categoryBits;
+    fixtureDef.filter.maskBits = maskBits;
+    fixtureDef.filter.groupIndex = groupIndex;
+    m_fixture = body->CreateFixture(&fixtureDef);
     body->SetUserData(this);
     m_body = body;
 };
@@ -30,6 +40,9 @@ void Alien::SetVelocity(b2Vec2 velocity) {
     m_body->SetLinearVelocity(velocity);
 }
 
+void Alien::Impulse(b2Vec2 impulse) {
+    m_body->ApplyLinearImpulse(impulse, b2Vec2(0,0), true);
+}
 
 b2Vec2 Alien::GetPosition() {
     return m_body->GetPosition();

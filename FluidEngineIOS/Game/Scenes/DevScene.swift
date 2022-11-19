@@ -3,12 +3,12 @@ import CoreHaptics
 
 class DevScene : Scene {
     
-    var Enemies: [ BoxPolygon ] = []
+    var Enemies: [ Alien ] = []
     var buttons: [ BoxButton ] = []
     var floatingButtons: [ FloatingButton ] = []
     var particleSystem: UnsafeMutableRawPointer?
     
-    var testAlien: BoxPolygon!
+    var testAlien: Alien!
     var barrel: BoxPolygon!
     var environmentBox: EdgeBox!
     
@@ -18,16 +18,12 @@ class DevScene : Scene {
     var buttonPressed: ButtonActions!
     
     override func buildScene() {
-            
-        testAlien = BoxPolygon(center: box2DOrigin, scale: 3.0, .Alien, .AlienTexture )
-        addChild(testAlien)
-        let asteroid = BoxPolygon(center: box2DOrigin + float2(0.2,-0.3), scale: 3.0, .Asteroid, .AsteroidTexture )
+
+        let asteroid = Alien(center: box2DOrigin + float2(0.2,-0.3), scale: 3.0, .Asteroid, .AsteroidTexture, density: 10 )
         
         addChild(asteroid)
         Enemies.append(asteroid)
         
-        barrel = BoxPolygon(center: box2DOrigin + float2(0,-4), scale: 1.0, .Barrel, .BarrelTexture )
-        addChild(barrel)
 
         CustomMeshes.Get(.SkyQuad).updateVertexColor(float4(0,0,0.1,1), atIndex: 0)
         CustomMeshes.Get(.SkyQuad).updateVertexColor(float4(0,0.1,0,1), atIndex: 1)
@@ -39,7 +35,7 @@ class DevScene : Scene {
                                                         gravityScale: 1, density: GameSettings.Density)
         
         environmentBox = EdgeBox(center: box2DOrigin,
-                                 size: float2(4.6,9),
+                                 size: float2(4.6,16),
                                  meshType: .NoMesh,
                                  textureType: .None,
                                  particleSystem: particleSystem)
@@ -61,6 +57,9 @@ class DevScene : Scene {
         floatingButtons.append(fireButton)
 
         LiquidFun.setGravity(Vector2D(x:0,y:0))
+        
+        testAlien = Alien(center: box2DOrigin, scale: 3.0, .Alien, .AlienTexture, density: 1.0 )
+        addChild(testAlien)
     }
     
     override func freeze() {

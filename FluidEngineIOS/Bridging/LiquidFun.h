@@ -212,9 +212,14 @@ typedef struct VertexIn {
 + (void)setDefaultFilterForFixture:(void *)fixtureRef;
 
 // Alien class
-+ (void *)makeAlien:(Vector2D)position vertices:(Vector2D*)vertices vertexCount:(long)vertexCount;
-
++ (void *)makeAlien:(Vector2D)position vertices:(Vector2D*)vertices vertexCount:(long)vertexCount density:(float)density health:(float)health crashDamage:(float)crashDamage categoryBits:(UInt32)categoryBits maskBits:(UInt16)maskBits groupIndex:(int16_t)groupIndex;
++ (Vector2D)getAlienPosition:(void *)alienRef;
++ (float) getAlienRotation:(void *)alienRef;
++ (void) setAlienVelocity:(void *)alienRef velocity:(Vector2D)velocity;
 // Friendly class
-+ (void *)makeFriendly:(Vector2D)position vertices:(Vector2D*)vertices vertexCount:(long)vertexCount;
-
++ (void *)makeFriendly:(Vector2D)position vertices:(Vector2D*)vertices vertexCount:(long)vertexCount density:(float)density health:(float)health crashDamage:(float)crashDamage categoryBits:(UInt32)categoryBits maskBits:(UInt16)maskBits groupIndex:(int16_t)groupIndex;
++ (Vector2D)getFriendlyPosition:(void *)friendlyRef;
++ (float) getFriendlyRotation:(void *)friendlyRef;
++ (void) setFriendlyVelocity:(void *)friendlyRef velocity:(Vector2D)velocity;
 @end
+

@@ -737,23 +737,58 @@ return belowPositionsCount;
 }
 
 // Alien class
-+ (void *)makeAlien:(b2Vec2)position vertices:(b2Vec2*)vertices vertexCount:(long)vertexCount {
-    Alien* newAlien = new Alien(world,
++ (void *)makeAlien:(b2Vec2)position vertices:(b2Vec2*)vertices vertexCount:(long)vertexCount density:(float)density health:(float)health crashDamage:(float)crashDamage categoryBits:(uint16)categoryBits maskBits:(uint16)maskBits groupIndex:(int16)groupIndex {
+    Alien* newAlien = new Alien( world,
+                                //           b2ParticleSystem* particleSystem,
                                 position,
                                 vertices,
-                                vertexCount);
+                                vertexCount,
+                                density,
+                                health,
+                                crashDamage, // damage of crash on friendly
+                                //           long crashParticleCount, // explosive particle effect
+                                //           float crashParticleDamage, // damage each particle will do
+                                categoryBits,
+                                maskBits,
+                                groupIndex);
     return newAlien;
+}
++ (b2Vec2)getAlienPosition:(void *)alienRef {
+    return ((Alien*)alienRef)->GetPosition();
+}
++ (float) getAlienRotation:(void *)alienRef {
+    return ((Alien*)alienRef)->GetRotation();
+}
++ (void) setAlienVelocity:(void *)alienRef velocity:(b2Vec2)velocity {
+    ((Alien*)alienRef)->SetVelocity(velocity);
 }
 
 // Friendly class
-+ (void *)makeFriendly:(b2Vec2)position vertices:(b2Vec2*)vertices vertexCount:(long)vertexCount {
-    Friendly* newFriendly = new Friendly(world,
++ (void *)makeFriendly:(b2Vec2)position vertices:(b2Vec2*)vertices vertexCount:(long)vertexCount density:(float)density health:(float)health crashDamage:(float)crashDamage categoryBits:(uint16)categoryBits maskBits:(uint16)maskBits groupIndex:(int16)groupIndex {
+    Friendly* newFriendly = new Friendly( world,
+                                //           b2ParticleSystem* particleSystem,
                                 position,
                                 vertices,
-                                vertexCount);
+                                vertexCount,
+                                density,
+                                health,
+                                crashDamage, // damage of crash on friendly
+                                //           long crashParticleCount, // explosive particle effect
+                                //           float crashParticleDamage, // damage each particle will do
+                                categoryBits,
+                                maskBits,
+                                groupIndex);
     return newFriendly;
 }
-
++ (b2Vec2)getFriendlyPosition:(void *)friendlyRef {
+    return ((Friendly*)friendlyRef)->GetPosition();
+}
++ (float) getFriendlyRotation:(void *)friendlyRef {
+    return ((Friendly*)friendlyRef)->GetRotation();
+}
++ (void) setFriendlyVelocity:(void *)friendlyRef velocity:(b2Vec2)velocity {
+    ((Friendly*)friendlyRef)->SetVelocity(velocity);
+}
 
 
 @end
