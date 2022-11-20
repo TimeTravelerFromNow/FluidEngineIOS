@@ -9,7 +9,7 @@ class DevScene : Scene {
     var particleSystem: UnsafeMutableRawPointer?
     
     var testAlien: Alien!
-    var gun: GunObject!
+    var gunTruck: GunTruck!
     var environmentBox: EdgeBox!
     var island: BoxPolygon!
     
@@ -22,8 +22,27 @@ class DevScene : Scene {
     override func buildScene() {
 
         let asteroid = Alien(center: box2DOrigin + float2(0.2,-0.3), scale: 3.0, .Asteroid, .AsteroidTexture, density: 10 )
+        let asteroid1 = Alien(center: box2DOrigin + float2(0.2,-0.3), scale: 3.0, .Asteroid, .AsteroidTexture, density: 10 )
+        let asteroid2 = Alien(center: box2DOrigin + float2(0.2,-0.3), scale: 3.0, .Asteroid, .AsteroidTexture, density: 10 )
+        let asteroid3 = Alien(center: box2DOrigin + float2(0.2,-0.3), scale: 3.0, .Asteroid, .AsteroidTexture, density: 10 )
         
+        let testAlien1 = Alien(center: box2DOrigin, scale: 3.0, .Alien, .AlienTexture, density: 1.0 )
+        let testAlien2 = Alien(center: box2DOrigin, scale: 3.0, .Alien, .AlienTexture, density: 1.0 )
+        let testAlien3 = Alien(center: box2DOrigin, scale: 3.0, .Alien, .AlienTexture, density: 1.0 )
+        let testAlien4 = Alien(center: box2DOrigin, scale: 3.0, .Alien, .AlienTexture, density: 1.0 )
+        let testAlien5 = Alien(center: box2DOrigin, scale: 3.0, .Alien, .AlienTexture, density: 1.0 )
+        let testAlien6 = Alien(center: box2DOrigin, scale: 3.0, .Alien, .AlienTexture, density: 1.0 )
         addChild(asteroid)
+        addChild(asteroid1)
+        addChild(asteroid2)
+        addChild(asteroid3)
+        
+        addChild(testAlien1)
+        addChild(testAlien2)
+        addChild(testAlien3)
+        addChild(testAlien4)
+        addChild(testAlien5)
+        addChild(testAlien6)
         Enemies.append(asteroid)
         
 
@@ -52,8 +71,8 @@ class DevScene : Scene {
         addChild(menuButton)
       
         pauseButton = FloatingButton(box2DOrigin + float2(-1.9, 3.0), size: float2(0.35,0.35), sceneAction: .Pause, textureType: .PauseTexture)
-        leftArrow = FloatingButton(box2DOrigin + float2(-2.5, -3.0), size: float2(1.35,1.35), sceneAction: .TruckLeft, textureType: .LeftArrowTexture)
-        rightArrow = FloatingButton(box2DOrigin + float2(-1, -3.0), size: float2(1.35,1.35), sceneAction: .TruckRight, textureType: .RightArrowTexture)
+        leftArrow = FloatingButton(box2DOrigin + float2(-2.5, -3.0), size: float2(0.5,0.5), sceneAction: .TruckLeft, textureType: .LeftArrowTexture)
+        rightArrow = FloatingButton(box2DOrigin + float2(-1, -3.0), size: float2(0.5,0.5), sceneAction: .TruckRight, textureType: .RightArrowTexture)
         addChild(pauseButton)
         addChild(leftArrow)
         addChild(rightArrow)
@@ -63,12 +82,12 @@ class DevScene : Scene {
 
 //        LiquidFun.setGravity(Vector2D(x:0,y:0))
         
-        gun = GunObject(origin: box2DOrigin + float2(0, -3.3), particleSystem: particleSystem!)
-        addChild(gun)
+        gunTruck = GunTruck(origin: box2DOrigin + float2(0, -3.3), particleSystem: particleSystem!)
+        addChild(gunTruck)
         testAlien = Alien(center: box2DOrigin, scale: 3.0, .Alien, .AlienTexture, density: 1.0 )
         addChild(testAlien)
         
-        (currentCamera as? OrthoCamera)?.setFrameSize(2.0)
+        (currentCamera as? OrthoCamera)?.setFrameSize(1.0)
     }
     
     override func freeze() {
@@ -109,14 +128,14 @@ class DevScene : Scene {
         }
         if( Touches.IsDragging ){
             let boxPos = Touches.GetBoxPos()
-            (gun as! Touchable ).touchDragged( boxPos )
+            (gunTruck as! Touchable ).touchDragged( boxPos )
             if buttonPressed != nil {
                 buttonPressed = boxButtonHitTest(boxPos: boxPos )
                 if buttonPressed == .TruckLeft {
-                    gun.truckLeft()
+                    gunTruck.truckLeft()
                 }
                 if buttonPressed == .TruckRight {
-                    gun.truckRight()
+                    gunTruck.truckRight()
                 }
                 if buttonPressed == nil { // we lost connection
                     deselectButtons()
@@ -129,13 +148,17 @@ class DevScene : Scene {
         let boxPos = Touches.GetBoxPos()
         buttonPressed = boxButtonHitTest(boxPos: boxPos )
         if buttonPressed == .TruckLeft {
-            gun.truckLeft()
+            gunTruck.truckLeft()
         }
         if buttonPressed == .TruckRight {
-            gun.truckRight()
+            gunTruck.truckRight()
         }
         
-        ( gun as! Touchable ).touchesBegan( boxPos )
+        if buttonPressed == nil {
+            gunTruck.fireAt( boxPos )
+        }
+        
+        ( gunTruck as! Touchable ).touchesBegan( boxPos )
         
         FluidEnvironment.Environment.debugParticleDraw(atPosition: Touches.GetBoxPos())
       
@@ -150,7 +173,7 @@ class DevScene : Scene {
         }
     }
     override func touchesEnded() {
-        ( gun as! Touchable ).touchEnded( )
+        ( gunTruck as! Touchable ).touchEnded( )
 
         switch buttonPressed {
         case .None:

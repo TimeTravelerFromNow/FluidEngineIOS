@@ -94,6 +94,10 @@ float Friendly::GetAngV() {
     return m_body->GetAngularVelocity();
 }
 
+b2Vec2 Friendly::GetVel() {
+    return m_body->GetLinearVelocity();
+}
+
 void Friendly::WeldFriendly( Friendly* friendly, b2Vec2 weldPos, float stiffness) {
     b2Body* otherBody = friendly->GetBody();
     b2WeldJointDef jointDef;

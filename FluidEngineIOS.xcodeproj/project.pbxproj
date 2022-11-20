@@ -140,7 +140,7 @@
 		92A75C1229284D4E00653F36 /* house.png in Resources */ = {isa = PBXBuildFile; fileRef = 92A75C0F29284D4E00653F36 /* house.png */; };
 		92A75C1329284D4E00653F36 /* house.mtl in Resources */ = {isa = PBXBuildFile; fileRef = 92A75C1029284D4E00653F36 /* house.mtl */; };
 		92A75C1429284D4E00653F36 /* house.obj in Resources */ = {isa = PBXBuildFile; fileRef = 92A75C1129284D4E00653F36 /* house.obj */; };
-		92A75C1629284ED200653F36 /* GunObject.swift in Sources */ = {isa = PBXBuildFile; fileRef = 92A75C1529284ED200653F36 /* GunObject.swift */; };
+		92A75C1629284ED200653F36 /* GunTruck.swift in Sources */ = {isa = PBXBuildFile; fileRef = 92A75C1529284ED200653F36 /* GunTruck.swift */; };
 		92A75C182928650100653F36 /* mount.png in Resources */ = {isa = PBXBuildFile; fileRef = 92A75C172928650100653F36 /* mount.png */; };
 		92A75C242929570700653F36 /* tire.png in Resources */ = {isa = PBXBuildFile; fileRef = 92A75C232929570700653F36 /* tire.png */; };
 		92A75C262929572A00653F36 /* TruckObject.swift in Sources */ = {isa = PBXBuildFile; fileRef = 92A75C252929572A00653F36 /* TruckObject.swift */; };
@@ -424,7 +424,7 @@
 		92A75C0F29284D4E00653F36 /* house.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = house.png; sourceTree = "<group>"; };
 		92A75C1029284D4E00653F36 /* house.mtl */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = house.mtl; sourceTree = "<group>"; };
 		92A75C1129284D4E00653F36 /* house.obj */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = house.obj; sourceTree = "<group>"; };
-		92A75C1529284ED200653F36 /* GunObject.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GunObject.swift; sourceTree = "<group>"; };
+		92A75C1529284ED200653F36 /* GunTruck.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GunTruck.swift; sourceTree = "<group>"; };
 		92A75C172928650100653F36 /* mount.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = mount.png; sourceTree = "<group>"; };
 		92A75C232929570700653F36 /* tire.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = tire.png; sourceTree = "<group>"; };
 		92A75C252929572A00653F36 /* TruckObject.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TruckObject.swift; sourceTree = "<group>"; };
@@ -541,7 +541,7 @@
 			children = (
 				92A9E38128DA6CEB0000A77F /* BoxPolygon.swift */,
 				92A75C252929572A00653F36 /* TruckObject.swift */,
-				92A75C1529284ED200653F36 /* GunObject.swift */,
+				92A75C1529284ED200653F36 /* GunTruck.swift */,
 				92A75C0C29284ABD00653F36 /* Friendly.swift */,
 				92A75C06292839D200653F36 /* Alien.swift */,
 				92A75BE4292564B000653F36 /* EdgeBox.swift */,
@@ -1369,7 +1369,7 @@
 				92376BE928DE6E9F007C93DB /* MBEFontAtlas.m in Sources */,
 				92A9E3B628DA6D3E0000A77F /* ColorUtil.swift in Sources */,
 				92489BC92799DA0400639B52 /* b2ChainShape.cpp in Sources */,
-				92A75C1629284ED200653F36 /* GunObject.swift in Sources */,
+				92A75C1629284ED200653F36 /* GunTruck.swift in Sources */,
 				92489BCC2799DA0400639B52 /* b2PolygonShape.cpp in Sources */,
 				920603D22912181E00C1C846 /* FloatingButton.swift in Sources */,
 				92489BAE2799DA0400639B52 /* b2RopeJoint.cpp in Sources */,

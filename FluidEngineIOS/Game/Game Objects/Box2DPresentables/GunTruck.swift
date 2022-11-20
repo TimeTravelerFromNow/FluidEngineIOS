@@ -1,5 +1,5 @@
 
-class GunObject: Node {
+class GunTruck: Node {
     
     var barrel: Friendly!
     var mount: Friendly!
@@ -10,20 +10,20 @@ class GunObject: Node {
     var fireButton: FloatingButton!
     var truck: TruckObject!
 
-    var barrelTop: float2 = float2(0)
+    var barrelTop: float2 = float2(0, 0.5)
     var pColor = float4(1,1,0,1)
 
-    init(origin: float2, particleSystem: UnsafeMutableRawPointer) {
+    init(origin: float2, scale: Float = 2.0, particleSystem: UnsafeMutableRawPointer) {
         super.init()
         self.particleSystem = particleSystem
-        self.mount = Friendly( center: origin, scale: 1.0, .Quad, density: 1.0 )
-        self.barrel = Friendly( center: origin, scale: 1.0, .Barrel, density: 1.0 )
+        self.mount = Friendly( center: origin, scale: scale, .Quad, density: 1.0 )
+        self.barrel = Friendly( center: origin, scale: scale, .Barrel, density: 1.0 )
         self.fireButton = FloatingButton(origin + fireButtonOffset, size: float2(0.35,0.35), sceneAction: .Fire, textureType: .FireButtonUp, selectTexture: .FireButton)
 
         barrelTop = origin + float2(0,0.2)
         self.barrel.setAsPolygonShape()
-        self.mount.setAsCircle(0.2, circleTexture: .MountTexture)
-        truck = TruckObject(origin: origin, scale: 1.5)
+        self.mount.setAsCircle(0.2 / scale, circleTexture: .MountTexture)
+        truck = TruckObject(origin: origin, scale: 1.5 * scale)
         addChild(truck)
         addChild(fireButton)
         addChild(barrel)
@@ -46,13 +46,30 @@ class GunObject: Node {
     override func update(deltaTime: Float) {
         super.update(deltaTime: deltaTime)
         updateFireButtonModelConstants()
+        if( torqueBuildUp > 20 ) {
+            torqueBuildUp -= deltaTime * 20
+        }
     }
     
+    var torqueBuildUp: Float = 20.0
     func truckLeft() {
-        truck.applyTorque( 200.0 )
+        truck.applyTorque( torqueBuildUp )
+        if torqueBuildUp < 100.0 {
+        torqueBuildUp += 1.0
+        }
     }
     func truckRight() {
-        truck.applyTorque( -200.0 )
+        truck.applyTorque( -torqueBuildUp )
+        if torqueBuildUp < 100.0 {
+        torqueBuildUp += 1.0
+        }
+    }
+    
+    func fireAt( _ boxPos: float2 ) {
+        let currGunPos = barrel.getBoxPosition()
+        let vel = boxPos - currGunPos
+        let exitV = Vector2D(x:vel.x,y:vel.y)
+        LiquidFun.createParticleBall(forSystem: particleSystem, position: Vector2D(x:currGunPos.x,y:currGunPos.y + 1.0), velocity: exitV, angV: 0, radius: 0.3, color: &pColor)
     }
     
     //testables
@@ -60,7 +77,7 @@ class GunObject: Node {
     var isShowingMiniMenu: Bool = false
 }
 
-extension GunObject: Touchable {
+extension GunTruck: Touchable {
    
     func touchesBegan(_ boxPos: float2) {
         if( fireButton.hitTest(boxPos) == .Fire ) {

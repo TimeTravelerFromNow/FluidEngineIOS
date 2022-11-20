@@ -31,6 +31,7 @@ public:
     b2Vec2 GetPosition();
     float GetRotation();
     float GetAngV();
+    b2Vec2 GetVel();
     void SetVelocity(b2Vec2 velocity);
     void SetAngularVelocity(float to);
     void WeldFriendly( Friendly* friendly, b2Vec2 weldPos, float stiffness);

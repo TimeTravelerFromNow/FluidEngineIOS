@@ -226,6 +226,8 @@ typedef struct VertexIn {
 + (Vector2D)getFriendlyPosition:(void *)friendlyRef;
 + (float) getFriendlyRotation:(void *)friendlyRef;
 + (float) getFriendlyAngV:(void *)friendlyRef;
++ (Vector2D) getFriendlyVel:(void *)friendlyRef;
+
 + (void) setFriendlyVelocity:(void *)friendlyRef velocity:(Vector2D)velocity;
 + (void) setFriendlyAngularVelocity:(void *)friendlyRef angV:(float)angV;
 + (void) weldJointFriendlies:(void *)friendly0 friendly1:(void *)friendly1 weldPos:(Vector2D)weldPos stiffness:(float)stiffness;

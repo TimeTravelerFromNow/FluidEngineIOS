@@ -125,7 +125,7 @@ static b2World *world;
     shape.m_radius = radius;
     
     b2ParticleGroupDef pGroupDef;
-    pGroupDef.flags = b2_waterParticle;
+    pGroupDef.flags = b2_powderParticle | b2_fixtureContactFilterParticle;
     pGroupDef.position.Set(position.x, position.y);
     pGroupDef.shape = &shape;
     b2ParticleColor pColor;
@@ -816,6 +816,10 @@ return belowPositionsCount;
 + (float) getFriendlyAngV:(void *)friendlyRef {
     return ((Friendly*)friendlyRef)->GetAngV();
 }
++ (b2Vec2) getFriendlyVel:(void *)friendlyRef {
+    return ((Friendly*)friendlyRef)->GetVel();
+}
+
 + (void) setFriendlyVelocity:(void *)friendlyRef velocity:(b2Vec2)velocity {
     ((Friendly*)friendlyRef)->SetVelocity(velocity);
 }
