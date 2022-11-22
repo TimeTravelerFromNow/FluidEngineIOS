@@ -21,6 +21,14 @@
 		920603D02912180600C1C846 /* MoveableArrow2D.swift in Sources */ = {isa = PBXBuildFile; fileRef = 920603CF2912180600C1C846 /* MoveableArrow2D.swift */; };
 		920603D22912181E00C1C846 /* FloatingButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 920603D12912181E00C1C846 /* FloatingButton.swift */; };
 		9218AAF4291F1A2D0007617D /* menuButton.png in Resources */ = {isa = PBXBuildFile; fileRef = 9218AAF3291F1A2D0007617D /* menuButton.png */; };
+		92213722292BF8C800108872 /* shell.mtl in Resources */ = {isa = PBXBuildFile; fileRef = 9221371F292BF8C800108872 /* shell.mtl */; };
+		92213723292BF8C800108872 /* shell.png in Resources */ = {isa = PBXBuildFile; fileRef = 92213720292BF8C800108872 /* shell.png */; };
+		92213724292BF8C800108872 /* shell.obj in Resources */ = {isa = PBXBuildFile; fileRef = 92213721292BF8C800108872 /* shell.obj */; };
+		9221372B292C01D600108872 /* Island.obj in Resources */ = {isa = PBXBuildFile; fileRef = 92213727292C01D500108872 /* Island.obj */; };
+		9221372C292C01D600108872 /* Island.png in Resources */ = {isa = PBXBuildFile; fileRef = 92213728292C01D600108872 /* Island.png */; };
+		9221372E292C01D600108872 /* Island.mtl in Resources */ = {isa = PBXBuildFile; fileRef = 9221372A292C01D600108872 /* Island.mtl */; };
+		92213730292C0B0100108872 /* LaserBeam.png in Resources */ = {isa = PBXBuildFile; fileRef = 9221372F292C0B0100108872 /* LaserBeam.png */; };
+		92213732292C204900108872 /* GunObject.swift in Sources */ = {isa = PBXBuildFile; fileRef = 92213731292C204900108872 /* GunObject.swift */; };
 		9226D3102905E306007785D5 /* Reservoir.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9226D30E2905E306007785D5 /* Reservoir.cpp */; };
 		9226D3182905FE6B007785D5 /* ReservoirObject.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9226D3172905FE6B007785D5 /* ReservoirObject.swift */; };
 		9226D33229071212007785D5 /* reservoir.mtl in Resources */ = {isa = PBXBuildFile; fileRef = 9226D32F29071212007785D5 /* reservoir.mtl */; };
@@ -144,9 +152,6 @@
 		92A75C182928650100653F36 /* mount.png in Resources */ = {isa = PBXBuildFile; fileRef = 92A75C172928650100653F36 /* mount.png */; };
 		92A75C242929570700653F36 /* tire.png in Resources */ = {isa = PBXBuildFile; fileRef = 92A75C232929570700653F36 /* tire.png */; };
 		92A75C262929572A00653F36 /* TruckObject.swift in Sources */ = {isa = PBXBuildFile; fileRef = 92A75C252929572A00653F36 /* TruckObject.swift */; };
-		92A75C2A292958A500653F36 /* Island.mtl in Resources */ = {isa = PBXBuildFile; fileRef = 92A75C27292958A500653F36 /* Island.mtl */; };
-		92A75C2B292958A500653F36 /* Island.obj in Resources */ = {isa = PBXBuildFile; fileRef = 92A75C28292958A500653F36 /* Island.obj */; };
-		92A75C2C292958A500653F36 /* Island.png in Resources */ = {isa = PBXBuildFile; fileRef = 92A75C29292958A500653F36 /* Island.png */; };
 		92A75C3129295A2200653F36 /* Truck.obj in Resources */ = {isa = PBXBuildFile; fileRef = 92A75C2E29295A2200653F36 /* Truck.obj */; };
 		92A75C3229295A2200653F36 /* Truck.mtl in Resources */ = {isa = PBXBuildFile; fileRef = 92A75C2F29295A2200653F36 /* Truck.mtl */; };
 		92A9E38E28DA6CEB0000A77F /* Renderable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 92A9E37A28DA6CEB0000A77F /* Renderable.swift */; };
@@ -235,6 +240,15 @@
 		920603CF2912180600C1C846 /* MoveableArrow2D.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MoveableArrow2D.swift; sourceTree = "<group>"; };
 		920603D12912181E00C1C846 /* FloatingButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FloatingButton.swift; sourceTree = "<group>"; };
 		9218AAF3291F1A2D0007617D /* menuButton.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = menuButton.png; sourceTree = "<group>"; };
+		9221371D292BEF7000108872 /* CustomContactListener.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CustomContactListener.h; sourceTree = "<group>"; };
+		9221371F292BF8C800108872 /* shell.mtl */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = shell.mtl; sourceTree = "<group>"; };
+		92213720292BF8C800108872 /* shell.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = shell.png; sourceTree = "<group>"; };
+		92213721292BF8C800108872 /* shell.obj */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = shell.obj; sourceTree = "<group>"; };
+		92213727292C01D500108872 /* Island.obj */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = Island.obj; sourceTree = "<group>"; };
+		92213728292C01D600108872 /* Island.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Island.png; sourceTree = "<group>"; };
+		9221372A292C01D600108872 /* Island.mtl */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = Island.mtl; sourceTree = "<group>"; };
+		9221372F292C0B0100108872 /* LaserBeam.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = LaserBeam.png; sourceTree = "<group>"; };
+		92213731292C204900108872 /* GunObject.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GunObject.swift; sourceTree = "<group>"; };
 		9226D30E2905E306007785D5 /* Reservoir.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Reservoir.cpp; sourceTree = "<group>"; };
 		9226D30F2905E306007785D5 /* Reservoir.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Reservoir.h; sourceTree = "<group>"; };
 		9226D3172905FE6B007785D5 /* ReservoirObject.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReservoirObject.swift; sourceTree = "<group>"; };
@@ -428,9 +442,6 @@
 		92A75C172928650100653F36 /* mount.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = mount.png; sourceTree = "<group>"; };
 		92A75C232929570700653F36 /* tire.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = tire.png; sourceTree = "<group>"; };
 		92A75C252929572A00653F36 /* TruckObject.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TruckObject.swift; sourceTree = "<group>"; };
-		92A75C27292958A500653F36 /* Island.mtl */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = Island.mtl; sourceTree = "<group>"; };
-		92A75C28292958A500653F36 /* Island.obj */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = Island.obj; sourceTree = "<group>"; };
-		92A75C29292958A500653F36 /* Island.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Island.png; sourceTree = "<group>"; };
 		92A75C2E29295A2200653F36 /* Truck.obj */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = Truck.obj; sourceTree = "<group>"; };
 		92A75C2F29295A2200653F36 /* Truck.mtl */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = Truck.mtl; sourceTree = "<group>"; };
 		92A9E37A28DA6CEB0000A77F /* Renderable.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Renderable.swift; sourceTree = "<group>"; };
@@ -541,6 +552,7 @@
 			children = (
 				92A9E38128DA6CEB0000A77F /* BoxPolygon.swift */,
 				92A75C252929572A00653F36 /* TruckObject.swift */,
+				92213731292C204900108872 /* GunObject.swift */,
 				92A75C1529284ED200653F36 /* GunTruck.swift */,
 				92A75C0C29284ABD00653F36 /* Friendly.swift */,
 				92A75C06292839D200653F36 /* Alien.swift */,
@@ -579,6 +591,16 @@
 				920603CF2912180600C1C846 /* MoveableArrow2D.swift */,
 			);
 			path = ReservoirStuff;
+			sourceTree = "<group>";
+		};
+		9221371E292BF8C200108872 /* Shell */ = {
+			isa = PBXGroup;
+			children = (
+				9221371F292BF8C800108872 /* shell.mtl */,
+				92213721292BF8C800108872 /* shell.obj */,
+				92213720292BF8C800108872 /* shell.png */,
+			);
+			path = Shell;
 			sourceTree = "<group>";
 		};
 		9226D32829070069007785D5 /* reservoir */ = {
@@ -929,6 +951,8 @@
 		92A75BE129255ED900653F36 /* AlienInfiltrators */ = {
 			isa = PBXGroup;
 			children = (
+				9221372F292C0B0100108872 /* LaserBeam.png */,
+				9221371E292BF8C200108872 /* Shell */,
 				92A75C2D292958A700653F36 /* Island */,
 				92A75C1C2929550C00653F36 /* Truck */,
 				92A75C0E29284D4900653F36 /* House */,
@@ -986,9 +1010,9 @@
 		92A75C2D292958A700653F36 /* Island */ = {
 			isa = PBXGroup;
 			children = (
-				92A75C27292958A500653F36 /* Island.mtl */,
-				92A75C28292958A500653F36 /* Island.obj */,
-				92A75C29292958A500653F36 /* Island.png */,
+				9221372A292C01D600108872 /* Island.mtl */,
+				92213727292C01D500108872 /* Island.obj */,
+				92213728292C01D600108872 /* Island.png */,
 			);
 			path = Island;
 			sourceTree = "<group>";
@@ -1143,6 +1167,7 @@
 				92A75BF32926F69B00653F36 /* Alien.h */,
 				92A75BF52926F93F00653F36 /* Friendly.cpp */,
 				92A75BF62926F93F00653F36 /* Friendly.h */,
+				9221371D292BEF7000108872 /* CustomContactListener.h */,
 			);
 			path = Bridging;
 			sourceTree = "<group>";
@@ -1248,6 +1273,7 @@
 				92A9E3FE28DA6D620000A77F /* cliff.mtl in Resources */,
 				9226D33629071250007785D5 /* reservoir.obj in Resources */,
 				92A9E43C28DA72910000A77F /* testButton.png in Resources */,
+				9221372E292C01D600108872 /* Island.mtl in Resources */,
 				92A9E3FF28DA6D620000A77F /* pineTree.obj in Resources */,
 				92A75BD62924A69800653F36 /* Alien.png in Resources */,
 				92A9E40028DA6D620000A77F /* cliff.obj in Resources */,
@@ -1257,12 +1283,15 @@
 				92A75C3129295A2200653F36 /* Truck.obj in Resources */,
 				92A75C242929570700653F36 /* tire.png in Resources */,
 				92A9E3EC28DA6D620000A77F /* quad.mtl in Resources */,
+				9221372C292C01D600108872 /* Island.png in Resources */,
 				92A75C1429284D4E00653F36 /* house.obj in Resources */,
 				92A9E40A28DA6D620000A77F /* cloud1.obj in Resources */,
 				92A75BE029255ED000653F36 /* Barrel.obj in Resources */,
 				92A9E43D28DA72910000A77F /* menuButton.mtl in Resources */,
+				92213724292BF8C800108872 /* shell.obj in Resources */,
 				92A9E44028DA72910000A77F /* clearButton.obj in Resources */,
 				92A9E43E28DA72910000A77F /* beachButton.png in Resources */,
+				92213730292C0B0100108872 /* LaserBeam.png in Resources */,
 				92A9E40E28DA6D620000A77F /* Cloud0.png in Resources */,
 				92489C032799DD0500639B52 /* LaunchScreen.storyboard in Resources */,
 				92A75BAC2921658900653F36 /* testFlat.mtl in Resources */,
@@ -1278,7 +1307,6 @@
 				92A9E3FD28DA6D620000A77F /* pineTree.mtl in Resources */,
 				92A9E44228DA72910000A77F /* testButton.obj in Resources */,
 				920603BF290C99C100C1C846 /* editTexture.png in Resources */,
-				92A75C2C292958A500653F36 /* Island.png in Resources */,
 				92A9E40228DA6D620000A77F /* pineTree.png in Resources */,
 				92A9E3ED28DA6D620000A77F /* quad.obj in Resources */,
 				92FD29AA291456B100DEB8CE /* smallValve.png in Resources */,
@@ -1288,16 +1316,17 @@
 				92A75BD52924A69800653F36 /* Asteroid.obj in Resources */,
 				920603B1290B03F400C1C846 /* bulbMesh.obj in Resources */,
 				92A9E43728DA72910000A77F /* clearButton.mtl in Resources */,
+				92213722292BF8C800108872 /* shell.mtl in Resources */,
 				92A9E44128DA72910000A77F /* beachButton.obj in Resources */,
 				92A9E43B28DA72910000A77F /* menuButton.obj in Resources */,
 				92A9E41028DA6D620000A77F /* cloud1.mtl in Resources */,
 				92A75BDF29255ED000653F36 /* Barrel.mtl in Resources */,
 				92FD29A9291456B100DEB8CE /* bigValve.png in Resources */,
 				92A9E40F28DA6D620000A77F /* cloud1.png in Resources */,
+				9221372B292C01D600108872 /* Island.obj in Resources */,
 				9218AAF4291F1A2D0007617D /* menuButton.png in Resources */,
 				92A75BED2926F13900653F36 /* fireButtonUp.png in Resources */,
 				92A75C3229295A2200653F36 /* Truck.mtl in Resources */,
-				92A75C2B292958A500653F36 /* Island.obj in Resources */,
 				92A75BE92926C7B300653F36 /* pauseButton.png in Resources */,
 				92A75C182928650100653F36 /* mount.png in Resources */,
 				92A9E41328DA6D620000A77F /* cloud3.mtl in Resources */,
@@ -1311,6 +1340,7 @@
 				92A9E43F28DA72910000A77F /* clearButton.png in Resources */,
 				92A75C1229284D4E00653F36 /* house.png in Resources */,
 				920603C5290DB6AD00C1C846 /* controlPoints.png in Resources */,
+				92213723292BF8C800108872 /* shell.png in Resources */,
 				92A9E40C28DA6D620000A77F /* cloud3.png in Resources */,
 				92A9E40D28DA6D620000A77F /* cloud2.png in Resources */,
 				92A9E40B28DA6D620000A77F /* cloud0.obj in Resources */,
@@ -1319,7 +1349,6 @@
 				92728472291CD11D004C0CFC /* reservoir.png in Resources */,
 				92489A122799D9BD00639B52 /* Main.storyboard in Resources */,
 				92A9E43A28DA72910000A77F /* testButton.mtl in Resources */,
-				92A75C2A292958A500653F36 /* Island.mtl in Resources */,
 				920603C7290DC54400C1C846 /* constructPipe.png in Resources */,
 				92A75BAB2921658900653F36 /* testFlat.obj in Resources */,
 			);
@@ -1423,6 +1452,7 @@
 				923F2BD427A0FD7300443936 /* MeshLibrary.swift in Sources */,
 				92489BAB2799DA0400639B52 /* b2Joint.cpp in Sources */,
 				92489B9A2799DA0400639B52 /* b2EdgeAndPolygonContact.cpp in Sources */,
+				92213732292C204900108872 /* GunObject.swift in Sources */,
 				92489BA42799DA0400639B52 /* b2MouseJoint.cpp in Sources */,
 				92489A0D2799D9BD00639B52 /* SceneDelegate.swift in Sources */,
 				92489BA32799DA0400639B52 /* b2WeldJoint.cpp in Sources */,

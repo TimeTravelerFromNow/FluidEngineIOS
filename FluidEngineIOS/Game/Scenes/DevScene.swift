@@ -11,6 +11,7 @@ class DevScene : Scene {
     var testAlien: Alien!
     var gunTruck: GunTruck!
     var environmentBox: EdgeBox!
+    let islandCenter = float2(0, -6.5)
     var island: BoxPolygon!
     
     var pauseButton: FloatingButton!
@@ -18,6 +19,8 @@ class DevScene : Scene {
     
     var leftArrow: FloatingButton!
     var rightArrow: FloatingButton!
+    
+    var oceanColor: float4 = float4(0,0.2,0.3,1)
     
     override func buildScene() {
 
@@ -56,12 +59,12 @@ class DevScene : Scene {
                                                         gravityScale: 1, density: GameSettings.Density)
         
         environmentBox = EdgeBox(center: box2DOrigin,
-                                 size: float2(20,12),
+                                 size: float2(20,16),
                                  meshType: .NoMesh,
                                  textureType: .None,
                                  particleSystem: particleSystem)
         
-        island = BoxPolygon(center: box2DOrigin + float2(0, -4.5), .Island, .IslandTexture, asStaticChain: false)
+        island = BoxPolygon(center: box2DOrigin + islandCenter, .Island, .IslandTexture, asStaticChain: false)
         addChild(island)
         addChild(environmentBox)
         
@@ -82,12 +85,21 @@ class DevScene : Scene {
 
 //        LiquidFun.setGravity(Vector2D(x:0,y:0))
         
-        gunTruck = GunTruck(origin: box2DOrigin + float2(0, -3.3), particleSystem: particleSystem!)
+        gunTruck = GunTruck(origin: box2DOrigin + islandCenter + float2(0, 1.3), particleSystem: particleSystem!)
         addChild(gunTruck)
         testAlien = Alien(center: box2DOrigin, scale: 3.0, .Alien, .AlienTexture, density: 1.0 )
         addChild(testAlien)
         
-        (currentCamera as? OrthoCamera)?.setFrameSize(1.0)
+        let leftOceanPos = Vector2D(x:islandCenter.x - 10.0, y: islandCenter.y - 2.0)
+        let rightOceanPos =  Vector2D(x:islandCenter.x + 10.0, y: islandCenter.y - 2.0)
+        LiquidFun.createParticleBox(forSystem: particleSystem, position: leftOceanPos, size:  Size2D(width:4,height:3), color: &oceanColor)
+        LiquidFun.createParticleBox(forSystem: particleSystem, position: rightOceanPos, size: Size2D(width:4,height:3), color: &oceanColor)
+
+        
+        (currentCamera as? OrthoCamera)?.setFrameSize(1.5)
+//        (currentCamera as? OrthoCamera)?.setFrameSize(1)
+//        (currentCamera as? OrthoCamera)?.setPositionY(box2DOrigin.y - 1)
+
     }
     
     override func freeze() {
@@ -132,10 +144,10 @@ class DevScene : Scene {
             if buttonPressed != nil {
                 buttonPressed = boxButtonHitTest(boxPos: boxPos )
                 if buttonPressed == .TruckLeft {
-                    gunTruck.truckLeft()
+                    gunTruck.truckLeft( deltaTime )
                 }
                 if buttonPressed == .TruckRight {
-                    gunTruck.truckRight()
+                    gunTruck.truckRight( deltaTime )
                 }
                 if buttonPressed == nil { // we lost connection
                     deselectButtons()
@@ -148,16 +160,11 @@ class DevScene : Scene {
         let boxPos = Touches.GetBoxPos()
         buttonPressed = boxButtonHitTest(boxPos: boxPos )
         if buttonPressed == .TruckLeft {
-            gunTruck.truckLeft()
+            gunTruck.truckLeft( 1 / 60 )
         }
         if buttonPressed == .TruckRight {
-            gunTruck.truckRight()
+            gunTruck.truckRight( 1 / 60 )
         }
-        
-        if buttonPressed == nil {
-            gunTruck.fireAt( boxPos )
-        }
-        
         ( gunTruck as! Touchable ).touchesBegan( boxPos )
         
         FluidEnvironment.Environment.debugParticleDraw(atPosition: Touches.GetBoxPos())

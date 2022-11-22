@@ -27,6 +27,10 @@ public:
     float GetRotation();
     void SetVelocity(b2Vec2 velocity);
     void Impulse(b2Vec2 impulse);
+    float GetHealth();
+    void TakeDamage();
+    
+    b2Body* GetBody();
     
 private:
     b2Body* m_body;

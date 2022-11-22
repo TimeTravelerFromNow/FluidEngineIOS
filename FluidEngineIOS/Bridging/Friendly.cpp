@@ -3,6 +3,8 @@
 Friendly::Friendly( b2World* worldRef,
                    //           b2ParticleSystem* particleSystem,
                    b2Vec2 location,
+                   b2Vec2 velocity,
+                   float startAngle,
                    float density,
                    float restitution,
                    float health,
@@ -26,12 +28,20 @@ Friendly::Friendly( b2World* worldRef,
     b2BodyDef bodyDef;
     bodyDef.type = b2_dynamicBody;
 //    bodyDef.gravityScale = 0.0;
+//    body
+    bodyDef.linearVelocity = velocity;
+    bodyDef.angle = startAngle;
     bodyDef.position.Set(location.x, location.y);
     b2Body *body = m_world->CreateBody(&bodyDef);
     
-    body->SetUserData(this);
     m_body = body;
 };
+
+Friendly::~Friendly() {
+    m_body->DestroyFixture(m_fixture);
+    m_world->DestroyBody(m_body);
+    auto newEnd = std::remove( friendlies.begin(), friendlies.end(), this);
+}
 
 void Friendly::SetAsPolygonShape(b2Vec2* vertices,
                        long vertexCount) {
@@ -60,6 +70,21 @@ void Friendly::SetAsCircleShape(float radius) {
     fixtureDef.friction = 1.0;
     m_body->SetAngularDamping(0.1);
     m_fixture = m_body->CreateFixture(&fixtureDef);
+}
+
+void Friendly::AddCircle( float radius ) {
+    b2CircleShape shape;
+    b2FixtureDef fixtureDef;
+    
+    shape.m_radius = radius;
+    
+    fixtureDef.shape = &shape;
+    fixtureDef.density = m_density;
+    fixtureDef.restitution = m_restition;
+    fixtureDef.filter = m_filter;
+    fixtureDef.friction = 1.0;
+    m_body->SetAngularDamping(0.1);
+    m_circleFixture = m_body->CreateFixture(&fixtureDef);
 }
 
 void Friendly::SetFixedRotation(bool to) {
@@ -108,6 +133,29 @@ void Friendly::WeldFriendly( Friendly* friendly, b2Vec2 weldPos, float stiffness
     jointDef.frequencyHz = stiffness;
     b2Joint* joint = m_world->CreateJoint( &jointDef );
 }
+
+void Friendly::WheelFriendly( Friendly* friendly, b2Vec2 weldPos, float stiffness, float damping) {
+    b2Body* otherBody = friendly->GetBody();
+    b2WheelJointDef jointDef;
+    jointDef.bodyA = m_body;
+    jointDef.bodyB = otherBody;
+    jointDef.localAnchorA = weldPos;
+    jointDef.collideConnected = false;
+    jointDef.localAxisA = b2Vec2(0, 1);
+    jointDef.frequencyHz = stiffness;
+    jointDef.dampingRatio = damping;
+    b2Joint* joint = m_world->CreateJoint( &jointDef );
+}
+
+
+float Friendly::GetHealth() {
+    return m_health;
+}
+
+void Friendly::TakeDamage() {
+    m_health -= 1;
+}
+
 
 b2Body* Friendly::GetBody() {
     return m_body;

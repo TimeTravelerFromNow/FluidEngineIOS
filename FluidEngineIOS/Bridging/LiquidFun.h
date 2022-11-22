@@ -213,16 +213,24 @@ typedef struct VertexIn {
 
 // Alien class
 + (void *)makeAlien:(Vector2D)position vertices:(Vector2D*)vertices vertexCount:(long)vertexCount density:(float)density health:(float)health crashDamage:(float)crashDamage categoryBits:(UInt32)categoryBits maskBits:(UInt16)maskBits groupIndex:(int16_t)groupIndex;
++ (void)destroyAlien:(void *)alienRef;
 + (Vector2D)getAlienPosition:(void *)alienRef;
 + (float) getAlienRotation:(void *)alienRef;
 + (void) setAlienVelocity:(void *)alienRef velocity:(Vector2D)velocity;
++ (float) getAlienHealth:(void *)alienRef;
+
 // Friendly class
-+ (void *)makeFriendly:(Vector2D)position density:(float)density restitution:(float)restition health:(float)health crashDamage:(float)crashDamage categoryBits:(UInt32)categoryBits maskBits:(UInt16)maskBits groupIndex:(int16_t)groupIndex;
++ (void *)makeFriendly:(Vector2D)position velocity:(Vector2D)velocity startAngle:(float)startAngle density:(float)density restitution:(float)restition health:(float)health crashDamage:(float)crashDamage categoryBits:(UInt32)categoryBits maskBits:(UInt16)maskBits groupIndex:(int16_t)groupIndex;
++ (void)destroyFriendly:(void *)friendlyRef;
 + (void)setFriendlyPolygon:(void *)friendlyRef vertices:(Vector2D*)vertices vertexCount:(long)vertexCount;
 + (void)setFriendlyCircle:(void *)friendlyRef radius:(float)radius;
++ (void)addFriendlyCircle:(void *)friendlyRef radius:(float)radius;
+    
 + (void)setFriendlyFixedRotation:(void*)friendlyRef to:(bool)to;
 + (void)impulseFriendly:(void*)friendlyRef imp:(Vector2D)imp atPt:(Vector2D)atPt;
 + (void)torqueFriendly:(void*)friendlyRef amt:(float)amt;
++ (float) getFriendlyHealth:(void *)friendlyRef;
+
 + (Vector2D)getFriendlyPosition:(void *)friendlyRef;
 + (float) getFriendlyRotation:(void *)friendlyRef;
 + (float) getFriendlyAngV:(void *)friendlyRef;
@@ -231,6 +239,6 @@ typedef struct VertexIn {
 + (void) setFriendlyVelocity:(void *)friendlyRef velocity:(Vector2D)velocity;
 + (void) setFriendlyAngularVelocity:(void *)friendlyRef angV:(float)angV;
 + (void) weldJointFriendlies:(void *)friendly0 friendly1:(void *)friendly1 weldPos:(Vector2D)weldPos stiffness:(float)stiffness;
-
++ (void) wheelJointFriendlies:(void *)friendlyA friendlyB:(void *)friendlyB jointPos:(Vector2D)jointPos stiffness:(float)stiffness damping:(float)damping;
 @end
 

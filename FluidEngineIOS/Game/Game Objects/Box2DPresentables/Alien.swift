@@ -6,7 +6,8 @@ class Alien: GameObject {
     var getAlienRef: UnsafeMutableRawPointer! { return _alienRef }
     var boxVertices: [Vector2D]!
     
-    init(center: float2, scale: Float = 1.0, _ meshType: MeshTypes, _ texture: TextureTypes, density: Float) {
+    init(center: float2, scale: Float = 1.0, _ meshType: MeshTypes, _ texture: TextureTypes, density: Float, health: Float = 1.0) {
+        self.health = health
         super.init(meshType)
         setTexture(texture)
         renderPipelineStateType = .Basic
@@ -27,6 +28,11 @@ class Alien: GameObject {
         updateModelConstants()
     }
     
+    var health: Float!
+    
+    func updateHealth() {
+        health = LiquidFun.getAlienHealth(_alienRef)
+    }
     
     func updateModelConstants() {
         setPositionX(self.getBoxPositionX() * GameSettings.stmRatio)

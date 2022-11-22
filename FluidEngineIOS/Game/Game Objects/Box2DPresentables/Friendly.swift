@@ -8,8 +8,10 @@ class Friendly: GameObject {
     var useCustomTexture = false
     var customTexture: TextureTypes?
     var scale: Float!
+    var health: Float!
     
-    init(center: float2, scale: Float = 1.0, _ meshType: MeshTypes, density: Float = 1.0, restitution: Float = 0.9) {
+    init(center: float2, scale: Float = 1.0, velocity: float2 = float2(0), angle: Float = 0.0, _ meshType: MeshTypes, density: Float = 1.0, restitution: Float = 0.9, health: Float = 1.0) {
+        self.health = health
         super.init(meshType)
         self.scale = scale
         renderPipelineStateType = .Basic
@@ -19,21 +21,29 @@ class Friendly: GameObject {
         self.setScale( GameSettings.stmRatio / scale )
         
         _friendlyRef = LiquidFun.makeFriendly(Vector2D(x:center.x,y:center.y),
+                                              velocity: Vector2D(x:velocity.x,y:velocity.y),
+                                              startAngle: angle,
                                         density: density,
                                         restitution: restitution,
-                                        health: 1.0,
+                                        health: health,
                                         crashDamage: 0.1,
                                         categoryBits: 0x0001,
                                         maskBits: 0x0001,
                                         groupIndex: 0)
         updateModelConstants()
+        setShape()
+    }
+    
+    func setShape() { } // override this. ( used for the gun )
+    
+    func updateHealth() {
+        health = LiquidFun.getFriendlyHealth(_friendlyRef)
     }
     
     func setAsPolygonShape() {
         LiquidFun.setFriendlyPolygon(_friendlyRef, vertices:  &boxVertices, vertexCount: boxVertices.count)
     }
     func setAsCircle(_ radius: Float, circleTexture: TextureTypes) {
-//        setScale( radius / (GameSettings.ptmRatio * 5) )
         LiquidFun.setFriendlyCircle(_friendlyRef, radius: radius)
         
         mesh = MeshLibrary.Get(.Quad)
@@ -63,6 +73,10 @@ class Friendly: GameObject {
     func getBoxPosition() -> float2 {
         let boxPos = LiquidFun.getFriendlyPosition(_friendlyRef)
         return float2(x: boxPos.x, y: boxPos.y)
+    }
+    
+    func setAngV( _ to: Float ) {
+        LiquidFun.setFriendlyAngularVelocity( _friendlyRef, angV: to )
     }
     
     override func render(_ renderCommandEncoder: MTLRenderCommandEncoder) {

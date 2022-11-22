@@ -7,7 +7,7 @@
 #import "TKSpline.h"
 #import "Alien.h"
 #import "Friendly.h"
-
+#import "CustomContactListener.h"
 static b2World *world;
 
 @implementation LiquidFun
@@ -47,7 +47,8 @@ static b2World *world;
 + (void)createWorldWithGravity:(Vector2D)gravity {
     world = new b2World(b2Vec2(gravity.x, gravity.y));
     world->SetDebugDraw(&metalDebugDraw);
-}
+    world->SetContactListener( &m_customcontactlistener );
+};
 
 + (void)destroyBody:(void *)bodyRef {
     world->DestroyBody((b2Body *)bodyRef);
@@ -135,7 +136,7 @@ static b2World *world;
     pGroupDef.linearVelocity = velocity;
     pGroupDef.angularVelocity = angV;
     pGroupDef.lifetime = 4;
-    ((b2ParticleSystem*)particleSystem)->SetGravityScale(0);
+//    ((b2ParticleSystem*)particleSystem)->SetGravityScale(0);
     ((b2ParticleSystem*)particleSystem)->CreateParticleGroup(pGroupDef);
 }
 
@@ -753,6 +754,7 @@ return belowPositionsCount;
                                 categoryBits,
                                 maskBits,
                                 groupIndex);
+    aliens.push_back( newAlien );
     return newAlien;
 }
 + (b2Vec2)getAlienPosition:(void *)alienRef {
@@ -764,9 +766,13 @@ return belowPositionsCount;
 + (void) setAlienVelocity:(void *)alienRef velocity:(b2Vec2)velocity {
     ((Alien*)alienRef)->SetVelocity(velocity);
 }
-
++ (float) getAlienHealth:(void *)alienRef {
+    return ((Alien*)alienRef)->GetHealth();
+}
 // Friendly class
 + (void *)makeFriendly:(b2Vec2)position
+              velocity:(b2Vec2)velocity
+            startAngle:(float)startAngle
                density:(float)density
                 restitution:(float)restition
                 health:(float)health
@@ -777,6 +783,8 @@ return belowPositionsCount;
     Friendly* newFriendly = new Friendly( world,
                                 //           b2ParticleSystem* particleSystem,
                                 position,
+                                         velocity,
+                                         startAngle,
                                 density,
                                 restition,
                                 health,
@@ -786,6 +794,7 @@ return belowPositionsCount;
                                 categoryBits,
                                 maskBits,
                                 groupIndex);
+    friendlies.push_back( newFriendly );
     return newFriendly;
 }
 + (void)setFriendlyPolygon:(void *)friendlyRef vertices:(b2Vec2*)vertices vertexCount:(long)vertexCount {
@@ -793,6 +802,9 @@ return belowPositionsCount;
 }
 + (void)setFriendlyCircle:(void *)friendlyRef radius:(float)radius {
     ((Friendly *) friendlyRef)->SetAsCircleShape(radius);
+}
++ (void)addFriendlyCircle:(void *)friendlyRef radius:(float)radius {
+    ((Friendly *) friendlyRef)->AddCircle(radius);
 }
 
 + (void)setFriendlyFixedRotation:(void*)friendlyRef to:(bool)to {
@@ -805,6 +817,10 @@ return belowPositionsCount;
 
 + (void)torqueFriendly:(void*)friendlyRef amt:(float)amt {
     ((Friendly *)friendlyRef)->Torque(amt);
+}
+
++ (float) getFriendlyHealth:(void *)friendlyRef {
+    return ((Friendly*)friendlyRef)->GetHealth();
 }
 
 + (b2Vec2)getFriendlyPosition:(void *)friendlyRef {
@@ -831,7 +847,9 @@ return belowPositionsCount;
 + (void) weldJointFriendlies:(void *)friendly0 friendly1:(void *)friendly1 weldPos:(b2Vec2)weldPos stiffness:(float)stiffness {
     ((Friendly*)friendly0)->WeldFriendly( (Friendly *)friendly1, weldPos, stiffness );
 }
-
++ (void) wheelJointFriendlies:(void *)friendlyA friendlyB:(void *)friendlyB jointPos:(b2Vec2)jointPos stiffness:(float)stiffness damping:(float)damping {
+    ((Friendly*)friendlyA)->WheelFriendly( (Friendly*) friendlyB, jointPos, stiffness, damping);
+}
 
 @end
 

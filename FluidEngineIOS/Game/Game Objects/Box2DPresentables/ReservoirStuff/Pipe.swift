@@ -75,6 +75,8 @@ class Pipe: Node {
         self._wallRef = wallRef
         self.originArrow = originArrow
         super.init()
+        self.setScale(1 / (GameSettings.ptmRatio * 5) )
+        modelConstants.modelMatrix = modelMatrix
         _mesh = CustomMesh()
         _fluidConstants = FluidConstants(ptmRatio: GameSettings.ptmRatio, pointSize: GameSettings.particleRadius)
         selectColor = WaterColors[ reservoirColor ]?.xyz ?? float3(1.0,0.0,0.0)

@@ -17,7 +17,7 @@ Alien::Alien( b2World* worldRef,
     
     b2BodyDef bodyDef;
     bodyDef.type = b2_dynamicBody;
-    bodyDef.gravityScale = 0.0;
+//    bodyDef.gravityScale = 0.0;
     bodyDef.position.Set(location.x, location.y);
     b2Body *body = m_world->CreateBody(&bodyDef);
     b2PolygonShape shape;
@@ -32,9 +32,14 @@ Alien::Alien( b2World* worldRef,
     fixtureDef.filter.maskBits = maskBits;
     fixtureDef.filter.groupIndex = groupIndex;
     m_fixture = body->CreateFixture(&fixtureDef);
-    body->SetUserData(this);
     m_body = body;
 };
+
+Alien::~Alien() {
+    m_body->DestroyFixture(m_fixture);
+    m_world->DestroyBody(m_body);
+    auto newEnd = std::remove( aliens.begin(), aliens.end(), this);
+}
 
 void Alien::SetVelocity(b2Vec2 velocity) {
     m_body->SetLinearVelocity(velocity);
@@ -51,3 +56,17 @@ b2Vec2 Alien::GetPosition() {
 float Alien::GetRotation() {
     return m_body->GetAngle();
 }
+
+float Alien::GetHealth() {
+    return health;
+}
+
+void Alien::TakeDamage() {
+    health -= 1;
+}
+
+
+b2Body* Alien::GetBody() {
+    return m_body;
+}
+

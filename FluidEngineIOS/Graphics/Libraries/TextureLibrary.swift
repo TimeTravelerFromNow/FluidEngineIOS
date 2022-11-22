@@ -45,6 +45,8 @@ enum TextureTypes {
     case TruckTexture
     case TruckTireTexture
     case IslandTexture
+    case ShellTexture
+    case LaserTexture
     
     // Alien floating butttons
     case PauseTexture
@@ -95,7 +97,9 @@ class Textures {
         _library.updateValue(Texture("Truck", ext: "png").texture, forKey: .TruckTexture)
         _library.updateValue(Texture("tire", ext: "png").texture, forKey: .TruckTireTexture)
         _library.updateValue(Texture("Island", ext: "png").texture, forKey: .IslandTexture)
-        
+        _library.updateValue(Texture("shell", ext: "png").texture, forKey: .ShellTexture)
+        _library.updateValue(Texture("LaserBeam", ext: "png").texture, forKey: .LaserTexture)
+
         _library.updateValue(Texture("pauseButton", ext: "png").texture, forKey: .PauseTexture)
         
         _library.updateValue(Texture("fireButton", ext: "png").texture, forKey: .FireButton)
