@@ -10,7 +10,6 @@ class CustomContactListener: public b2ContactListener {
     void PreSolve(b2Contact* contact, const b2Manifold* oldManifold);
     
 };
-static std::vector<Alien*> alienstodelete;
 
 inline void CustomContactListener::PreSolve(b2Contact *contact, const b2Manifold *oldManifold) {
     
@@ -18,7 +17,7 @@ inline void CustomContactListener::PreSolve(b2Contact *contact, const b2Manifold
         b2Fixture* fixA = contact->GetFixtureA();
         b2Fixture* fixB = contact->GetFixtureB();
         for( int i = 0; i < friendlies.size(); i++ ){
-            if( friendlies[i]->GetBody() == fixA->GetBody() ) { // did we have a friendly?
+            if( friendlies[i]->GetBody() == fixA->GetBody() || friendlies[i]->GetBody() == fixB->GetBody() ) { // did we have a friendly?
                 for( int j = 0; j < aliens.size(); j++ ) {
                     if( aliens[j]->GetBody() == fixB->GetBody() ) { // is the other fixture an alien?
                         aliens[j]->TakeDamage();

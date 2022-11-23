@@ -87,19 +87,10 @@ class GunTruck: Node {
         _laserMesh.setVertices(newVs)
         
     }
-    var truckHP: Float = 10.0
-    func updateTotalHealth() {
-        let hpAfter  = truck.health
-        if ((hpAfter - truckHP) < 0) {
-            print("hp reduced \(hpAfter)")
-            
-        }
-        truckHP = hpAfter
-    }
     
     override func update(deltaTime: Float) {
         super.update(deltaTime: deltaTime)
-        updateTotalHealth()
+        
         updateFireButtonModelConstants()
         if( torqueBuildUp > minTorque ) {
             torqueBuildUp -= deltaTime * jerk
