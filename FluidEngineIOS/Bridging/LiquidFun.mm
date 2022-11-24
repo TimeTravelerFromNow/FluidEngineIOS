@@ -2,7 +2,6 @@
 #import "Box2D.h"
 #import "Tube.h"
 #import "BoxButton.h"
-#import "PolygonObject.h"
 #import "Reservoir.h"
 #import "TKSpline.h"
 #import "Infiltrator.h"
@@ -521,51 +520,34 @@ static b2World *world;
 + (void) updateBoxButton:(void *)boxRef {
     ((BoxButton *)boxRef)->Update();
 }
+
 + (void) freezeButton:(void *)boxRef {
     ((BoxButton *)boxRef)->Freeze();
 }
+
 + (void) unFreezeButton:(void *)boxRef {
     ((BoxButton *)boxRef)->UnFreeze();
 }
 
-// custom polygons
-+ (void *)makePolygon:( b2Vec2* )withVertices vertexCount:( int32 )vertexCount location:(b2Vec2)location asStaticChain:(bool)asStaticChain {
-    PolygonObject* polygonObject = new PolygonObject(world, (b2Vec2*)withVertices, vertexCount, b2Vec2(location.x, location.y), asStaticChain);
-    return polygonObject;
-}
-+ (float2)getPolygonPosition:(void *)polygonRef {
-    return _float2( ((PolygonObject*)polygonRef)->GetPosition() );
-}
-
-+ (float) getPolygonRotation:(void *)polygonRef {
-    return ((PolygonObject *)polygonRef)->GetRotation();
-}
-
-+ (void) setPolygonVelocity:(void *)polygonRef velocity:(b2Vec2)velocity {
-    ((PolygonObject *)polygonRef)->SetVelocity(b2Vec2(velocity.x, velocity.y));
-}
-
 //move a particle system
-
 + (void) moveParticleSystem:(void *)particleSys byVelocity:(b2Vec2)byVelocity {
     b2ParticleSystem* system = ((b2ParticleSystem *)particleSys);
     int particleCount = system->GetParticleCount();
     b2Vec2* vBuffer = system->GetVelocityBuffer();
-    b2Vec2 velocityChange = b2Vec2(byVelocity.x, byVelocity.y);
     
     for( int i = 0; i < particleCount; i++ ) {
-        vBuffer[i] += velocityChange;
+        vBuffer[i] += byVelocity;
     }
 }
 
 // Reservoir Class
 + (void *) makeReservoir:(void *)particleSysRef
                 location:(b2Vec2)location
-                vertices:(void *) vertices vertexCount:(UInt32)vertexCount {
+                vertices:(b2Vec2 *) vertices vertexCount:(UInt32)vertexCount {
     Reservoir* newReservoir = new Reservoir(world,
                              (b2ParticleSystem*) particleSysRef,
-                             b2Vec2(location.x,location.y),
-                             (b2Vec2*)vertices, (unsigned int)vertexCount);
+                             location,
+                             vertices, (unsigned int)vertexCount);
 //    reservoirs.push_back(newReservoir);
     return newReservoir;
 }

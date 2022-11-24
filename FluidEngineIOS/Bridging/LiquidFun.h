@@ -157,20 +157,10 @@ BoxFilter BoxFilterInit() {
 + (void) freezeButton:(void *)boxRef;
 + (void) unFreezeButton:(void *)boxRef;
 
-
-//custom polygons
-+ (void *)makePolygon:( float2* )withVertices vertexCount:( int )vertexCount location:(float2)location  asStaticChain:(bool)asStaticChain;
-+ (float2)getPolygonPosition:(void *)polygonRef;
-+ (float) getPolygonRotation:(void *)polygonRef;
-+ (void) setPolygonVelocity:(void *)polygonRef velocity:(float2)velocity;
-
-
-+ (void) moveParticleSystem:(void *)particleSys byVelocity:(float2)byVelocity;
-
 //Reservoir Class
 + (void *) makeReservoir:(void *)particleSysRef
                 location:(float2)location
-                vertices:(void *) vertices vertexCount:(UInt32)vertexCount;
+                vertices:(float2 *) vertices vertexCount:(UInt32)vertexCount;
 + (void) destroyReservoir:(void *)reservoir;
 
 + (float2)getReservoirPosition:(void *)reservoir;

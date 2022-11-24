@@ -11,8 +11,7 @@ class DevScene : Scene {
     var testAlien: Alien!
     var gunTruck: GunTruck!
     var environmentBox: EdgeBox!
-    let islandCenter = float2(0, -6.5)
-    var island: BoxPolygon!
+    let islandCenter = float2(0, -10.5)
     
     var pauseButton: FloatingButton!
     var buttonPressed: ButtonActions!
@@ -64,8 +63,6 @@ class DevScene : Scene {
                                  textureType: .None,
                                  particleSystem: particleSystem)
         
-        island = BoxPolygon(center: box2DOrigin + islandCenter, .Island, .IslandTexture, asStaticChain: false)
-        addChild(island)
         addChild(environmentBox)
         
         let menuButton = BoxButton(.Menu,.Menu, .ToMenu, center: box2DOrigin + float2(-1.9, 4.0), label: .MenuLabel)
@@ -85,7 +82,7 @@ class DevScene : Scene {
 
 //        LiquidFun.setGravity(Vector2D(x:0,y:0))
         
-        gunTruck = GunTruck(origin: box2DOrigin + islandCenter + float2(0, 1.3), particleSystem: particleSystem!)
+        gunTruck = GunTruck(origin: box2DOrigin + islandCenter + float2(0, 4.3), particleSystem: particleSystem!)
         addChild(gunTruck)
         testAlien = Alien(center: box2DOrigin, scale: 3.0, .Alien, .AlienTexture, density: 1.0 )
         addChild(testAlien)

@@ -29,11 +29,9 @@ Infiltrator::Infiltrator( b2World* worldRef,
     
     b2BodyDef bodyDef;
     bodyDef.type = b2_dynamicBody;
-//    bodyDef.gravityScale = 0.0;
-//    body
     bodyDef.linearVelocity = velocity;
     bodyDef.angle = startAngle;
-    bodyDef.position.Set(location.x, location.y);
+    bodyDef.position = location;
     b2Body *body = m_world->CreateBody(&bodyDef);
     
     m_body = body;

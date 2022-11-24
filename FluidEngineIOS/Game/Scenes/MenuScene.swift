@@ -20,7 +20,6 @@ enum ButtonActions {
 }
 
 class MenuScene : Scene {
-    var waterFall: WaterFallObject!
     var testTextObject: TextObject!
     
     var buttons: [ BoxButton ] = []
@@ -59,15 +58,6 @@ class MenuScene : Scene {
     
     override func buildScene() {
         addTestButtons()
-        
-        waterFall = WaterFallObject(center: float2(x:-2.5, y: -1.0) + box2DOrigin)
-    
-        addChild(waterFall)
-        addChild(waterFall.getCliff())
-
-        for pine in waterFall.getPines() {
-            addChild(pine)
-        }
         sceneSizeWillChange()
         addTestTube()
     }
@@ -76,7 +66,6 @@ class MenuScene : Scene {
         for button in buttons {
             button.freeze()
         }
-        waterFall.clearParticles()
     }
     
     override func unFreeze() {
@@ -219,7 +208,7 @@ class MenuScene : Scene {
     
     func unSelect() {
         print("let go of tube")
-        selectedTube?.returnToOrigin( waterFall.particleSystem )
+//        selectedTube?.returnToOrigin( waterFall.particleSystem )
         selectedTube = nil
         _holdDelay = _defaultHoldTime
         _currentState = .Idle

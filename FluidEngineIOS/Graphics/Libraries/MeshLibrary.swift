@@ -17,7 +17,6 @@ enum MeshTypes {
     case PineTree
     case Menu
     case BeachButton
-    case Sand
     
     case Reservoir
     case BulbMesh
@@ -74,9 +73,7 @@ class MeshLibrary: Library<MeshTypes, Mesh> {
         meshes.updateValue( Mesh( modelName: "menuButton" ), forKey: .Menu)
         meshes.updateValue( Mesh( modelName: "beachButton" ), forKey: .BeachButton)
         meshes.updateValue( Mesh( modelName: "bulbMesh" ), forKey: .BulbMesh)
-        
-        meshes.updateValue( Mesh( modelName: "beach" ), forKey: .Sand)
-        
+                
         meshes.updateValue( Mesh( modelName: "Alien" ), forKey: .Alien)
         meshes.updateValue( Mesh( modelName: "Asteroid" ), forKey: .Asteroid)
         meshes.updateValue( Mesh( modelName: "Barrel" ), forKey: .Barrel)

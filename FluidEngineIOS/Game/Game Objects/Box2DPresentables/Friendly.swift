@@ -62,17 +62,16 @@ class Friendly: GameObject {
     }
     
     func getBoxPositionX() -> Float {
-        return Float(LiquidFun.getFriendlyPosition(_friendlyRef).x)
+        return LiquidFun.getFriendlyPosition(_friendlyRef).x
     }
     func getBoxPositionY() -> Float {
-        return Float(LiquidFun.getFriendlyPosition(_friendlyRef).y)
+        return LiquidFun.getFriendlyPosition(_friendlyRef).y
     }
     override func getRotationZ() -> Float {
         return LiquidFun.getFriendlyRotation(_friendlyRef)
     }
     func getBoxPosition() -> float2 {
-        let boxPos = LiquidFun.getFriendlyPosition(_friendlyRef)
-        return float2(x: boxPos.x, y: boxPos.y)
+        return LiquidFun.getFriendlyPosition(_friendlyRef)
     }
     
     func setAngV( _ to: Float ) {

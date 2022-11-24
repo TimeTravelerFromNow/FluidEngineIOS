@@ -122,6 +122,7 @@
 		9270CD9C28E1084600A5CB05 /* FontRenderable.m in Sources */ = {isa = PBXBuildFile; fileRef = 9270CD9B28E1084600A5CB05 /* FontRenderable.m */; };
 		92728470291CD06F004C0CFC /* bulbMesh.png in Resources */ = {isa = PBXBuildFile; fileRef = 9272846F291CD06E004C0CFC /* bulbMesh.png */; };
 		92728472291CD11D004C0CFC /* reservoir.png in Resources */ = {isa = PBXBuildFile; fileRef = 92728471291CD11D004C0CFC /* reservoir.png */; };
+		927DB832292FFB9900DBB5F3 /* Infiltrator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 927DB831292FFB9900DBB5F3 /* Infiltrator.swift */; };
 		9295E4CD2900AFB300A33A0D /* TextLibraries.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9295E4CC2900AFB300A33A0D /* TextLibraries.swift */; };
 		9295E4CF2900B84900A33A0D /* TextObject.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9295E4CE2900B84900A33A0D /* TextObject.swift */; };
 		9295E4D12900BB2900A33A0D /* TextShaders.metal in Sources */ = {isa = PBXBuildFile; fileRef = 9295E4D02900BB2900A33A0D /* TextShaders.metal */; };
@@ -157,7 +158,6 @@
 		92A9E38F28DA6CEB0000A77F /* Camera.swift in Sources */ = {isa = PBXBuildFile; fileRef = 92A9E37C28DA6CEB0000A77F /* Camera.swift */; };
 		92A9E39028DA6CEB0000A77F /* Levels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 92A9E37E28DA6CEB0000A77F /* Levels.swift */; };
 		92A9E39128DA6CEB0000A77F /* GameStateEnums.swift in Sources */ = {isa = PBXBuildFile; fileRef = 92A9E37F28DA6CEB0000A77F /* GameStateEnums.swift */; };
-		92A9E39228DA6CEB0000A77F /* BoxPolygon.swift in Sources */ = {isa = PBXBuildFile; fileRef = 92A9E38128DA6CEB0000A77F /* BoxPolygon.swift */; };
 		92A9E39328DA6CEB0000A77F /* SharedBackground.swift in Sources */ = {isa = PBXBuildFile; fileRef = 92A9E38228DA6CEB0000A77F /* SharedBackground.swift */; };
 		92A9E39428DA6CEB0000A77F /* SkyBackground.swift in Sources */ = {isa = PBXBuildFile; fileRef = 92A9E38328DA6CEB0000A77F /* SkyBackground.swift */; };
 		92A9E39528DA6CEB0000A77F /* TestTube.swift in Sources */ = {isa = PBXBuildFile; fileRef = 92A9E38428DA6CEB0000A77F /* TestTube.swift */; };
@@ -165,10 +165,8 @@
 		92A9E39828DA6CEB0000A77F /* FluidEnvironment.swift in Sources */ = {isa = PBXBuildFile; fileRef = 92A9E38728DA6CEB0000A77F /* FluidEnvironment.swift */; };
 		92A9E39928DA6CEB0000A77F /* GameObject.swift in Sources */ = {isa = PBXBuildFile; fileRef = 92A9E38828DA6CEB0000A77F /* GameObject.swift */; };
 		92A9E39A28DA6CEB0000A77F /* InstancedObject.swift in Sources */ = {isa = PBXBuildFile; fileRef = 92A9E38928DA6CEB0000A77F /* InstancedObject.swift */; };
-		92A9E39B28DA6CEB0000A77F /* WaterFallObject.swift in Sources */ = {isa = PBXBuildFile; fileRef = 92A9E38A28DA6CEB0000A77F /* WaterFallObject.swift */; };
 		92A9E39C28DA6CEB0000A77F /* BoxButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 92A9E38B28DA6CEB0000A77F /* BoxButton.swift */; };
 		92A9E39D28DA6CEB0000A77F /* DebugEnvironment.swift in Sources */ = {isa = PBXBuildFile; fileRef = 92A9E38C28DA6CEB0000A77F /* DebugEnvironment.swift */; };
-		92A9E39E28DA6CEB0000A77F /* SurfObject.swift in Sources */ = {isa = PBXBuildFile; fileRef = 92A9E38D28DA6CEB0000A77F /* SurfObject.swift */; };
 		92A9E3A728DA6D1F0000A77F /* Scene.swift in Sources */ = {isa = PBXBuildFile; fileRef = 92A9E3A028DA6D1F0000A77F /* Scene.swift */; };
 		92A9E3A828DA6D1F0000A77F /* TestTubeScene.swift in Sources */ = {isa = PBXBuildFile; fileRef = 92A9E3A128DA6D1F0000A77F /* TestTubeScene.swift */; };
 		92A9E3A928DA6D1F0000A77F /* Matrix.swift in Sources */ = {isa = PBXBuildFile; fileRef = 92A9E3A228DA6D1F0000A77F /* Matrix.swift */; };
@@ -206,7 +204,6 @@
 		92A9E42628DA6F410000A77F /* LiquidFun.mm in Sources */ = {isa = PBXBuildFile; fileRef = 92A9E41C28DA6F410000A77F /* LiquidFun.mm */; };
 		92A9E42728DA6F410000A77F /* JointTest.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 92A9E41F28DA6F410000A77F /* JointTest.cpp */; };
 		92A9E42828DA6F410000A77F /* Tube.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 92A9E42028DA6F410000A77F /* Tube.cpp */; };
-		92A9E42928DA6F410000A77F /* PolygonObject.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 92A9E42128DA6F410000A77F /* PolygonObject.cpp */; };
 		92A9E43728DA72910000A77F /* clearButton.mtl in Resources */ = {isa = PBXBuildFile; fileRef = 92A9E42B28DA72910000A77F /* clearButton.mtl */; };
 		92A9E43828DA72910000A77F /* beachButton.mtl in Resources */ = {isa = PBXBuildFile; fileRef = 92A9E42C28DA72910000A77F /* beachButton.mtl */; };
 		92A9E43A28DA72910000A77F /* testButton.mtl in Resources */ = {isa = PBXBuildFile; fileRef = 92A9E42E28DA72910000A77F /* testButton.mtl */; };
@@ -409,6 +406,7 @@
 		9270CD9D28E10F4500A5CB05 /* FontRenderable.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = FontRenderable.h; sourceTree = "<group>"; };
 		9272846F291CD06E004C0CFC /* bulbMesh.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = bulbMesh.png; sourceTree = "<group>"; };
 		92728471291CD11D004C0CFC /* reservoir.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = reservoir.png; sourceTree = "<group>"; };
+		927DB831292FFB9900DBB5F3 /* Infiltrator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Infiltrator.swift; sourceTree = "<group>"; };
 		9295E4CC2900AFB300A33A0D /* TextLibraries.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextLibraries.swift; sourceTree = "<group>"; };
 		9295E4CE2900B84900A33A0D /* TextObject.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextObject.swift; sourceTree = "<group>"; };
 		9295E4D02900BB2900A33A0D /* TextShaders.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = TextShaders.metal; sourceTree = "<group>"; };
@@ -445,7 +443,6 @@
 		92A9E37C28DA6CEB0000A77F /* Camera.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Camera.swift; sourceTree = "<group>"; };
 		92A9E37E28DA6CEB0000A77F /* Levels.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Levels.swift; sourceTree = "<group>"; };
 		92A9E37F28DA6CEB0000A77F /* GameStateEnums.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GameStateEnums.swift; sourceTree = "<group>"; };
-		92A9E38128DA6CEB0000A77F /* BoxPolygon.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BoxPolygon.swift; sourceTree = "<group>"; };
 		92A9E38228DA6CEB0000A77F /* SharedBackground.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SharedBackground.swift; sourceTree = "<group>"; };
 		92A9E38328DA6CEB0000A77F /* SkyBackground.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SkyBackground.swift; sourceTree = "<group>"; };
 		92A9E38428DA6CEB0000A77F /* TestTube.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TestTube.swift; sourceTree = "<group>"; };
@@ -453,10 +450,8 @@
 		92A9E38728DA6CEB0000A77F /* FluidEnvironment.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FluidEnvironment.swift; sourceTree = "<group>"; };
 		92A9E38828DA6CEB0000A77F /* GameObject.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GameObject.swift; sourceTree = "<group>"; };
 		92A9E38928DA6CEB0000A77F /* InstancedObject.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = InstancedObject.swift; sourceTree = "<group>"; };
-		92A9E38A28DA6CEB0000A77F /* WaterFallObject.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = WaterFallObject.swift; sourceTree = "<group>"; };
 		92A9E38B28DA6CEB0000A77F /* BoxButton.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BoxButton.swift; sourceTree = "<group>"; };
 		92A9E38C28DA6CEB0000A77F /* DebugEnvironment.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DebugEnvironment.swift; sourceTree = "<group>"; };
-		92A9E38D28DA6CEB0000A77F /* SurfObject.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SurfObject.swift; sourceTree = "<group>"; };
 		92A9E3A028DA6D1F0000A77F /* Scene.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Scene.swift; sourceTree = "<group>"; };
 		92A9E3A128DA6D1F0000A77F /* TestTubeScene.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TestTubeScene.swift; sourceTree = "<group>"; };
 		92A9E3A228DA6D1F0000A77F /* Matrix.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Matrix.swift; sourceTree = "<group>"; };
@@ -491,13 +486,11 @@
 		92A9E3E928DA6D620000A77F /* beach.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = beach.png; sourceTree = "<group>"; };
 		92A9E3EA28DA6D620000A77F /* beach.obj */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = beach.obj; sourceTree = "<group>"; };
 		92A9E41928DA6F410000A77F /* BridgingHeader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BridgingHeader.h; sourceTree = "<group>"; };
-		92A9E41A28DA6F410000A77F /* PolygonObject.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PolygonObject.h; sourceTree = "<group>"; };
 		92A9E41B28DA6F410000A77F /* BoxButton.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = BoxButton.cpp; sourceTree = "<group>"; };
 		92A9E41C28DA6F410000A77F /* LiquidFun.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = LiquidFun.mm; sourceTree = "<group>"; };
 		92A9E41E28DA6F410000A77F /* JointTest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JointTest.h; sourceTree = "<group>"; };
 		92A9E41F28DA6F410000A77F /* JointTest.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = JointTest.cpp; sourceTree = "<group>"; };
 		92A9E42028DA6F410000A77F /* Tube.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Tube.cpp; sourceTree = "<group>"; };
-		92A9E42128DA6F410000A77F /* PolygonObject.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = PolygonObject.cpp; sourceTree = "<group>"; };
 		92A9E42228DA6F410000A77F /* Tube.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Tube.h; sourceTree = "<group>"; };
 		92A9E42328DA6F410000A77F /* BoxButton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BoxButton.h; sourceTree = "<group>"; };
 		92A9E42428DA6F410000A77F /* LiquidFun.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LiquidFun.h; sourceTree = "<group>"; };
@@ -547,7 +540,7 @@
 		920603C0290D96D700C1C846 /* Box2DPresentables */ = {
 			isa = PBXGroup;
 			children = (
-				92A9E38128DA6CEB0000A77F /* BoxPolygon.swift */,
+				927DB831292FFB9900DBB5F3 /* Infiltrator.swift */,
 				92A75C252929572A00653F36 /* TruckObject.swift */,
 				92213731292C204900108872 /* GunObject.swift */,
 				92A75C1529284ED200653F36 /* GunTruck.swift */,
@@ -557,8 +550,6 @@
 				92A9E38428DA6CEB0000A77F /* TestTube.swift */,
 				920603CC291217CD00C1C846 /* ReservoirStuff */,
 				92A9E38B28DA6CEB0000A77F /* BoxButton.swift */,
-				92A9E38A28DA6CEB0000A77F /* WaterFallObject.swift */,
-				92A9E38D28DA6CEB0000A77F /* SurfObject.swift */,
 				92A9E38728DA6CEB0000A77F /* FluidEnvironment.swift */,
 				92A9E38C28DA6CEB0000A77F /* DebugEnvironment.swift */,
 			);
@@ -1146,8 +1137,6 @@
 			isa = PBXGroup;
 			children = (
 				92A9E41928DA6F410000A77F /* BridgingHeader.h */,
-				92A9E42128DA6F410000A77F /* PolygonObject.cpp */,
-				92A9E41A28DA6F410000A77F /* PolygonObject.h */,
 				92A9E42328DA6F410000A77F /* BoxButton.h */,
 				92A9E41B28DA6F410000A77F /* BoxButton.cpp */,
 				92A9E42428DA6F410000A77F /* LiquidFun.h */,
@@ -1359,7 +1348,6 @@
 				92489BBB2799DA0400639B52 /* b2StackAllocator.cpp in Sources */,
 				92489BB42799DA0400639B52 /* b2Draw.cpp in Sources */,
 				92489BC72799DA0400639B52 /* b2CollidePolygon.cpp in Sources */,
-				92A9E42928DA6F410000A77F /* PolygonObject.cpp in Sources */,
 				92489BAD2799DA0400639B52 /* b2PulleyJoint.cpp in Sources */,
 				92A9E42828DA6F410000A77F /* Tube.cpp in Sources */,
 				9226D3102905E306007785D5 /* Reservoir.cpp in Sources */,
@@ -1403,7 +1391,6 @@
 				923F2B6227A0FCE200443936 /* GameTime.swift in Sources */,
 				92489BB22799DA0400639B52 /* b2Rope.cpp in Sources */,
 				92376BE828DE6E9F007C93DB /* MBEMesh.m in Sources */,
-				92A9E39B28DA6CEB0000A77F /* WaterFallObject.swift in Sources */,
 				923F2BD727A0FD7300443936 /* BasicShaders.metal in Sources */,
 				92489BCD2799DA0400639B52 /* b2TimeOfImpact.cpp in Sources */,
 				923F2BD927A0FD7300443936 /* FinalShaders.metal in Sources */,
@@ -1411,7 +1398,6 @@
 				92A9E3B528DA6D3E0000A77F /* OBJLoader.swift in Sources */,
 				92A9E39A28DA6CEB0000A77F /* InstancedObject.swift in Sources */,
 				92A9E3AC28DA6D1F0000A77F /* MenuScene.swift in Sources */,
-				92A9E39228DA6CEB0000A77F /* BoxPolygon.swift in Sources */,
 				9270CD9C28E1084600A5CB05 /* FontRenderable.m in Sources */,
 				923F2BDB27A0FD7300443936 /* InstancedShaders.metal in Sources */,
 				92A9E39C28DA6CEB0000A77F /* BoxButton.swift in Sources */,
@@ -1477,11 +1463,11 @@
 				92A9E39028DA6CEB0000A77F /* Levels.swift in Sources */,
 				92A9E3B328DA6D3E0000A77F /* Math.swift in Sources */,
 				92489BA62799DA0400639B52 /* b2DistanceJoint.cpp in Sources */,
-				92A9E39E28DA6CEB0000A77F /* SurfObject.swift in Sources */,
 				920603B6290C4E8300C1C846 /* DevScene.swift in Sources */,
 				92489BA12799DA0400639B52 /* b2Contact.cpp in Sources */,
 				92489BA52799DA0400639B52 /* b2FrictionJoint.cpp in Sources */,
 				92A75BE5292564B000653F36 /* EdgeBox.swift in Sources */,
+				927DB832292FFB9900DBB5F3 /* Infiltrator.swift in Sources */,
 				920603B8290C559600C1C846 /* Touchable.swift in Sources */,
 				92376BF428DE6E9F007C93DB /* MBETextMesh.m in Sources */,
 				92A75C07292839D200653F36 /* Alien.swift in Sources */,
