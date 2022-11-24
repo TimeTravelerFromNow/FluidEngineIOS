@@ -5,8 +5,7 @@
 #import "PolygonObject.h"
 #import "Reservoir.h"
 #import "TKSpline.h"
-#import "Alien.h"
-#import "Friendly.h"
+#import "Infiltrator.h"
 #import "CustomContactListener.h"
 static b2World *world;
 
@@ -780,7 +779,7 @@ return belowPositionsCount;
           categoryBits:(uint16)categoryBits
               maskBits:(uint16)maskBits
             groupIndex:(int16)groupIndex {
-    Friendly* newFriendly = new Friendly( world,
+    Infiltrator* newFriendly = new Infiltrator( world,
                                 //           b2ParticleSystem* particleSystem,
                                 position,
                                          velocity,
@@ -798,57 +797,57 @@ return belowPositionsCount;
     return newFriendly;
 }
 + (void)setFriendlyPolygon:(void *)friendlyRef vertices:(b2Vec2*)vertices vertexCount:(long)vertexCount {
-    ((Friendly*) friendlyRef)->SetAsPolygonShape(vertices, vertexCount);
+    ((Infiltrator*) friendlyRef)->SetAsPolygonShape(vertices, vertexCount);
 }
 + (void)setFriendlyCircle:(void *)friendlyRef radius:(float)radius {
-    ((Friendly *) friendlyRef)->SetAsCircleShape(radius);
+    ((Infiltrator *) friendlyRef)->SetAsCircleShape(radius);
 }
 + (void)addFriendlyCircle:(void *)friendlyRef radius:(float)radius {
-    ((Friendly *) friendlyRef)->AddCircle(radius);
+    ((Infiltrator *) friendlyRef)->AddCircle(radius);
 }
 
 + (void)setFriendlyFixedRotation:(void*)friendlyRef to:(bool)to {
-    ((Friendly *) friendlyRef)->SetFixedRotation(to);
+    ((Infiltrator *) friendlyRef)->SetFixedRotation(to);
 }
 
 + (void)impulseFriendly:(void*)friendlyRef imp:(b2Vec2)imp atPt:(b2Vec2)atPt {
-    ((Friendly *)friendlyRef)->Impulse(imp, atPt);
+    ((Infiltrator *)friendlyRef)->Impulse(imp, atPt);
 }
 
 + (void)torqueFriendly:(void*)friendlyRef amt:(float)amt {
-    ((Friendly *)friendlyRef)->Torque(amt);
+    ((Infiltrator *)friendlyRef)->Torque(amt);
 }
 
 + (float) getFriendlyHealth:(void *)friendlyRef {
-    return ((Friendly*)friendlyRef)->GetHealth();
+    return ((Infiltrator*)friendlyRef)->GetHealth();
 }
 
 + (b2Vec2)getFriendlyPosition:(void *)friendlyRef {
-    return ((Friendly*)friendlyRef)->GetPosition();
+    return ((Infiltrator*)friendlyRef)->GetPosition();
 }
 + (float) getFriendlyRotation:(void *)friendlyRef {
-    return ((Friendly*)friendlyRef)->GetRotation();
+    return ((Infiltrator*)friendlyRef)->GetRotation();
 }
 + (float) getFriendlyAngV:(void *)friendlyRef {
-    return ((Friendly*)friendlyRef)->GetAngV();
+    return ((Infiltrator*)friendlyRef)->GetAngV();
 }
 + (b2Vec2) getFriendlyVel:(void *)friendlyRef {
-    return ((Friendly*)friendlyRef)->GetVel();
+    return ((Infiltrator*)friendlyRef)->GetVel();
 }
 
 + (void) setFriendlyVelocity:(void *)friendlyRef velocity:(b2Vec2)velocity {
-    ((Friendly*)friendlyRef)->SetVelocity(velocity);
+    ((Infiltrator*)friendlyRef)->SetVelocity(velocity);
 }
 
 + (void) setFriendlyAngularVelocity:(void *)friendlyRef angV:(float)angV {
-    ((Friendly*)friendlyRef)->SetAngularVelocity(angV);
+    ((Infiltrator*)friendlyRef)->SetAngularVelocity(angV);
 }
 
 + (void) weldJointFriendlies:(void *)friendly0 friendly1:(void *)friendly1 weldPos:(b2Vec2)weldPos stiffness:(float)stiffness {
-    ((Friendly*)friendly0)->WeldFriendly( (Friendly *)friendly1, weldPos, stiffness );
+    ((Infiltrator*)friendly0)->WeldFriendly( (Infiltrator *)friendly1, weldPos, stiffness );
 }
 + (void) wheelJointFriendlies:(void *)friendlyA friendlyB:(void *)friendlyB jointPos:(b2Vec2)jointPos stiffness:(float)stiffness damping:(float)damping {
-    ((Friendly*)friendlyA)->WheelFriendly( (Friendly*) friendlyB, jointPos, stiffness, damping);
+    ((Infiltrator*)friendlyA)->WheelFriendly( (Infiltrator*) friendlyB, jointPos, stiffness, damping);
 }
 
 @end

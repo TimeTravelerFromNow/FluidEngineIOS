@@ -1,10 +1,3 @@
-//
-//  BasicShaders.metal
-//  FluidEngine
-//
-//  Created by sebi d on 1/10/22.
-//
-
 #include <metal_stdlib>
 #include "MetalTypes.metal"
 using namespace metal;

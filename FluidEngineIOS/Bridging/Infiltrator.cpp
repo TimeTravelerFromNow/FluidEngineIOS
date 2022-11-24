@@ -1,6 +1,8 @@
-#include "Friendly.h"
+#include "Infiltrator.h"
 
-Friendly::Friendly( b2World* worldRef,
+// both Aliens and Human objects are of the class type Infiltrator.
+// Infiltrator can also serve as the ultimate Box2D C++ to Objective C to Swift class 
+Infiltrator::Infiltrator( b2World* worldRef,
                    //           b2ParticleSystem* particleSystem,
                    b2Vec2 location,
                    b2Vec2 velocity,
@@ -37,13 +39,13 @@ Friendly::Friendly( b2World* worldRef,
     m_body = body;
 };
 
-Friendly::~Friendly() {
+Infiltrator::~Infiltrator() {
     m_body->DestroyFixture(m_fixture);
     m_world->DestroyBody(m_body);
     auto newEnd = std::remove( friendlies.begin(), friendlies.end(), this);
 }
 
-void Friendly::SetAsPolygonShape(b2Vec2* vertices,
+void Infiltrator::SetAsPolygonShape(b2Vec2* vertices,
                        long vertexCount) {
     b2PolygonShape shape;
     b2FixtureDef fixtureDef;
@@ -57,7 +59,7 @@ void Friendly::SetAsPolygonShape(b2Vec2* vertices,
     m_fixture = m_body->CreateFixture(&fixtureDef);
 }
 
-void Friendly::SetAsCircleShape(float radius) {
+void Infiltrator::SetAsCircleShape(float radius) {
     b2CircleShape shape;
     b2FixtureDef fixtureDef;
     
@@ -72,7 +74,7 @@ void Friendly::SetAsCircleShape(float radius) {
     m_fixture = m_body->CreateFixture(&fixtureDef);
 }
 
-void Friendly::AddCircle( float radius ) {
+void Infiltrator::AddCircle( float radius ) {
     b2CircleShape shape;
     b2FixtureDef fixtureDef;
     
@@ -87,43 +89,43 @@ void Friendly::AddCircle( float radius ) {
     m_circleFixture = m_body->CreateFixture(&fixtureDef);
 }
 
-void Friendly::SetFixedRotation(bool to) {
+void Infiltrator::SetFixedRotation(bool to) {
     m_body->SetFixedRotation(to);
 }
 
-void Friendly::SetVelocity(b2Vec2 velocity) {
+void Infiltrator::SetVelocity(b2Vec2 velocity) {
     m_body->SetLinearVelocity(velocity);
 }
 
-void Friendly::SetAngularVelocity(float to) {
+void Infiltrator::SetAngularVelocity(float to) {
     m_body->SetAngularVelocity(to);
 }
 
-void Friendly::Torque(float amt) {
+void Infiltrator::Torque(float amt) {
     m_body->ApplyTorque(amt, true);
 }
 
-void Friendly::Impulse(b2Vec2 imp, b2Vec2 atPos) {
+void Infiltrator::Impulse(b2Vec2 imp, b2Vec2 atPos) {
     m_body->ApplyLinearImpulse(imp, atPos, true);
 }
 
-b2Vec2 Friendly::GetPosition() {
+b2Vec2 Infiltrator::GetPosition() {
     return m_body->GetPosition();
 }
 
-float Friendly::GetRotation() {
+float Infiltrator::GetRotation() {
     return m_body->GetAngle();
 }
 
-float Friendly::GetAngV() {
+float Infiltrator::GetAngV() {
     return m_body->GetAngularVelocity();
 }
 
-b2Vec2 Friendly::GetVel() {
+b2Vec2 Infiltrator::GetVel() {
     return m_body->GetLinearVelocity();
 }
 
-void Friendly::WeldFriendly( Friendly* friendly, b2Vec2 weldPos, float stiffness) {
+void Infiltrator::WeldFriendly( Infiltrator* friendly, b2Vec2 weldPos, float stiffness) {
     b2Body* otherBody = friendly->GetBody();
     b2WeldJointDef jointDef;
     jointDef.bodyA = m_body;
@@ -134,7 +136,7 @@ void Friendly::WeldFriendly( Friendly* friendly, b2Vec2 weldPos, float stiffness
     b2Joint* joint = m_world->CreateJoint( &jointDef );
 }
 
-void Friendly::WheelFriendly( Friendly* friendly, b2Vec2 weldPos, float stiffness, float damping) {
+void Infiltrator::WheelFriendly( Infiltrator* friendly, b2Vec2 weldPos, float stiffness, float damping) {
     b2Body* otherBody = friendly->GetBody();
     b2WheelJointDef jointDef;
     jointDef.bodyA = m_body;
@@ -148,15 +150,15 @@ void Friendly::WheelFriendly( Friendly* friendly, b2Vec2 weldPos, float stiffnes
 }
 
 
-float Friendly::GetHealth() {
+float Infiltrator::GetHealth() {
     return m_health;
 }
 
-void Friendly::TakeDamage() {
+void Infiltrator::TakeDamage() {
     m_health -= 1;
 }
 
 
-b2Body* Friendly::GetBody() {
+b2Body* Infiltrator::GetBody() {
     return m_body;
 }

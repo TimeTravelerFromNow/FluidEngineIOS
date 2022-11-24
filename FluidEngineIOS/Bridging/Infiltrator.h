@@ -4,10 +4,10 @@
 #include <stdio.h>
 #include "Box2D.h"
 #include <vector>
-class Friendly {
+class Infiltrator {
 
 public:
-    Friendly( b2World* worldRef,
+    Infiltrator( b2World* worldRef,
              //           b2ParticleSystem* particleSystem,
              b2Vec2 location,
              b2Vec2 velocity,
@@ -21,7 +21,7 @@ public:
                         uint16 categoryBits,
                         uint16 maskBits,
                         int16 groupIndex);
-    ~Friendly();
+    ~Infiltrator();
     
     void SetAsPolygonShape(b2Vec2* vertices,
                            long vertexCount);
@@ -40,8 +40,8 @@ public:
     b2Vec2 GetVel();
     void SetVelocity(b2Vec2 velocity);
     void SetAngularVelocity(float to);
-    void WeldFriendly( Friendly* friendly, b2Vec2 weldPos, float stiffness);
-    void WheelFriendly( Friendly* friendly, b2Vec2 weldPos, float stiffness, float damping);
+    void WeldFriendly( Infiltrator* friendly, b2Vec2 weldPos, float stiffness);
+    void WheelFriendly( Infiltrator* friendly, b2Vec2 weldPos, float stiffness, float damping);
     b2Body* GetBody();
     
 private:
@@ -60,8 +60,6 @@ private:
     float m_crashDamage;
     long m_crashParticleCount;
 };
-
-static std::vector<Friendly*> friendlies;
 
 #endif /* Friendly_h */
 

@@ -24,6 +24,16 @@ typedef struct VertexIn {
     Color    color;
 } VertexIn;
 
+typedef struct BoxFilter
+{
+    UInt16 categoryBits = 0x0001;
+    UInt16 maskBits  = 0xFFFF;
+    UInt16 groupIndex  = 0;
+    
+    bool isFiltering  = false; // implemented to allow phasing objects
+} BoxFilter;
+
+
 #endif
 
 @interface LiquidFun : NSObject

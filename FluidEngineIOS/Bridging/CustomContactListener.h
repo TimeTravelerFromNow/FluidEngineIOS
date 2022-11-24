@@ -1,7 +1,6 @@
 
 #include "Box2D.h"
-#include "Friendly.h"
-#include "Alien.h"
+#include "Infiltrator.h"
 #ifndef CustomContactListener_h
 #define CustomContactListener_h
 
