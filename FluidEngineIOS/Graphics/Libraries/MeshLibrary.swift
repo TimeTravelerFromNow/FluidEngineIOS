@@ -120,11 +120,11 @@ class Mesh {
         return (_vertices.map { CustomVertex( position: $0.position, color: $0.color, textureCoordinate: $0.textureCoordinate ) }, _indices)
     }
     
-    func getBoxVertices(_ scale: Float) -> [Vector2D] {
-        var boxVertices : [Vector2D] =    [Vector2D(x: 1.2, y:1.0),
-                                                 Vector2D(x: 1.2, y: -1.0),
-                                                 Vector2D(x: -1.2, y: -1.0),
-                                                 Vector2D(x: -1.2, y: 1.0) ] // default box so it doesnt crash
+    func getBoxVertices(_ scale: Float) -> [float2] {
+        var boxVertices : [float2] =    [float2(x: 1.2, y:1.0),
+                                                 float2(x: 1.2, y: -1.0),
+                                                 float2(x: -1.2, y: -1.0),
+                                                 float2(x: -1.2, y: 1.0) ] // default box so it doesnt crash
         guard let assetURL = Bundle.main.url(forResource: _modelName, withExtension: "obj") else {
             print("getBoxVertices() WARNING::Asset \(_modelName) does not exist. Returning default box vertices.")
             return boxVertices
@@ -152,10 +152,10 @@ class Mesh {
         let vertexCount = objLoader.vertexCount
 
         if boxVertices.count != vertexCount  { // resize array.
-            boxVertices = [Vector2D].init(repeating: Vector2D(x:0, y:0), count: vertexCount)
+            boxVertices = [float2].init(repeating: float2(x:0, y:0), count: vertexCount)
         }
         for i in 0..<vertexCount {
-            boxVertices[i] = Vector2D(x:vertexData[i].x / scale, y: vertexData[i].y / scale)
+            boxVertices[i] = float2(x:vertexData[i].x / scale, y: vertexData[i].y / scale)
         }
         
         return boxVertices

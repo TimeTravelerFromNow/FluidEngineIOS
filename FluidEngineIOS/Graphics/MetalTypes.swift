@@ -27,8 +27,6 @@ typealias float4 = SIMD4<Float>
 typealias int2 = SIMD2<Int32>
 typealias long2 = SIMD2<Int>
 
-
-extension Vector2D: sizeable { }
 extension Bool: sizeable { }
 extension uint32: sizeable { }
 extension Int32: sizeable { }

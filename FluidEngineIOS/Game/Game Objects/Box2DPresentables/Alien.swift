@@ -4,7 +4,7 @@ class Alien: GameObject {
 
     private var _alienRef: UnsafeMutableRawPointer!
     var getAlienRef: UnsafeMutableRawPointer! { return _alienRef }
-    var boxVertices: [Vector2D]!
+    var boxVertices: [float2]!
     
     init(center: float2, scale: Float = 1.0, _ meshType: MeshTypes, _ texture: TextureTypes, density: Float, health: Float = 1.0) {
         self.health = health
@@ -15,23 +15,14 @@ class Alien: GameObject {
         let polygonVerticesCount = boxVertices.count
         self.setPositionZ(0.11)
         self.setScale( GameSettings.stmRatio / scale )
-        
-        _alienRef = LiquidFun.makeAlien(Vector2D(x:center.x,y:center.y),
-                                        vertices: &boxVertices,
-                                        vertexCount: polygonVerticesCount,
-                                        density: density,
-                                        health: 1.0,
-                                        crashDamage: 0.1,
-                                        categoryBits: 0x0001,
-                                        maskBits: 0x0001,
-                                        groupIndex: 0)
+      
         updateModelConstants()
     }
     
     var health: Float!
     
     func updateHealth() {
-        health = LiquidFun.getAlienHealth(_alienRef)
+        health = 0
     }
     
     func updateModelConstants() {
@@ -42,17 +33,17 @@ class Alien: GameObject {
     }
     
     func getBoxPositionX() -> Float {
-        return Float(LiquidFun.getAlienPosition(_alienRef).x)
+        return 0
     }
     func getBoxPositionY() -> Float {
-        return Float(LiquidFun.getAlienPosition(_alienRef).y)
+        return 0
     }
     override func getRotationZ() -> Float {
-        return LiquidFun.getAlienRotation(_alienRef)
+        return 0
     }
     func getBoxPosition() -> float2 {
-        let boxPos = LiquidFun.getAlienPosition(_alienRef)
-        return float2(x: boxPos.x, y: boxPos.y)
+      
+        return float2(0)
     }
     
     override func render(_ renderCommandEncoder: MTLRenderCommandEncoder) {

@@ -4,7 +4,7 @@ class Friendly: GameObject {
 
     private var _friendlyRef: UnsafeMutableRawPointer!
     var getFriendlyRef: UnsafeMutableRawPointer! { return _friendlyRef }
-    var boxVertices: [Vector2D]!
+    var boxVertices: [float2]!
     var useCustomTexture = false
     var customTexture: TextureTypes?
     var scale: Float!
@@ -20,8 +20,8 @@ class Friendly: GameObject {
         self.setPositionZ(0.1)
         self.setScale( GameSettings.stmRatio / scale )
         
-        _friendlyRef = LiquidFun.makeFriendly(Vector2D(x:center.x,y:center.y),
-                                              velocity: Vector2D(x:velocity.x,y:velocity.y),
+        _friendlyRef = LiquidFun.makeFriendly(center,
+                                              velocity: velocity,
                                               startAngle: angle,
                                         density: density,
                                         restitution: restitution,

@@ -181,7 +181,7 @@ class MenuScene : Scene {
             SceneManager.sceneSwitchingTo = .TestTubes
             print("start a new game now!")
             SceneManager.Get( .TestTubes ).unFreeze()
-            LiquidFun.setGravity(Vector2D(x:0,y:-9.8065))
+            LiquidFun.setGravity(float2(x:0,y:-9.8065))
         case .ToBeach:
             SceneManager.sceneSwitchingTo = .Beach
             SceneManager.Get( .Beach ).unFreeze()
@@ -191,7 +191,7 @@ class MenuScene : Scene {
             SceneManager.sceneSwitchingTo = .Dev
             print("Going to developer scene!")
             SceneManager.Get( .Dev ).unFreeze()
-            LiquidFun.setGravity(Vector2D(x:0,y:0))
+            LiquidFun.setGravity(float2(x:0,y:0))
         case nil:
             print("let go of no button")
         default:
@@ -246,7 +246,7 @@ class MenuScene : Scene {
         super.update(deltaTime: deltaTime)
         
         if shouldUpdateGyro {
-            LiquidFun.setGravity(Vector2D(x: gyroVector.x, y: gyroVector.y))
+            LiquidFun.setGravity(float2(x: gyroVector.x, y: gyroVector.y))
         }
         if (Touches.IsDragging) {
             if(buttonPressed != nil) {

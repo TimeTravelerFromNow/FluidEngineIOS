@@ -10,12 +10,12 @@ enum TubeColors {
     case Light
 }
 
-let WaterColors: [TubeColors:float4] =
-    [ .Empty    :float4(0.1,0.1,0.1,1.0),
-      .Red      :float4(0.9, 30 / 255, 13 / 255, 255 / 255),
-      .Green    :float4(0.4, 0.8, 0.3, 1),
-      .Blue     :float4(70 / 255, 130  / 255, 245 / 255, 1),
-      .Purple   :float4(48 / 255, 30  / 255, 80 / 255, 1)
+let WaterColors: [TubeColors:float3] =
+    [ .Empty    :float3(0.1,0.1,0.1),
+      .Red      :float3(0.9, 30 / 255, 13 / 255),
+      .Green    :float3(0.4, 0.8, 0.3),
+      .Blue     :float3(70 / 255, 130  / 255, 245 / 255),
+      .Purple   :float3(48 / 255, 30  / 255, 80 / 255)
 ]
 //XMas ?
 //let WaterColors: [TubeColors:float4] =

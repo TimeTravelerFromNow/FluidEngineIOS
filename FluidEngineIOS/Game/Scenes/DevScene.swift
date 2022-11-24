@@ -20,7 +20,7 @@ class DevScene : Scene {
     var leftArrow: FloatingButton!
     var rightArrow: FloatingButton!
     
-    var oceanColor: float4 = float4(0,0.2,0.3,1)
+    var oceanColor: float3 = float3(0,0.2,0.3)
     
     override func buildScene() {
 
@@ -90,10 +90,10 @@ class DevScene : Scene {
         testAlien = Alien(center: box2DOrigin, scale: 3.0, .Alien, .AlienTexture, density: 1.0 )
         addChild(testAlien)
         
-        let leftOceanPos = Vector2D(x:islandCenter.x - 10.0, y: islandCenter.y - 2.0)
-        let rightOceanPos =  Vector2D(x:islandCenter.x + 10.0, y: islandCenter.y - 2.0)
-        LiquidFun.createParticleBox(forSystem: particleSystem, position: leftOceanPos, size:  Size2D(width:4,height:3), color: &oceanColor)
-        LiquidFun.createParticleBox(forSystem: particleSystem, position: rightOceanPos, size: Size2D(width:4,height:3), color: &oceanColor)
+        let leftOceanPos = float2(x:islandCenter.x - 10.0, y: islandCenter.y - 2.0)
+        let rightOceanPos =  float2(x:islandCenter.x + 10.0, y: islandCenter.y - 2.0)
+        LiquidFun.createParticleBox(forSystem: particleSystem, position: leftOceanPos, size:  float2(4,3), color: oceanColor)
+        LiquidFun.createParticleBox(forSystem: particleSystem, position: rightOceanPos, size: float2(4,3), color: oceanColor)
 
         
         (currentCamera as? OrthoCamera)?.setFrameSize(1.5)

@@ -46,7 +46,7 @@ class GunTruck: Node {
         self.fireButton.setPositionZ(0.12)
         self.truck.setPositionZ(0.12)
 //        LiquidFun.wheelJointFriendlies(gunObject.getFriendlyRef, friendlyB: truck.truckBody.getFriendlyRef, jointPos: Vector2D(x:0.4 / scale,y: -0.8 / scale), stiffness: 10, damping: 0.1)
-        LiquidFun.weldJointFriendlies(truck.truckBody.getFriendlyRef, friendly1: gunObject.getFriendlyRef, weldPos:  Vector2D(x:-0.5 / scale,y: 0.2 / scale), stiffness: 0.1)
+        LiquidFun.weldJointFriendlies(truck.truckBody.getFriendlyRef, friendly1: gunObject.getFriendlyRef, weldPos:  float2(x:-0.5 / scale,y: 0.2 / scale), stiffness: 0.1)
 //        LiquidFun.wheelJointFriendlies( truck.truckBody.getFriendlyRef, friendlyB: gunObject.getFriendlyRef, jointPos: Vector2D(x:-0.5 / scale,y: 0.2 / scale), stiffness: 10, damping: 0.8 )
     }
     

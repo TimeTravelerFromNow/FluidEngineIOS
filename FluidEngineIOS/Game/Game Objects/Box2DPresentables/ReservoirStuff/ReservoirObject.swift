@@ -14,7 +14,7 @@ class ReservoirObject: Node {
     
     var moveButtonOffset = float2(1.0, 1.0)
     
-    var boxVertices: [Vector2D] = []
+    var boxVertices: [float2] = []
     
     var reservoirMesh: Mesh!
     var bulbMesh: Mesh!
@@ -31,7 +31,7 @@ class ReservoirObject: Node {
     
     var origin: float2!
     
-    var waterColor: float4 = float4(1.0,0.0,0.0,1.0)
+    var waterColor: float3 = float3(1.0,0.0,0.0)
     
     var particleCount: Int = 0
     var ptmRatio: Float = GameSettings.ptmRatio
@@ -103,15 +103,14 @@ class ReservoirObject: Node {
     func buildContainer() {
         guard let reservoirMesh = reservoirMesh else { fatalError("Reservoir OBject ERROR::NO Mesh!") }
         boxVertices = reservoirMesh.getBoxVertices(scale)
-        let tubeVerticesPtr = LiquidFun.getVec2(&boxVertices, vertexCount: UInt32(boxVertices.count))
         
         particleSystem = LiquidFun.createParticleSystem(withRadius: GameSettings.particleRadius / GameSettings.ptmRatio,
                                                         dampingStrength: GameSettings.DampingStrength,
                                                         gravityScale: 1,
                                                         density: GameSettings.Density)
         _reservoir = LiquidFun.makeReservoir(particleSystem,
-                                             location: Vector2D(x:origin.x,y:origin.y),
-                                             vertices: tubeVerticesPtr,
+                                             location: float2(x:origin.x,y:origin.y),
+                                             vertices: &boxVertices,
                                              vertexCount: UInt32(boxVertices.count))
         createBulb()
         LiquidFun.setParticleLimitForSystem(particleSystem, maxParticles: GameSettings.MaxParticles)
@@ -154,7 +153,7 @@ class ReservoirObject: Node {
         waterColor = WaterColors[reservoirFluidColor]!
         spawnParticleBox(origin,
                          float2(1.0,2.2),
-                         color: &waterColor)
+                         color: waterColor)
     }
     var pipeWidth: Float = 0.0
     func createBulb() {
@@ -246,10 +245,10 @@ class ReservoirObject: Node {
         _fluidBuffer = Engine.Device.makeBuffer(bytes: &fluidConstants, length: FluidConstants.size, options: [])
     }
     
-    func spawnParticleBox(_ position: float2,_ groupSize: float2, color: UnsafeMutableRawPointer) {
+    func spawnParticleBox(_ position: float2,_ groupSize: float2, color: float3) {
         LiquidFun.createParticleBox(forSystem: particleSystem,
-                                    position: Vector2D(x:position.x,y: position.y),
-                                    size: Size2D(width:groupSize.x, height: groupSize.y),
+                                    position: float2(x:position.x,y: position.y),
+                                    size: float2(groupSize.x, groupSize.y),
                                     color: color)
     }
 
@@ -581,14 +580,14 @@ extension ReservoirObject: Touchable {
         }
         if( isMoving ) {
             let newV = boxPos - getBoxPosition() - moveButtonOffset
-            LiquidFun.setVelocity(_reservoir, velocity: Vector2D(x:newV.x,y:newV.y))
+            LiquidFun.setVelocity(_reservoir, velocity: float2(x:newV.x,y:newV.y))
         }
     }
     
     func touchEnded() {
         if(isMoving) {
         isMoving = false
-            LiquidFun.setVelocity(_reservoir, velocity: Vector2D(x:0,y:0))
+            LiquidFun.setVelocity(_reservoir, velocity: float2(x:0,y:0))
         }
         for i in 0..<buttons.count {
             switch buttons[i].action {

@@ -1,10 +1,3 @@
-//
-//  InstancedShaders.metal
-//  FluidEngine
-//
-//  Created by sebi d on 1/9/22.
-//
-
 #include <metal_stdlib>
 #include "MetalTypes.metal"
 using namespace metal;

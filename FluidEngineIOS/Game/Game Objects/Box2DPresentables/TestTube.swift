@@ -47,7 +47,7 @@ class TestTube: Node {
     var isPourCandidate: Bool = false               // is being poured into?
     var candidateTube: TestTube?
     private var _pourKF:Int = 0
-    private var _guidePositions:  [Vector2D]?
+    private var _guidePositions:  [float2]?
 
     var donePouring: Bool = false                   // done with entire pour action (including going back to origin)?
     //moving
@@ -71,13 +71,14 @@ class TestTube: Node {
     private var _interpolatedPtsBuffer: MTLBuffer!
     private var _interpolatedPtsColorBuffer: MTLBuffer!
     
-    private var _colors: [float4] = []
+    private var _colors: [float4] = [] { didSet { _b2Colors = _colors.map {$0.xyz} }}
+    private var _b2Colors: [float3] = []
     private var _cPtsColors: [float4] = []
     private var _interpPtsColors: [float4] = []
     private var animationControlPoints: [float2] = []
     private var _tParams: [Float] = [] { didSet { _cPtsColors = [float4].init(repeating:float4( 1, 0, 0, 1 ), count: _controlPointsCount)  } }
 
-    private var _b2AnimationControlPts: [Vector2D] = []
+    private var _b2AnimationControlPts: [float2] = []
     private var _animationControlPtsY: [Float] = []
     private var _controlPointsCount: Int { return animationControlPoints.count }
     private var interpolatedPoints: [float2] = []
@@ -85,12 +86,12 @@ class TestTube: Node {
     private var _interpolatedPtsY: [Float] = []
     private var _sourceTPoints: [Float] = [] { didSet { _interpPtsColors = [float4].init(repeating: float4(0,0,1,1), count: _interpolatedPtsCount) } }
     private var _interpolatedPtsCount: Int { return _sourceTPoints.count }
-    private var _interpolatedTangents: [Vector2D] = []
+    private var _interpolatedTangents: [float2] = []
     
     private var _splineRef: UnsafeMutableRawPointer?
     
     //tube geometry
-    private var tubeOBJVertices: [Vector2D] = []
+    private var tubeOBJVertices: [float2] = []
     private var tubeHeight: Float!
     private var tubeWidth : Float!
     var dividerOffset: Float!
@@ -100,7 +101,7 @@ class TestTube: Node {
     private var totalColors: Int { return currentColors.count }//no. cells dont change during a level.
     // determine if still needed after C++ refactor
     private var _dividerReferences: [UnsafeMutableRawPointer?] = []
-    private var _dividerPositions: [ [Vector2D] ]!
+    private var _dividerPositions: [ [float2] ]!
     private var _dividerYs : [ Float ]!
     // for handling group destruction
     private var _groupReferences:   UnsafeMutableRawPointer!
@@ -113,7 +114,7 @@ class TestTube: Node {
     } // what we will see, what dividers are computed on
     var newColors: [TubeColors] = [] { didSet
         {
-            _colors = newColors.map { WaterColors[ $0 ]! }
+            _colors = newColors.map { float4(WaterColors[ $0 ]!,1) }
         }
     }// state we are trying to achieve with animation
     private var _currentTopIndex: Int { // zero is completely empty
@@ -219,7 +220,7 @@ class TestTube: Node {
     //initialization
     private func makeContainer() {
         self.tubeOBJVertices = mesh.getBoxVertices( scale )
-        self.tubeOBJVertices = tubeOBJVertices.map { Vector2D(x: $0.x,y: $0.y * Float(totalColors) / 4 ) }
+        self.tubeOBJVertices = tubeOBJVertices.map { float2(x: $0.x,y: $0.y * Float(totalColors) / 4 ) }
         let (xVals, yVals) = ( tubeOBJVertices.map { Float($0.x) } , tubeOBJVertices.map { Float($0.y) } )
         guard let yMax = yVals.max() else { print("TestTube() ERROR:no yMax from obj vertices"); return }
         guard let yMin = yVals.min() else { print("TestTube() ERROR:no yMin from obj vertices"); return }
@@ -237,7 +238,7 @@ class TestTube: Node {
                                                         gravityScale: 1,
                                                         density: GameSettings.Density)
         _tube = LiquidFun.makeTube(particleSystem,
-                                   location: Vector2D(x:origin.x,y:origin.y),
+                                   location: float2(x:origin.x,y:origin.y),
                                    vertices: &tubeOBJVertices,
                                    vertexCount: UInt32(tubeOBJVertices.count),
                                    tubeWidth: tubeWidth,
@@ -248,7 +249,7 @@ class TestTube: Node {
     }
     
     private func initializeDividerArrays() {
-        _dividerPositions = [ [Vector2D] ].init(repeating: [Vector2D(x:0,y:0), Vector2D(x:0,y:0)], count: totalColors)
+        _dividerPositions = [ [float2] ].init(repeating: [float2(x:0,y:0), float2(x:0,y:0)], count: totalColors)
         _dividerReferences = [UnsafeMutableRawPointer?].init(repeating: nil, count: totalColors)
         _dividerYs = [Float].init(repeating: 0.0, count: totalColors)
     }
@@ -256,8 +257,8 @@ class TestTube: Node {
     private func initializeDividerPositions() {
         for incr in 0..<totalColors {
             let yPos = (_dividerIncrement * Float(incr + 1)) - tubeHeight / 2 + dividerOffset
-            var dividerVertices = [Vector2D(x: -tubeWidth * _dividerScale / 2,y:yPos ),
-                                   Vector2D(x:  tubeWidth * _dividerScale / 2,y:yPos ) ]
+            var dividerVertices = [float2(x: -tubeWidth * _dividerScale / 2,y:yPos ),
+                                   float2(x:  tubeWidth * _dividerScale / 2,y:yPos ) ]
             _dividerPositions[incr] =  dividerVertices
             _dividerYs[incr] = yPos
         }
@@ -351,7 +352,7 @@ class TestTube: Node {
         guard let pipeToAsk = pipes[newColors[ _currentTopIndex + 1 ]] else { updatePipe = false; returnToOrigin(); return;  }
         selectEffect = .FillingEffect
         isSelected = true
-        _selectColors.updateValue( (WaterColors[ newColors[ _currentTopIndex + 1] ]?.xyz ?? _selectColors[.SelectHighlight])!, forKey: .FillingEffect)
+        _selectColors.updateValue( (WaterColors[ newColors[ _currentTopIndex + 1] ] ?? _selectColors[.SelectHighlight])!, forKey: .FillingEffect)
         pipeToAsk.highlighted = true
         pipeToAsk.attachFixtures()
         print("asking for color \(_currentTopIndex + 1) which should be \(currentColors[_currentTopIndex + 1])")
@@ -466,7 +467,7 @@ class TestTube: Node {
 
         (_, _sourceTPoints) = CustomMathMethods.getSourceTVals( _tParams, density: 3 )
         interpolatedPoints = [float2].init(repeating: float2(0,0), count: _interpolatedPtsCount) // _sourceTPoints count
-        _interpolatedTangents = interpolatedPoints.map { Vector2D(x:$0.x,y:$0.y) }
+        _interpolatedTangents = interpolatedPoints.map { float2(x:$0.x,y:$0.y) }
         _interpolatedPtsX = _sourceTPoints
         _interpolatedPtsY = _sourceTPoints
         if( _splineRef != nil ) {
@@ -479,7 +480,7 @@ class TestTube: Node {
     
     func makeSpline(resetRecursion: Bool = false) {
         if( _splineRef == nil ){
-            _b2AnimationControlPts = animationControlPoints.map { Vector2D(x:$0.x,y:$0.y) }
+            _b2AnimationControlPts = animationControlPoints.map { float2(x:$0.x,y:$0.y) }
             _splineRef = LiquidFun.makeSpline(&_tParams, withControlPoints: &_b2AnimationControlPts, controlPtsCount: _controlPointsCount)
         } else if !resetRecursion {
             _splineRef = nil
@@ -807,14 +808,13 @@ class TestTube: Node {
         } else {
             if( !isRecieving ) {
                 let yPos = (2 * _dividerIncrement * Float(_currentTopIndex + 1) - tubeHeight / 2 + dividerOffset)
-                let groupSpawnPosition = Vector2D(x: self.getBoxPositionX(),
+                let groupSpawnPosition = float2(x: self.getBoxPositionX(),
                                                   y: self.getBoxPositionY() + yPos)
-                let groupSize = Size2D(width: tubeWidth,
-                                       height: _dividerIncrement * 2 )
+                let groupSize = float2( tubeWidth, _dividerIncrement * 2 )
                 if( _currentTopIndex + 1 < _colors.count  && _currentTopIndex > -2 ) {
                     spawnParticleBox(groupSpawnPosition,
                                      groupSize,
-                                     color: &_colors[_currentTopIndex + 1])
+                                     color: _colors[_currentTopIndex + 1].xyz)
                 } else {
                     print("fastFillStep WARN:: new color index out of color buffer range.")
                 }
@@ -881,7 +881,7 @@ class TestTube: Node {
     }
     func updateColors() {
         LiquidFun.updateColors(particleSystem,
-                               colors: &_colors,
+                               colors: &_b2Colors,
                                yLevels: &_dividerYs,
                                numLevels: 4)
     }
@@ -901,10 +901,10 @@ class TestTube: Node {
                                                 width: tubeWidth,
                                                 height: tubeHeight,
                                                 rotation: getRotationZ(),
-                                                position: Vector2D(x:self.getBoxPositionX(),y:getBoxPositionY())))
+                                                position: float2(x:self.getBoxPositionX(),y:getBoxPositionY())))
     }
     
-    func spawnParticleBox(_ position: Vector2D,_ groupSize: Size2D, color: UnsafeMutableRawPointer) {
+    func spawnParticleBox(_ position: float2,_ groupSize: float2, color: float3) {
         LiquidFun.createParticleBox(forSystem: particleSystem,
                                     position: position,
                                     size: groupSize,
@@ -955,7 +955,7 @@ class TestTube: Node {
     
     // getters and helpers for position and rotation
     func getTubeAtBox2DPosition(_ position: float2) -> TestTube? {
-        if self._tube == LiquidFun.getTubeAtPosition( Vector2D(x: position.x, y:position.y) ){
+        if self._tube == LiquidFun.getTubeAtPosition( float2(x: position.x, y:position.y) ){
         return self
         }
         return nil
@@ -1001,21 +1001,19 @@ class TestTube: Node {
         LiquidFun.dampRotation(ofBody: _tube, amount: value)
     }
     func setBoxVelocity(_ velocity: float2 = float2()) {
-        LiquidFun.setTubeVelocity(_tube, velocity: Vector2D(x: Float32(velocity.x), y: Float32(velocity.y)))
+        LiquidFun.setTubeVelocity(_tube, velocity: velocity)
     }
     func setBoxVelocityX(_ to: Float) {
         let currV = LiquidFun.getTubeVelocity(_tube)
-        LiquidFun.setTubeVelocity(_tube, velocity: Vector2D(x: Float32(to), y: Float32(currV.y)))
+        LiquidFun.setTubeVelocity(_tube, velocity: float2(x: to, y:currV.y))
     }
     func setBoxVelocityY(_ to: Float) {
         let currV = LiquidFun.getTubeVelocity(_tube)
-        LiquidFun.setTubeVelocity(_tube, velocity: Vector2D(x: Float32(currV.x), y: Float32(to)))
+        LiquidFun.setTubeVelocity(_tube, velocity: float2(x: currV.x, y: to))
     }
-    func setBoxVelocity(_ velocity: Vector2D ) {
-        LiquidFun.setTubeVelocity(_tube, velocity: Vector2D(x: Float32(velocity.x), y: Float32(velocity.y)))
-    }
+    
     func getBoxVelocity() -> float2 {
-        float2(x: LiquidFun.getTubeVelocity(_tube).x, y: LiquidFun.getTubeVelocity(_tube).y)
+       return LiquidFun.getTubeVelocity(_tube)
     }
     
     func getVelocityX() -> Float {

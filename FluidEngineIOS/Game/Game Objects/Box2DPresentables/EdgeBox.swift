@@ -2,7 +2,7 @@ import MetalKit
 
 class EdgeBox: GameObject {
     
-    var edgeVertices: [Vector2D]!
+    var edgeVertices: [float2]!
     
     var origin: float2!
     var size: float2!
@@ -38,7 +38,7 @@ class EdgeBox: GameObject {
     
     private func createEdgeBox(){
         if( _boxRef == nil ) {
-            _boxRef = LiquidFun.createEdgeBox(withOrigin: Vector2D(x:origin.y,y:origin.y), size: Size2D(width:size.x,height:size.y))
+            _boxRef = LiquidFun.createEdgeBox(withOrigin: origin, size: size)
         }
     }
     

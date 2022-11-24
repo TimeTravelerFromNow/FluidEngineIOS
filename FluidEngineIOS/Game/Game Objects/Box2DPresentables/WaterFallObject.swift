@@ -9,8 +9,8 @@ class WaterFallObject: Node {
     var particleSystem: UnsafeMutableRawPointer!
     private let _defaultRefillTime: Float = 0.3
     private var _refillDelay: Float = 0.1
-    var _color: float4 = float4(0.1, 0.3, 0.9, 1.0)
-    var waterColor: float4 = float4(0.1, 0.3, 0.9, 1.0)
+    var _color: float3 = float3(0.1, 0.3, 0.9)
+    var waterColor: float3 = float3(0.1, 0.3, 0.9)
     var modelConstants = ModelConstants()
 
     private var ptmRatio: Float!
@@ -48,9 +48,9 @@ class WaterFallObject: Node {
         }
                 
         LiquidFun.createParticleBox(forSystem: particleSystem,
-                                    position: Vector2D(x: cliff.getBoxPositionX() - 1.0, y: cliff.getBoxPositionY() + 5.0) ,
-                                    size: Size2D(width: 1.0, height: 1.0),
-                                    color: &_color)
+                                    position: float2(x: cliff.getBoxPositionX() - 1.0, y: cliff.getBoxPositionY() + 5.0) ,
+                                    size: float2( 1.0, 1.0),
+                                    color: _color)
     }
     
     func getCliff() -> BoxPolygon {
@@ -74,9 +74,9 @@ class WaterFallObject: Node {
                 LiquidFun.deleteBelow(inParticleSystem: particleSystem, belowYPosition: -3.0)
 
         LiquidFun.createParticleBox(forSystem: particleSystem,
-                                    position: Vector2D(x: cliff.getBoxPositionX() - 1.0, y: cliff.getBoxPositionY() + 5.0) ,
-                                    size: Size2D(width: 0.5, height: 0.5),
-                                    color: &_color)
+                                    position: float2(x: cliff.getBoxPositionX() - 1.0, y: cliff.getBoxPositionY() + 5.0) ,
+                                    size: float2( 0.5, 0.5),
+                                    color: _color)
             _refillDelay = _defaultRefillTime
         }
     }
@@ -107,8 +107,8 @@ class WaterFallObject: Node {
     }
     
     func setVelocity(_ to: float2) {
-        LiquidFun.moveParticleSystem(particleSystem, byVelocity: Vector2D(x:to.x, y: to.y))
-        LiquidFun.setPolygonVelocity(cliff.getPolygonRef, velocity: Vector2D(x:to.x, y: to.y))
+        LiquidFun.moveParticleSystem(particleSystem, byVelocity: float2(x:to.x, y: to.y))
+        LiquidFun.setPolygonVelocity(cliff.getPolygonRef, velocity: float2(x:to.x, y: to.y))
     }
 }
 

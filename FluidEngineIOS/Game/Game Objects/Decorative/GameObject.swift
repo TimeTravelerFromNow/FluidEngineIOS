@@ -23,7 +23,7 @@ class GameObject: Node {
         super.update()
     }
     
-    func getBoxVertices( _ scale: Float ) -> [Vector2D] {
+    func getBoxVertices( _ scale: Float ) -> [float2] {
         mesh.getBoxVertices( scale )
     }
     

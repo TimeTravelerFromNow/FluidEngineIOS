@@ -42,7 +42,7 @@ Infiltrator::Infiltrator( b2World* worldRef,
 Infiltrator::~Infiltrator() {
     m_body->DestroyFixture(m_fixture);
     m_world->DestroyBody(m_body);
-    auto newEnd = std::remove( friendlies.begin(), friendlies.end(), this);
+//    auto newEnd = std::remove( friendlies.begin(), friendlies.end(), this);
 }
 
 void Infiltrator::SetAsPolygonShape(b2Vec2* vertices,

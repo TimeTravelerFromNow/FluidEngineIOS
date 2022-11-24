@@ -41,7 +41,7 @@ class DebugEnvironment : Node {
     var mesh: Mesh!
     var texture: MTLTexture!
 
-    var debugColor: float4 = float4(1,0,0,1)
+    var debugColor: float3 = float3(1,0,0)
     
     override init() {
         super.init()
@@ -65,7 +65,7 @@ class DebugEnvironment : Node {
     
     func setGravity( x: Float, y: Float) {
         _gravity = float2(x,y)
-        LiquidFun.setGravity(Vector2D(x: x,y: y))
+        LiquidFun.setGravity(float2(x: x,y: y))
     }
     
     func updateModelConstants() {
@@ -115,15 +115,15 @@ class DebugEnvironment : Node {
     }
 
     private func MakeWorld() {
-        LiquidFun.createWorld(withGravity: Vector2D(x: _gravity.x, y: _gravity.y))
+        LiquidFun.createWorld(withGravity: float2(x: _gravity.x, y: _gravity.y))
         particleSystem = LiquidFun.createParticleSystem(withRadius: GameSettings.particleRadius / ptmRatio,
                                                         dampingStrength: GameSettings.DampingStrength,
                                                         gravityScale: 1, density: GameSettings.Density)
     }
     
-    func makeBoundingBox(center: float2, size: Size2D) {
+    func makeBoundingBox(center: float2, size: float2) {
         if _worldBoundingBox == nil {
-        let boxCenter = Vector2D(x: center.x, y: center.y )
+        let boxCenter = float2(x: center.x, y: center.y )
         _worldBoundingBox = LiquidFun.createEdgeBox(withOrigin: boxCenter, size: size)
         } else { print("bounding box already made.")}
     }
@@ -140,9 +140,9 @@ class DebugEnvironment : Node {
         if particleSystem != nil {
             print("debugParticleDraw at: x: \(atPosition.x), \(atPosition.y)")
         LiquidFun.createParticleBox(forSystem: particleSystem,
-                                    position: Vector2D(x: atPosition.x, y: atPosition.y),
-                                    size: Size2D(width: 0.1, height: 0.1),
-                                    color: &debugColor)
+                                    position: float2(x: atPosition.x, y: atPosition.y),
+                                    size: float2( 0.1, 0.1),
+                                    color: debugColor)
         } else { print("trying to debug draw particle at (x: \(atPosition.x), y: \(atPosition.y)) without having initialized the particle system")}
     }
 }

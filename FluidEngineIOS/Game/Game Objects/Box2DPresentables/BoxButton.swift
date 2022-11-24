@@ -7,7 +7,7 @@ class BoxButton: GameObject {
                                                              .Finished: float3(1.0,1.0,0.0) ]
     private var _boxRef: UnsafeMutableRawPointer!
     
-    var boxVertices: [Vector2D]!
+    var boxVertices: [float2]!
     
     var buttonAction: ButtonActions!
     
@@ -33,7 +33,7 @@ class BoxButton: GameObject {
         boxVertices = getBoxVertices( scale )
         self.setScale(GameSettings.stmRatio / scale )
         self.setPositionZ(0.11)
-        _boxRef = LiquidFun.makeBoxButton(&boxVertices, location: Vector2D(x: center.x, y: center.y))
+        _boxRef = LiquidFun.makeBoxButton(&boxVertices, location: float2(x: center.x, y: center.y))
         if( staticButton ){
             freeze()
         }
@@ -42,7 +42,7 @@ class BoxButton: GameObject {
     }
     
     func boxHitTest( _ atPos: float2) -> ButtonActions? {
-        if LiquidFun.boxIs(atPosition: Vector2D(x: atPos.x, y: atPos.y), boxRef: _boxRef) {
+        if LiquidFun.boxIs(atPosition: float2(x: atPos.x, y: atPos.y), boxRef: _boxRef) {
             self._selected = true
             return buttonAction
         } else {

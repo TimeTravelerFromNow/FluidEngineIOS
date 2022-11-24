@@ -9,7 +9,7 @@ class SurfObject: Node {
     var particleSystem: UnsafeMutableRawPointer!
     private let _defaultRefillTime: Float = 0.3
     private var _refillDelay: Float = 0.1
-    var _color: float4 = float4(0.1, 0.3, 0.9, 1.0)
+    var _color: float3 = float3(0.1, 0.3, 0.9)
     var waterColor: float4 = float4(0.1, 0.3, 0.9, 1.0)
     var modelConstants = ModelConstants()
 
@@ -39,10 +39,10 @@ class SurfObject: Node {
   
                 
         LiquidFun.createParticleBox(forSystem: particleSystem,
-                                    position: Vector2D(x: sandObject.getBoxPositionX(),
+                                    position: float2(x: sandObject.getBoxPositionX(),
                                                        y: sandObject.getBoxPositionY()) ,
-                                    size: Size2D(width: 0.1, height: 0.1),
-                                    color: &_color)
+                                    size: float2(0.1,  0.1),
+                                    color: _color)
     }
     
     func getBeach() -> BoxPolygon {
@@ -63,10 +63,10 @@ class SurfObject: Node {
                 if( LiquidFun.particleCount(forSystem: particleSystem) < 3000) {
                 
         LiquidFun.createParticleBox(forSystem: particleSystem,
-                                    position: Vector2D(x: sandObject.getBoxPositionX(),
+                                    position: float2(x: sandObject.getBoxPositionX(),
                                                        y: sandObject.getBoxPositionY()) ,
-                                    size: Size2D(width: 2.0, height: 2.0),
-                                    color: &_color)
+                                    size: float2( 2.0, 2.0),
+                                    color: _color)
                 }
             _refillDelay = _defaultRefillTime
         }
@@ -101,7 +101,7 @@ class SurfObject: Node {
     }
     
     func setVelocity(_ to: float2) {
-        LiquidFun.moveParticleSystem(particleSystem, byVelocity: Vector2D(x:to.x, y: to.y))
+        LiquidFun.moveParticleSystem(particleSystem, byVelocity: float2(x:to.x, y: to.y))
     }
     func getBoxPosition() -> float2 {
         return sandObject.getBoxPosition()

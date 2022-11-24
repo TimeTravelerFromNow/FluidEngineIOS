@@ -5,7 +5,7 @@ class BoxPolygon: GameObject {
 
     private var _polygonRef: UnsafeMutableRawPointer!
     var getPolygonRef: UnsafeMutableRawPointer! { return _polygonRef }
-    var polygonVertices: [Vector2D]!
+    var polygonVertices: [float2]!
     
     init(center: float2, scale: Float = 1.0, _ meshType: MeshTypes, _ texture: TextureTypes, asStaticChain: Bool = true) {
         super.init(meshType)
@@ -18,7 +18,7 @@ class BoxPolygon: GameObject {
         
         _polygonRef = LiquidFun.makePolygon(&polygonVertices,
                                             vertexCount: Int32(polygonVerticesCount),
-                                            location: Vector2D(x: center.x, y: center.y),
+                                            location: float2(x: center.x, y: center.y),
                                             asStaticChain: asStaticChain )
 
         updateModelConstants()

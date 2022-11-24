@@ -24,10 +24,10 @@ class Pipe: Node {
     
     private var _leftVertices:  [float2] = []
     private var _rightVertices: [float2] = []
-    private var _b2leftVertices: [Vector2D] = []
-    private var _b2rightVertices: [Vector2D] = []
+    private var _b2leftVertices: [float2] = []
+    private var _b2rightVertices: [float2] = []
     private var _sourceVertices: [float2] = [] // source path vertices
-    private var _sourceTangents: [Vector2D] = [] // perpendicular vector at each source vertex
+    private var _sourceTangents: [float2] = [] // perpendicular vector at each source vertex
     private var _perpendiculars: [float2] = []
     
     private var _textureType: TextureTypes = .PipeTexture
@@ -59,15 +59,15 @@ class Pipe: Node {
     private var _interpolatedYValues: [Float] = []
     var interpolatedPoints: [float2] = [] { didSet { _interpPtsColors = [float4].init(repeating: float4(0,1,0,1), count: _interpolatedPointsCount); updateModelConstants(); }}
     
-    var box2DControlPts: [Vector2D] = []
+    var box2DControlPts: [float2] = []
     let segmentDensity: Int!
     var doneBuilding = false
     var originArrow: Arrow2D
-    var wallSegmentPosition: Vector2D!
+    var wallSegmentPosition: float2!
     private var _timeTicked: Float = 0.0
     
     init(_ pipeSegmentDensity: Int = 2, pipeWidth: Float, parentReservoir: UnsafeMutableRawPointer?, wallRef: UnsafeMutableRawPointer, originArrow: Arrow2D, reservoirColor: TubeColors) {
-        self.wallSegmentPosition = Vector2D(x:originArrow.head.x,y:originArrow.head.y)
+        self.wallSegmentPosition = float2(x:originArrow.head.x,y:originArrow.head.y)
         self._pipeWidth = pipeWidth
         self.fluidColor = reservoirColor
         self.segmentDensity = pipeSegmentDensity
@@ -79,7 +79,7 @@ class Pipe: Node {
         modelConstants.modelMatrix = modelMatrix
         _mesh = CustomMesh()
         _fluidConstants = FluidConstants(ptmRatio: GameSettings.ptmRatio, pointSize: GameSettings.particleRadius)
-        selectColor = WaterColors[ reservoirColor ]?.xyz ?? float3(1.0,0.0,0.0)
+        selectColor = WaterColors[ reservoirColor ] ?? float3(1.0,0.0,0.0)
     }
     deinit {
         if( leftFixRef != nil && rightFixRef != nil && parentReservoirRef != nil){
@@ -106,8 +106,8 @@ class Pipe: Node {
         if( parentReservoirRef == nil ) { return }
         if ( _leftVertices.count < 2 || _rightVertices.count < 2 ) { return }
         let bulbPos = LiquidFun.getBulbPos(parentReservoirRef)
-        _b2leftVertices = _leftVertices.map { Vector2D(x:$0.x - bulbPos.x,y:$0.y - bulbPos.y) }
-        _b2rightVertices = _rightVertices.map { Vector2D(x:$0.x - bulbPos.x,y:$0.y - bulbPos.y) }
+        _b2leftVertices = _leftVertices.map { float2(x:$0.x - bulbPos.x,y:$0.y - bulbPos.y) }
+        _b2rightVertices = _rightVertices.map { float2(x:$0.x - bulbPos.x,y:$0.y - bulbPos.y) }
         if(leftFixRef == nil && rightFixRef == nil) {
             leftFixRef = LiquidFun.makePipeFixture(parentReservoirRef, lineVertices: &_b2leftVertices, vertexCount: _leftVertices.count)
             rightFixRef = LiquidFun.makePipeFixture(parentReservoirRef, lineVertices: &_b2rightVertices, vertexCount: _rightVertices.count)
@@ -231,7 +231,7 @@ class Pipe: Node {
         let count = _interpolatedPointsCount
         _interpolatedXValues = _tSourcePoints
         _interpolatedYValues = _tSourcePoints
-        _sourceTangents = [Vector2D].init(repeating: Vector2D(x:0,y:0), count: count)
+        _sourceTangents = [float2].init(repeating: float2(x:0,y:0), count: count)
         _perpendiculars = [float2].init(repeating: float2(0,0), count: count)
         interpolatedPoints = [float2].init(repeating: float2(0,0), count: count)
         // if we have the spline, write to the arrays with their pointers.
@@ -247,7 +247,7 @@ class Pipe: Node {
     }
     
     func updateBox2DControlPts() {
-        box2DControlPts = (controlPoints.map { Vector2D(x:$0.x,y:$0.y) })
+        box2DControlPts = (controlPoints.map { float2(x:$0.x,y:$0.y) })
     }
     
     func makeSpline() {

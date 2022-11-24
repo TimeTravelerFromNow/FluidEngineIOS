@@ -29,8 +29,8 @@ class TruckObject: Node {
         tire0.setAsCircle(0.5 / scale, circleTexture: .TruckTireTexture)
         tire1.setAsCircle(0.5 / scale, circleTexture: .TruckTireTexture)
         
-        LiquidFun.wheelJointFriendlies( truckBody.getFriendlyRef, friendlyB: tire0.getFriendlyRef, jointPos: Vector2D(x:tire0Offset.x,y:tire0Offset.y), stiffness: 10, damping: 0.5 )
-        LiquidFun.wheelJointFriendlies( truckBody.getFriendlyRef, friendlyB: tire1.getFriendlyRef, jointPos: Vector2D(x:tire1Offset.x,y:tire1Offset.y), stiffness: 10, damping: 0.5 )
+        LiquidFun.wheelJointFriendlies( truckBody.getFriendlyRef, friendlyB: tire0.getFriendlyRef, jointPos: tire0Offset, stiffness: 10, damping: 0.5 )
+        LiquidFun.wheelJointFriendlies( truckBody.getFriendlyRef, friendlyB: tire1.getFriendlyRef, jointPos: tire1Offset, stiffness: 10, damping: 0.5 )
         LiquidFun.setFriendlyFixedRotation(tire0.getFriendlyRef, to: false)
         LiquidFun.setFriendlyFixedRotation(tire1.getFriendlyRef, to: false)
         addChild(truckBody)
@@ -73,7 +73,7 @@ class TruckObject: Node {
                 _parkDelay -= deltaTime
             } else {
                 isParking = true
-                LiquidFun.setFriendlyVelocity(truckBody.getFriendlyRef, velocity: Vector2D(x:0,y:0))
+                LiquidFun.setFriendlyVelocity(truckBody.getFriendlyRef, velocity: float2(0))
                 LiquidFun.setFriendlyAngularVelocity(truckBody.getFriendlyRef, angV: 0)
                 LiquidFun.setFriendlyAngularVelocity(tire0.getFriendlyRef, angV: 0)
                 LiquidFun.setFriendlyAngularVelocity(tire1.getFriendlyRef, angV: 0)
