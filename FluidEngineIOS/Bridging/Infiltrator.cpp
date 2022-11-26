@@ -1,6 +1,6 @@
 #include "Infiltrator.h"
 
-// both Aliens and Human objects are of the class type Infiltrator.
+// both Aliens and Human objects are of the class type Infiltrator as well as any other cool swift object that needs to be in Box2D.
 // Infiltrator can also serve as the ultimate Box2D C++ to Objective C to Swift class 
 Infiltrator::Infiltrator( b2World* worldRef,
                    //           b2ParticleSystem* particleSystem,
@@ -9,154 +9,83 @@ Infiltrator::Infiltrator( b2World* worldRef,
                    float startAngle,
                    float density,
                    float restitution,
-                   float health,
-                   float crashDamage, // damage of crash on anything ( even other enemies if possible )
                    //           long crashParticleCount, // explosive particle effect
                    //           float crashParticleDamage, // damage each particle will do
-                   uint16 categoryBits,
-                   uint16 maskBits,
-                   int16 groupIndex) {
+                   b2Filter filter) {
     m_world = worldRef;
     m_origin = location;
     m_density = density;
     m_restition = restitution;
-    m_health = health;
-    m_crashDamage = crashDamage;
-    
-    m_filter.categoryBits = categoryBits;
-    m_filter.maskBits = maskBits;
-    m_filter.groupIndex = groupIndex;
-    
-    b2BodyDef bodyDef;
-    bodyDef.type = b2_dynamicBody;
-    bodyDef.linearVelocity = velocity;
-    bodyDef.angle = startAngle;
-    bodyDef.position = location;
-    b2Body *body = m_world->CreateBody(&bodyDef);
-    
-    m_body = body;
+    m_filter = filter;
 };
 
 Infiltrator::~Infiltrator() {
-    m_body->DestroyFixture(m_fixture);
-    m_world->DestroyBody(m_body);
 //    auto newEnd = std::remove( friendlies.begin(), friendlies.end(), this);
 }
 
-void Infiltrator::SetAsPolygonShape(b2Vec2* vertices,
-                       long vertexCount) {
+// MARK: you may wonder why this is in a class and not outside in LiquidFun,
+// there are many physics constants that could be reused inside each infiltrator instance.
+// there's no other reason, maybe also neatness, the interface is less crowded with method content.
+// body methods
+b2Body* Infiltrator::MakeBody(b2Vec2 atPos, float angle, b2Filter filter) {
+    b2BodyDef bodyDef;
+    bodyDef.gravityScale = 1.0f;
+    bodyDef.type = b2_dynamicBody;
+    bodyDef.position = atPos;
+    bodyDef.angle = angle;
+    bodyDef.active = true;
+    bodyDef.awake = true;
+    return m_world->CreateBody(&bodyDef);
+}
+
+void Infiltrator::DestroyBody(b2Body* bodyRef) {
+    m_world->DestroyBody(bodyRef);
+}
+
+// attach methods
+b2Fixture* Infiltrator::AttachPolygon(b2Body* onBody, b2Vec2 pos, b2Vec2* vertices, long vertexCount) {
     b2PolygonShape shape;
     b2FixtureDef fixtureDef;
+    fixtureDef.density = m_density;
+    fixtureDef.restitution = m_restition;
     shape.Set(vertices, vertexCount);
-
-    fixtureDef.shape = &shape;
-    fixtureDef.density = m_density;
-    fixtureDef.restitution = m_restition;
     fixtureDef.filter = m_filter;
-
-    m_fixture = m_body->CreateFixture(&fixtureDef);
+    fixtureDef.shape = &shape;
+    return onBody->CreateFixture( &fixtureDef );
 }
-
-void Infiltrator::SetAsCircleShape(float radius) {
+b2Fixture* Infiltrator::AttachCircle(b2Body* onBody, b2Vec2 pos, float radius) {
     b2CircleShape shape;
-    b2FixtureDef fixtureDef;
-    
     shape.m_radius = radius;
-    
-    fixtureDef.shape = &shape;
+    b2FixtureDef fixtureDef;
     fixtureDef.density = m_density;
     fixtureDef.restitution = m_restition;
     fixtureDef.filter = m_filter;
-    fixtureDef.friction = 1.0;
-    m_body->SetAngularDamping(0.1);
-    m_fixture = m_body->CreateFixture(&fixtureDef);
-}
-
-void Infiltrator::AddCircle( float radius ) {
-    b2CircleShape shape;
-    b2FixtureDef fixtureDef;
-    
-    shape.m_radius = radius;
-    
+    fixtureDef.friction = 0.7f;
     fixtureDef.shape = &shape;
-    fixtureDef.density = m_density;
-    fixtureDef.restitution = m_restition;
-    fixtureDef.filter = m_filter;
-    fixtureDef.friction = 1.0;
-    m_body->SetAngularDamping(0.1);
-    m_circleFixture = m_body->CreateFixture(&fixtureDef);
+    return onBody->CreateFixture( &fixtureDef );
 }
 
-void Infiltrator::SetFixedRotation(bool to) {
-    m_body->SetFixedRotation(to);
-}
-
-void Infiltrator::SetVelocity(b2Vec2 velocity) {
-    m_body->SetLinearVelocity(velocity);
-}
-
-void Infiltrator::SetAngularVelocity(float to) {
-    m_body->SetAngularVelocity(to);
-}
-
-void Infiltrator::Torque(float amt) {
-    m_body->ApplyTorque(amt, true);
-}
-
-void Infiltrator::Impulse(b2Vec2 imp, b2Vec2 atPos) {
-    m_body->ApplyLinearImpulse(imp, atPos, true);
-}
-
-b2Vec2 Infiltrator::GetPosition() {
-    return m_body->GetPosition();
-}
-
-float Infiltrator::GetRotation() {
-    return m_body->GetAngle();
-}
-
-float Infiltrator::GetAngV() {
-    return m_body->GetAngularVelocity();
-}
-
-b2Vec2 Infiltrator::GetVel() {
-    return m_body->GetLinearVelocity();
-}
-
-void Infiltrator::WeldFriendly( Infiltrator* friendly, b2Vec2 weldPos, float stiffness) {
-    b2Body* otherBody = friendly->GetBody();
-    b2WeldJointDef jointDef;
-    jointDef.bodyA = m_body;
-    jointDef.bodyB = otherBody;
-    jointDef.collideConnected = false;
-    jointDef.localAnchorA = weldPos;
-    jointDef.frequencyHz = stiffness;
-    b2Joint* joint = m_world->CreateJoint( &jointDef );
-}
-
-void Infiltrator::WheelFriendly( Infiltrator* friendly, b2Vec2 weldPos, float stiffness, float damping) {
-    b2Body* otherBody = friendly->GetBody();
+// joint methods
+b2Joint* Infiltrator::WheelJoint(b2Body* bodyA, b2Body* bodyB, b2Vec2 weldPos, b2Vec2 localAxisA, float stiffness, float damping) {
     b2WheelJointDef jointDef;
-    jointDef.bodyA = m_body;
-    jointDef.bodyB = otherBody;
+    jointDef.bodyA = bodyA;
+    jointDef.bodyB = bodyB;
     jointDef.localAnchorA = weldPos;
     jointDef.collideConnected = false;
-    jointDef.localAxisA = b2Vec2(0, 1);
+    jointDef.localAxisA = localAxisA;
     jointDef.frequencyHz = stiffness;
     jointDef.dampingRatio = damping;
-    b2Joint* joint = m_world->CreateJoint( &jointDef );
+    return m_world->CreateJoint( &jointDef );
 }
 
 
-float Infiltrator::GetHealth() {
-    return m_health;
-}
-
-void Infiltrator::TakeDamage() {
-    m_health -= 1;
-}
-
-
-b2Body* Infiltrator::GetBody() {
-    return m_body;
-}
+//void Infiltrator::WeldInfiltrator( Infiltrator* infiltrator, b2Vec2 weldPos, float stiffness) {
+//    b2Body* otherBody = infiltrator->GetBody();
+//    b2WeldJointDef jointDef;
+//    jointDef.bodyA = m_body;
+//    jointDef.bodyB = otherBody;
+//    jointDef.collideConnected = false;
+//    jointDef.localAnchorA = weldPos;
+//    jointDef.frequencyHz = stiffness;
+//    b2Joint* joint = m_world->CreateJoint( &jointDef );
+//}

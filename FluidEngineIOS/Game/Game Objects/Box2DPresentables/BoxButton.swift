@@ -19,7 +19,7 @@ class BoxButton: GameObject {
          _ action: ButtonActions = .None,
          center: float2,
          label: TextLabelTypes = .None,
-         scale: Float = 1.5,
+         scale: Float = 0.66,
          staticButton: Bool = true) {
         isStatic = staticButton
         super.init(meshType)
@@ -31,7 +31,7 @@ class BoxButton: GameObject {
         setTexture(texture)
         renderPipelineStateType = .Basic
         boxVertices = getBoxVertices( scale )
-        self.setScale(GameSettings.stmRatio / scale )
+        self.setScale(GameSettings.stmRatio * scale )
         self.setPositionZ(0.11)
         _boxRef = LiquidFun.makeBoxButton(&boxVertices, location: float2(x: center.x, y: center.y))
         if( staticButton ){

@@ -91,6 +91,8 @@ class MeshLibrary: Library<MeshTypes, Mesh> {
 
 // Vertex Information
 class Mesh {
+    func getName() -> String { return _modelName }
+    
     private var _vertices: [Vertex] = [] // should only be custom (most data is held in the submeshes.
     private var _indices: [UInt32] = [] // only custom
     private var _vertexCount: Int = 0
@@ -142,7 +144,7 @@ class Mesh {
         for i in 0..<vertexData.count {
             let v = vertexData[i]
             let texCoord = textureCoordData[i]
-            _vertices[i].position = float3(v.x / scale, v.y / scale, v.z / scale )
+            _vertices[i].position = float3(v.x * scale, v.y * scale, v.z * scale )
             _vertices[i].textureCoordinate = float2(texCoord.u, texCoord.v)
         }
         
@@ -152,7 +154,7 @@ class Mesh {
             boxVertices = [float2].init(repeating: float2(x:0, y:0), count: vertexCount)
         }
         for i in 0..<vertexCount {
-            boxVertices[i] = float2(x:vertexData[i].x / scale, y: vertexData[i].y / scale)
+            boxVertices[i] = float2(x:vertexData[i].x * scale, y: vertexData[i].y * scale)
         }
         
         return boxVertices

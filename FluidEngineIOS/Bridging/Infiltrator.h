@@ -1,5 +1,5 @@
-#ifndef Friendly_h
-#define Friendly_h
+#ifndef Infiltrator_h
+#define Infiltrator_h
 
 #include <stdio.h>
 #include "Box2D.h"
@@ -8,58 +8,38 @@ class Infiltrator {
 
 public:
     Infiltrator( b2World* worldRef,
-             //           b2ParticleSystem* particleSystem,
-             b2Vec2 location,
-             b2Vec2 velocity,
-             float startAngle,
-             float density,
-                        float restitution,
-                        float health,
-                        float crashDamage, // damage of crash on friendly
-             //           long crashParticleCount, // explosive particle effect
-             //           float crashParticleDamage, // damage each particle will do
-                        uint16 categoryBits,
-                        uint16 maskBits,
-                        int16 groupIndex);
+                //           b2ParticleSystem* particleSystem,
+                b2Vec2 location,
+                b2Vec2 velocity,
+                float startAngle,
+                float density,
+                float restitution,
+                //           long crashParticleCount, // explosive particle effect
+                //           float crashParticleDamage, // damage each particle will do
+                b2Filter filter);
     ~Infiltrator();
     
-    void SetAsPolygonShape(b2Vec2* vertices,
-                           long vertexCount);
-    void SetAsCircleShape(float radius);
-    void AddCircle( float radius );
-
-    void SetFixedRotation(bool to);
-    void Torque(float amt);
-    void Impulse(b2Vec2 imp, b2Vec2 atPos);
-    float GetHealth();
-    void TakeDamage();
+    // body methods
+    b2Body* MakeBody(b2Vec2 atPos, float angle, b2Filter filter);
+    void DestroyBody(b2Body* bodyRef);
     
-    b2Vec2 GetPosition();
-    float GetRotation();
-    float GetAngV();
-    b2Vec2 GetVel();
-    void SetVelocity(b2Vec2 velocity);
-    void SetAngularVelocity(float to);
-    void WeldFriendly( Infiltrator* friendly, b2Vec2 weldPos, float stiffness);
-    void WheelFriendly( Infiltrator* friendly, b2Vec2 weldPos, float stiffness, float damping);
-    b2Body* GetBody();
+    // attach methods
+    b2Fixture* AttachPolygon(b2Body* onBody, b2Vec2 pos, b2Vec2* vertices, long vertexCount);
+    b2Fixture* AttachCircle(b2Body* onBody, b2Vec2 pos, float radius);
+    // joint methods
+    b2Joint* WheelJoint(b2Body* bodyA, b2Body* bodyB, b2Vec2 weldPos, b2Vec2 localAxisA, float stiffness, float damping);
     
 private:
-    b2Fixture* m_fixture;
-    b2Fixture* m_circleFixture = NULL;
     b2World* m_world;
-    b2ParticleSystem* m_particleSystem;
-    b2Body* m_body;
+//    b2ParticleSystem* m_particleSystem;
 
     b2Filter m_filter = b2Filter();
     
     b2Vec2 m_origin;
     float m_density;
     float m_restition;
-    float m_health;
-    float m_crashDamage;
     long m_crashParticleCount;
 };
 
-#endif /* Friendly_h */
+#endif /* Infiltrator_h */
 

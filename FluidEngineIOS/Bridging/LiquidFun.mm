@@ -10,8 +10,16 @@
 #ifndef BoxToSimd_Definitions
 #define BoxToSimd_Definitions
 
-float2 _float2(b2Vec2 from) {
-    return float2 { from.x, from.y };
+float2 _float2( const b2Vec2& from) { // I really wanted to avoid this, but it will work for singular b2Vec2/float values
+    return { from.x, from.y };
+}
+
+b2Vec2 _b2Vec2(float2 from) { // the good news is the pointers seem to be working fine.
+    return b2Vec2( from.x, from.y );
+}
+
+b2Color _b2Color(float3 from) { // had to do the same (alignments or something made float3 { 0.4, 0.8, 0.3} into b2Color(0.4, 1, 0) )
+    return b2Color( from.r, from.g, from.b );
 }
 
 #endif
@@ -47,13 +55,14 @@ static b2World *world;
 + (void *)getTrianglesVertices {
     return metalDebugDraw.GetTrianglesPositionBuffer();
 }
+
 + (int)getTrianglesDrawCount {
     return metalDebugDraw.GetTrianglesCount();
 }
 
 // world access
-+ (void)createWorldWithGravity:(b2Vec2)gravity {
-    world = new b2World( gravity );
++ (void)createWorldWithGravity:(float2)gravity {
+    world = new b2World( _b2Vec2(gravity) );
     world->SetDebugDraw(&metalDebugDraw);
     world->SetContactListener( &m_customcontactlistener );
 };
@@ -105,31 +114,31 @@ static b2World *world;
 }
 
 // particle creation
-+ (void)createParticleBoxForSystem:(void *)particleSystem position:(b2Vec2)position size:(float2)size color:(b2Color)color {
++ (void)createParticleBoxForSystem:(void *)particleSystem position:(float2)position size:(float2)size color:(float3)color {
     b2PolygonShape shape;
     shape.SetAsBox(size.x * 0.5f, size.y * 0.5f);
     
     b2ParticleGroupDef particleGroupDef;
     particleGroupDef.flags = b2_waterParticle | b2_fixtureContactFilterParticle;
-    particleGroupDef.position = position;
+    particleGroupDef.position = _b2Vec2(position);
     particleGroupDef.shape = &shape;
     b2ParticleColor pColor;
-    pColor.Set(color);
+    pColor.Set( _b2Color(color) );
     particleGroupDef.color = pColor;
     ((b2ParticleSystem *)particleSystem)->CreateParticleGroup(particleGroupDef);
 }
 
-+ (void)createParticleBallForSystem:(void *)particleSystem position:(b2Vec2)position velocity:(b2Vec2)velocity angV:(float)angV radius:(float)radius color:(b2Color)color {
-    b2CircleShape shape;
-    shape.m_radius = radius;
-    
++ (void)createParticleBallForSystem:(void *)particleSystem position:(float2)position velocity:(float2)velocity angV:(float)angV radius:(float)radius color:(float3)color {
     b2ParticleGroupDef pGroupDef;
     pGroupDef.flags = b2_powderParticle | b2_fixtureContactFilterParticle;
-    pGroupDef.position.Set(position.x, position.y);
-    pGroupDef.shape = &shape;
-    pGroupDef.color = b2ParticleColor( color );
-    pGroupDef.linearVelocity = velocity;
+    pGroupDef.position = _b2Vec2(position);
+    pGroupDef.linearVelocity = _b2Vec2(velocity);
     pGroupDef.angularVelocity = angV;
+    
+    b2CircleShape shape;
+    shape.m_radius = radius;
+    pGroupDef.shape = &shape;
+    pGroupDef.color = b2ParticleColor( _b2Color(color) );
     pGroupDef.lifetime = 4;
     ((b2ParticleSystem*)particleSystem)->CreateParticleGroup(pGroupDef);
 }
@@ -225,20 +234,20 @@ static b2World *world;
   positionIterations:(int)positionIterations {
   world->Step(timeStep, velocityIterations, positionIterations);
     world->DrawDebugData();
-
 }
-+ (void *)createEdgeBoxWithOrigin:(b2Vec2)origin size:(b2Vec2)size {
+
++ (void *)createEdgeBoxWithOrigin:(float2)origin size:(float2)size {
     // create the body
     b2BodyDef bodyDef;
     bodyDef.type = b2_kinematicBody;
-    bodyDef.position.Set(origin.x, origin.y);
+    bodyDef.position = _b2Vec2(origin);
     b2Body *body = world->CreateBody(&bodyDef);
     b2EdgeShape shape;
     b2Filter filter;
     filter.maskBits = 0x0001;
     filter.categoryBits = 0x0001;
     
-    b2Vec2 halfS = size / 2;
+    b2Vec2 halfS = _b2Vec2(size) / 2;
     b2Vec2 bottomL = -halfS;
     b2Vec2 bottomR = b2Vec2(halfS.x,-halfS.y);
     b2Vec2 topL    = b2Vec2(-halfS.x,halfS.y);
@@ -263,8 +272,8 @@ static b2World *world;
     return body;
 }
 
-+ (void)setGravity:(b2Vec2)gravity {
-  world->SetGravity( gravity );
++ (void)setGravity:(float2)gravity {
+  world->SetGravity( _b2Vec2(gravity) );
 }
 
 + (void)setParticleLimitForSystem:(void *)particleSystem maxParticles:(int)maxParticles {
@@ -293,7 +302,7 @@ static b2World *world;
 
 //positioning bodies
 + (float2)getPositionOfbody:(void *)bodyRef{
-    return _float2(((b2Body*)bodyRef)->GetPosition());
+    return _float2( ((b2Body*)bodyRef)->GetPosition() );
 }
 
 //contacts
@@ -315,7 +324,7 @@ static b2World *world;
 }
 
 // for managing transferring particles leaving to new tubes
-+ (int)leavingParticleSystem:(void *)particleSystem newSystem:(void *)newSystem a:(b2Vec2)a b:(b2Vec2)b isLeft:(bool)isLeft {
++ (int)leavingParticleSystem:(void *)particleSystem newSystem:(void *)newSystem a:(float2)a b:(float2)b isLeft:(bool)isLeft {
     b2ParticleGroupDef newGroupDef;
     
     b2Vec2* positionBuffer = ((b2ParticleSystem *)particleSystem)->GetPositionBuffer();
@@ -355,7 +364,7 @@ static b2World *world;
     ((b2ParticleSystem *)newSystem)->CreateParticleGroup(newGroupDef);
     return newPositionsCount;
 }
-+ (int)deleteParticlesOutside:(void *)particleSystem width:(float)width height:(float)height rotation:(float)rotation position:(b2Vec2)position {
++ (int)deleteParticlesOutside:(void *)particleSystem width:(float)width height:(float)height rotation:(float)rotation position:(float2)position {
     b2PolygonShape hitBox;
     hitBox.SetAsBox(width , height);
     b2Transform boxTransform;
@@ -380,10 +389,10 @@ static b2World *world;
 
 
 //movement and rotation
-+ (void)moveKinematic:(void *)kinematicRef pushDirection:(b2Vec2)pushDirection {
++ (void)moveKinematic:(void *)kinematicRef pushDirection:(float2)pushDirection {
     ((b2Body *) kinematicRef)->SetLinearVelocity(b2Vec2(pushDirection.x,pushDirection.y));
 }
-+ (void)pushBody:(void *)bodyRef pushVector:(b2Vec2)pushVector atPoint:(b2Vec2)atPoint awake:(bool)awake {
++ (void)pushBody:(void *)bodyRef pushVector:(float2)pushVector atPoint:(float2)atPoint awake:(bool)awake {
     ((b2Body *) bodyRef)->ApplyLinearImpulse(b2Vec2(pushVector.x,pushVector.y), b2Vec2(atPoint.x,atPoint.y), awake);
 }
 + (void)dampMovementOfBody:(void *)kinematicRef amount:(float)amount {
@@ -393,11 +402,11 @@ static b2World *world;
 + (void)rotateBody:(void *)bodyRef amount:(float)amount{
     ((b2Body *)bodyRef)->SetAngularVelocity(amount);
 }
-+ (void)torqueBody:(void *)bodyRef amount:(float)amount awake:(bool)awake{
-    ((b2Body *)bodyRef)->ApplyAngularImpulse(amount, awake);
++ (void)torqueBody:(void *)bodyRef amt:(float)amt awake:(bool)awake{
+    ((b2Body *)bodyRef)->ApplyAngularImpulse(amt, awake);
 }
 
-+ (void)dampRotationOfBody:(void *)bodyRef amount:(float)amount {
++ (void)setAngularDamping:(void *)bodyRef amount:(float)amount {
     ((b2Body *)bodyRef)->SetAngularDamping(amount);
 }
 
@@ -405,9 +414,13 @@ static b2World *world;
     return ((b2Body *)bodyRef)->GetAngle();
 }
 
++ (void)setFixedRotation:(void*)bodyRef to:(bool)to {
+    ((b2Body*)bodyRef)->SetFixedRotation(to);
+}
+
 // Tube class refactor ( now the tube is constructed in C++ and game scene communication occurs in TestTube.Swift )
 + (void *)makeTube:(void *)particleSysRef
-          location:(b2Vec2)location
+          location:(float2)location
           vertices:(void *) vertices
           vertexCount:(UInt32)vertexCount
           tubeWidth:(float32)tubeWidth
@@ -415,7 +428,7 @@ static b2World *world;
           gridId:(long)gridId {
     Tube* newTube = new Tube(world,
                              (b2ParticleSystem*) particleSysRef,
-                             b2Vec2(location.x,location.y),
+                             _b2Vec2( location ),
                              (b2Vec2*)vertices,
                              (unsigned int)vertexCount,
                              tubeWidth,
@@ -449,7 +462,7 @@ static b2World *world;
 }
 
 //movement and rotation
-+ (void)setTubeVelocity:(void *)tube velocity:(b2Vec2)velocity {
++ (void)setTubeVelocity:(void *)tube velocity:(float2)velocity {
     ((Tube *) tube)->SetVelocity(b2Vec2(velocity.x,velocity.y));
 }
 // rotation
@@ -465,7 +478,7 @@ static b2World *world;
     return sharedPosition;
 }
 
-+ (void *)getTubeAtPosition:(b2Vec2)position {
++ (void *)getTubeAtPosition:(float2)position {
     b2Vec2 pos = b2Vec2(position.x, position.y);
     unsigned long tubeCount = tubes.size();
     for( int i = 0; i < tubeCount; i++ ){
@@ -500,13 +513,13 @@ static b2World *world;
 
 // making buttons
 
-+ (void *) makeBoxButton:( b2Vec2* )withVertices location:(b2Vec2)location {
++ (void *) makeBoxButton:( b2Vec2* )withVertices location:(float2)location {
     BoxButton* button = new BoxButton(world, (b2Vec2*)withVertices, b2Vec2(location.x, location.y));
     return button;
 }
 
-+ (bool) boxIsAtPosition:( b2Vec2 )boxPosition boxRef:(void *)boxRef {
-    return ((BoxButton *)boxRef)->IsAtPosition(b2Vec2(boxPosition.x, boxPosition.y));
++ (bool) boxIsAtPosition:( float2 )boxPosition boxRef:(void *)boxRef {
+    return ((BoxButton *)boxRef)->IsAtPosition(_b2Vec2(boxPosition));
 }
 
 + (float2)getBoxButtonPosition:(void *)boxRef {
@@ -530,24 +543,24 @@ static b2World *world;
 }
 
 //move a particle system
-+ (void) moveParticleSystem:(void *)particleSys byVelocity:(b2Vec2)byVelocity {
++ (void) moveParticleSystem:(void *)particleSys byVelocity:(float2)byVelocity {
     b2ParticleSystem* system = ((b2ParticleSystem *)particleSys);
     int particleCount = system->GetParticleCount();
     b2Vec2* vBuffer = system->GetVelocityBuffer();
-    
+    const b2Vec2 b2Velocity = _b2Vec2( byVelocity );
     for( int i = 0; i < particleCount; i++ ) {
-        vBuffer[i] += byVelocity;
+        vBuffer[i] += b2Velocity;
     }
 }
 
 // Reservoir Class
 + (void *) makeReservoir:(void *)particleSysRef
-                location:(b2Vec2)location
+                location:(float2)location
                 vertices:(b2Vec2 *) vertices vertexCount:(UInt32)vertexCount {
     Reservoir* newReservoir = new Reservoir(world,
-                             (b2ParticleSystem*) particleSysRef,
-                             location,
-                             vertices, (unsigned int)vertexCount);
+                                            (b2ParticleSystem*) particleSysRef,
+                                            _b2Vec2( location ),
+                                            vertices, (unsigned int)vertexCount);
 //    reservoirs.push_back(newReservoir);
     return newReservoir;
 }
@@ -583,8 +596,8 @@ static b2World *world;
     return _float2( ((Reservoir *)reservoir)->GetBulbSegmentPosition(atIndex) );
 }
 
-+ (void) setVelocity:(void *)ofReservoir velocity:(b2Vec2)velocity{
-    ((Reservoir *)ofReservoir)->SetVelocity(velocity);
++ (void) setVelocity:(void *)ofReservoir velocity:(float2)velocity{
+    ((Reservoir *)ofReservoir)->SetVelocity( _b2Vec2(velocity) );
 }
 
 + (float2) getVelocity:(void *)ofReservoir {
@@ -628,8 +641,8 @@ static b2World *world;
 }
 
 //reservoir particle transfers
-+ (long) transferParticles:(void *)fromReservoir wallSegmentPosition:(b2Vec2)wallPos toSystem:(void *)toSystem {
-    return long( ((Reservoir *)fromReservoir)->TransferParticles(toSystem, wallPos) );
++ (long) transferParticles:(void *)fromReservoir wallSegmentPosition:(float2)wallPos toSystem:(void *)toSystem {
+    return long( ((Reservoir *)fromReservoir)->TransferParticles(toSystem, _b2Vec2(wallPos) ) );
 }
 
 // wall body rotations
@@ -656,86 +669,49 @@ static b2World *world;
     ((b2Fixture*)fixtureRef)->SetFilterData(defFilter);
 }
 
-// Friendly class
-+ (void *)makeFriendly:(b2Vec2)position
-              velocity:(b2Vec2)velocity
+// Infiltrator class
++ (void *)makeInfiltrator:(float2)position
+              velocity:(float2)velocity
             startAngle:(float)startAngle
                density:(float)density
-                restitution:(float)restition
-                health:(float)health
-           crashDamage:(float)crashDamage
-          categoryBits:(uint16)categoryBits
-              maskBits:(uint16)maskBits
-            groupIndex:(int16)groupIndex {
-    Infiltrator* newFriendly = new Infiltrator( world,
-                                //           b2ParticleSystem* particleSystem,
-                                position,
-                                         velocity,
-                                         startAngle,
-                                density,
-                                restition,
-                                health,
-                                crashDamage, // damage of crash on friendly
-                                //           long crashParticleCount, // explosive particle effect
-                                //           float crashParticleDamage, // damage each particle will do
-                                categoryBits,
-                                maskBits,
-                                groupIndex);
-    return newFriendly;
-}
-+ (void)setFriendlyPolygon:(void *)friendlyRef vertices:(b2Vec2*)vertices vertexCount:(long)vertexCount {
-    ((Infiltrator*) friendlyRef)->SetAsPolygonShape(vertices, vertexCount);
-}
-+ (void)setFriendlyCircle:(void *)friendlyRef radius:(float)radius {
-    ((Infiltrator *) friendlyRef)->SetAsCircleShape(radius);
-}
-+ (void)addFriendlyCircle:(void *)friendlyRef radius:(float)radius {
-    ((Infiltrator *) friendlyRef)->AddCircle(radius);
+                restitution:(float)restitution
+                   filter:(b2Filter)filter {
+    Infiltrator* newInfiltrator = new Infiltrator( world,
+                                                  //           b2ParticleSystem* particleSystem,
+                                                  _b2Vec2( position ),
+                                                  _b2Vec2( velocity ),
+                                                  startAngle,
+                                                  density,
+                                                  restitution,
+                                                  filter);
+    return newInfiltrator;
 }
 
-+ (void)setFriendlyFixedRotation:(void*)friendlyRef to:(bool)to {
-    ((Infiltrator *) friendlyRef)->SetFixedRotation(to);
+// body methods
++ (void*) newInfiltratorBody:(void*)infiltratorRef pos:(float2)pos angle:(float)angle filter:(b2Filter)filter {
+//    printf(" b2Vec2 bytes: %d \n", sizeof(b2Vec2));
+//    printf(" float2 bytes: %d \n", sizeof(float2));
+//    printf(" packed float2 bytes: %d", sizeof(simd_packed_float2));
+    return ((Infiltrator*)infiltratorRef)->MakeBody( _b2Vec2(pos), angle, filter);
+}
++ (void) destroyInfiltratorBody:(void*)infiltratorRef bodyRef:(void*)bodyRef {
+    ((Infiltrator*)infiltratorRef)->DestroyBody((b2Body*)bodyRef);
 }
 
-+ (void)impulseFriendly:(void*)friendlyRef imp:(b2Vec2)imp atPt:(b2Vec2)atPt {
-    ((Infiltrator *)friendlyRef)->Impulse(imp, atPt);
+// fixture methods
++ (void*) makePolygonFixtureOnInfiltrator:(void*)infiltrator body:(void*)body pos:(float2)pos vertices:(b2Vec2*)vertices vertexCount:(long)vertexCount  {
+    return ((Infiltrator*)infiltrator)->AttachPolygon((b2Body*)body, _b2Vec2(pos), vertices, vertexCount);
 }
 
-+ (void)torqueFriendly:(void*)friendlyRef amt:(float)amt {
-    ((Infiltrator *)friendlyRef)->Torque(amt);
++ (void*) makeCircleFixtureOnInfiltrator:(void*)infiltrator body:(void*)body radius:(float)radius pos:(float2)pos {
+    return ((Infiltrator*)infiltrator)->AttachCircle((b2Body*)body, _b2Vec2(pos), radius);
 }
 
-+ (float) getFriendlyHealth:(void *)friendlyRef {
-    return ((Infiltrator*)friendlyRef)->GetHealth();
+// joint methods
++ (void*) wheelJointOnInfiltrator:(void*)infiltrator bodyA:(b2Body*)bodyA bodyB:(b2Body*)bodyB weldPos:(float2)weldPos localAxisA:(float2)localAxisA stiffness:(float)stiffness damping:(float)damping {
+    return ((Infiltrator*)infiltrator)->WheelJoint( bodyA, bodyB, _b2Vec2(weldPos), _b2Vec2(localAxisA), stiffness, damping);
 }
 
-+ (b2Vec2)getFriendlyPosition:(void *)friendlyRef {
-    return ((Infiltrator*)friendlyRef)->GetPosition();
-}
-+ (float) getFriendlyRotation:(void *)friendlyRef {
-    return ((Infiltrator*)friendlyRef)->GetRotation();
-}
-+ (float) getFriendlyAngV:(void *)friendlyRef {
-    return ((Infiltrator*)friendlyRef)->GetAngV();
-}
-+ (b2Vec2) getFriendlyVel:(void *)friendlyRef {
-    return ((Infiltrator*)friendlyRef)->GetVel();
-}
-
-+ (void) setFriendlyVelocity:(void *)friendlyRef velocity:(b2Vec2)velocity {
-    ((Infiltrator*)friendlyRef)->SetVelocity(velocity);
-}
-
-+ (void) setFriendlyAngularVelocity:(void *)friendlyRef angV:(float)angV {
-    ((Infiltrator*)friendlyRef)->SetAngularVelocity(angV);
-}
-
-+ (void) weldJointFriendlies:(void *)friendly0 friendly1:(void *)friendly1 weldPos:(b2Vec2)weldPos stiffness:(float)stiffness {
-    ((Infiltrator*)friendly0)->WeldFriendly( (Infiltrator *)friendly1, weldPos, stiffness );
-}
-+ (void) wheelJointFriendlies:(void *)friendlyA friendlyB:(void *)friendlyB jointPos:(b2Vec2)jointPos stiffness:(float)stiffness damping:(float)damping {
-    ((Infiltrator*)friendlyA)->WheelFriendly( (Infiltrator*) friendlyB, jointPos, stiffness, damping);
-}
 
 @end
 

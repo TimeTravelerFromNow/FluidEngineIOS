@@ -194,7 +194,7 @@ class TestTube: Node {
     private var _travelTime: Float = 0.0
     
     
-    init( origin: float2 = float2(0,0), gridId: Int = -1, scale: Float = 5.0, startingColors: [TubeColors] = [.Empty] ) {
+    init( origin: float2 = float2(0,0), gridId: Int = -1, scale: Float = 0.2, startingColors: [TubeColors] = [.Empty] ) {
         super.init()
         if( gridId == -1 ) { print("TestTube() ADVISE::did you mean to init tube with -1? I will be test testTube.")}
         self.gridId = gridId
@@ -207,8 +207,8 @@ class TestTube: Node {
         fluidModelConstants.modelMatrix = modelMatrix
         refreshFluidBuffer()
         
-        self.setScaleX( GameSettings.stmRatio * 1.3 / scale ) // particles appear to move a bit out of the fixtures
-        self.setScaleY( GameSettings.stmRatio * 1.1 / scale * Float(totalColors) / 4 )
+        self.setScaleX( GameSettings.stmRatio * 1.3 * scale ) // particles appear to move a bit out of the fixtures
+        self.setScaleY( GameSettings.stmRatio * 1.1 * scale * Float(totalColors) / 4 )
         self.setPositionZ(0.1)
         self.scale = scale
         self.makeContainer()
@@ -997,9 +997,7 @@ class TestTube: Node {
     override func rotateZ(_ value: Float) {
         LiquidFun.setAngularVelocity(_tube, angularVelocity: value)
     }
-    func dampRotation( _ value: Float){
-        LiquidFun.dampRotation(ofBody: _tube, amount: value)
-    }
+    
     func setBoxVelocity(_ velocity: float2 = float2()) {
         LiquidFun.setTubeVelocity(_tube, velocity: velocity)
     }

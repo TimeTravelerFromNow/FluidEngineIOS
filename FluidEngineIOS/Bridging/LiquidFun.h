@@ -1,5 +1,6 @@
 #import <Foundation/Foundation.h>
 #include <simd/simd.h>
+
 #ifndef LiquidFun_Definitions
 #define LiquidFun_Definitions
 
@@ -94,27 +95,22 @@ BoxFilter BoxFilterInit() {
 + (void)dampMovementOfBody:(void *)kinematicRef amount:(float)amount;
 
 + (void)rotateBody:(void *)bodyRef amount:(float)amount;
-+ (void)dampRotationOfBody:(void *)bodyRef amount:(float)amount;
-+ (void)torqueBody:(void *)bodyRef amount:(float)amount awake:(bool)awake;
++ (void)setAngularDamping:(void *)bodyRef amount:(float)amount;
++ (void)torqueBody:(void *)bodyRef amt:(float)amt awake:(bool)awake;
 + (float)getRotationOfBody:(void *)bodyRef;
++ (void)setFixedRotation:(void*)bodyRef to:(bool)to;
 //positioning tubes
 + (float2)getPositionOfbody:(void *)bodyRef;
 //contacts
 + (void *)bodyInContactWith:(void *)bodyRef;
 
 // Tube class refactor
-
-// joint test
-//+ (void *)makeJointTest:(float2)location
-//            box1Vertices:(void *)box1Vertices box1Count:(UInt32)box1Count
-//         box2Vertices:(void *)box2Vertices box2Count:(UInt32)box2Count;
-
 + (void *)makeTube:(void *)particleSysRef
           location:(float2)location
           vertices:(void *)vertices
           vertexCount:(UInt32)vertexCount
-          tubeWidth:(Float32)tubeWidth
-          tubeHeight:(Float32)tubeHeight
+          tubeWidth:(float)tubeWidth
+          tubeHeight:(float)tubeHeight
           gridId:(long)gridId;
 
 + (void)destroyTube:(void *)tubeRef;
@@ -200,26 +196,21 @@ BoxFilter BoxFilterInit() {
 + (void)shareParticleSystemFilterWithFixture:(void*)fixtureRef particleSystem:(void *)particleSystem;
 + (void)setDefaultFilterForFixture:(void *)fixtureRef;
 
-// Friendly class
-+ (void *)makeFriendly:(float2)position velocity:(float2)velocity startAngle:(float)startAngle density:(float)density restitution:(float)restition health:(float)health crashDamage:(float)crashDamage categoryBits:(UInt32)categoryBits maskBits:(UInt16)maskBits groupIndex:(int16_t)groupIndex;
-+ (void)destroyFriendly:(void *)friendlyRef;
-+ (void)setFriendlyPolygon:(void *)friendlyRef vertices:(float2*)vertices vertexCount:(long)vertexCount;
-+ (void)setFriendlyCircle:(void *)friendlyRef radius:(float)radius;
-+ (void)addFriendlyCircle:(void *)friendlyRef radius:(float)radius;
-    
-+ (void)setFriendlyFixedRotation:(void*)friendlyRef to:(bool)to;
-+ (void)impulseFriendly:(void*)friendlyRef imp:(float2)imp atPt:(float2)atPt;
-+ (void)torqueFriendly:(void*)friendlyRef amt:(float)amt;
-+ (float) getFriendlyHealth:(void *)friendlyRef;
+// Infiltrator class
++ (void *)makeInfiltrator:(float2)position velocity:(float2)velocity startAngle:(float)startAngle density:(float)density restitution:(float)restitution filter:(BoxFilter)filter;
++ (void)destroyInfiltrator:(void *)infiltratorRef;
 
-+ (float2)getFriendlyPosition:(void *)friendlyRef;
-+ (float) getFriendlyRotation:(void *)friendlyRef;
-+ (float) getFriendlyAngV:(void *)friendlyRef;
-+ (float2) getFriendlyVel:(void *)friendlyRef;
+// body methods
++ (void*) newInfiltratorBody:(void*)infiltratorRef pos:(float2)pos angle:(float)angle filter:(BoxFilter)filter;
++ (void) destroyInfiltratorBody:(void*)infiltratorRef bodyRef:(void*)bodyRef;
 
-+ (void) setFriendlyVelocity:(void *)friendlyRef velocity:(float2)velocity;
-+ (void) setFriendlyAngularVelocity:(void *)friendlyRef angV:(float)angV;
-+ (void) weldJointFriendlies:(void *)friendly0 friendly1:(void *)friendly1 weldPos:(float2)weldPos stiffness:(float)stiffness;
-+ (void) wheelJointFriendlies:(void *)friendlyA friendlyB:(void *)friendlyB jointPos:(float2)jointPos stiffness:(float)stiffness damping:(float)damping;
+// fixture methods
++ (void*) makePolygonFixtureOnInfiltrator:(void*)infiltrator body:(void*)body pos:(float2)pos vertices:(float2*)vertices vertexCount:(long)vertexCount;
++ (void*) makeCircleFixtureOnInfiltrator:(void*)infiltrator body:(void*)body radius:(float)radius pos:(float2)pos;
+
+//joint methods
++ (void*) wheelJointOnInfiltrator:(void*)infiltrator bodyA:(void*)bodyA bodyB:(void*)bodyB weldPos:(float2)weldPos localAxisA:(float2)localAxisA stiffness:(float)stiffness damping:(float)damping;
+
+ 
 @end
 

@@ -70,7 +70,7 @@ class ReservoirObject: Node {
     var isBuildingPipes = false
     var arrowLength: Float = 0.2
     
-    init( origin: float2, scale: Float = 4.0, colorType: TubeColors ) {
+    init( origin: float2, scale: Float = 0.25, colorType: TubeColors ) {
         self.reservoirFluidColor = colorType
         super.init()
         reservoirMesh = MeshLibrary.Get(.Reservoir)
@@ -80,9 +80,9 @@ class ReservoirObject: Node {
         setScale(1 / (GameSettings.ptmRatio * 5) )
         fluidModelConstants.modelMatrix = modelMatrix
         setPositionZ(0.11)
-        setScale(GameSettings.stmRatio / scale)
+        setScale(GameSettings.stmRatio * scale)
         bulbNode = Node()
-        bulbNode.setScale( bulbRadius * 2 * GameSettings.stmRatio / scale )
+        bulbNode.setScale( bulbRadius * 2 * GameSettings.stmRatio * scale )
         buildContainer()
         updateModelConstants()
         refreshFluidMCBuffer()
@@ -247,8 +247,8 @@ class ReservoirObject: Node {
     
     func spawnParticleBox(_ position: float2,_ groupSize: float2, color: float3) {
         LiquidFun.createParticleBox(forSystem: particleSystem,
-                                    position: float2(x:position.x,y: position.y),
-                                    size: float2(groupSize.x, groupSize.y),
+                                    position: position,
+                                    size: groupSize,
                                     color: color)
     }
 

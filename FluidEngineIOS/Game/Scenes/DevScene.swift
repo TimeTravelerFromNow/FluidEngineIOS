@@ -3,15 +3,14 @@ import CoreHaptics
 
 class DevScene : Scene {
     
-    var Enemies: [ Alien ] = []
     var buttons: [ BoxButton ] = []
     var floatingButtons: [ FloatingButton ] = []
     var particleSystem: UnsafeMutableRawPointer?
     
-    var testAlien: Alien!
     var gunTruck: GunTruck!
+    var island: Infiltrator!
     var environmentBox: EdgeBox!
-    let islandCenter = float2(0, -10.5)
+    let islandCenter = float2(0, -1.5)
     
     var pauseButton: FloatingButton!
     var buttonPressed: ButtonActions!
@@ -22,30 +21,6 @@ class DevScene : Scene {
     var oceanColor: float3 = float3(0,0.2,0.3)
     
     override func buildScene() {
-
-        let asteroid = Alien(center: box2DOrigin + float2(0.2,-0.3), scale: 3.0, .Asteroid, .AsteroidTexture, density: 10 )
-        let asteroid1 = Alien(center: box2DOrigin + float2(0.2,-0.3), scale: 3.0, .Asteroid, .AsteroidTexture, density: 10 )
-        let asteroid2 = Alien(center: box2DOrigin + float2(0.2,-0.3), scale: 3.0, .Asteroid, .AsteroidTexture, density: 10 )
-        let asteroid3 = Alien(center: box2DOrigin + float2(0.2,-0.3), scale: 3.0, .Asteroid, .AsteroidTexture, density: 10 )
-        
-        let testAlien1 = Alien(center: box2DOrigin, scale: 3.0, .Alien, .AlienTexture, density: 1.0 )
-        let testAlien2 = Alien(center: box2DOrigin, scale: 3.0, .Alien, .AlienTexture, density: 1.0 )
-        let testAlien3 = Alien(center: box2DOrigin, scale: 3.0, .Alien, .AlienTexture, density: 1.0 )
-        let testAlien4 = Alien(center: box2DOrigin, scale: 3.0, .Alien, .AlienTexture, density: 1.0 )
-        let testAlien5 = Alien(center: box2DOrigin, scale: 3.0, .Alien, .AlienTexture, density: 1.0 )
-        let testAlien6 = Alien(center: box2DOrigin, scale: 3.0, .Alien, .AlienTexture, density: 1.0 )
-        addChild(asteroid)
-        addChild(asteroid1)
-        addChild(asteroid2)
-        addChild(asteroid3)
-        
-        addChild(testAlien1)
-        addChild(testAlien2)
-        addChild(testAlien3)
-        addChild(testAlien4)
-        addChild(testAlien5)
-        addChild(testAlien6)
-        Enemies.append(asteroid)
         
 
         CustomMeshes.Get(.SkyQuad).updateVertexColor(float4(0,0,0.1,1), atIndex: 0)
@@ -58,7 +33,7 @@ class DevScene : Scene {
                                                         gravityScale: 1, density: GameSettings.Density)
         
         environmentBox = EdgeBox(center: box2DOrigin,
-                                 size: float2(20,16),
+                                 size: float2(20,20),
                                  meshType: .NoMesh,
                                  textureType: .None,
                                  particleSystem: particleSystem)
@@ -80,19 +55,18 @@ class DevScene : Scene {
         floatingButtons.append(rightArrow)
         floatingButtons.append(pauseButton)
 
-//        LiquidFun.setGravity(Vector2D(x:0,y:0))
+        LiquidFun.setGravity(float2(0,-9.8065))
         
-        gunTruck = GunTruck(origin: box2DOrigin + islandCenter + float2(0, 4.3), particleSystem: particleSystem!)
+        gunTruck = GunTruck(origin: box2DOrigin + float2(0,3), scale: 0.3)
+        island =  Infiltrator(origin: box2DOrigin + islandCenter,scale: 1.0, startingMesh: .Island, density: 100)
         addChild(gunTruck)
-        testAlien = Alien(center: box2DOrigin, scale: 3.0, .Alien, .AlienTexture, density: 1.0 )
-        addChild(testAlien)
+        addChild(island)
         
-        let leftOceanPos = float2(x:islandCenter.x - 10.0, y: islandCenter.y - 2.0)
-        let rightOceanPos =  float2(x:islandCenter.x + 10.0, y: islandCenter.y - 2.0)
+        let leftOceanPos = float2(x:islandCenter.x - 10.0, y: islandCenter.y)
+        let rightOceanPos =  float2(x:islandCenter.x + 10.0, y: islandCenter.y)
         LiquidFun.createParticleBox(forSystem: particleSystem, position: leftOceanPos, size:  float2(4,3), color: oceanColor)
         LiquidFun.createParticleBox(forSystem: particleSystem, position: rightOceanPos, size: float2(4,3), color: oceanColor)
 
-        
         (currentCamera as? OrthoCamera)?.setFrameSize(1.5)
 //        (currentCamera as? OrthoCamera)?.setFrameSize(1)
 //        (currentCamera as? OrthoCamera)?.setPositionY(box2DOrigin.y - 1)
@@ -137,14 +111,13 @@ class DevScene : Scene {
         }
         if( Touches.IsDragging ){
             let boxPos = Touches.GetBoxPos()
-            (gunTruck as! Touchable ).touchDragged( boxPos )
             if buttonPressed != nil {
                 buttonPressed = boxButtonHitTest(boxPos: boxPos )
                 if buttonPressed == .TruckLeft {
-                    gunTruck.truckLeft( deltaTime )
+                    gunTruck.driveReverse( deltaTime )
                 }
                 if buttonPressed == .TruckRight {
-                    gunTruck.truckRight( deltaTime )
+                    gunTruck.driveForward( deltaTime )
                 }
                 if buttonPressed == nil { // we lost connection
                     deselectButtons()
@@ -157,12 +130,9 @@ class DevScene : Scene {
         let boxPos = Touches.GetBoxPos()
         buttonPressed = boxButtonHitTest(boxPos: boxPos )
         if buttonPressed == .TruckLeft {
-            gunTruck.truckLeft( 1 / 60 )
         }
         if buttonPressed == .TruckRight {
-            gunTruck.truckRight( 1 / 60 )
         }
-        ( gunTruck as! Touchable ).touchesBegan( boxPos )
         
         FluidEnvironment.Environment.debugParticleDraw(atPosition: Touches.GetBoxPos())
       
@@ -177,7 +147,6 @@ class DevScene : Scene {
         }
     }
     override func touchesEnded() {
-        ( gunTruck as! Touchable ).touchEnded( )
 
         switch buttonPressed {
         case .None:
