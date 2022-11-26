@@ -123,6 +123,11 @@
 		92728472291CD11D004C0CFC /* reservoir.png in Resources */ = {isa = PBXBuildFile; fileRef = 92728471291CD11D004C0CFC /* reservoir.png */; };
 		927DB832292FFB9900DBB5F3 /* Infiltrator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 927DB831292FFB9900DBB5F3 /* Infiltrator.swift */; };
 		927DB8342931BB8400DBB5F3 /* GunTruck.swift in Sources */ = {isa = PBXBuildFile; fileRef = 927DB8332931BB8400DBB5F3 /* GunTruck.swift */; };
+		927DB83A2932B2CD00DBB5F3 /* palm.png in Resources */ = {isa = PBXBuildFile; fileRef = 927DB8362932B2CC00DBB5F3 /* palm.png */; };
+		927DB83F2932B41D00DBB5F3 /* Island.swift in Sources */ = {isa = PBXBuildFile; fileRef = 927DB83E2932B41D00DBB5F3 /* Island.swift */; };
+		927DB8432932BCED00DBB5F3 /* palmBase.obj in Resources */ = {isa = PBXBuildFile; fileRef = 927DB8402932BCED00DBB5F3 /* palmBase.obj */; };
+		927DB8442932BCED00DBB5F3 /* palmBase.png in Resources */ = {isa = PBXBuildFile; fileRef = 927DB8412932BCED00DBB5F3 /* palmBase.png */; };
+		927DB8452932BCED00DBB5F3 /* palmBase.mtl in Resources */ = {isa = PBXBuildFile; fileRef = 927DB8422932BCED00DBB5F3 /* palmBase.mtl */; };
 		9295E4CD2900AFB300A33A0D /* TextLibraries.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9295E4CC2900AFB300A33A0D /* TextLibraries.swift */; };
 		9295E4CF2900B84900A33A0D /* TextObject.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9295E4CE2900B84900A33A0D /* TextObject.swift */; };
 		9295E4D12900BB2900A33A0D /* TextShaders.metal in Sources */ = {isa = PBXBuildFile; fileRef = 9295E4D02900BB2900A33A0D /* TextShaders.metal */; };
@@ -403,6 +408,11 @@
 		92728471291CD11D004C0CFC /* reservoir.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = reservoir.png; sourceTree = "<group>"; };
 		927DB831292FFB9900DBB5F3 /* Infiltrator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Infiltrator.swift; sourceTree = "<group>"; };
 		927DB8332931BB8400DBB5F3 /* GunTruck.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GunTruck.swift; sourceTree = "<group>"; };
+		927DB8362932B2CC00DBB5F3 /* palm.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = palm.png; sourceTree = "<group>"; };
+		927DB83E2932B41D00DBB5F3 /* Island.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Island.swift; sourceTree = "<group>"; };
+		927DB8402932BCED00DBB5F3 /* palmBase.obj */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = palmBase.obj; sourceTree = "<group>"; };
+		927DB8412932BCED00DBB5F3 /* palmBase.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = palmBase.png; sourceTree = "<group>"; };
+		927DB8422932BCED00DBB5F3 /* palmBase.mtl */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = palmBase.mtl; sourceTree = "<group>"; };
 		9295E4CC2900AFB300A33A0D /* TextLibraries.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextLibraries.swift; sourceTree = "<group>"; };
 		9295E4CE2900B84900A33A0D /* TextObject.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextObject.swift; sourceTree = "<group>"; };
 		9295E4D02900BB2900A33A0D /* TextShaders.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = TextShaders.metal; sourceTree = "<group>"; };
@@ -532,6 +542,7 @@
 		920603C0290D96D700C1C846 /* Box2DPresentables */ = {
 			isa = PBXGroup;
 			children = (
+				927DB83E2932B41D00DBB5F3 /* Island.swift */,
 				927DB8332931BB8400DBB5F3 /* GunTruck.swift */,
 				927DB831292FFB9900DBB5F3 /* Infiltrator.swift */,
 				92A75BE4292564B000653F36 /* EdgeBox.swift */,
@@ -914,6 +925,17 @@
 			path = Shapes;
 			sourceTree = "<group>";
 		};
+		927DB8352932B2BF00DBB5F3 /* PalmTree */ = {
+			isa = PBXGroup;
+			children = (
+				927DB8422932BCED00DBB5F3 /* palmBase.mtl */,
+				927DB8402932BCED00DBB5F3 /* palmBase.obj */,
+				927DB8412932BCED00DBB5F3 /* palmBase.png */,
+				927DB8362932B2CC00DBB5F3 /* palm.png */,
+			);
+			path = PalmTree;
+			sourceTree = "<group>";
+		};
 		92A75BCA2924A66300653F36 /* Alien */ = {
 			isa = PBXGroup;
 			children = (
@@ -927,6 +949,7 @@
 		92A75BE129255ED900653F36 /* AlienInfiltrators */ = {
 			isa = PBXGroup;
 			children = (
+				927DB8352932B2BF00DBB5F3 /* PalmTree */,
 				9221372F292C0B0100108872 /* LaserBeam.png */,
 				9221371E292BF8C200108872 /* Shell */,
 				92A75C2D292958A700653F36 /* Island */,
@@ -1240,6 +1263,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				92A9E40128DA6D620000A77F /* cliff.png in Resources */,
+				927DB83A2932B2CD00DBB5F3 /* palm.png in Resources */,
 				9254F4AE2929680E00B8B9FF /* leftArrow.png in Resources */,
 				92A75C1329284D4E00653F36 /* house.mtl in Resources */,
 				92A9E3FE28DA6D620000A77F /* cliff.mtl in Resources */,
@@ -1251,6 +1275,7 @@
 				92A9E40028DA6D620000A77F /* cliff.obj in Resources */,
 				92A75BD32924A69800653F36 /* Asteroid.png in Resources */,
 				920603B2290B03F400C1C846 /* bulbMesh.mtl in Resources */,
+				927DB8442932BCED00DBB5F3 /* palmBase.png in Resources */,
 				92A75C0B29283D5200653F36 /* Alien.mtl in Resources */,
 				92A75C3129295A2200653F36 /* Truck.obj in Resources */,
 				92A75C242929570700653F36 /* tire.png in Resources */,
@@ -1270,8 +1295,10 @@
 				920603CB2910972D00C1C846 /* moveTexture.png in Resources */,
 				92A9E41228DA6D620000A77F /* cloud2.mtl in Resources */,
 				920603BC290C684F00C1C846 /* missingTexture.png in Resources */,
+				927DB8432932BCED00DBB5F3 /* palmBase.obj in Resources */,
 				92A9E41628DA6D620000A77F /* beach.png in Resources */,
 				92A9E41528DA6D620000A77F /* beach.mtl in Resources */,
+				927DB8452932BCED00DBB5F3 /* palmBase.mtl in Resources */,
 				92A9E40928DA6D620000A77F /* cloud3.obj in Resources */,
 				92A9E41128DA6D620000A77F /* cloud0.mtl in Resources */,
 				92A75BD22924A69800653F36 /* Asteroid.mtl in Resources */,
@@ -1421,6 +1448,7 @@
 				92489BA42799DA0400639B52 /* b2MouseJoint.cpp in Sources */,
 				92489A0D2799D9BD00639B52 /* SceneDelegate.swift in Sources */,
 				92489BA32799DA0400639B52 /* b2WeldJoint.cpp in Sources */,
+				927DB83F2932B41D00DBB5F3 /* Island.swift in Sources */,
 				92A9E3A828DA6D1F0000A77F /* TestTubeScene.swift in Sources */,
 				92A9E3B428DA6D3E0000A77F /* TextureLoader.swift in Sources */,
 				92376BEC28DE6E9F007C93DB /* MBETextureLoader.m in Sources */,

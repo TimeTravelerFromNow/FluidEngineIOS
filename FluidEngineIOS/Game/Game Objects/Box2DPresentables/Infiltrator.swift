@@ -82,7 +82,7 @@ class Infiltrator: Node {
         _renderables[of]?.zPos = to
     }
     
-    func attachPolygonFixture(fromMesh: MeshTypes, body: b2Body) -> b2Fixture? {
+    func attachPolygonFixture(_ pos: float2 = float2(0), fromMesh: MeshTypes, body: b2Body) -> b2Fixture? {
         let mesh = MeshLibrary.Get(fromMesh)
         let newRenderable = InfiltratorRenderables(mesh: mesh,
                                                  texture: .None,
@@ -91,7 +91,7 @@ class Infiltrator: Node {
                                                  scale: scale)
         var boxVertices = mesh.getBoxVertices(scale)
         if (boxVertices.count > 8) { print("infiltrator polygon WARN::too many vertices \(boxVertices.count) count > 8 max."); return nil }
-        let fixtureRef: b2Fixture = LiquidFun.makePolygonFixture(onInfiltrator: _infiltratorRef, body: body, pos: float2(0), vertices: &boxVertices, vertexCount: boxVertices.count)
+        let fixtureRef: b2Fixture = LiquidFun.makePolygonFixture(onInfiltrator: _infiltratorRef, body: body, pos: pos, vertices: &boxVertices, vertexCount: boxVertices.count)
         var fixtures: [b2Fixture] = fixtureRefs[body] ?? []
         fixtures.append( fixtureRef )
         fixtureRefs.updateValue( fixtures, forKey: body )
@@ -105,8 +105,11 @@ class Infiltrator: Node {
     }
     
     // joint methods
+    func weldJoint( bodyA: b2Body, bodyB: b2Body, weldPos: float2, stiffness: Float, damping: Float) -> b2Joint {
+        return LiquidFun.weldJoint( bodyA, bodyB: bodyB, weldPos: weldPos, stiffness: stiffness, damping: damping)
+    }
     func wheelJoint( bodyA: b2Body, bodyB: b2Body, weldPos: float2, localAxisA: float2, stiffness: Float, damping: Float) -> b2Joint {
-        return LiquidFun.wheelJoint(onInfiltrator: _infiltratorRef, bodyA: bodyA, bodyB: bodyB, weldPos: weldPos, localAxisA: localAxisA, stiffness: stiffness, damping: damping)
+        return LiquidFun.wheelJoint( bodyA, bodyB: bodyB, weldPos: weldPos, localAxisA: localAxisA, stiffness: stiffness, damping: damping)
     }
     
     private func updateModelConstants() {

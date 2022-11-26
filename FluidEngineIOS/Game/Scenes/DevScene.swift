@@ -8,9 +8,9 @@ class DevScene : Scene {
     var particleSystem: UnsafeMutableRawPointer?
     
     var gunTruck: GunTruck!
-    var island: Infiltrator!
+    var island: Island!
     var environmentBox: EdgeBox!
-    let islandCenter = float2(0, -1.5)
+    let islandCenter = float2(0, -3.5)
     
     var pauseButton: FloatingButton!
     var buttonPressed: ButtonActions!
@@ -33,7 +33,7 @@ class DevScene : Scene {
                                                         gravityScale: 1, density: GameSettings.Density)
         
         environmentBox = EdgeBox(center: box2DOrigin,
-                                 size: float2(20,20),
+                                 size: float2(10,26),
                                  meshType: .NoMesh,
                                  textureType: .None,
                                  particleSystem: particleSystem)
@@ -57,19 +57,19 @@ class DevScene : Scene {
 
         LiquidFun.setGravity(float2(0,-9.8065))
         
-        gunTruck = GunTruck(origin: box2DOrigin + float2(0,3), scale: 0.3)
-        island =  Infiltrator(origin: box2DOrigin + islandCenter,scale: 1.0, startingMesh: .Island, density: 100)
+        gunTruck = GunTruck(origin: box2DOrigin + islandCenter + float2(0,1), scale: 0.2)
+        island =  Island(origin: box2DOrigin + islandCenter)
         addChild(gunTruck)
         addChild(island)
         
-        let leftOceanPos = float2(x:islandCenter.x - 10.0, y: islandCenter.y)
-        let rightOceanPos =  float2(x:islandCenter.x + 10.0, y: islandCenter.y)
-        LiquidFun.createParticleBox(forSystem: particleSystem, position: leftOceanPos, size:  float2(4,3), color: oceanColor)
-        LiquidFun.createParticleBox(forSystem: particleSystem, position: rightOceanPos, size: float2(4,3), color: oceanColor)
+        let leftOceanPos = float2(x:islandCenter.x - 6, y: islandCenter.y)
+        let rightOceanPos =  float2(x:islandCenter.x + 6.0, y: islandCenter.y)
+        LiquidFun.createParticleBox(forSystem: particleSystem, position: leftOceanPos, size:  float2(2,1), color: oceanColor)
+        LiquidFun.createParticleBox(forSystem: particleSystem, position: rightOceanPos, size: float2(2,1), color: oceanColor)
 
-        (currentCamera as? OrthoCamera)?.setFrameSize(1.5)
-//        (currentCamera as? OrthoCamera)?.setFrameSize(1)
-//        (currentCamera as? OrthoCamera)?.setPositionY(box2DOrigin.y - 1)
+//        (currentCamera as? OrthoCamera)?.setFrameSize(1.5)
+        (currentCamera as? OrthoCamera)?.setFrameSize(1)
+        (currentCamera as? OrthoCamera)?.setPositionY(box2DOrigin.y + 0.2)
 
     }
     

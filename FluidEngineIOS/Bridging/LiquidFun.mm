@@ -387,8 +387,7 @@ static b2World *world;
     return ( (Tube *) inTube )->EngulfParticles( ( (b2ParticleSystem *)originalParticleSystem ) );
 }
 
-
-//movement and rotation
+// physics setters
 + (void)moveKinematic:(void *)kinematicRef pushDirection:(float2)pushDirection {
     ((b2Body *) kinematicRef)->SetLinearVelocity(b2Vec2(pushDirection.x,pushDirection.y));
 }
@@ -398,24 +397,27 @@ static b2World *world;
 + (void)dampMovementOfBody:(void *)kinematicRef amount:(float)amount {
     ((b2Body *) kinematicRef)->SetLinearDamping(amount);
 }
-// rotation
 + (void)rotateBody:(void *)bodyRef amount:(float)amount{
     ((b2Body *)bodyRef)->SetAngularVelocity(amount);
 }
++ (void)setAngularDamping:(void *)bodyRef amount:(float)amount {
+    ((b2Body *)bodyRef)->SetAngularDamping(amount);
+}
++ (void)setFixedRotation:(void*)bodyRef to:(bool)to {
+    ((b2Body*)bodyRef)->SetFixedRotation(to);
+}
+
+// physics appliers
 + (void)torqueBody:(void *)bodyRef amt:(float)amt awake:(bool)awake{
     ((b2Body *)bodyRef)->ApplyAngularImpulse(amt, awake);
 }
 
-+ (void)setAngularDamping:(void *)bodyRef amount:(float)amount {
-    ((b2Body *)bodyRef)->SetAngularDamping(amount);
-}
-
+// physics getters
 + (float)getRotationOfBody:(void *)bodyRef{
     return ((b2Body *)bodyRef)->GetAngle();
 }
-
-+ (void)setFixedRotation:(void*)bodyRef to:(bool)to {
-    ((b2Body*)bodyRef)->SetFixedRotation(to);
++ (float2)getVelocityOfBody:(void*)bodyRef{
+    return _float2( ((b2Body *)bodyRef)->GetLinearVelocity() );
 }
 
 // Tube class refactor ( now the tube is constructed in C++ and game scene communication occurs in TestTube.Swift )
@@ -707,10 +709,30 @@ static b2World *world;
     return ((Infiltrator*)infiltrator)->AttachCircle((b2Body*)body, _b2Vec2(pos), radius);
 }
 
-// joint methods
-+ (void*) wheelJointOnInfiltrator:(void*)infiltrator bodyA:(b2Body*)bodyA bodyB:(b2Body*)bodyB weldPos:(float2)weldPos localAxisA:(float2)localAxisA stiffness:(float)stiffness damping:(float)damping {
-    return ((Infiltrator*)infiltrator)->WheelJoint( bodyA, bodyB, _b2Vec2(weldPos), _b2Vec2(localAxisA), stiffness, damping);
+// joint methods ( has no class specifics )
++ (void*) weldJoint:(b2Body*)bodyA bodyB:(b2Body*)bodyB weldPos:(float2)weldPos stiffness:(float)stiffness damping:(float)damping {
+    b2WeldJointDef jointDef;
+    jointDef.bodyA = bodyA;
+    jointDef.bodyB = bodyB;
+    jointDef.localAnchorA = _b2Vec2(weldPos);
+    jointDef.collideConnected = false;
+    jointDef.frequencyHz = stiffness;
+    jointDef.dampingRatio = damping;
+    return world->CreateJoint( &jointDef );
 }
+
++ (void*) wheelJoint:(b2Body*)bodyA bodyB:(b2Body*)bodyB weldPos:(float2)weldPos localAxisA:(float2)localAxisA stiffness:(float)stiffness damping:(float)damping {
+    b2WheelJointDef jointDef;
+    jointDef.bodyA = bodyA;
+    jointDef.bodyB = bodyB;
+    jointDef.localAnchorA = _b2Vec2(weldPos);
+    jointDef.collideConnected = false;
+    jointDef.localAxisA = _b2Vec2(localAxisA);
+    jointDef.frequencyHz = stiffness;
+    jointDef.dampingRatio = damping;
+    return world->CreateJoint( &jointDef );
+}
+
 
 
 @end

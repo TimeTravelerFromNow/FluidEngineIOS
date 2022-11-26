@@ -48,36 +48,25 @@ b2Fixture* Infiltrator::AttachPolygon(b2Body* onBody, b2Vec2 pos, b2Vec2* vertic
     b2FixtureDef fixtureDef;
     fixtureDef.density = m_density;
     fixtureDef.restitution = m_restition;
+    shape.m_centroid = pos;
     shape.Set(vertices, vertexCount);
     fixtureDef.filter = m_filter;
     fixtureDef.shape = &shape;
     return onBody->CreateFixture( &fixtureDef );
 }
+
 b2Fixture* Infiltrator::AttachCircle(b2Body* onBody, b2Vec2 pos, float radius) {
     b2CircleShape shape;
     shape.m_radius = radius;
+    shape.m_p = pos;
     b2FixtureDef fixtureDef;
     fixtureDef.density = m_density;
     fixtureDef.restitution = m_restition;
     fixtureDef.filter = m_filter;
-    fixtureDef.friction = 0.7f;
+    fixtureDef.friction = 0.9f;
     fixtureDef.shape = &shape;
     return onBody->CreateFixture( &fixtureDef );
 }
-
-// joint methods
-b2Joint* Infiltrator::WheelJoint(b2Body* bodyA, b2Body* bodyB, b2Vec2 weldPos, b2Vec2 localAxisA, float stiffness, float damping) {
-    b2WheelJointDef jointDef;
-    jointDef.bodyA = bodyA;
-    jointDef.bodyB = bodyB;
-    jointDef.localAnchorA = weldPos;
-    jointDef.collideConnected = false;
-    jointDef.localAxisA = localAxisA;
-    jointDef.frequencyHz = stiffness;
-    jointDef.dampingRatio = damping;
-    return m_world->CreateJoint( &jointDef );
-}
-
 
 //void Infiltrator::WeldInfiltrator( Infiltrator* infiltrator, b2Vec2 weldPos, float stiffness) {
 //    b2Body* otherBody = infiltrator->GetBody();

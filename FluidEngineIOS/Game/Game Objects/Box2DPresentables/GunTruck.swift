@@ -13,10 +13,11 @@ class GunTruck: Infiltrator {
     var backTireOffset: float2!
 
     var torqueBuildUp: Float = 0.0
-    let maxTorque: Float = 20.0
-    let minTorque: Float = 0.1
-    let jerk: Float = 3.0
-    let rpmDecay: Float  = 2.0
+    let maxTorque: Float = 0.1
+    let minTorque: Float = 0.01
+    let jerk: Float = 1
+    let rpmDecay: Float  = 0.1
+    let maxVelocity: Float = 0.3
     
     init(origin: float2, scale: Float = 1.0) {
         backTireOffset  = float2(-0.95 * scale, -0.5 * scale)
@@ -41,6 +42,9 @@ class GunTruck: Infiltrator {
 
         frontWheelJoint = wheelJoint(bodyA: truckBodyRef, bodyB: frontWheelRef!, weldPos: frontTireOffset, localAxisA: float2(0,1), stiffness: 10, damping: 0.5)
         backWheelJoint = wheelJoint(bodyA: truckBodyRef, bodyB: backWheelRef!, weldPos: backTireOffset, localAxisA: float2(0,1), stiffness: 10, damping: 0.5)
+        
+            LiquidFun.setFixedRotation(frontWheelRef,to: true)
+            LiquidFun.setFixedRotation(backWheelRef, to: true)
     }
     
     private func applyTorque(_ amt: Float) {
@@ -55,22 +59,38 @@ class GunTruck: Infiltrator {
     func driveForward(_ deltaTime: Float) {
       
         if torqueBuildUp < maxTorque {
-            torqueBuildUp += deltaTime * jerk
+            torqueBuildUp += deltaTime * (jerk + rpmDecay )
         }
         if torqueBuildUp > minTorque {
-            LiquidFun.setFixedRotation(frontWheelRef, to: false)
-            LiquidFun.setFixedRotation(backWheelRef, to: false)
-            applyTorque( -torqueBuildUp )
+            let horizV = LiquidFun.getVelocityOfBody( frontWheelRef ).x
+              if( horizV < -0.03) {
+                  LiquidFun.setFixedRotation(frontWheelRef, to: true)
+                  LiquidFun.setFixedRotation(backWheelRef, to: true) // brake instead of forwards accelerate.
+              } else {
+                  if( horizV < maxVelocity ) {
+                  LiquidFun.setFixedRotation(frontWheelRef, to: false)
+                  LiquidFun.setFixedRotation(backWheelRef, to: false)
+                  applyTorque( -torqueBuildUp )
+                  }
+              }
         }
     }
     func driveReverse( _ deltaTime: Float ) {
         if torqueBuildUp < maxTorque {
-            torqueBuildUp += deltaTime * jerk
+            torqueBuildUp += deltaTime * ( jerk + rpmDecay )
         }
         if torqueBuildUp > minTorque {
-            LiquidFun.setFixedRotation(frontWheelRef, to: false)
-            LiquidFun.setFixedRotation(backWheelRef, to: false)
-            applyTorque( torqueBuildUp )
+            let horizV = LiquidFun.getVelocityOfBody( frontWheelRef ).x
+            if( horizV > 0.03) {
+                LiquidFun.setFixedRotation(frontWheelRef, to: true)
+                LiquidFun.setFixedRotation(backWheelRef, to: true) // brake instead of backwards accelerate.
+            } else {
+                if horizV > -maxVelocity {
+                LiquidFun.setFixedRotation(frontWheelRef, to: false)
+                LiquidFun.setFixedRotation(backWheelRef, to: false)
+                applyTorque( torqueBuildUp )
+                }
+            }
         }
     }
     

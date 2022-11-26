@@ -27,6 +27,7 @@ public:
     b2Fixture* AttachPolygon(b2Body* onBody, b2Vec2 pos, b2Vec2* vertices, long vertexCount);
     b2Fixture* AttachCircle(b2Body* onBody, b2Vec2 pos, float radius);
     // joint methods
+    b2Joint* WeldJoint(b2Body* bodyA, b2Body* bodyB, b2Vec2 weldPos, float stiffness, float damping);
     b2Joint* WheelJoint(b2Body* bodyA, b2Body* bodyB, b2Vec2 weldPos, b2Vec2 localAxisA, float stiffness, float damping);
     
 private:

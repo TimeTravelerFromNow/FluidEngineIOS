@@ -89,16 +89,21 @@ BoxFilter BoxFilterInit() {
 + (int)deleteParticlesOutside:(void *)particleSystem width:(float)width height:(float)height rotation:(float)rotation position:(float2)position;
 + (int)engulfParticles:(void *)inTube originalParticleSystem:(void *)originalParticleSystem;
 
-// movement and rotation
-+ (void)pushBody:(void *)bodyRef pushVector:(float2)pushVector atPoint:(float2)atPoint awake:(bool)awake;
+// physics setters
 + (void)moveKinematic:(void *)kinematicRef pushDirection:(float2)pushDirection;
++ (void)pushBody:(void *)bodyRef pushVector:(float2)pushVector atPoint:(float2)atPoint awake:(bool)awake;
 + (void)dampMovementOfBody:(void *)kinematicRef amount:(float)amount;
-
 + (void)rotateBody:(void *)bodyRef amount:(float)amount;
 + (void)setAngularDamping:(void *)bodyRef amount:(float)amount;
-+ (void)torqueBody:(void *)bodyRef amt:(float)amt awake:(bool)awake;
-+ (float)getRotationOfBody:(void *)bodyRef;
 + (void)setFixedRotation:(void*)bodyRef to:(bool)to;
+
+// physics appliers
++ (void)torqueBody:(void *)bodyRef amt:(float)amt awake:(bool)awake;
+
+// physics getters
++ (float)getRotationOfBody:(void *)bodyRef;
++ (float2)getVelocityOfBody:(void*)bodyRef;
+
 //positioning tubes
 + (float2)getPositionOfbody:(void *)bodyRef;
 //contacts
@@ -208,9 +213,10 @@ BoxFilter BoxFilterInit() {
 + (void*) makePolygonFixtureOnInfiltrator:(void*)infiltrator body:(void*)body pos:(float2)pos vertices:(float2*)vertices vertexCount:(long)vertexCount;
 + (void*) makeCircleFixtureOnInfiltrator:(void*)infiltrator body:(void*)body radius:(float)radius pos:(float2)pos;
 
-//joint methods
-+ (void*) wheelJointOnInfiltrator:(void*)infiltrator bodyA:(void*)bodyA bodyB:(void*)bodyB weldPos:(float2)weldPos localAxisA:(float2)localAxisA stiffness:(float)stiffness damping:(float)damping;
 
- 
+// joint methods ( has no class specifics )
++ (void*) weldJoint:(void*)bodyA bodyB:(void*)bodyB weldPos:(float2)weldPos stiffness:(float)stiffness damping:(float)damping;
+
++ (void*) wheelJoint:(void*)bodyA bodyB:(void*)bodyB weldPos:(float2)weldPos localAxisA:(float2)localAxisA stiffness:(float)stiffness damping:(float)damping;
 @end
 
