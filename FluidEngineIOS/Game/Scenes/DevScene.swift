@@ -33,7 +33,7 @@ class DevScene : Scene {
                                                         gravityScale: 1, density: GameSettings.Density)
         
         environmentBox = EdgeBox(center: box2DOrigin,
-                                 size: float2(10,26),
+                                 size: float2(20,26),
                                  meshType: .NoMesh,
                                  textureType: .None,
                                  particleSystem: particleSystem)
@@ -64,10 +64,10 @@ class DevScene : Scene {
         
         let leftOceanPos = float2(x:islandCenter.x - 6, y: islandCenter.y)
         let rightOceanPos =  float2(x:islandCenter.x + 6.0, y: islandCenter.y)
-        LiquidFun.createParticleBox(forSystem: particleSystem, position: leftOceanPos, size:  float2(2,1), color: oceanColor)
-        LiquidFun.createParticleBox(forSystem: particleSystem, position: rightOceanPos, size: float2(2,1), color: oceanColor)
+        LiquidFun.createParticleBox(forSystem: particleSystem, position: leftOceanPos, size:  float2(2,2), color: oceanColor)
+        LiquidFun.createParticleBox(forSystem: particleSystem, position: rightOceanPos, size: float2(2,2), color: oceanColor)
 
-//        (currentCamera as? OrthoCamera)?.setFrameSize(1.5)
+        (currentCamera as? OrthoCamera)?.setFrameSize(1.5)
         (currentCamera as? OrthoCamera)?.setFrameSize(1)
         (currentCamera as? OrthoCamera)?.setPositionY(box2DOrigin.y + 0.2)
 

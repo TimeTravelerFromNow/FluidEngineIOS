@@ -22,7 +22,7 @@ class GunTruck: Infiltrator {
     init(origin: float2, scale: Float = 1.0) {
         backTireOffset  = float2(-0.95 * scale, -0.5 * scale)
         frontTireOffset = float2( 0.9 * scale, -0.5 * scale)
-        super.init(origin: origin, scale: scale, startingMesh: .Truck, density: 100)
+        super.init(origin: origin, scale: scale, startingMesh: .Interceptor, density: 100)
         truckBodyRef = bodyRefs.keys.first!
         buildTruck()
     }
@@ -34,8 +34,8 @@ class GunTruck: Infiltrator {
         LiquidFun.setAngularDamping( frontWheelRef, amount: 0.1)
         LiquidFun.setAngularDamping( backWheelRef, amount: 0.1)
 
-        frontWheelFixture = attachCircleFixture( scale * 0.5, pos: float2(0), texture: .TruckTireTexture, body: frontWheelRef!)
-        backWheelFixture = attachCircleFixture( scale * 0.5, pos: float2(0), texture: .TruckTireTexture, body: backWheelRef!)
+        frontWheelFixture = attachCircleFixture( scale * 0.3, pos: float2(0), texture: .TruckTireTexture, body: frontWheelRef!)
+        backWheelFixture = attachCircleFixture( scale * 0.3, pos: float2(0), texture: .TruckTireTexture, body: backWheelRef!)
         
         setFixtureZPos(frontWheelFixture!, to: 0.09)
         setFixtureZPos(backWheelFixture!, to: 0.09)

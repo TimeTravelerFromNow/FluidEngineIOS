@@ -42,8 +42,11 @@ enum TextureTypes {
     case BarrelTexture
     case HouseTexture
     case MountTexture
+    
+    // vehicles
     case TruckTexture
     case TruckTireTexture
+    case InterceptorTexture
     
     // island stuff
     case IslandTexture
@@ -99,8 +102,12 @@ class Textures {
         _library.updateValue(Texture("Barrel", ext: "png").texture, forKey: .BarrelTexture)
         _library.updateValue(Texture("house", ext: "png").texture, forKey: .HouseTexture)
         _library.updateValue(Texture("mount", ext: "png").texture, forKey: .MountTexture)
+        
+        //vehicles
         _library.updateValue(Texture("Truck", ext: "png").texture, forKey: .TruckTexture)
         _library.updateValue(Texture("tire", ext: "png").texture, forKey: .TruckTireTexture)
+        _library.updateValue(Texture("interceptor", ext: "png").texture, forKey: .InterceptorTexture)
+        
         _library.updateValue(Texture("Island", ext: "png").texture, forKey: .IslandTexture)
         _library.updateValue(Texture("palm", ext: "png").texture, forKey: .PalmTexture)
         _library.updateValue(Texture("palmBase", ext: "png").texture, forKey: .PalmStemTexture)

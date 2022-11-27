@@ -25,7 +25,11 @@ enum MeshTypes {
     case Asteroid
     case Barrel
     case House
+    
+    //vehicles
     case Truck
+    case Interceptor
+    
     case Island
     case Palm
     
@@ -79,7 +83,11 @@ class MeshLibrary: Library<MeshTypes, Mesh> {
         meshes.updateValue( Mesh( modelName: "Alien" ), forKey: .Alien)
         meshes.updateValue( Mesh( modelName: "Asteroid" ), forKey: .Asteroid)
         meshes.updateValue( Mesh( modelName: "Barrel" ), forKey: .Barrel)
+        
+        // vehicles
         meshes.updateValue( Mesh( modelName: "Truck" ), forKey: .Truck)
+        meshes.updateValue( Mesh( modelName: "interceptor"), forKey: .Interceptor )
+        
         meshes.updateValue( Mesh( modelName: "Island" ), forKey: .Island)
         meshes.updateValue( Mesh( modelName: "palmBase"), forKey: .Palm)
         

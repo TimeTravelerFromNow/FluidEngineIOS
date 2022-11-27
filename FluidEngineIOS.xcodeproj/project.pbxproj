@@ -128,6 +128,9 @@
 		927DB8432932BCED00DBB5F3 /* palmBase.obj in Resources */ = {isa = PBXBuildFile; fileRef = 927DB8402932BCED00DBB5F3 /* palmBase.obj */; };
 		927DB8442932BCED00DBB5F3 /* palmBase.png in Resources */ = {isa = PBXBuildFile; fileRef = 927DB8412932BCED00DBB5F3 /* palmBase.png */; };
 		927DB8452932BCED00DBB5F3 /* palmBase.mtl in Resources */ = {isa = PBXBuildFile; fileRef = 927DB8422932BCED00DBB5F3 /* palmBase.mtl */; };
+		927DB84A2933FB0600DBB5F3 /* interceptor.obj in Resources */ = {isa = PBXBuildFile; fileRef = 927DB8472933FB0500DBB5F3 /* interceptor.obj */; };
+		927DB84B2933FB0600DBB5F3 /* interceptor.png in Resources */ = {isa = PBXBuildFile; fileRef = 927DB8482933FB0600DBB5F3 /* interceptor.png */; };
+		927DB84C2933FB0600DBB5F3 /* interceptor.mtl in Resources */ = {isa = PBXBuildFile; fileRef = 927DB8492933FB0600DBB5F3 /* interceptor.mtl */; };
 		9295E4CD2900AFB300A33A0D /* TextLibraries.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9295E4CC2900AFB300A33A0D /* TextLibraries.swift */; };
 		9295E4CF2900B84900A33A0D /* TextObject.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9295E4CE2900B84900A33A0D /* TextObject.swift */; };
 		9295E4D12900BB2900A33A0D /* TextShaders.metal in Sources */ = {isa = PBXBuildFile; fileRef = 9295E4D02900BB2900A33A0D /* TextShaders.metal */; };
@@ -413,6 +416,9 @@
 		927DB8402932BCED00DBB5F3 /* palmBase.obj */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = palmBase.obj; sourceTree = "<group>"; };
 		927DB8412932BCED00DBB5F3 /* palmBase.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = palmBase.png; sourceTree = "<group>"; };
 		927DB8422932BCED00DBB5F3 /* palmBase.mtl */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = palmBase.mtl; sourceTree = "<group>"; };
+		927DB8472933FB0500DBB5F3 /* interceptor.obj */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = interceptor.obj; sourceTree = "<group>"; };
+		927DB8482933FB0600DBB5F3 /* interceptor.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = interceptor.png; sourceTree = "<group>"; };
+		927DB8492933FB0600DBB5F3 /* interceptor.mtl */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = interceptor.mtl; sourceTree = "<group>"; };
 		9295E4CC2900AFB300A33A0D /* TextLibraries.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextLibraries.swift; sourceTree = "<group>"; };
 		9295E4CE2900B84900A33A0D /* TextObject.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextObject.swift; sourceTree = "<group>"; };
 		9295E4D02900BB2900A33A0D /* TextShaders.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = TextShaders.metal; sourceTree = "<group>"; };
@@ -936,6 +942,16 @@
 			path = PalmTree;
 			sourceTree = "<group>";
 		};
+		927DB8462933FAF800DBB5F3 /* Interceptor */ = {
+			isa = PBXGroup;
+			children = (
+				927DB8492933FB0600DBB5F3 /* interceptor.mtl */,
+				927DB8472933FB0500DBB5F3 /* interceptor.obj */,
+				927DB8482933FB0600DBB5F3 /* interceptor.png */,
+			);
+			path = Interceptor;
+			sourceTree = "<group>";
+		};
 		92A75BCA2924A66300653F36 /* Alien */ = {
 			isa = PBXGroup;
 			children = (
@@ -949,6 +965,7 @@
 		92A75BE129255ED900653F36 /* AlienInfiltrators */ = {
 			isa = PBXGroup;
 			children = (
+				927DB8462933FAF800DBB5F3 /* Interceptor */,
 				927DB8352932B2BF00DBB5F3 /* PalmTree */,
 				9221372F292C0B0100108872 /* LaserBeam.png */,
 				9221371E292BF8C200108872 /* Shell */,
@@ -1263,6 +1280,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				92A9E40128DA6D620000A77F /* cliff.png in Resources */,
+				927DB84B2933FB0600DBB5F3 /* interceptor.png in Resources */,
 				927DB83A2932B2CD00DBB5F3 /* palm.png in Resources */,
 				9254F4AE2929680E00B8B9FF /* leftArrow.png in Resources */,
 				92A75C1329284D4E00653F36 /* house.mtl in Resources */,
@@ -1289,6 +1307,7 @@
 				92A9E44028DA72910000A77F /* clearButton.obj in Resources */,
 				92A9E43E28DA72910000A77F /* beachButton.png in Resources */,
 				92213730292C0B0100108872 /* LaserBeam.png in Resources */,
+				927DB84A2933FB0600DBB5F3 /* interceptor.obj in Resources */,
 				92A9E40E28DA6D620000A77F /* Cloud0.png in Resources */,
 				92489C032799DD0500639B52 /* LaunchScreen.storyboard in Resources */,
 				92A75BAC2921658900653F36 /* testFlat.mtl in Resources */,
@@ -1350,6 +1369,7 @@
 				92A9E43A28DA72910000A77F /* testButton.mtl in Resources */,
 				920603C7290DC54400C1C846 /* constructPipe.png in Resources */,
 				92A75BAB2921658900653F36 /* testFlat.obj in Resources */,
+				927DB84C2933FB0600DBB5F3 /* interceptor.mtl in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
