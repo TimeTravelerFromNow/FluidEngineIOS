@@ -26,7 +26,7 @@ class BoxButton: GameObject {
        
         if( label != .None ) {
             _textObject = TextLabels.Get(label)
-            _textObject?.setScaleFactor(scale)
+            _textObject?.setScaleFactor(1/scale)
         }
         setTexture(texture)
         renderPipelineStateType = .Basic

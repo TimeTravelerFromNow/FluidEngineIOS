@@ -1,23 +1,5 @@
 import MetalKit
 
-enum ButtonActions {
-    case Clear
-    case NewGame
-    case ToMenu
-    case ToBeach
-    case ToDev
-    
-    case StartGameAction
-    case TestAction1
-    case TestAction2
-    case TestAction3
-    
-    case Pause
-    case Fire
-    case TruckLeft
-    case TruckRight
-    case None
-}
 
 class MenuScene : Scene {
     var testTextObject: TextObject!

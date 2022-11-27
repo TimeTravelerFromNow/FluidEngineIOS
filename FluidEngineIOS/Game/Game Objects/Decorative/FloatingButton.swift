@@ -11,9 +11,9 @@ enum MiniMenuActions {
     case None
 }
 
-// A button without a representation in the box2d world
+// A square button without a representation in the box2d world
 class FloatingButton: Node {
-    var b2BodyRef: UnsafeMutableRawPointer? // MARK: I know i said it wouldn't be represented, but it's kinda cool wat im doin
+    var b2BodyRef: UnsafeMutableRawPointer? // MARK: I know i said it wouldn't be represented, but it's kinda cool wat im doin (used for valves)
     var buttonQuad: Mesh = MeshLibrary.Get(.Quad)
     var buttonTexture: TextureTypes!
     var selectTexture: TextureTypes?
@@ -60,6 +60,17 @@ class FloatingButton: Node {
         self.setPositionY( box2DPos.y / 5)
         modelConstants.modelMatrix = modelMatrix
     }
+    
+    func getBoxPositionX() -> Float {
+        return box2DPos.x
+    }
+    func getBoxPositionY() -> Float {
+        return box2DPos.y
+    }
+    func getBoxPosition() -> float2 {
+        return box2DPos
+    }
+    
     func miniMenuHitTest(_ parentOffset: float2, _ atPos: float2) -> MiniMenuActions? {
         let boxCenter = box2DPos + parentOffset
         if ( ( ( (boxCenter.x - size.x) < atPos.x) && (atPos.x < (boxCenter.x + size.x) ) ) &&

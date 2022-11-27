@@ -1,6 +1,27 @@
 import Foundation
 import CoreHaptics
 
+enum ButtonActions {
+    case Clear
+    case NewGame
+    case ToMenu
+    case ToBeach
+    case ToDev
+    
+    case StartGameAction
+    case TestAction1
+    case TestAction2
+    case TestAction3
+    
+    case Pause
+    case Fire
+    case TruckLeft
+    case TruckRight
+    case SteerTruck
+    
+    case None
+}
+
 class DevScene : Scene {
     
     var buttons: [ BoxButton ] = []
@@ -17,6 +38,7 @@ class DevScene : Scene {
     
     var leftArrow: FloatingButton!
     var rightArrow: FloatingButton!
+    var moveButton: FloatingButton!
     
     var oceanColor: float3 = float3(0,0.2,0.3)
     
@@ -46,14 +68,18 @@ class DevScene : Scene {
         addChild(menuButton)
       
         pauseButton = FloatingButton(box2DOrigin + float2(-1.9, 3.0), size: float2(0.35,0.35), sceneAction: .Pause, textureType: .PauseTexture)
-        leftArrow = FloatingButton(box2DOrigin + float2(-2.5, -3.0), size: float2(0.5,0.5), sceneAction: .TruckLeft, textureType: .LeftArrowTexture)
-        rightArrow = FloatingButton(box2DOrigin + float2(-1, -3.0), size: float2(0.5,0.5), sceneAction: .TruckRight, textureType: .RightArrowTexture)
+//        leftArrow = FloatingButton(box2DOrigin + float2(-2.5, -3.0), size: float2(0.5,0.5), sceneAction: .TruckLeft, textureType: .LeftArrowTexture)
+//        rightArrow = FloatingButton(box2DOrigin + float2(-1, -3.0), size: float2(0.5,0.5), sceneAction: .TruckRight, textureType: .RightArrowTexture)
+        moveButton = FloatingButton(box2DOrigin + float2(-1, 1.0), size: float2(0.5,0.5), sceneAction: .SteerTruck, textureType: .MoveObjectTexture)
+        
         addChild(pauseButton)
-        addChild(leftArrow)
-        addChild(rightArrow)
-        floatingButtons.append(leftArrow)
-        floatingButtons.append(rightArrow)
+//        addChild(leftArrow)
+//        addChild(rightArrow)
+        addChild(moveButton)
+//        floatingButtons.append(leftArrow)
+//        floatingButtons.append(rightArrow)
         floatingButtons.append(pauseButton)
+        floatingButtons.append(moveButton)
 
         LiquidFun.setGravity(float2(0,-9.8065))
         
@@ -67,10 +93,9 @@ class DevScene : Scene {
         LiquidFun.createParticleBox(forSystem: particleSystem, position: leftOceanPos, size:  float2(2,2), color: oceanColor)
         LiquidFun.createParticleBox(forSystem: particleSystem, position: rightOceanPos, size: float2(2,2), color: oceanColor)
 
-        (currentCamera as? OrthoCamera)?.setFrameSize(1.5)
+//        (currentCamera as? OrthoCamera)?.setFrameSize(1.5)
         (currentCamera as? OrthoCamera)?.setFrameSize(1)
-        (currentCamera as? OrthoCamera)?.setPositionY(box2DOrigin.y + 0.2)
-
+        (currentCamera as? OrthoCamera)?.setPositionY(box2DOrigin.y + 0.18)
     }
     
     override func freeze() {
@@ -112,12 +137,24 @@ class DevScene : Scene {
         if( Touches.IsDragging ){
             let boxPos = Touches.GetBoxPos()
             if buttonPressed != nil {
+                if( buttonPressed != .SteerTruck ) {
                 buttonPressed = boxButtonHitTest(boxPos: boxPos )
+                }
                 if buttonPressed == .TruckLeft {
                     gunTruck.driveReverse( deltaTime )
                 }
                 if buttonPressed == .TruckRight {
                     gunTruck.driveForward( deltaTime )
+                }
+                if buttonPressed == .SteerTruck {
+                    if( boxPos.x > moveButton.getBoxPositionX() + moveButton.size.x) {
+                        let strength = boxPos.x - moveButton.getBoxPositionX() + moveButton.size.x / 2
+                        gunTruck.driveForward( deltaTime, strength: strength )
+                    }
+                    if( boxPos.x < moveButton.getBoxPositionX() - moveButton.size.x ) {
+                        let strength = abs(  boxPos.x - moveButton.getBoxPositionX() - moveButton.size.x / 2)
+                        gunTruck.driveReverse( deltaTime, strength: strength )
+                    }
                 }
                 if buttonPressed == nil { // we lost connection
                     deselectButtons()

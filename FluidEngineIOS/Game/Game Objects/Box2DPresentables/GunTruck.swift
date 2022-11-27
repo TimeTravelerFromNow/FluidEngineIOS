@@ -17,12 +17,12 @@ class GunTruck: Infiltrator {
     let minTorque: Float = 0.01
     let jerk: Float = 1
     let rpmDecay: Float  = 0.1
-    let maxVelocity: Float = 0.3
+    var maxVelocity: Float = 0.3
     
     init(origin: float2, scale: Float = 1.0) {
         backTireOffset  = float2(-0.95 * scale, -0.5 * scale)
         frontTireOffset = float2( 0.9 * scale, -0.5 * scale)
-        super.init(origin: origin, scale: scale, startingMesh: .Interceptor, density: 100)
+        super.init(origin: origin, scale: scale, startingMesh: .Truck, density: 100)
         truckBodyRef = bodyRefs.keys.first!
         buildTruck()
     }
@@ -34,8 +34,8 @@ class GunTruck: Infiltrator {
         LiquidFun.setAngularDamping( frontWheelRef, amount: 0.1)
         LiquidFun.setAngularDamping( backWheelRef, amount: 0.1)
 
-        frontWheelFixture = attachCircleFixture( scale * 0.3, pos: float2(0), texture: .TruckTireTexture, body: frontWheelRef!)
-        backWheelFixture = attachCircleFixture( scale * 0.3, pos: float2(0), texture: .TruckTireTexture, body: backWheelRef!)
+        frontWheelFixture = attachCircleFixture( scale * 0.5, pos: float2(0), texture: .TruckTireTexture, body: frontWheelRef! )
+        backWheelFixture = attachCircleFixture( scale * 0.5, pos: float2(0), texture: .TruckTireTexture, body: backWheelRef! )
         
         setFixtureZPos(frontWheelFixture!, to: 0.09)
         setFixtureZPos(backWheelFixture!, to: 0.09)
@@ -56,8 +56,9 @@ class GunTruck: Infiltrator {
 //          isParking = false
       }
 
-    func driveForward(_ deltaTime: Float) {
-      
+    func driveForward( _ deltaTime: Float, strength: Float = 0.3 ) {
+        maxVelocity = strength
+
         if torqueBuildUp < maxTorque {
             torqueBuildUp += deltaTime * (jerk + rpmDecay )
         }
@@ -71,11 +72,16 @@ class GunTruck: Infiltrator {
                   LiquidFun.setFixedRotation(frontWheelRef, to: false)
                   LiquidFun.setFixedRotation(backWheelRef, to: false)
                   applyTorque( -torqueBuildUp )
+                  } else {
+                      if( horizV > maxVelocity * 1.05 ) {
+                          applyTorque( torqueBuildUp ) // brake a bit
+                      }
                   }
               }
         }
     }
-    func driveReverse( _ deltaTime: Float ) {
+    func driveReverse( _ deltaTime: Float, strength: Float = 0.3 ) {
+        maxVelocity = strength
         if torqueBuildUp < maxTorque {
             torqueBuildUp += deltaTime * ( jerk + rpmDecay )
         }
@@ -89,6 +95,10 @@ class GunTruck: Infiltrator {
                 LiquidFun.setFixedRotation(frontWheelRef, to: false)
                 LiquidFun.setFixedRotation(backWheelRef, to: false)
                 applyTorque( torqueBuildUp )
+                } else {
+                    if( horizV < -maxVelocity * 1.05 ) {
+                        applyTorque( -torqueBuildUp ) // brake a bit
+                    }
                 }
             }
         }
