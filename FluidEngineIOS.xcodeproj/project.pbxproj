@@ -220,6 +220,8 @@
 		92A9E44128DA72910000A77F /* beachButton.obj in Resources */ = {isa = PBXBuildFile; fileRef = 92A9E43528DA72910000A77F /* beachButton.obj */; };
 		92A9E44228DA72910000A77F /* testButton.obj in Resources */ = {isa = PBXBuildFile; fileRef = 92A9E43628DA72910000A77F /* testButton.obj */; };
 		92C1AB2A291BFF91005B90BD /* pipeTexture.png in Resources */ = {isa = PBXBuildFile; fileRef = 92C1AB29291BFF91005B90BD /* pipeTexture.png */; };
+		92E53D1D29345EA900D6CED5 /* FloatingBanner.swift in Sources */ = {isa = PBXBuildFile; fileRef = 92E53D1C29345EA900D6CED5 /* FloatingBanner.swift */; };
+		92E53D20293464A200D6CED5 /* alienInfiltratorsBanner.png in Resources */ = {isa = PBXBuildFile; fileRef = 92E53D1F293464A200D6CED5 /* alienInfiltratorsBanner.png */; };
 		92FD29A9291456B100DEB8CE /* bigValve.png in Resources */ = {isa = PBXBuildFile; fileRef = 92FD29A7291456B100DEB8CE /* bigValve.png */; };
 		92FD29AA291456B100DEB8CE /* smallValve.png in Resources */ = {isa = PBXBuildFile; fileRef = 92FD29A8291456B100DEB8CE /* smallValve.png */; };
 		92FD2CC32916F2DD00DEB8CE /* TKSpline.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 92FD2CC12916F2DD00DEB8CE /* TKSpline.cpp */; };
@@ -514,6 +516,8 @@
 		92A9E43528DA72910000A77F /* beachButton.obj */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = beachButton.obj; sourceTree = "<group>"; };
 		92A9E43628DA72910000A77F /* testButton.obj */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = testButton.obj; sourceTree = "<group>"; };
 		92C1AB29291BFF91005B90BD /* pipeTexture.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = pipeTexture.png; sourceTree = "<group>"; };
+		92E53D1C29345EA900D6CED5 /* FloatingBanner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FloatingBanner.swift; sourceTree = "<group>"; };
+		92E53D1F293464A200D6CED5 /* alienInfiltratorsBanner.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = alienInfiltratorsBanner.png; sourceTree = "<group>"; };
 		92FD29A7291456B100DEB8CE /* bigValve.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = bigValve.png; sourceTree = "<group>"; };
 		92FD29A8291456B100DEB8CE /* smallValve.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = smallValve.png; sourceTree = "<group>"; };
 		92FD2CC12916F2DD00DEB8CE /* TKSpline.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = TKSpline.cpp; sourceTree = "<group>"; };
@@ -564,6 +568,7 @@
 		920603C3290D973100C1C846 /* Decorative */ = {
 			isa = PBXGroup;
 			children = (
+				92E53D1C29345EA900D6CED5 /* FloatingBanner.swift */,
 				920603D12912181E00C1C846 /* FloatingButton.swift */,
 				92A9E38928DA6CEB0000A77F /* InstancedObject.swift */,
 				92A9E38228DA6CEB0000A77F /* SharedBackground.swift */,
@@ -965,6 +970,7 @@
 		92A75BE129255ED900653F36 /* AlienInfiltrators */ = {
 			isa = PBXGroup;
 			children = (
+				92E53D1E2934649D00D6CED5 /* Banners */,
 				927DB8462933FAF800DBB5F3 /* Interceptor */,
 				927DB8352932B2BF00DBB5F3 /* PalmTree */,
 				9221372F292C0B0100108872 /* LaserBeam.png */,
@@ -1212,6 +1218,14 @@
 			path = BoxButtons;
 			sourceTree = "<group>";
 		};
+		92E53D1E2934649D00D6CED5 /* Banners */ = {
+			isa = PBXGroup;
+			children = (
+				92E53D1F293464A200D6CED5 /* alienInfiltratorsBanner.png */,
+			);
+			path = Banners;
+			sourceTree = "<group>";
+		};
 		92FD2CCC2919EDA500DEB8CE /* TestTube */ = {
 			isa = PBXGroup;
 			children = (
@@ -1313,6 +1327,7 @@
 				92A75BAC2921658900653F36 /* testFlat.mtl in Resources */,
 				920603CB2910972D00C1C846 /* moveTexture.png in Resources */,
 				92A9E41228DA6D620000A77F /* cloud2.mtl in Resources */,
+				92E53D20293464A200D6CED5 /* alienInfiltratorsBanner.png in Resources */,
 				920603BC290C684F00C1C846 /* missingTexture.png in Resources */,
 				927DB8432932BCED00DBB5F3 /* palmBase.obj in Resources */,
 				92A9E41628DA6D620000A77F /* beach.png in Resources */,
@@ -1501,6 +1516,7 @@
 				92489BA52799DA0400639B52 /* b2FrictionJoint.cpp in Sources */,
 				92A75BE5292564B000653F36 /* EdgeBox.swift in Sources */,
 				927DB832292FFB9900DBB5F3 /* Infiltrator.swift in Sources */,
+				92E53D1D29345EA900D6CED5 /* FloatingBanner.swift in Sources */,
 				920603B8290C559600C1C846 /* Touchable.swift in Sources */,
 				92376BF428DE6E9F007C93DB /* MBETextMesh.m in Sources */,
 				92489BC52799DA0400639B52 /* b2Distance.cpp in Sources */,

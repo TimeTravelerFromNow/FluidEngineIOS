@@ -41,14 +41,16 @@ class DevScene : Scene {
     var moveButton: FloatingButton!
     
     var oceanColor: float3 = float3(0,0.2,0.3)
+    var startingBanner: FloatingBanner!
     
-    override func buildScene() {
-        
-
+    private func makeSkyBlack() {
         CustomMeshes.Get(.SkyQuad).updateVertexColor(float4(0,0,0.1,1), atIndex: 0)
         CustomMeshes.Get(.SkyQuad).updateVertexColor(float4(0,0.1,0,1), atIndex: 1)
         CustomMeshes.Get(.SkyQuad).updateVertexColor(float4(0,0.1,0,1), atIndex: 2)
         CustomMeshes.Get(.SkyQuad).updateVertexColor(float4(0,0,0.1,1), atIndex: 3)
+    }
+    
+    override func buildScene() {
         
         particleSystem = LiquidFun.createParticleSystem(withRadius: GameSettings.particleRadius / GameSettings.ptmRatio,
                                                         dampingStrength: GameSettings.DampingStrength,
@@ -87,12 +89,15 @@ class DevScene : Scene {
         island =  Island(origin: box2DOrigin + islandCenter)
         addChild(gunTruck)
         addChild(island)
+        startingBanner = FloatingBanner(box2DOrigin + float2(0,3), size: float2(3,1.5), labelType: .MenuLabel, textureType: .AlienInfiltratorsBannerTexture)
+        startingBanner.setPositionZ(0.15)
+        addChild(startingBanner)
         
         let leftOceanPos = float2(x:islandCenter.x - 6, y: islandCenter.y)
         let rightOceanPos =  float2(x:islandCenter.x + 6.0, y: islandCenter.y)
         LiquidFun.createParticleBox(forSystem: particleSystem, position: leftOceanPos, size:  float2(2,2), color: oceanColor)
         LiquidFun.createParticleBox(forSystem: particleSystem, position: rightOceanPos, size: float2(2,2), color: oceanColor)
-
+        
 //        (currentCamera as? OrthoCamera)?.setFrameSize(1.5)
         (currentCamera as? OrthoCamera)?.setFrameSize(1)
         (currentCamera as? OrthoCamera)?.setPositionY(box2DOrigin.y + 0.18)

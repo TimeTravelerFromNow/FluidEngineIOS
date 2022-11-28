@@ -26,6 +26,9 @@ enum TextureTypes {
     case Missing
     case None // special, no texture at all, not even in library
     
+    //banners
+    case AlienInfiltratorsBannerTexture
+    
     //floating button Quad textures
     case EditTexture
     case ControlPointsTexture
@@ -96,6 +99,9 @@ class Textures {
         _library.updateValue(Texture("moveTexture", ext: "png").texture, forKey: .MoveObjectTexture)
         _library.updateValue(Texture("bigValve", ext: "png").texture, forKey: .BigValveTexture)
         _library.updateValue(Texture("smallValve", ext: "png").texture, forKey: .SmallValveTexture)
+        
+        //banners
+        _library.updateValue(Texture("alienInfiltratorsBanner", ext: "png").texture, forKey: .AlienInfiltratorsBannerTexture)
         
         _library.updateValue(Texture("Alien", ext: "png").texture, forKey: .AlienTexture)
         _library.updateValue(Texture("Asteroid", ext: "png").texture, forKey: .AsteroidTexture)
