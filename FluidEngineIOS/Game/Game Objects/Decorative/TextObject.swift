@@ -13,8 +13,12 @@ class TextObject: Node {
     private var _fontType: FontRenderableTypes!
     var currentText: String!
     private var _fontRenderable: FontRenderable!
-    
+    private let startingXScale: Float!
+    private let startingYScale: Float!
+
     init(_ fontType: FontRenderableTypes, _ text: String? = nil){
+        self.startingXScale = 1 / (GameSettings.ptmRatio * 5)
+        self.startingYScale = 1 / (GameSettings.ptmRatio * 5)
         super.init()
         self.setPositionZ(0.2)
         self.setRotationY(2 * .pi)
@@ -32,6 +36,12 @@ class TextObject: Node {
     func setBoxPos(_ pos: float2) {
         setPositionX(pos.x / 5)
         setPositionY(pos.y / 5)
+//        refreshBuffers()
+    }
+    
+    func setScaleRatio(_ to: Float ) {
+            self.setScaleX( startingXScale * to )
+            self.setScaleY( startingYScale * to )
     }
     func setText(_ text: String) {
         currentText = text

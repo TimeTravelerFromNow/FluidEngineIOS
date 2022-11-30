@@ -54,10 +54,20 @@ class Infiltrator: Node {
     }
     
     // body methods
-    func newBody(_ atPos: float2, angle: Float = 0.0, withFilter: BoxFilter, name: String) -> b2Body {
+    func newBody(_ atPos: float2, angle: Float = 0.0, withFilter: BoxFilter = BoxFilterInit(), name: String) -> b2Body {
         let bodyRef = LiquidFun.newInfiltratorBody( _infiltratorRef, pos: atPos, angle: angle, filter: withFilter)
         bodyRefs.updateValue( name, forKey: bodyRef! )
         return bodyRef!
+    }
+    
+    // getters
+    func getBodyPosition(_ ofBody: b2Body?) -> float2 {
+        if ofBody != nil {
+            return LiquidFun.getPositionOfbody( ofBody )
+        } else {
+            print("getBodyPos WARN::body was nil")
+        }
+        return float2(0)
     }
     
     // fixture methods
@@ -82,14 +92,16 @@ class Infiltrator: Node {
         _renderables[of]?.zPos = to
     }
     
-    func attachPolygonFixture(_ pos: float2 = float2(0), fromMesh: MeshTypes, body: b2Body) -> b2Fixture? {
+    func attachPolygonFixture(_ pos: float2 = float2(0), fixtureScale: Float? = nil, fromMesh: MeshTypes, body: b2Body) -> b2Fixture? {
         let mesh = MeshLibrary.Get(fromMesh)
+        var polygonScale = self.scale
+        if fixtureScale != nil { polygonScale = fixtureScale }
         let newRenderable = InfiltratorRenderables(mesh: mesh,
                                                  texture: .None,
                                                  modelConstants: ModelConstants(),
                                                  isCircle: false,
-                                                 scale: scale)
-        var boxVertices = mesh.getBoxVertices(scale)
+                                                 scale: polygonScale!)
+        var boxVertices = mesh.getBoxVertices(polygonScale!)
         if (boxVertices.count > 8) { print("infiltrator polygon WARN::too many vertices \(boxVertices.count) count > 8 max."); return nil }
         let fixtureRef: b2Fixture = LiquidFun.makePolygonFixture(onInfiltrator: _infiltratorRef, body: body, pos: pos, vertices: &boxVertices, vertexCount: boxVertices.count)
         var fixtures: [b2Fixture] = fixtureRefs[body] ?? []
@@ -135,6 +147,7 @@ class Infiltrator: Node {
     var material = CustomMaterial(color: float4(0), useMaterialColor: false, useTexture: true)
     
     override func render(_ renderCommandEncoder: MTLRenderCommandEncoder) {
+        super.render( renderCommandEncoder )
         updateModelConstants()
         for fixture in _renderables.keys {
             if (_renderables[fixture] != nil) {

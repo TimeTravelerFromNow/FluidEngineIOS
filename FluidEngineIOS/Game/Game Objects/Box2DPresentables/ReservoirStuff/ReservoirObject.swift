@@ -551,7 +551,7 @@ extension ReservoirObject: Renderable {
     }
 }
 
-extension ReservoirObject: Touchable {
+extension ReservoirObject: Testable {
     func touchesBegan(_ boxPos: float2) {
         if let actionHit = floatingButtonHitTest( boxPos ) {
             switch actionHit {
@@ -574,7 +574,7 @@ extension ReservoirObject: Touchable {
         }
     }
     
-    func touchDragged(_ boxPos: float2) {
+    func touchDragged(_ boxPos: float2, _ deltaTime: Float) {
         if buttonPressed != nil {
         
         }
@@ -584,7 +584,7 @@ extension ReservoirObject: Touchable {
         }
     }
     
-    func touchEnded() {
+    func touchEnded(_ boxPos: float2) {
         if(isMoving) {
         isMoving = false
             LiquidFun.setVelocity(_reservoir, velocity: float2(x:0,y:0))

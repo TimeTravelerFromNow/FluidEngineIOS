@@ -19,12 +19,17 @@ enum ButtonActions {
     case TruckRight
     case SteerTruck
     
+    case HowitzerSelect
+    case MGSelect
+    case ShotgunSelect
+    
     case None
 }
 
 class DevScene : Scene {
     
     var buttons: [ BoxButton ] = []
+                  
     var floatingButtons: [ FloatingButton ] = []
     var particleSystem: UnsafeMutableRawPointer?
     
@@ -42,6 +47,7 @@ class DevScene : Scene {
     
     var oceanColor: float3 = float3(0,0.2,0.3)
     var startingBanner: FloatingBanner!
+    var gunSelectionMenu: GunSelectionMenu!
     
     private func makeSkyBlack() {
         CustomMeshes.Get(.SkyQuad).updateVertexColor(float4(0,0,0.1,1), atIndex: 0)
@@ -51,7 +57,7 @@ class DevScene : Scene {
     }
     
     override func buildScene() {
-        
+        makeSkyBlack()
         particleSystem = LiquidFun.createParticleSystem(withRadius: GameSettings.particleRadius / GameSettings.ptmRatio,
                                                         dampingStrength: GameSettings.DampingStrength,
                                                         gravityScale: 1, density: GameSettings.Density)
@@ -69,7 +75,7 @@ class DevScene : Scene {
         buttons.append(menuButton)
         addChild(menuButton)
       
-        pauseButton = FloatingButton(box2DOrigin + float2(-1.9, 3.0), size: float2(0.35,0.35), sceneAction: .Pause, textureType: .PauseTexture)
+        pauseButton = FloatingButton(box2DOrigin + float2(1.9, 4.0), size: float2(0.35,0.35), sceneAction: .Pause, textureType: .PauseTexture)
 //        leftArrow = FloatingButton(box2DOrigin + float2(-2.5, -3.0), size: float2(0.5,0.5), sceneAction: .TruckLeft, textureType: .LeftArrowTexture)
 //        rightArrow = FloatingButton(box2DOrigin + float2(-1, -3.0), size: float2(0.5,0.5), sceneAction: .TruckRight, textureType: .RightArrowTexture)
         moveButton = FloatingButton(box2DOrigin + float2(-1, 1.0), size: float2(0.5,0.5), sceneAction: .SteerTruck, textureType: .MoveObjectTexture)
@@ -90,17 +96,24 @@ class DevScene : Scene {
         addChild(gunTruck)
         addChild(island)
         startingBanner = FloatingBanner(box2DOrigin + float2(0,3), size: float2(3,1.5), labelType: .MenuLabel, textureType: .AlienInfiltratorsBannerTexture)
-        startingBanner.setPositionZ(0.15)
+        startingBanner.setPositionZ(0.2)
         addChild(startingBanner)
+        
+        gunSelectionMenu = GunSelectionMenu(box2DOrigin, selectionClosure: selectGun )
+        addChild( gunSelectionMenu )
         
         let leftOceanPos = float2(x:islandCenter.x - 6, y: islandCenter.y)
         let rightOceanPos =  float2(x:islandCenter.x + 6.0, y: islandCenter.y)
         LiquidFun.createParticleBox(forSystem: particleSystem, position: leftOceanPos, size:  float2(2,2), color: oceanColor)
         LiquidFun.createParticleBox(forSystem: particleSystem, position: rightOceanPos, size: float2(2,2), color: oceanColor)
         
-//        (currentCamera as? OrthoCamera)?.setFrameSize(1.5)
         (currentCamera as? OrthoCamera)?.setFrameSize(1)
-        (currentCamera as? OrthoCamera)?.setPositionY(box2DOrigin.y + 0.18)
+//        (currentCamera as? OrthoCamera)?.setFrameSize(0.5)
+//        (currentCamera as? OrthoCamera)?.setPositionY(box2DOrigin.y - 0.18)
+    }
+    
+    func selectGun( _ gunType: GunTruck.GunTypes ) {
+        gunTruck.selectGun( gunType )
     }
     
     override func freeze() {
@@ -139,12 +152,17 @@ class DevScene : Scene {
         if panVelocity != float2(0.0,0.0) {
             moveOrthoCamera(deltaTime: deltaTime)
         }
+        if (!pauseButton.isSelected) {
+        startingBanner.setScaleRatio( (sin( GameTime.TotalGameTime) + 7.3) / 12.3  )
+        }
         if( Touches.IsDragging ){
             let boxPos = Touches.GetBoxPos()
-            if buttonPressed != nil {
-                if( buttonPressed != .SteerTruck ) {
-                buttonPressed = boxButtonHitTest(boxPos: boxPos )
+            for c in children {
+                if let touchable = c as? Testable {
+                    touchable.touchDragged(boxPos, deltaTime)
                 }
+            }
+            if buttonPressed != nil {
                 if buttonPressed == .TruckLeft {
                     gunTruck.driveReverse( deltaTime )
                 }
@@ -170,12 +188,19 @@ class DevScene : Scene {
     
     override func touchesBegan() {
         let boxPos = Touches.GetBoxPos()
+        for c in children {
+            if let touchable = c as? Testable {
+                touchable.touchesBegan(boxPos)
+            }
+        }
         buttonPressed = boxButtonHitTest(boxPos: boxPos )
+        if( buttonPressed != nil ) {
         if buttonPressed == .TruckLeft {
         }
         if buttonPressed == .TruckRight {
         }
-        
+       
+        }
         FluidEnvironment.Environment.debugParticleDraw(atPosition: Touches.GetBoxPos())
       
     }
@@ -189,7 +214,11 @@ class DevScene : Scene {
         }
     }
     override func touchesEnded() {
-
+        for c in children {
+            if let touchable = c as? Testable {
+                touchable.touchEnded(Touches.GetBoxPos())
+            }
+        }
         switch buttonPressed {
         case .None:
             print("let go of a button")

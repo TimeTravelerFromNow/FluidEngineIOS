@@ -17,34 +17,43 @@ class FloatingButton: Node {
     var buttonQuad: Mesh = MeshLibrary.Get(.Quad)
     var buttonTexture: TextureTypes!
     var selectTexture: TextureTypes?
+    var miscTexture: TextureTypes?
     var action: MiniMenuActions!
     var sceneAction: ButtonActions!
     var modelConstants = ModelConstants()
     var box2DPos: float2!
+    let startSize: float2!
     var size: float2!
     
     var isSelected = false
+    var isMiscOn = false
     var selectTime: Float = 0.0
     var selectColor = float4(0.3,0.4,0.1,1.0)
     
-    init(_ boxPos: float2, size: float2, action: MiniMenuActions = .None, sceneAction: ButtonActions = .None, textureType: TextureTypes = .Missing, selectTexture: TextureTypes? = nil) {
+    init(_ boxPos: float2, size: float2, action: MiniMenuActions = .None, sceneAction: ButtonActions = .None, textureType: TextureTypes = .Missing, selectTexture: TextureTypes? = nil, miscTexture: TextureTypes? = nil) {
+        self.startSize = size
         super.init()
         self.box2DPos = boxPos
         self.size = size
-        let xScale = size.x
-        let yScale = size.y
         self.action = action
         self.sceneAction = sceneAction
         self.buttonTexture = textureType
         self.selectTexture = selectTexture
-        self.setScaleX(GameSettings.stmRatio * xScale  )
-        self.setScaleY(GameSettings.stmRatio * yScale )
         self.setPositionZ(0.1)
         refreshModelConstants()
     }
     
     func setButtonSizeFromQuad() {
         
+    }
+    
+    func boxMoveX(_ delta: Float) {
+        box2DPos.x += delta
+        refreshModelConstants()
+    }
+    func setScaleRatio(_ to: Float) {
+        size = startSize * to
+        refreshModelConstants()
     }
     
     func pressButton( closure: () -> Void ) {
@@ -58,6 +67,8 @@ class FloatingButton: Node {
     func refreshModelConstants() {
         self.setPositionX( box2DPos.x / 5)
         self.setPositionY( box2DPos.y / 5)
+        self.setScaleX(GameSettings.stmRatio * size.x  )
+        self.setScaleY(GameSettings.stmRatio * size.y )
         modelConstants.modelMatrix = modelMatrix
     }
     
@@ -69,6 +80,10 @@ class FloatingButton: Node {
     }
     func getBoxPosition() -> float2 {
         return box2DPos
+    }
+    func setBoxPosition(_ to: float2) {
+        box2DPos = to
+        refreshModelConstants()
     }
     
     func miniMenuHitTest(_ parentOffset: float2, _ atPos: float2) -> MiniMenuActions? {
@@ -107,7 +122,7 @@ extension FloatingButton: Renderable {
         }
         
         renderCommandEncoder.setVertexBytes(&modelConstants, length : ModelConstants.stride, index: 2)
-        buttonQuad.drawPrimitives(renderCommandEncoder, baseColorTextureType: isSelected ? (selectTexture ?? buttonTexture) : buttonTexture )
+        buttonQuad.drawPrimitives(renderCommandEncoder, baseColorTextureType: isSelected ? (selectTexture ?? buttonTexture) : (isMiscOn ? (miscTexture ?? buttonTexture) : buttonTexture) )
     }
     
 }

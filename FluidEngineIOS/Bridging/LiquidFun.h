@@ -93,7 +93,7 @@ BoxFilter BoxFilterInit() {
 + (void)moveKinematic:(void *)kinematicRef pushDirection:(float2)pushDirection;
 + (void)pushBody:(void *)bodyRef pushVector:(float2)pushVector atPoint:(float2)atPoint awake:(bool)awake;
 + (void)dampMovementOfBody:(void *)kinematicRef amount:(float)amount;
-+ (void)rotateBody:(void *)bodyRef amount:(float)amount;
++ (void)setAngV:(void *)bodyRef amount:(float)amount;
 + (void)setAngularDamping:(void *)bodyRef amount:(float)amount;
 + (void)setFixedRotation:(void*)bodyRef to:(bool)to;
 

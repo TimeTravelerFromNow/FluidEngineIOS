@@ -397,7 +397,7 @@ static b2World *world;
 + (void)dampMovementOfBody:(void *)kinematicRef amount:(float)amount {
     ((b2Body *) kinematicRef)->SetLinearDamping(amount);
 }
-+ (void)rotateBody:(void *)bodyRef amount:(float)amount{
++ (void)setAngV:(void *)bodyRef amount:(float)amount{
     ((b2Body *)bodyRef)->SetAngularVelocity(amount);
 }
 + (void)setAngularDamping:(void *)bodyRef amount:(float)amount {

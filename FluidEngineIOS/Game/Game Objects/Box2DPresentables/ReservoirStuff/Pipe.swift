@@ -342,17 +342,17 @@ extension Pipe: Renderable {
     
 }
 
-extension Pipe: Touchable {
+extension Pipe: Testable {
 
     func touchesBegan(_ boxPos: float2) {
         
     }
     
-    func touchDragged(_ boxPos: float2) {
+    func touchDragged(_ boxPos: float2, _ deltaTime: Float) {
         
     }
     
-    func touchEnded() {
+    func touchEnded(_ boxPos: float2) {
         
     }
     

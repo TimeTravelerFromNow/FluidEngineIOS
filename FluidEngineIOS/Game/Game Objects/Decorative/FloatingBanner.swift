@@ -14,8 +14,12 @@ class FloatingBanner: Node {
     var isSelected = false
     var selectTime: Float = 0.0
     var selectColor = float4(0.3,0.4,0.1,1.0)
-    
+    let startingXScale: Float!
+    let startingYScale: Float!
+
     init(_ boxPos: float2, size: float2, labelType: TextLabelTypes = .None, textureType: TextureTypes = .Missing, selectTexture: TextureTypes? = nil) {
+        self.startingXScale = size.x * GameSettings.stmRatio
+        self.startingYScale = size.y * GameSettings.stmRatio
         super.init()
         self.box2DPos = boxPos
         self.size = size
@@ -33,6 +37,12 @@ class FloatingBanner: Node {
         self.setScaleX(GameSettings.stmRatio * xScale  )
         self.setScaleY(GameSettings.stmRatio * yScale )
         self.setPositionZ(0.1)
+        refreshModelConstants()
+    }
+    
+    func setScaleRatio(_ to: Float) {
+        self.setScaleX( startingXScale * to )
+        self.setScaleY( startingYScale * to )
         refreshModelConstants()
     }
     

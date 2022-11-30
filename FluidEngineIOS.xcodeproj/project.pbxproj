@@ -10,7 +10,7 @@
 		920603B1290B03F400C1C846 /* bulbMesh.obj in Resources */ = {isa = PBXBuildFile; fileRef = 920603AF290B03F400C1C846 /* bulbMesh.obj */; };
 		920603B2290B03F400C1C846 /* bulbMesh.mtl in Resources */ = {isa = PBXBuildFile; fileRef = 920603B0290B03F400C1C846 /* bulbMesh.mtl */; };
 		920603B6290C4E8300C1C846 /* DevScene.swift in Sources */ = {isa = PBXBuildFile; fileRef = 920603B5290C4E8300C1C846 /* DevScene.swift */; };
-		920603B8290C559600C1C846 /* Touchable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 920603B7290C559600C1C846 /* Touchable.swift */; };
+		920603B8290C559600C1C846 /* Testable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 920603B7290C559600C1C846 /* Testable.swift */; };
 		920603BA290C585600C1C846 /* SnapshotObject.swift in Sources */ = {isa = PBXBuildFile; fileRef = 920603B9290C585600C1C846 /* SnapshotObject.swift */; };
 		920603BC290C684F00C1C846 /* missingTexture.png in Resources */ = {isa = PBXBuildFile; fileRef = 920603BB290C684F00C1C846 /* missingTexture.png */; };
 		920603BF290C99C100C1C846 /* editTexture.png in Resources */ = {isa = PBXBuildFile; fileRef = 920603BE290C99C100C1C846 /* editTexture.png */; };
@@ -222,6 +222,10 @@
 		92C1AB2A291BFF91005B90BD /* pipeTexture.png in Resources */ = {isa = PBXBuildFile; fileRef = 92C1AB29291BFF91005B90BD /* pipeTexture.png */; };
 		92E53D1D29345EA900D6CED5 /* FloatingBanner.swift in Sources */ = {isa = PBXBuildFile; fileRef = 92E53D1C29345EA900D6CED5 /* FloatingBanner.swift */; };
 		92E53D20293464A200D6CED5 /* alienInfiltratorsBanner.png in Resources */ = {isa = PBXBuildFile; fileRef = 92E53D1F293464A200D6CED5 /* alienInfiltratorsBanner.png */; };
+		92E53D242934738200D6CED5 /* howitzerBanner.png in Resources */ = {isa = PBXBuildFile; fileRef = 92E53D212934738200D6CED5 /* howitzerBanner.png */; };
+		92E53D252934738200D6CED5 /* mgBanner.png in Resources */ = {isa = PBXBuildFile; fileRef = 92E53D222934738200D6CED5 /* mgBanner.png */; };
+		92E53D262934738200D6CED5 /* shotgunBanner.png in Resources */ = {isa = PBXBuildFile; fileRef = 92E53D232934738200D6CED5 /* shotgunBanner.png */; };
+		92E53D282937CEB500D6CED5 /* GunSelectionMenu.swift in Sources */ = {isa = PBXBuildFile; fileRef = 92E53D272937CEB500D6CED5 /* GunSelectionMenu.swift */; };
 		92FD29A9291456B100DEB8CE /* bigValve.png in Resources */ = {isa = PBXBuildFile; fileRef = 92FD29A7291456B100DEB8CE /* bigValve.png */; };
 		92FD29AA291456B100DEB8CE /* smallValve.png in Resources */ = {isa = PBXBuildFile; fileRef = 92FD29A8291456B100DEB8CE /* smallValve.png */; };
 		92FD2CC32916F2DD00DEB8CE /* TKSpline.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 92FD2CC12916F2DD00DEB8CE /* TKSpline.cpp */; };
@@ -231,7 +235,7 @@
 		920603AF290B03F400C1C846 /* bulbMesh.obj */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = bulbMesh.obj; sourceTree = "<group>"; };
 		920603B0290B03F400C1C846 /* bulbMesh.mtl */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = bulbMesh.mtl; sourceTree = "<group>"; };
 		920603B5290C4E8300C1C846 /* DevScene.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DevScene.swift; sourceTree = "<group>"; };
-		920603B7290C559600C1C846 /* Touchable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Touchable.swift; sourceTree = "<group>"; };
+		920603B7290C559600C1C846 /* Testable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Testable.swift; sourceTree = "<group>"; };
 		920603B9290C585600C1C846 /* SnapshotObject.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SnapshotObject.swift; sourceTree = "<group>"; };
 		920603BB290C684F00C1C846 /* missingTexture.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = missingTexture.png; sourceTree = "<group>"; };
 		920603BE290C99C100C1C846 /* editTexture.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = editTexture.png; sourceTree = "<group>"; };
@@ -518,6 +522,10 @@
 		92C1AB29291BFF91005B90BD /* pipeTexture.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = pipeTexture.png; sourceTree = "<group>"; };
 		92E53D1C29345EA900D6CED5 /* FloatingBanner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FloatingBanner.swift; sourceTree = "<group>"; };
 		92E53D1F293464A200D6CED5 /* alienInfiltratorsBanner.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = alienInfiltratorsBanner.png; sourceTree = "<group>"; };
+		92E53D212934738200D6CED5 /* howitzerBanner.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = howitzerBanner.png; sourceTree = "<group>"; };
+		92E53D222934738200D6CED5 /* mgBanner.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = mgBanner.png; sourceTree = "<group>"; };
+		92E53D232934738200D6CED5 /* shotgunBanner.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = shotgunBanner.png; sourceTree = "<group>"; };
+		92E53D272937CEB500D6CED5 /* GunSelectionMenu.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GunSelectionMenu.swift; sourceTree = "<group>"; };
 		92FD29A7291456B100DEB8CE /* bigValve.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = bigValve.png; sourceTree = "<group>"; };
 		92FD29A8291456B100DEB8CE /* smallValve.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = smallValve.png; sourceTree = "<group>"; };
 		92FD2CC12916F2DD00DEB8CE /* TKSpline.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = TKSpline.cpp; sourceTree = "<group>"; };
@@ -568,6 +576,7 @@
 		920603C3290D973100C1C846 /* Decorative */ = {
 			isa = PBXGroup;
 			children = (
+				92E53D272937CEB500D6CED5 /* GunSelectionMenu.swift */,
 				92E53D1C29345EA900D6CED5 /* FloatingBanner.swift */,
 				920603D12912181E00C1C846 /* FloatingButton.swift */,
 				92A9E38928DA6CEB0000A77F /* InstancedObject.swift */,
@@ -1043,7 +1052,7 @@
 			isa = PBXGroup;
 			children = (
 				92A9E37A28DA6CEB0000A77F /* Renderable.swift */,
-				920603B7290C559600C1C846 /* Touchable.swift */,
+				920603B7290C559600C1C846 /* Testable.swift */,
 			);
 			path = Protocols;
 			sourceTree = "<group>";
@@ -1221,6 +1230,9 @@
 		92E53D1E2934649D00D6CED5 /* Banners */ = {
 			isa = PBXGroup;
 			children = (
+				92E53D212934738200D6CED5 /* howitzerBanner.png */,
+				92E53D222934738200D6CED5 /* mgBanner.png */,
+				92E53D232934738200D6CED5 /* shotgunBanner.png */,
 				92E53D1F293464A200D6CED5 /* alienInfiltratorsBanner.png */,
 			);
 			path = Banners;
@@ -1300,6 +1312,7 @@
 				92A75C1329284D4E00653F36 /* house.mtl in Resources */,
 				92A9E3FE28DA6D620000A77F /* cliff.mtl in Resources */,
 				9226D33629071250007785D5 /* reservoir.obj in Resources */,
+				92E53D252934738200D6CED5 /* mgBanner.png in Resources */,
 				92A9E43C28DA72910000A77F /* testButton.png in Resources */,
 				9221372E292C01D600108872 /* Island.mtl in Resources */,
 				92A9E3FF28DA6D620000A77F /* pineTree.obj in Resources */,
@@ -1310,6 +1323,7 @@
 				927DB8442932BCED00DBB5F3 /* palmBase.png in Resources */,
 				92A75C0B29283D5200653F36 /* Alien.mtl in Resources */,
 				92A75C3129295A2200653F36 /* Truck.obj in Resources */,
+				92E53D262934738200D6CED5 /* shotgunBanner.png in Resources */,
 				92A75C242929570700653F36 /* tire.png in Resources */,
 				92A9E3EC28DA6D620000A77F /* quad.mtl in Resources */,
 				9221372C292C01D600108872 /* Island.png in Resources */,
@@ -1352,6 +1366,7 @@
 				92213722292BF8C800108872 /* shell.mtl in Resources */,
 				92A9E44128DA72910000A77F /* beachButton.obj in Resources */,
 				92A9E43B28DA72910000A77F /* menuButton.obj in Resources */,
+				92E53D242934738200D6CED5 /* howitzerBanner.png in Resources */,
 				92A9E41028DA6D620000A77F /* cloud1.mtl in Resources */,
 				92A75BDF29255ED000653F36 /* Barrel.mtl in Resources */,
 				92FD29A9291456B100DEB8CE /* bigValve.png in Resources */,
@@ -1439,6 +1454,7 @@
 				923F2B6227A0FCE200443936 /* GameTime.swift in Sources */,
 				92489BB22799DA0400639B52 /* b2Rope.cpp in Sources */,
 				92376BE828DE6E9F007C93DB /* MBEMesh.m in Sources */,
+				92E53D282937CEB500D6CED5 /* GunSelectionMenu.swift in Sources */,
 				923F2BD727A0FD7300443936 /* BasicShaders.metal in Sources */,
 				92489BCD2799DA0400639B52 /* b2TimeOfImpact.cpp in Sources */,
 				923F2BD927A0FD7300443936 /* FinalShaders.metal in Sources */,
@@ -1517,7 +1533,7 @@
 				92A75BE5292564B000653F36 /* EdgeBox.swift in Sources */,
 				927DB832292FFB9900DBB5F3 /* Infiltrator.swift in Sources */,
 				92E53D1D29345EA900D6CED5 /* FloatingBanner.swift in Sources */,
-				920603B8290C559600C1C846 /* Touchable.swift in Sources */,
+				920603B8290C559600C1C846 /* Testable.swift in Sources */,
 				92376BF428DE6E9F007C93DB /* MBETextMesh.m in Sources */,
 				92489BC52799DA0400639B52 /* b2Distance.cpp in Sources */,
 				92A9E3A728DA6D1F0000A77F /* Scene.swift in Sources */,

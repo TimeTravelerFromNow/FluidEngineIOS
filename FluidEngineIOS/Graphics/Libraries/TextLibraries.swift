@@ -15,6 +15,9 @@ enum FontRenderableTypes {
     case BadInfoMessage
     case GoodInfoMessage
     
+    // Alien gamemode
+    case HumanStateLabel
+    
     case LevelTime
     case LevelScore
 }
@@ -38,6 +41,9 @@ enum TextLabelTypes {
     case LevelScoreLabel
     
     case CleanDescription
+    
+    // Alien gamemode
+    case WeaponSelectText
     
     case None
 }
@@ -64,13 +70,12 @@ class FontRenderables: Library<FontRenderableTypes, FontRenderable> {
 
         fontRenderables.updateValue(FontRenderable(device: Engine.Device), forKey: .LevelTime  )
         fontRenderables.updateValue(FontRenderable(device: Engine.Device), forKey: .LevelScore  )
-
+        fontRenderables.updateValue(FontRenderable(device: Engine.Device), forKey: .HumanStateLabel  )
     }
     
     public static func Get(_ fontType : FontRenderableTypes) -> FontRenderable {
         return fontRenderables[fontType]!
     }
-    
 }
 
 class TextLabels: Library<TextLabelTypes, TextObject> {
@@ -90,13 +95,16 @@ class TextLabels: Library<TextLabelTypes, TextObject> {
         textObjects.updateValue(TextObject(.DevText, "developer" ), forKey: .DevSceneLabel)
         
         textObjects.updateValue(TextObject(.BadInfoMessage, "this tube is pouring!" ), forKey: .TubePouringLabel)
-        textObjects.updateValue(TextObject(.BadInfoMessage , "top colors not matching" ), forKey:  .TubeRejectLabel)
-        textObjects.updateValue(TextObject(.GoodInfoMessage   , "this tube is complete!" ), forKey:    .TubeDoneLabel)
-        textObjects.updateValue(TextObject(.BadInfoMessage   , "this tube is full!" ), forKey:    .TubeFullLabel)
+        textObjects.updateValue(TextObject(.BadInfoMessage, "top colors not matching" ), forKey:  .TubeRejectLabel)
+        textObjects.updateValue(TextObject(.GoodInfoMessage, "this tube is complete!" ), forKey:    .TubeDoneLabel)
+        textObjects.updateValue(TextObject(.BadInfoMessage, "this tube is full!" ), forKey:    .TubeFullLabel)
         textObjects.updateValue(TextObject(.BadInfoMessage, "this tube is filling" ), forKey: .TubeFillingLabel)
         
         textObjects.updateValue(TextObject(.GenericInfoMessage, "Clean bugs refills all the tubes to the current game state. \n Use this button when something looks off." ), forKey: .CleanDescription)
         
+        // Alien gamemode
+        textObjects.updateValue(TextObject(.HumanStateLabel, "select your starting gun"), forKey:  .WeaponSelectText)
+
         textObjects.updateValue(TextObject(.LevelTime, "time: 0"), forKey: .LevelTimeLabel)
         textObjects.updateValue(TextObject(.LevelScore, "score: 0"), forKey:  .LevelScoreLabel)
     }

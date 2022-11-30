@@ -162,7 +162,7 @@ class MenuScene : Scene {
             SceneManager.sceneSwitchingTo = .Dev
             print("Going to developer scene!")
             SceneManager.Get( .Dev ).unFreeze()
-            LiquidFun.setGravity(float2(x:0,y:0))
+//            LiquidFun.setGravity(float2(x:0,y:0))
         case nil:
             print("let go of no button")
         default:
