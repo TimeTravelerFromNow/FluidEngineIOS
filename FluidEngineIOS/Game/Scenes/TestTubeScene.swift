@@ -180,7 +180,6 @@ class TestTubeScene : Scene {
         buttons.append(menuButton)
         buttons.append(startButton)
         buttons.append(cleanButton)
-        
         addChild(menuButton)
         addChild(startButton)
         addChild(cleanButton)

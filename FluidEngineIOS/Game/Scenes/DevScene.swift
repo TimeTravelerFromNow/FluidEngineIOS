@@ -53,8 +53,15 @@ class DevScene : Scene {
         CustomMeshes.Get(.SkyQuad).updateVertexColor(float4(0,0,0.1,1), atIndex: 3)
     }
     
+    private func makeSkyGreen() {
+        CustomMeshes.Get(.SkyQuad).updateVertexColor(float4(0,1,0,1), atIndex: 0)
+        CustomMeshes.Get(.SkyQuad).updateVertexColor(float4(0,1,0,1), atIndex: 1)
+        CustomMeshes.Get(.SkyQuad).updateVertexColor(float4(0,1,0,1), atIndex: 2)
+        CustomMeshes.Get(.SkyQuad).updateVertexColor(float4(0,1,0,1), atIndex: 3)
+    }
+    
     override func buildScene() {
-//        makeSkyBlack()
+//        makeSkyGreen()
         particleSystem = LiquidFun.createParticleSystem(withRadius: GameSettings.particleRadius / GameSettings.ptmRatio,
                                                         dampingStrength: GameSettings.DampingStrength,
                                                         gravityScale: 1, density: GameSettings.Density)
@@ -85,7 +92,7 @@ class DevScene : Scene {
         addChild(island)
         startingBanner = FloatingBanner(box2DOrigin + float2(0,3), size: float2(3,1.5), labelType: .MenuLabel, textureType: .AlienInfiltratorsBannerTexture)
         startingBanner.setPositionZ(0.2)
-        addChild(startingBanner)
+        addChild( startingBanner )
         
         gunSelectionMenu = GunSelectionMenu(box2DOrigin, selectionClosure: selectGun )
         addChild( gunSelectionMenu )

@@ -144,6 +144,7 @@
 		929E548B293C283F0067B949 /* mgMount.obj in Resources */ = {isa = PBXBuildFile; fileRef = 929E5488293C283F0067B949 /* mgMount.obj */; };
 		929E548C293C283F0067B949 /* mgMount.png in Resources */ = {isa = PBXBuildFile; fileRef = 929E5489293C283F0067B949 /* mgMount.png */; };
 		929E548D293C283F0067B949 /* mgMount.mtl in Resources */ = {isa = PBXBuildFile; fileRef = 929E548A293C283F0067B949 /* mgMount.mtl */; };
+		929E548F293D1FAD0067B949 /* AlienScene.swift in Sources */ = {isa = PBXBuildFile; fileRef = 929E548E293D1FAD0067B949 /* AlienScene.swift */; };
 		92A75BAB2921658900653F36 /* testFlat.obj in Resources */ = {isa = PBXBuildFile; fileRef = 92A75BA82921658800653F36 /* testFlat.obj */; };
 		92A75BAC2921658900653F36 /* testFlat.mtl in Resources */ = {isa = PBXBuildFile; fileRef = 92A75BA92921658800653F36 /* testFlat.mtl */; };
 		92A75BD22924A69800653F36 /* Asteroid.mtl in Resources */ = {isa = PBXBuildFile; fileRef = 92A75BCC2924A69800653F36 /* Asteroid.mtl */; };
@@ -447,6 +448,7 @@
 		929E5488293C283F0067B949 /* mgMount.obj */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = mgMount.obj; sourceTree = "<group>"; };
 		929E5489293C283F0067B949 /* mgMount.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = mgMount.png; sourceTree = "<group>"; };
 		929E548A293C283F0067B949 /* mgMount.mtl */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = mgMount.mtl; sourceTree = "<group>"; };
+		929E548E293D1FAD0067B949 /* AlienScene.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AlienScene.swift; sourceTree = "<group>"; };
 		92A75BA82921658800653F36 /* testFlat.obj */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = testFlat.obj; sourceTree = "<group>"; };
 		92A75BA92921658800653F36 /* testFlat.mtl */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = testFlat.mtl; sourceTree = "<group>"; };
 		92A75BCC2924A69800653F36 /* Asteroid.mtl */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = Asteroid.mtl; sourceTree = "<group>"; };
@@ -1127,6 +1129,7 @@
 				92A9E3A328DA6D1F0000A77F /* BeachScene.swift */,
 				92A9E3A528DA6D1F0000A77F /* MenuScene.swift */,
 				92A9E3A628DA6D1F0000A77F /* Node.swift */,
+				929E548E293D1FAD0067B949 /* AlienScene.swift */,
 			);
 			path = Scenes;
 			sourceTree = "<group>";
@@ -1488,6 +1491,7 @@
 				92376BE928DE6E9F007C93DB /* MBEFontAtlas.m in Sources */,
 				92A9E3B628DA6D3E0000A77F /* ColorUtil.swift in Sources */,
 				92489BC92799DA0400639B52 /* b2ChainShape.cpp in Sources */,
+				929E548F293D1FAD0067B949 /* AlienScene.swift in Sources */,
 				92489BCC2799DA0400639B52 /* b2PolygonShape.cpp in Sources */,
 				920603D22912181E00C1C846 /* FloatingButton.swift in Sources */,
 				92489BAE2799DA0400639B52 /* b2RopeJoint.cpp in Sources */,

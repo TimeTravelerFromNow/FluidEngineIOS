@@ -57,7 +57,7 @@ class GunTruck: Infiltrator {
         _fluidConstants = FluidConstants(ptmRatio: GameSettings.ptmRatio, pointSize: GameSettings.particleRadius)
         _laserMesh = CustomMesh()
     }
-    //latest
+    
     func buildTruck() {
         let filter = BoxFilter(categoryBits: 0x0011, maskBits: 0xFF0F, groupIndex: 0, isFiltering: false)
         frontWheelRef = self.newBody(origin + frontTireOffset, withFilter: filter, name: "front-wheel-body")
@@ -70,7 +70,7 @@ class GunTruck: Infiltrator {
         
         setFixtureZPos(frontWheelFixture!, to: 0.09)
         setFixtureZPos(backWheelFixture!, to: 0.09)
-
+        
         frontWheelJoint = wheelJoint(bodyA: truckBodyRef, bodyB: frontWheelRef!, weldPos: frontTireOffset, localAxisA: float2(0,1), stiffness: 10, damping: 0.5)
         backWheelJoint = wheelJoint(bodyA: truckBodyRef, bodyB: backWheelRef!, weldPos: backTireOffset, localAxisA: float2(0,1), stiffness: 10, damping: 0.5)
         

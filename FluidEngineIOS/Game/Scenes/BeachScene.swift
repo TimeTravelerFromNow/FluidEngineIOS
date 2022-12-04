@@ -16,7 +16,7 @@ class BeachScene : Scene {
         
         addTestButtons()
                 
-        freeze()
+        freeze()    
 
     }
     
