@@ -41,13 +41,10 @@ class DevScene : Scene {
     var pauseButton: FloatingButton!
     var buttonPressed: ButtonActions!
     
-    var leftArrow: FloatingButton!
-    var rightArrow: FloatingButton!
-    var moveButton: FloatingButton!
-    
     var oceanColor: float3 = float3(0,0.2,0.3)
     var startingBanner: FloatingBanner!
     var gunSelectionMenu: GunSelectionMenu!
+    var testJoystick: Joystick!
     
     private func makeSkyBlack() {
         CustomMeshes.Get(.SkyQuad).updateVertexColor(float4(0,0,0.1,1), atIndex: 0)
@@ -57,7 +54,7 @@ class DevScene : Scene {
     }
     
     override func buildScene() {
-        makeSkyBlack()
+//        makeSkyBlack()
         particleSystem = LiquidFun.createParticleSystem(withRadius: GameSettings.particleRadius / GameSettings.ptmRatio,
                                                         dampingStrength: GameSettings.DampingStrength,
                                                         gravityScale: 1, density: GameSettings.Density)
@@ -76,18 +73,9 @@ class DevScene : Scene {
         addChild(menuButton)
       
         pauseButton = FloatingButton(box2DOrigin + float2(1.9, 4.0), size: float2(0.35,0.35), sceneAction: .Pause, textureType: .PauseTexture)
-//        leftArrow = FloatingButton(box2DOrigin + float2(-2.5, -3.0), size: float2(0.5,0.5), sceneAction: .TruckLeft, textureType: .LeftArrowTexture)
-//        rightArrow = FloatingButton(box2DOrigin + float2(-1, -3.0), size: float2(0.5,0.5), sceneAction: .TruckRight, textureType: .RightArrowTexture)
-        moveButton = FloatingButton(box2DOrigin + float2(-1, 1.0), size: float2(0.5,0.5), sceneAction: .SteerTruck, textureType: .MoveObjectTexture)
-        
+
         addChild(pauseButton)
-//        addChild(leftArrow)
-//        addChild(rightArrow)
-        addChild(moveButton)
-//        floatingButtons.append(leftArrow)
-//        floatingButtons.append(rightArrow)
         floatingButtons.append(pauseButton)
-        floatingButtons.append(moveButton)
 
         LiquidFun.setGravity(float2(0,-9.8065))
         
@@ -110,6 +98,10 @@ class DevScene : Scene {
         (currentCamera as? OrthoCamera)?.setFrameSize(1)
 //        (currentCamera as? OrthoCamera)?.setFrameSize(0.5)
 //        (currentCamera as? OrthoCamera)?.setPositionY(box2DOrigin.y - 0.18)
+        
+        testJoystick = Joystick( box2DOrigin + float2(0,-3.9), size: float2(0.45,0.45), sceneAction: .SteerTruck, movementFunction: gunTruck.steerTruck)
+        addChild(testJoystick)
+        floatingButtons.append(testJoystick)
     }
     
     func selectGun( _ gunType: GunTruck.GunTypes ) {
@@ -158,8 +150,8 @@ class DevScene : Scene {
         if( Touches.IsDragging ){
             let boxPos = Touches.GetBoxPos()
             for c in children {
-                if let touchable = c as? Testable {
-                    touchable.touchDragged(boxPos, deltaTime)
+                if let testable = c as? Testable {
+                    testable.touchDragged(boxPos, deltaTime)
                 }
             }
             if buttonPressed != nil {
@@ -170,14 +162,7 @@ class DevScene : Scene {
                     gunTruck.driveForward( deltaTime )
                 }
                 if buttonPressed == .SteerTruck {
-                    if( boxPos.x > moveButton.getBoxPositionX() + moveButton.size.x) {
-                        let strength = boxPos.x - moveButton.getBoxPositionX() + moveButton.size.x / 2
-                        gunTruck.driveForward( deltaTime, strength: strength )
-                    }
-                    if( boxPos.x < moveButton.getBoxPositionX() - moveButton.size.x ) {
-                        let strength = abs(  boxPos.x - moveButton.getBoxPositionX() - moveButton.size.x / 2)
-                        gunTruck.driveReverse( deltaTime, strength: strength )
-                    }
+                    testJoystick.moveJoystickStep(deltaTime, boxPos)
                 }
                 if buttonPressed == nil { // we lost connection
                     deselectButtons()
@@ -188,21 +173,16 @@ class DevScene : Scene {
     
     override func touchesBegan() {
         let boxPos = Touches.GetBoxPos()
+        buttonPressed = boxButtonHitTest(boxPos: boxPos )
         for c in children {
             if let touchable = c as? Testable {
                 touchable.touchesBegan(boxPos)
             }
         }
-        buttonPressed = boxButtonHitTest(boxPos: boxPos )
-        if( buttonPressed != nil ) {
-        if buttonPressed == .TruckLeft {
-        }
-        if buttonPressed == .TruckRight {
-        }
-       
+        if buttonPressed == .SteerTruck { // dont
+            gunTruck.touchEnded(boxPos)
         }
         FluidEnvironment.Environment.debugParticleDraw(atPosition: Touches.GetBoxPos())
-      
     }
     
     private func deselectButtons() {

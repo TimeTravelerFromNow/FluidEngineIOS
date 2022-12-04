@@ -68,6 +68,9 @@ enum TextureTypes {
     case FireButtonUp
     case LeftArrowTexture
     case RightArrowTexture
+    
+    case JoystickTexture
+    case JoystickMountTexture
 }
 
 
@@ -134,6 +137,8 @@ class Textures {
         _library.updateValue(Texture("fireButtonUp", ext: "png").texture, forKey: .FireButtonUp)
         _library.updateValue(Texture("leftArrow", ext: "png").texture, forKey: .LeftArrowTexture)
         _library.updateValue(Texture("rightArrow", ext: "png").texture, forKey: .RightArrowTexture)
+        _library.updateValue(Texture("joystick", ext: "png").texture, forKey: .JoystickTexture)
+        _library.updateValue(Texture("joystickMount", ext: "png").texture, forKey: .JoystickMountTexture)
     }
     
     public static func Get(_ type: TextureTypes)->MTLTexture {

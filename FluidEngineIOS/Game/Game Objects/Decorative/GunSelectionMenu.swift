@@ -15,8 +15,8 @@ class GunSelectionMenu: Node {
     let rightBound: Float = 1.0
     let defaultDragDelay: Float = 0.1
     private var _dragDelay: Float = 0.1
-    var startDragPos: Float = 0.0
-    var wheelCenter: Float = 0.0
+    var target: Float = 0.0
+    var wheelCenter: Float { return mgSelectButton.getBoxPositionX() }
     var didDragGunSelectionWheel = false { didSet { _dragDelay = defaultDragDelay}}
     
     // parent closure
@@ -55,33 +55,24 @@ class GunSelectionMenu: Node {
         buttons.append(shotgunSelectButton      )
     }
     
-    private func gunSelectStep( _ deltaTime: Float,_ boxPos: float2 ) {
+    private func dragSelectionStep( _ deltaTime: Float,_ boxPos: float2 ) {
         if _dragDelay > 0.0 && !didDragGunSelectionWheel {
             _dragDelay -= deltaTime
         } else {
-            if !didDragGunSelectionWheel {
             didDragGunSelectionWheel = true
-            startDragPos = boxPos.x
-            }
         }
         if didDragGunSelectionWheel {
-            if boxPos.x > startDragPos {
-                if wheelCenter < rightBound {
-                    let movement = deltaTime * ( boxPos.x - startDragPos ) * 2
-                   moveButtons( movement )
-                    wheelCenter += movement
-                    startDragPos += deltaTime * 0.3
-                }
-            }
-            if boxPos.x < startDragPos {
-                if wheelCenter > leftBound {
-                    let movement = deltaTime * (startDragPos - boxPos.x) * 2
-                    moveButtons(-movement)
-                    wheelCenter -= movement
-                    startDragPos -= deltaTime * 0.3
+            let centerPos = mgSelectButton.getBoxPositionX()
+            let offset = (boxPos.x - centerPos) * deltaTime
+            if( centerPos < rightBound && centerPos > leftBound ) {
+                moveButtons( offset )
+            } else {
+                if (offset + centerPos > leftBound || offset + centerPos < rightBound) { // saves from being stuck
+                    moveButtons( offset )
                 }
             }
         }
+        
     }
     
     private func moveButtons(_ by: Float ) {
@@ -97,7 +88,7 @@ class GunSelectionMenu: Node {
     let maxSlowIterations: Int = 100
    
     private func selectLockStep(_ deltaTime: Float) {
-        let target = round(startDragPos)
+        let target = round(target)
         let centerPos = mgSelectButton.getBoxPositionX()
         let distToClose = target - centerPos
         var slowIter = 0
@@ -180,7 +171,8 @@ extension GunSelectionMenu: Testable {
     
     func touchDragged(_ boxPos: float2,_ deltaTime: Float) {
         if buttonPressed != nil {
-       gunSelectStep( deltaTime, boxPos)
+       dragSelectionStep( deltaTime, boxPos)
+            target = clamp(boxPos,min:-1.0,max:1.0).x
         }
     }
     
@@ -190,13 +182,13 @@ extension GunSelectionMenu: Testable {
                 let hit = hitTest(boxPos)
                 if hit == buttonPressed { // tell wheel to lock at tapped gun icon
                     if buttonPressed == .HowitzerSelect {
-                        startDragPos = 1.0
+                        target = 1.0
                     }
                     if buttonPressed == .MGSelect {
-                        startDragPos = 0.0
+                        target = 0.0
                     }
                     if buttonPressed == .ShotgunSelect {
-                        startDragPos = -1.0
+                        target = -1.0
                     }
                 }
             }

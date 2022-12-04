@@ -49,7 +49,7 @@ class GunTruck: Infiltrator {
         backTireOffset  = float2(-0.95 * scale, -0.5 * scale)
         frontTireOffset = float2( 0.9 * scale, -0.5 * scale)
         gunMountPosition = float2( -0.55 * scale,  0.37 * scale)
-        super.init(origin: origin, scale: scale, startingMesh: .Truck, density: 100)
+        super.init(origin: origin, scale: scale, startingMesh: .Truck, density: 100 , filter: BoxFilter(categoryBits: 0x0011, maskBits: 0xFF0F, groupIndex: 0, isFiltering: false))
         self.setScale(1 / (GameSettings.ptmRatio * 5) )
         fluidModelConstants.modelMatrix = modelMatrix
         truckBodyRef = bodyRefs.keys.first!
@@ -59,7 +59,7 @@ class GunTruck: Infiltrator {
     }
     
     func buildTruck() {
-        let filter = BoxFilter(categoryBits: 0x0001, maskBits: 0xFFFF, groupIndex: 0, isFiltering: false)
+        let filter = BoxFilter(categoryBits: 0x0011, maskBits: 0xFF0F, groupIndex: 0, isFiltering: false)
         frontWheelRef = self.newBody(origin + frontTireOffset, withFilter: filter, name: "front-wheel-body")
         backWheelRef  = self.newBody(origin + backTireOffset, withFilter: filter, name: "back-wheel-body")
         LiquidFun.setAngularDamping( frontWheelRef, amount: 0.1)
@@ -78,16 +78,19 @@ class GunTruck: Infiltrator {
             LiquidFun.setFixedRotation(backWheelRef, to: true)
     }
     
-    func selectGun(_ gunType: GunTypes ){
+    func selectGun( _ gunType: GunTypes ){
         if gunRef != nil {
         } else {
-            let filter = BoxFilter(categoryBits: 0x0001, maskBits: 0x0001, groupIndex: 0, isFiltering: false)
-            gunRef = newBody(gunMountPosition, angle: 0, withFilter: filter, name: "gun-body")
+            let filter = BoxFilter(categoryBits: 0x0010, maskBits: 0xFF0F, groupIndex: -1, isFiltering: false)
+            let attachPos = LiquidFun.getPositionOfbody( truckBodyRef ) + gunMountPosition
+            gunRef = newBody(attachPos, angle: 0, withFilter: filter, name: "gun-body")
         }
         if gunType != currentGun {
             if mountFixture != nil {
-//                LiquidFun.destroyFixture
-                //...
+                removeFixture(gunRef!, fixtureRef: mountFixture!)
+                removeFixture(gunRef!, fixtureRef: barrelFixture!)
+                mountFixture = nil
+                barrelFixture = nil
             }
          attachGun(gunType: gunType)
         }
@@ -98,16 +101,25 @@ class GunTruck: Infiltrator {
         case .Howitzer:
             mountFixture = attachCircleFixture(0.09, pos: gunMountPosition, texture: .MountTexture, body: gunRef!)
             barrelFixture = attachPolygonFixture(fixtureScale: 0.5, fromMesh: .Barrel, body: gunRef!)
+
             wheelJoint(bodyA: truckBodyRef, bodyB: gunRef!, weldPos: gunMountPosition, localAxisA:float2(0,1),stiffness: 10, damping: 0.5)
+//            weldJoint(bodyA: truckBodyRef, bodyB: gunRef!, weldPos: gunMountPosition, stiffness: 10, damping: 0.5)
             setFixtureZPos(mountFixture!, to: 0.07)
             setFixtureZPos(barrelFixture!, to: 0.07)
             LiquidFun.setFixedRotation(gunRef, to: true)
         case .MG:
-            fatalError("attachGun Implement MG")
+            mountFixture = attachPolygonFixture(fixtureScale: 1.0, fromMesh: .MGMount, body: gunRef!)
+            barrelFixture = attachPolygonFixture(fixtureScale: 0.5, fromMesh: .Barrel, body: gunRef!)
+            wheelJoint(bodyA: truckBodyRef, bodyB: gunRef!, weldPos: gunMountPosition, localAxisA:float2(0,1),stiffness: 10, damping: 0.5)
+//            weldJoint(bodyA: truckBodyRef, bodyB: gunRef!, weldPos: gunMountPosition, stiffness: 10, damping: 0.5)
+            setFixtureZPos(mountFixture!, to: 0.07)
+            setFixtureZPos(barrelFixture!, to: 0.07)
+            LiquidFun.setFixedRotation(gunRef, to: true)
+            print("attachGun Implement MG")
         case .Shotgun:
-            fatalError("attachGun  Implement Shotgun")
+            print("attachGun  Implement Shotgun")
         case .None:
-            fatalError("attachGun  No gun")
+            print("attachGun  No gun")
 
         }
     }
@@ -121,6 +133,17 @@ class GunTruck: Infiltrator {
 //          isParking = false
       }
 
+    func steerTruck(_ deltaTime: Float, towards: float2) {
+        let magnified = towards * 5
+        if magnified.x > 0 {
+            driveForward( deltaTime, strength: magnified.x)
+        } else if magnified.x < 0 {
+            driveReverse( deltaTime, strength: abs(magnified.x))
+        } else if magnified.x == 0 {
+            
+        }
+    }
+    
     func driveForward( _ deltaTime: Float, strength: Float = 0.3 ) {
         maxVelocity = strength
 

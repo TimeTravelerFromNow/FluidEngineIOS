@@ -45,7 +45,7 @@ class Scene: Node {
         cameras.append(orthoCamera)
         currentCamera = orthoCamera
         orthoCamera.rotateY(.pi)
-        orthoCamera.setPositionZ(1)
+        orthoCamera.setPositionZ(10)
         orthoCamera.setPositionY(box2DOrigin.y / 5.0)
         orthoCamera.setPositionX(box2DOrigin.x / 5.0)
         buildScene()

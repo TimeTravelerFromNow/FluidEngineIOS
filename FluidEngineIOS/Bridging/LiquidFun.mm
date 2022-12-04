@@ -67,8 +67,14 @@ static b2World *world;
     world->SetContactListener( &m_customcontactlistener );
 };
 
+// body methods
 + (void)destroyBody:(void *)bodyRef {
     world->DestroyBody((b2Body *)bodyRef);
+}
+//fixture methods
+
++ (void)destroyFixture:(void*)onBody fixture:(void*)fixture {
+    ((b2Body*)onBody)->DestroyFixture((b2Fixture*)fixture);
 }
 
 + (void *)createParticleSystemWithRadius:(float)radius dampingStrength:(float)dampingStrength gravityScale:(float)gravityScale density:(float)density {

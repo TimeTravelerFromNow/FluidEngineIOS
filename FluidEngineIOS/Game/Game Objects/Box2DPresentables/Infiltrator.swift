@@ -116,6 +116,11 @@ class Infiltrator: Node {
         return nil
     }
     
+    func removeFixture( _ onBody: b2Body, fixtureRef: b2Fixture ){
+        LiquidFun.removeFixture(onBody: onBody, fixtureRef: fixtureRef)
+        _renderables.removeValue(forKey: fixtureRef)
+    }
+    
     // joint methods
     func weldJoint( bodyA: b2Body, bodyB: b2Body, weldPos: float2, stiffness: Float, damping: Float) -> b2Joint {
         return LiquidFun.weldJoint( bodyA, bodyB: bodyB, weldPos: weldPos, stiffness: stiffness, damping: damping)

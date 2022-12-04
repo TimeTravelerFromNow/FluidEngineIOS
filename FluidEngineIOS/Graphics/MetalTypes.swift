@@ -65,7 +65,7 @@ struct Material: sizeable{
     var shininess: Float = 2
 }
 
-struct CustomMaterial : sizeable {
+struct CustomMaterial : sizeable { // naming is bad, this is actually Material in MetalTypes .swift
     var color = float4(0.8,0.8,0.8,1.0)
     var useMaterialColor : Bool = false
     var useTexture: Bool = false

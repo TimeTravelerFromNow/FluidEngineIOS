@@ -13,7 +13,7 @@ typedef struct BoxFilter
 {
     UInt16 categoryBits;
     UInt16 maskBits;
-    UInt16 groupIndex;
+    short groupIndex;
     
     bool isFiltering; // implemented to allow phasing objects
 } BoxFilter;
@@ -44,8 +44,11 @@ BoxFilter BoxFilterInit() {
 
 // world access
 + (void)worldStep:(CFTimeInterval)timeStep velocityIterations:(int)velocityIterations positionIterations:(int)positionIterations;
-+ (void)destroyBody:(void *)bodyRef;
 
+//body methods
++ (void)destroyBody:(void *)bodyRef;
+// fixture methods
++ (void)destroyFixture:(void*)onBody fixture:(void*)fixture;
 
 + (void)createWorldWithGravity:(float2)gravity;
 //particle system access
