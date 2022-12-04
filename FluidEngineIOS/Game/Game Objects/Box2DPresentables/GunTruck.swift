@@ -57,7 +57,7 @@ class GunTruck: Infiltrator {
         _fluidConstants = FluidConstants(ptmRatio: GameSettings.ptmRatio, pointSize: GameSettings.particleRadius)
         _laserMesh = CustomMesh()
     }
-    
+    //latest
     func buildTruck() {
         let filter = BoxFilter(categoryBits: 0x0011, maskBits: 0xFF0F, groupIndex: 0, isFiltering: false)
         frontWheelRef = self.newBody(origin + frontTireOffset, withFilter: filter, name: "front-wheel-body")
