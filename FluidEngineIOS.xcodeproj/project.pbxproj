@@ -56,6 +56,7 @@
 		923F2BDB27A0FD7300443936 /* InstancedShaders.metal in Sources */ = {isa = PBXBuildFile; fileRef = 923F2BCF27A0FD7300443936 /* InstancedShaders.metal */; };
 		923F2C0E27A10CFA00443936 /* Touches.swift in Sources */ = {isa = PBXBuildFile; fileRef = 923F2C0D27A10CFA00443936 /* Touches.swift */; };
 		9240F099293E697700D81DD2 /* mainGameBanner.png in Resources */ = {isa = PBXBuildFile; fileRef = 9240F098293E697700D81DD2 /* mainGameBanner.png */; };
+		9240F09C293E759D00D81DD2 /* alienIcon.png in Resources */ = {isa = PBXBuildFile; fileRef = 9240F09B293E759D00D81DD2 /* alienIcon.png */; };
 		92465D85291D79A2001CC08B /* TKSpline1D.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 92465D83291D79A2001CC08B /* TKSpline1D.cpp */; };
 		92489A0B2799D9BD00639B52 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 92489A0A2799D9BD00639B52 /* AppDelegate.swift */; };
 		92489A0D2799D9BD00639B52 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 92489A0C2799D9BD00639B52 /* SceneDelegate.swift */; };
@@ -299,6 +300,7 @@
 		923F2BCF27A0FD7300443936 /* InstancedShaders.metal */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.metal; path = InstancedShaders.metal; sourceTree = "<group>"; };
 		923F2C0D27A10CFA00443936 /* Touches.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Touches.swift; sourceTree = "<group>"; };
 		9240F098293E697700D81DD2 /* mainGameBanner.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = mainGameBanner.png; sourceTree = "<group>"; };
+		9240F09B293E759D00D81DD2 /* alienIcon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = alienIcon.png; sourceTree = "<group>"; };
 		92465D83291D79A2001CC08B /* TKSpline1D.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = TKSpline1D.cpp; sourceTree = "<group>"; };
 		92489A072799D9BD00639B52 /* FluidEngineIOS.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = FluidEngineIOS.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		92489A0A2799D9BD00639B52 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
@@ -566,6 +568,9 @@
 		920603BD290C990000C1C846 /* Button Textures */ = {
 			isa = PBXGroup;
 			children = (
+				9240F09B293E759D00D81DD2 /* alienIcon.png */,
+				9254F4AC2929680E00B8B9FF /* leftArrow.png */,
+				9254F4AD2929680E00B8B9FF /* rightArrow.png */,
 				92A75BEA2926F13900653F36 /* fireButton.png */,
 				92A75BEB2926F13900653F36 /* fireButtonUp.png */,
 				92A75BE82926C7B300653F36 /* pauseButton.png */,
@@ -1072,8 +1077,6 @@
 		92A75C1C2929550C00653F36 /* Truck */ = {
 			isa = PBXGroup;
 			children = (
-				9254F4AC2929680E00B8B9FF /* leftArrow.png */,
-				9254F4AD2929680E00B8B9FF /* rightArrow.png */,
 				929E547A293BCA520067B949 /* Truck.png */,
 				92A75C2F29295A2200653F36 /* Truck.mtl */,
 				92A75C2E29295A2200653F36 /* Truck.obj */,
@@ -1376,6 +1379,7 @@
 				92A75C242929570700653F36 /* tire.png in Resources */,
 				92A9E3EC28DA6D620000A77F /* quad.mtl in Resources */,
 				9221372C292C01D600108872 /* Island.png in Resources */,
+				9240F09C293E759D00D81DD2 /* alienIcon.png in Resources */,
 				92A75C1429284D4E00653F36 /* house.obj in Resources */,
 				92A9E40A28DA6D620000A77F /* cloud1.obj in Resources */,
 				92A75BE029255ED000653F36 /* Barrel.obj in Resources */,

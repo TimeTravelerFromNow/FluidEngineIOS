@@ -59,8 +59,24 @@ class DevScene : Scene {
         CustomMeshes.Get(.SkyQuad).updateVertexColor(float4(0,1,0,1), atIndex: 3)
     }
     
+    private func buildButtons() {
+        let menuButton = BoxButton(.Menu,.Menu, .ToMenu, center: box2DOrigin + float2(-1.9, 4.0), label: .MenuLabel)
+        
+        buttons.append(menuButton)
+        addChild(menuButton)
+      
+        pauseButton = FloatingButton(box2DOrigin + float2(1.9, 4.0), size: float2(0.35,0.35), sceneAction: .Pause, textureType: .PauseTexture)
+        let newAlienButton = FloatingButton(box2DOrigin + float2(-1, 1.0), size: float2(0.35,0.35), sceneAction: .TestAction1, textureType: .NewAlienButtonTexture)
+        addChild(newAlienButton)
+        addChild(pauseButton)
+        floatingButtons.append(newAlienButton)
+        floatingButtons.append(pauseButton)
+    }
+    
     override func buildScene() {
 //        makeSkyGreen()
+        buildButtons()
+        
         particleSystem = LiquidFun.createParticleSystem(withRadius: GameSettings.particleRadius / GameSettings.ptmRatio,
                                                         dampingStrength: GameSettings.DampingStrength,
                                                         gravityScale: 1, density: GameSettings.Density)
@@ -72,18 +88,6 @@ class DevScene : Scene {
                                  particleSystem: particleSystem)
         
         addChild(environmentBox)
-        
-        let menuButton = BoxButton(.Menu,.Menu, .ToMenu, center: box2DOrigin + float2(-1.9, 4.0), label: .MenuLabel)
-        
-        buttons.append(menuButton)
-        addChild(menuButton)
-      
-        pauseButton = FloatingButton(box2DOrigin + float2(1.9, 4.0), size: float2(0.35,0.35), sceneAction: .Pause, textureType: .PauseTexture)
-
-        addChild(pauseButton)
-        floatingButtons.append(pauseButton)
-
-        LiquidFun.setGravity(float2(0,-9.8065))
         
         gunTruck = GunTruck(origin: box2DOrigin + islandCenter + float2(0,1), scale: 0.2)
         island =  Island(origin: box2DOrigin + islandCenter)
@@ -206,6 +210,9 @@ class DevScene : Scene {
             }
         }
         switch buttonPressed {
+        case .TestAction1:
+            let newAlien = Infiltrator(origin: box2DOrigin, scale: 0.4, startingMesh: .Alien)
+            addChild(newAlien)
         case .None:
             print("let go of a button")
         case .ToMenu:
