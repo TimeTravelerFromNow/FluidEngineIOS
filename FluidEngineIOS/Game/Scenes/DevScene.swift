@@ -5,7 +5,6 @@ enum ButtonActions {
     case Clear
     case NewGame
     case ToMenu
-    case ToBeach
     case ToDev
     
     case StartGameAction

@@ -2,6 +2,9 @@ import MetalKit
 
 
 class MenuScene : Scene {
+    
+    var startingBanner: FloatingBanner!
+
     var testTextObject: TextObject!
     
     var buttons: [ BoxButton ] = []
@@ -18,14 +21,11 @@ class MenuScene : Scene {
     private var _emptyKF = 0
     
     private func addTestButtons() {
-        let newGameButton   = BoxButton(.Menu, .Menu, .NewGame, center: box2DOrigin + float2(x: 0.5, y: 1.0), label: .NewGameLabel )
-        let beachButton     = BoxButton(.BeachButton, .BeachButton, .ToBeach, center: box2DOrigin + float2(x: 0.3, y: 0.0))
-        let devSceneButton  = BoxButton(.Menu, .Menu, .ToDev, center: box2DOrigin + float2(x:0.0, y: 3.0), label: .DevSceneLabel)
+        let newGameButton   = BoxButton(.Menu, .Menu, .NewGame, center: box2DOrigin + float2(x: 0.0, y: 0.0), label: .NewGameLabel )
+        let devSceneButton  = BoxButton(.Menu, .Menu, .ToDev, center: box2DOrigin + float2(x:0.0, y: 1.0), label: .DevSceneLabel)
         buttons.append(newGameButton)
-        buttons.append(beachButton)
         buttons.append(devSceneButton)
         addChild(newGameButton)
-        addChild(beachButton)
         addChild(devSceneButton)
     }
     
@@ -38,10 +38,17 @@ class MenuScene : Scene {
         }
     }
     
+    private func addStartingBanner() {
+        startingBanner = FloatingBanner(box2DOrigin + float2(0,3), size: float2(3,1.5), textureType: .MainGameBannerTexture)
+        startingBanner.setPositionZ(0.2)
+        addChild( startingBanner )
+    }
+    
     override func buildScene() {
         addTestButtons()
         sceneSizeWillChange()
         addTestTube()
+        addStartingBanner()
     }
     
     override func freeze() {
@@ -153,9 +160,6 @@ class MenuScene : Scene {
             print("start a new game now!")
             SceneManager.Get( .TestTubes ).unFreeze()
             LiquidFun.setGravity(float2(x:0,y:-9.8065))
-        case .ToBeach:
-            SceneManager.sceneSwitchingTo = .Beach
-            SceneManager.Get( .Beach ).unFreeze()
         case .ToMenu:
             print("pressed to menu button in the menu?")
         case .ToDev:
@@ -215,7 +219,8 @@ class MenuScene : Scene {
     
     override func update(deltaTime: Float) {
         super.update(deltaTime: deltaTime)
-        
+        startingBanner.setScaleRatio( (sin( GameTime.TotalGameTime) + 7.3) / 12.3  )
+
         if shouldUpdateGyro {
             LiquidFun.setGravity(float2(x: gyroVector.x, y: gyroVector.y))
         }

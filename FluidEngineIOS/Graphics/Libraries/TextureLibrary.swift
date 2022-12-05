@@ -28,6 +28,8 @@ enum TextureTypes {
     
     //banners
     case AlienInfiltratorsBannerTexture
+    case MainGameBannerTexture
+    
     case HowitzerBannerTexture
     case MGBannerTexture
     case ShotgunBannerTexture
@@ -108,6 +110,8 @@ class Textures {
         
         //banners
         _library.updateValue(Texture("alienInfiltratorsBanner", ext: "png").texture, forKey: .AlienInfiltratorsBannerTexture)
+        _library.updateValue(Texture("mainGameBanner", ext: "png").texture, forKey: .MainGameBannerTexture)
+
         _library.updateValue(Texture("howitzerBanner", ext: "png").texture, forKey: .HowitzerBannerTexture)
         _library.updateValue(Texture("mgBanner", ext: "png").texture, forKey: .MGBannerTexture)
         _library.updateValue(Texture("shotgunBanner", ext: "png").texture, forKey: .ShotgunBannerTexture)

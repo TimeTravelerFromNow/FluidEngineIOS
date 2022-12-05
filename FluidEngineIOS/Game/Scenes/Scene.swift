@@ -4,16 +4,15 @@ import CoreMotion
 enum SceneTypes {
     case TestTubes
     case Menu
-    case Beach
-    
+    case AlienScene
     case Dev
     
     case None
 }
 
-let SceneOrigins: [SceneTypes: float2] = [.TestTubes:float2(15.0, 15.0),
+let SceneOrigins: [SceneTypes: float2] = [.TestTubes:float2(-25.0, 5.0),
                                           .Menu:float2(-5.0, 5.0),
-                                          .Beach:float2(15.0, 0.0),
+                                          .AlienScene:float2(15.0, 0.0),
                                           .Dev:float2(0.0,0.0)]
 
 enum SmoothingStates {
@@ -178,7 +177,7 @@ class SceneManager: Library<SceneTypes, Scene> {
     private static func createScenes() {
         scenes.updateValue(TestTubeScene(.TestTubes), forKey: .TestTubes)
         scenes.updateValue(MenuScene(.Menu), forKey: .Menu)
-        scenes.updateValue(BeachScene(.Beach), forKey: .Beach)
+        scenes.updateValue(AlienScene(.AlienScene), forKey: .AlienScene)
         scenes.updateValue(DevScene(.Dev), forKey: .Dev)
     }
     
@@ -193,6 +192,7 @@ class SceneManager: Library<SceneTypes, Scene> {
     public static func update(_ deltaTime: Float) {
         currentScene!.update(deltaTime: deltaTime)
         SkyBackground.update(deltaTime: deltaTime)
+        
         if( sceneSwitchingTo != .None ) {
             scenes[sceneSwitchingTo]!.update(deltaTime:deltaTime)
             currentScene.sceneSwitchStep(deltaTime: deltaTime, toScene: sceneSwitchingTo)

@@ -14,7 +14,7 @@ class Renderer: NSObject {
         
         updateScreenSize(view: mtkView)
         
-        SceneManager.Initialize(.Dev)
+        SceneManager.Initialize(.Menu)
         
         setupBaseRenderPass()
 
