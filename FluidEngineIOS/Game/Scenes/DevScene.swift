@@ -203,6 +203,7 @@ class DevScene : Scene {
             fB.isSelected = false
         }
     }
+    
     override func touchesEnded() {
         for c in children {
             if let touchable = c as? Testable {
@@ -211,7 +212,7 @@ class DevScene : Scene {
         }
         switch buttonPressed {
         case .TestAction1:
-            let newAlien = Infiltrator(origin: box2DOrigin, scale: 0.4, startingMesh: .Alien)
+            let newAlien = Infiltrator(origin: box2DOrigin, scale: 0.4, startingMesh: .Alien, gravity: 0.02)
             addChild(newAlien)
         case .None:
             print("let go of a button")

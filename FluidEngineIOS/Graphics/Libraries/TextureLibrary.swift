@@ -47,9 +47,13 @@ enum TextureTypes {
     
     case AlienTexture
     case AsteroidTexture
+    
+    // guns
     case BarrelTexture
-    case HouseTexture
     case MountTexture
+    
+    case HouseTexture
+    case MGFireBulletTexture
     
     // vehicles
     case TruckTexture
@@ -120,9 +124,12 @@ class Textures {
 
         _library.updateValue(Texture("Alien", ext: "png").texture, forKey: .AlienTexture)
         _library.updateValue(Texture("Asteroid", ext: "png").texture, forKey: .AsteroidTexture)
+        //guns
         _library.updateValue(Texture("Barrel", ext: "png").texture, forKey: .BarrelTexture)
         _library.updateValue(Texture("house", ext: "png").texture, forKey: .HouseTexture)
         _library.updateValue(Texture("mount", ext: "png").texture, forKey: .MountTexture)
+        _library.updateValue(Texture("fireBullet", ext: "png").texture, forKey: .MGFireBulletTexture)
+
         
         //vehicles
         _library.updateValue(Texture("Truck", ext: "png").texture, forKey: .TruckTexture)

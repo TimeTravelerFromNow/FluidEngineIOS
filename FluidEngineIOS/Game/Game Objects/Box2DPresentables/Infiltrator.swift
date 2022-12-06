@@ -35,7 +35,7 @@ class Infiltrator: Node {
     var _infiltratorRef: UnsafeMutableRawPointer!
     var positionZ: Float = 0.1
     
-    init(origin: float2, scale: Float, startingMesh: MeshTypes? = nil, density: Float = 1.0, restitution: Float = 0.7, filter: BoxFilter = BoxFilterInit()) {
+    init(origin: float2, scale: Float, startingMesh: MeshTypes? = nil, density: Float = 1.0, restitution: Float = 0.7, gravity: Float = 1.0, filter: BoxFilter = BoxFilterInit()) {
         self.origin = origin
         self.filter = filter
         self.scale = scale
@@ -46,28 +46,36 @@ class Infiltrator: Node {
                                   startAngle: 0,
                                   density: density,
                                   restitution: restitution,
+                                                    gravity: gravity,
                                   filter: filter)
         if( startingMesh != nil ) {
-            let body = newBody(origin, withFilter: filter, name: MeshLibrary.Get(startingMesh!).getName())
+            let body = newBody(origin, name: MeshLibrary.Get(startingMesh!).getName())
             attachPolygonFixture(fromMesh: startingMesh!, body: body)
         }
     }
     
     // body methods
-    func newBody(_ atPos: float2, angle: Float = 0.0, withFilter: BoxFilter = BoxFilterInit(), name: String) -> b2Body {
-        let bodyRef = LiquidFun.newInfiltratorBody( _infiltratorRef, pos: atPos, angle: angle, filter: withFilter)
+    func newBody(_ atPos: float2, angle: Float = 0.0, name: String) -> b2Body {
+        let bodyRef = LiquidFun.newInfiltratorBody( _infiltratorRef, pos: atPos, angle: angle)
         bodyRefs.updateValue( name, forKey: bodyRef! )
         return bodyRef!
     }
     
     // getters
-    func getBodyPosition(_ ofBody: b2Body?) -> float2 {
+    internal func getBodyPosition(_ ofBody: b2Body?) -> float2 {
         if ofBody != nil {
             return LiquidFun.getPositionOfbody( ofBody )
         } else {
             print("getBodyPos WARN::body was nil")
         }
         return float2(0)
+    }
+    internal func getBodyRotation(_ ofBody: b2Body!) -> Float {
+        return LiquidFun.getRotationOfBody(ofBody)
+    }
+    // setters
+    internal func setBodyVelocity(_ ofBody: b2Body!, to: float2) {
+        LiquidFun.setLinearV(ofBody, to: to)
     }
     
     // fixture methods
@@ -117,8 +125,19 @@ class Infiltrator: Node {
     }
     
     func removeFixture( _ onBody: b2Body, fixtureRef: b2Fixture ){
-        LiquidFun.removeFixture(onBody: onBody, fixtureRef: fixtureRef)
+        LiquidFun.destroyFixture(onBody, fixture: fixtureRef)
         _renderables.removeValue(forKey: fixtureRef)
+    }
+    func removeBody( _ body: b2Body ){
+        if fixtureRefs[body] != nil {
+        if( fixtureRefs[body]!.count > 0 ) {
+            for fixture in fixtureRefs[body]! {
+                removeFixture(body, fixtureRef: fixture)
+            }
+        }
+        }
+        LiquidFun.destroyBody( body )
+        fixtureRefs.removeValue(forKey: body)
     }
     
     // joint methods

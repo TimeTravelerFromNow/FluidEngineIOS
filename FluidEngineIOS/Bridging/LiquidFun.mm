@@ -72,7 +72,6 @@ static b2World *world;
     world->DestroyBody((b2Body *)bodyRef);
 }
 //fixture methods
-
 + (void)destroyFixture:(void*)onBody fixture:(void*)fixture {
     ((b2Body*)onBody)->DestroyFixture((b2Fixture*)fixture);
 }
@@ -302,10 +301,6 @@ static b2World *world;
     return lineFixture;
 }
 
-+ (void)removeFixtureOnBody:(void *)bodyRef fixtureRef:(void *)fixtureRef {
-    ((b2Body *) bodyRef)->DestroyFixture( (b2Fixture *)fixtureRef );
-}
-
 //positioning bodies
 + (float2)getPositionOfbody:(void *)bodyRef{
     return _float2( ((b2Body*)bodyRef)->GetPosition() );
@@ -394,7 +389,11 @@ static b2World *world;
 }
 
 // physics setters
-+ (void)moveKinematic:(void *)kinematicRef pushDirection:(float2)pushDirection {
++ (void)setLinearV:(void*)body to:(float2)to
+{
+    ((b2Body *) body)->SetLinearVelocity(_b2Vec2(to));
+}
++ (void)moveKinematic:(void *)kinematicRef pushDirection:(float2)pushDirection { //MARK: does same thing as above, (refactor)
     ((b2Body *) kinematicRef)->SetLinearVelocity(b2Vec2(pushDirection.x,pushDirection.y));
 }
 + (void)pushBody:(void *)bodyRef pushVector:(float2)pushVector atPoint:(float2)atPoint awake:(bool)awake {
@@ -677,12 +676,17 @@ static b2World *world;
     ((b2Fixture*)fixtureRef)->SetFilterData(defFilter);
 }
 
++ (void)setFilterOfFixture:(void*)fixture filter:(b2Filter)filter {
+    ((b2Fixture*)fixture)->SetFilterData( filter );
+}
+
 // Infiltrator class
 + (void *)makeInfiltrator:(float2)position
               velocity:(float2)velocity
             startAngle:(float)startAngle
                density:(float)density
                 restitution:(float)restitution
+gravity:(float)gravity
                    filter:(b2Filter)filter {
     Infiltrator* newInfiltrator = new Infiltrator( world,
                                                   //           b2ParticleSystem* particleSystem,
@@ -691,16 +695,17 @@ static b2World *world;
                                                   startAngle,
                                                   density,
                                                   restitution,
+                                                  gravity,
                                                   filter);
     return newInfiltrator;
 }
 
 // body methods
-+ (void*) newInfiltratorBody:(void*)infiltratorRef pos:(float2)pos angle:(float)angle filter:(b2Filter)filter {
++ (void*) newInfiltratorBody:(void*)infiltratorRef pos:(float2)pos angle:(float)angle {
 //    printf(" b2Vec2 bytes: %d \n", sizeof(b2Vec2));
 //    printf(" float2 bytes: %d \n", sizeof(float2));
 //    printf(" packed float2 bytes: %d", sizeof(simd_packed_float2));
-    return ((Infiltrator*)infiltratorRef)->MakeBody( _b2Vec2(pos), angle, filter);
+    return ((Infiltrator*)infiltratorRef)->MakeBody( _b2Vec2(pos), angle);
 }
 + (void) destroyInfiltratorBody:(void*)infiltratorRef bodyRef:(void*)bodyRef {
     ((Infiltrator*)infiltratorRef)->DestroyBody((b2Body*)bodyRef);

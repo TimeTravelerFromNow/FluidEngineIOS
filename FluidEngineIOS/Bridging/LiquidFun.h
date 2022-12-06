@@ -82,7 +82,6 @@ BoxFilter BoxFilterInit() {
 
 // segmenting
 + (void *)makeLineFixtureOnBody:(void *)bodyRef vertices:(void *)vertices; //2 only
-+ (void)removeFixtureOnBody:(void *)bodyRef fixtureRef:(void *)fixtureRef;
 + (void)destroyParticlesInSystem:(void *)particleSystem; // destroy all particle groups in system
 + (int)deleteParticlesInParticleSystem:(void *)particleSystem aboveYPosition:(float)aboveYPosition;
 + (int)deleteBelowInParticleSystem:(void *)particleSystem belowYPosition:(float)belowYPosition;
@@ -94,6 +93,7 @@ BoxFilter BoxFilterInit() {
 
 // physics setters
 + (void)moveKinematic:(void *)kinematicRef pushDirection:(float2)pushDirection;
++ (void)setLinearV:(void*)body to:(float2)to;
 + (void)pushBody:(void *)bodyRef pushVector:(float2)pushVector atPoint:(float2)atPoint awake:(bool)awake;
 + (void)dampMovementOfBody:(void *)kinematicRef amount:(float)amount;
 + (void)setAngV:(void *)bodyRef amount:(float)amount;
@@ -205,17 +205,18 @@ BoxFilter BoxFilterInit() {
 + (void)setDefaultFilterForFixture:(void *)fixtureRef;
 
 // Infiltrator class
-+ (void *)makeInfiltrator:(float2)position velocity:(float2)velocity startAngle:(float)startAngle density:(float)density restitution:(float)restitution filter:(BoxFilter)filter;
++ (void *)makeInfiltrator:(float2)position velocity:(float2)velocity startAngle:(float)startAngle density:(float)density restitution:(float)restitution gravity:(float)gravity filter:(BoxFilter)filter;
 + (void)destroyInfiltrator:(void *)infiltratorRef;
 
 // body methods
-+ (void*) newInfiltratorBody:(void*)infiltratorRef pos:(float2)pos angle:(float)angle filter:(BoxFilter)filter;
++ (void*) newInfiltratorBody:(void*)infiltratorRef pos:(float2)pos angle:(float)angle;
 + (void) destroyInfiltratorBody:(void*)infiltratorRef bodyRef:(void*)bodyRef;
 
 // fixture methods
 + (void*) makePolygonFixtureOnInfiltrator:(void*)infiltrator body:(void*)body pos:(float2)pos vertices:(float2*)vertices vertexCount:(long)vertexCount;
 + (void*) makeCircleFixtureOnInfiltrator:(void*)infiltrator body:(void*)body radius:(float)radius pos:(float2)pos;
 
++ (void)setFilterOfFixture:(void*)fixture filter:(BoxFilter)filter;
 
 // joint methods ( has no class specifics )
 + (void*) weldJoint:(void*)bodyA bodyB:(void*)bodyB weldPos:(float2)weldPos stiffness:(float)stiffness damping:(float)damping;

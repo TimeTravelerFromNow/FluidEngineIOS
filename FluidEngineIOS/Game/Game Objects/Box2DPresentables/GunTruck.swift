@@ -8,6 +8,8 @@ class GunTruck: Infiltrator {
     }
     var currentGun = GunTypes.None
     
+    var ordinanceRefs: [ b2Body:(b2Fixture,Float) ] = [:] // stores fixture reference and lifetime.
+    
     var gunRef: b2Body?
     var barrelFixture: b2Fixture?
     var mountFixture: b2Fixture?
@@ -59,15 +61,18 @@ class GunTruck: Infiltrator {
     }
     
     func buildTruck() {
-        let filter = BoxFilter(categoryBits: 0x0011, maskBits: 0xFF0F, groupIndex: 0, isFiltering: false)
-        frontWheelRef = self.newBody(origin + frontTireOffset, withFilter: filter, name: "front-wheel-body")
-        backWheelRef  = self.newBody(origin + backTireOffset, withFilter: filter, name: "back-wheel-body")
+        let filter = BoxFilter(categoryBits: 0x0012, maskBits: 0xFF0F, groupIndex: 0, isFiltering: false)
+        frontWheelRef = self.newBody(origin + frontTireOffset, name: "front-wheel-body")
+        backWheelRef  = self.newBody(origin + backTireOffset, name: "back-wheel-body")
         LiquidFun.setAngularDamping( frontWheelRef, amount: 0.1)
         LiquidFun.setAngularDamping( backWheelRef, amount: 0.1)
 
         frontWheelFixture = attachCircleFixture( scale * 0.5, pos: float2(0), texture: .TruckTireTexture, body: frontWheelRef! )
         backWheelFixture = attachCircleFixture( scale * 0.5, pos: float2(0), texture: .TruckTireTexture, body: backWheelRef! )
         
+        LiquidFun.setFilterOfFixture(frontWheelFixture, filter: filter)
+        LiquidFun.setFilterOfFixture(backWheelFixture, filter: filter)
+
         setFixtureZPos(frontWheelFixture!, to: 0.09)
         setFixtureZPos(backWheelFixture!, to: 0.09)
         
@@ -81,11 +86,11 @@ class GunTruck: Infiltrator {
     func selectGun( _ gunType: GunTypes ){
         if gunRef != nil {
         } else {
-            let filter = BoxFilter(categoryBits: 0x0010, maskBits: 0xFF0F, groupIndex: -1, isFiltering: false)
             let attachPos = LiquidFun.getPositionOfbody( truckBodyRef ) + gunMountPosition
-            gunRef = newBody(attachPos, angle: 0, withFilter: filter, name: "gun-body")
+            gunRef = newBody(attachPos, angle: 0, name: "gun-body")
         }
         if gunType != currentGun {
+            currentGun = gunType
             if mountFixture != nil {
                 removeFixture(gunRef!, fixtureRef: mountFixture!)
                 removeFixture(gunRef!, fixtureRef: barrelFixture!)
@@ -106,21 +111,28 @@ class GunTruck: Infiltrator {
 //            weldJoint(bodyA: truckBodyRef, bodyB: gunRef!, weldPos: gunMountPosition, stiffness: 10, damping: 0.5)
             setFixtureZPos(mountFixture!, to: 0.07)
             setFixtureZPos(barrelFixture!, to: 0.07)
+            let filter = BoxFilter(categoryBits: 0x0010, maskBits: 0xFF0F, groupIndex: 0, isFiltering: false)
+            LiquidFun.setFilterOfFixture(mountFixture, filter: filter)
+            LiquidFun.setFilterOfFixture(barrelFixture, filter: filter)
+
             LiquidFun.setFixedRotation(gunRef, to: true)
+            
         case .MG:
             mountFixture = attachPolygonFixture(fixtureScale: 1.0, fromMesh: .MGMount, body: gunRef!)
-            barrelFixture = attachPolygonFixture(fixtureScale: 0.5, fromMesh: .Barrel, body: gunRef!)
+            barrelFixture = attachPolygonFixture(fixtureScale: 1.5, fromMesh: .MGBarrel, body: gunRef!)
             wheelJoint(bodyA: truckBodyRef, bodyB: gunRef!, weldPos: gunMountPosition, localAxisA:float2(0,1),stiffness: 10, damping: 0.5)
 //            weldJoint(bodyA: truckBodyRef, bodyB: gunRef!, weldPos: gunMountPosition, stiffness: 10, damping: 0.5)
             setFixtureZPos(mountFixture!, to: 0.07)
             setFixtureZPos(barrelFixture!, to: 0.07)
+            let filter = BoxFilter(categoryBits: 0x0010, maskBits: 0xFF0F, groupIndex: 0, isFiltering: false)
+            LiquidFun.setFilterOfFixture(mountFixture, filter: filter)
+            LiquidFun.setFilterOfFixture(barrelFixture, filter: filter)
             LiquidFun.setFixedRotation(gunRef, to: true)
             print("attachGun Implement MG")
         case .Shotgun:
             print("attachGun  Implement Shotgun")
         case .None:
             print("attachGun  No gun")
-
         }
     }
     
@@ -143,9 +155,57 @@ class GunTruck: Infiltrator {
             
         }
     }
+    func fireGun() {
+        switch currentGun {
+        case .Howitzer:
+            let currGunPos =  getBodyPosition(gunRef)
+           
+            let currAngle = getBodyRotation(gunRef) + .pi/2
+            let startDir = float2(cos(currAngle), sin(currAngle)) * 0.3
+            let newShellBody = newBody(currGunPos + startDir, angle: currAngle - .pi/2, name: "shell \(ordinanceRefs.count)")
+            let newShellFixture = attachPolygonFixture(fixtureScale: 0.7, fromMesh: .Shell, body: newShellBody)
+            let newLifetime: Float = 1.0
+            setBodyVelocity(newShellBody, to: startDir * 60)
+            ordinanceRefs.updateValue( (newShellFixture!,newLifetime), forKey: newShellBody)
+            LiquidFun.setFixedRotation(newShellBody, to: false)
+
+        case .MG:
+            print("mgfire code")
+            let currGunPos =  getBodyPosition(gunRef)
+           
+            let currAngle = getBodyRotation(gunRef) + .pi/2
+            let startDir = float2(cos(currAngle), sin(currAngle)) * 0.3
+            let newBulletBody = newBody(currGunPos + startDir, angle: currAngle - .pi/2, name: "bullet \(ordinanceRefs.count)")
+            let newBulletFixture = attachCircleFixture(0.1, pos: currGunPos + startDir, texture: .MGFireBulletTexture, body: newBulletBody)
+            let newLifetime: Float = 0.1
+            setBodyVelocity(newBulletBody, to: startDir * 40)
+            ordinanceRefs.updateValue( (newBulletFixture!,newLifetime), forKey: newBulletBody)
+            LiquidFun.setFixedRotation(newBulletBody, to: false)
+        case .Shotgun:
+            print("sg fire code")
+        case .None:
+            print("no gun fire")
+        }
+        
+    }
+    private func decayOrdinancesStep(_ deltaTime: Float) {
+        for o in ordinanceRefs.keys {
+            if(ordinanceRefs[o]!.1 > 0.0) {
+                ordinanceRefs[o]!.1 -= deltaTime
+            } else {
+                removeBody(o)
+                ordinanceRefs.removeValue(forKey: o)
+            }
+           
+        }
+    }
+
+    let gunTestShootTime: Float = 1.0
+    private var _shootDelay: Float = 1.0
     
     func driveForward( _ deltaTime: Float, strength: Float = 0.3 ) {
         maxVelocity = strength
+
 
         if torqueBuildUp < maxTorque {
             torqueBuildUp += deltaTime * (jerk + rpmDecay )
@@ -255,6 +315,22 @@ class GunTruck: Infiltrator {
 
     override func update(deltaTime: Float) {
         super.update(deltaTime: deltaTime)
+        decayOrdinancesStep(deltaTime)
+        if currentGun == .Howitzer {
+            if _shootDelay > 0.0 {
+                _shootDelay -= deltaTime
+            } else {
+                fireGun()
+                _shootDelay = gunTestShootTime
+            }
+        } else if currentGun == .MG {
+            if _shootDelay > 0.0 {
+                _shootDelay -= deltaTime
+            } else {
+                fireGun()
+                _shootDelay = 0.1
+            }
+        }
         if( torqueBuildUp > 0.0 ) {
             torqueBuildUp -= deltaTime * rpmDecay
             if torqueBuildUp < minTorque {

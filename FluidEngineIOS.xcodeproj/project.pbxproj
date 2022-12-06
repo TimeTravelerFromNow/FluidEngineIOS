@@ -57,6 +57,10 @@
 		923F2C0E27A10CFA00443936 /* Touches.swift in Sources */ = {isa = PBXBuildFile; fileRef = 923F2C0D27A10CFA00443936 /* Touches.swift */; };
 		9240F099293E697700D81DD2 /* mainGameBanner.png in Resources */ = {isa = PBXBuildFile; fileRef = 9240F098293E697700D81DD2 /* mainGameBanner.png */; };
 		9240F09C293E759D00D81DD2 /* alienIcon.png in Resources */ = {isa = PBXBuildFile; fileRef = 9240F09B293E759D00D81DD2 /* alienIcon.png */; };
+		9240F0A2293ECF2600D81DD2 /* mgBarrel.png in Resources */ = {isa = PBXBuildFile; fileRef = 9240F09F293ECF2600D81DD2 /* mgBarrel.png */; };
+		9240F0A3293ECF2600D81DD2 /* mgBarrel.mtl in Resources */ = {isa = PBXBuildFile; fileRef = 9240F0A0293ECF2600D81DD2 /* mgBarrel.mtl */; };
+		9240F0A4293ECF2600D81DD2 /* mgBarrel.obj in Resources */ = {isa = PBXBuildFile; fileRef = 9240F0A1293ECF2600D81DD2 /* mgBarrel.obj */; };
+		9240F0A6293ED62900D81DD2 /* fireBullet.png in Resources */ = {isa = PBXBuildFile; fileRef = 9240F0A5293ED62900D81DD2 /* fireBullet.png */; };
 		92465D85291D79A2001CC08B /* TKSpline1D.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 92465D83291D79A2001CC08B /* TKSpline1D.cpp */; };
 		92489A0B2799D9BD00639B52 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 92489A0A2799D9BD00639B52 /* AppDelegate.swift */; };
 		92489A0D2799D9BD00639B52 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 92489A0C2799D9BD00639B52 /* SceneDelegate.swift */; };
@@ -301,6 +305,10 @@
 		923F2C0D27A10CFA00443936 /* Touches.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Touches.swift; sourceTree = "<group>"; };
 		9240F098293E697700D81DD2 /* mainGameBanner.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = mainGameBanner.png; sourceTree = "<group>"; };
 		9240F09B293E759D00D81DD2 /* alienIcon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = alienIcon.png; sourceTree = "<group>"; };
+		9240F09F293ECF2600D81DD2 /* mgBarrel.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = mgBarrel.png; sourceTree = "<group>"; };
+		9240F0A0293ECF2600D81DD2 /* mgBarrel.mtl */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = mgBarrel.mtl; sourceTree = "<group>"; };
+		9240F0A1293ECF2600D81DD2 /* mgBarrel.obj */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = mgBarrel.obj; sourceTree = "<group>"; };
+		9240F0A5293ED62900D81DD2 /* fireBullet.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = fireBullet.png; sourceTree = "<group>"; };
 		92465D83291D79A2001CC08B /* TKSpline1D.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = TKSpline1D.cpp; sourceTree = "<group>"; };
 		92489A072799D9BD00639B52 /* FluidEngineIOS.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = FluidEngineIOS.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		92489A0A2799D9BD00639B52 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
@@ -742,6 +750,31 @@
 			path = "Main-Game";
 			sourceTree = "<group>";
 		};
+		9240F09D293ECF0900D81DD2 /* MG */ = {
+			isa = PBXGroup;
+			children = (
+				9240F0A0293ECF2600D81DD2 /* mgBarrel.mtl */,
+				9240F0A5293ED62900D81DD2 /* fireBullet.png */,
+				9240F0A1293ECF2600D81DD2 /* mgBarrel.obj */,
+				9240F09F293ECF2600D81DD2 /* mgBarrel.png */,
+				929E548A293C283F0067B949 /* mgMount.mtl */,
+				929E5488293C283F0067B949 /* mgMount.obj */,
+				929E5489293C283F0067B949 /* mgMount.png */,
+			);
+			path = MG;
+			sourceTree = "<group>";
+		};
+		9240F09E293ECF1000D81DD2 /* Howitzer */ = {
+			isa = PBXGroup;
+			children = (
+				92A75BDC29255ED000653F36 /* Barrel.mtl */,
+				92A75C172928650100653F36 /* mount.png */,
+				92A75BDD29255ED000653F36 /* Barrel.obj */,
+				92A75BDB29255ED000653F36 /* Barrel.png */,
+			);
+			path = Howitzer;
+			sourceTree = "<group>";
+		};
 		924899FE2799D9BD00639B52 = {
 			isa = PBXGroup;
 			children = (
@@ -1043,13 +1076,8 @@
 		92A75BE229255EE700653F36 /* Guns */ = {
 			isa = PBXGroup;
 			children = (
-				929E548A293C283F0067B949 /* mgMount.mtl */,
-				929E5488293C283F0067B949 /* mgMount.obj */,
-				929E5489293C283F0067B949 /* mgMount.png */,
-				92A75BDC29255ED000653F36 /* Barrel.mtl */,
-				92A75C172928650100653F36 /* mount.png */,
-				92A75BDD29255ED000653F36 /* Barrel.obj */,
-				92A75BDB29255ED000653F36 /* Barrel.png */,
+				9240F09E293ECF1000D81DD2 /* Howitzer */,
+				9240F09D293ECF0900D81DD2 /* MG */,
 			);
 			path = Guns;
 			sourceTree = "<group>";
@@ -1355,6 +1383,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				92A9E40128DA6D620000A77F /* cliff.png in Resources */,
+				9240F0A4293ECF2600D81DD2 /* mgBarrel.obj in Resources */,
 				927DB84B2933FB0600DBB5F3 /* interceptor.png in Resources */,
 				927DB83A2932B2CD00DBB5F3 /* palm.png in Resources */,
 				9254F4AE2929680E00B8B9FF /* leftArrow.png in Resources */,
@@ -1391,10 +1420,12 @@
 				927DB84A2933FB0600DBB5F3 /* interceptor.obj in Resources */,
 				92A9E40E28DA6D620000A77F /* Cloud0.png in Resources */,
 				92489C032799DD0500639B52 /* LaunchScreen.storyboard in Resources */,
+				9240F0A2293ECF2600D81DD2 /* mgBarrel.png in Resources */,
 				92A75BAC2921658900653F36 /* testFlat.mtl in Resources */,
 				920603CB2910972D00C1C846 /* moveTexture.png in Resources */,
 				92A9E41228DA6D620000A77F /* cloud2.mtl in Resources */,
 				92E53D20293464A200D6CED5 /* alienInfiltratorsBanner.png in Resources */,
+				9240F0A3293ECF2600D81DD2 /* mgBarrel.mtl in Resources */,
 				920603BC290C684F00C1C846 /* missingTexture.png in Resources */,
 				927DB8432932BCED00DBB5F3 /* palmBase.obj in Resources */,
 				9240F099293E697700D81DD2 /* mainGameBanner.png in Resources */,
@@ -1435,6 +1466,7 @@
 				92A75BED2926F13900653F36 /* fireButtonUp.png in Resources */,
 				92A75C3229295A2200653F36 /* Truck.mtl in Resources */,
 				92A75BE92926C7B300653F36 /* pauseButton.png in Resources */,
+				9240F0A6293ED62900D81DD2 /* fireBullet.png in Resources */,
 				92A75C182928650100653F36 /* mount.png in Resources */,
 				92A9E41328DA6D620000A77F /* cloud3.mtl in Resources */,
 				92A9E41728DA6D620000A77F /* beach.obj in Resources */,

@@ -31,6 +31,8 @@ enum MeshTypes {
     
     // guns
     case MGMount
+    case MGBarrel
+
     case Barrel
     
     case Island
@@ -86,8 +88,12 @@ class MeshLibrary: Library<MeshTypes, Mesh> {
                 
         meshes.updateValue( Mesh( modelName: "Alien" ), forKey: .Alien)
         meshes.updateValue( Mesh( modelName: "Asteroid" ), forKey: .Asteroid)
+        
+        //guns
         meshes.updateValue( Mesh( modelName: "Barrel" ), forKey: .Barrel)
         meshes.updateValue( Mesh( modelName: "mgMount" ), forKey: .MGMount)
+        meshes.updateValue( Mesh( modelName: "mgBarrel" ), forKey: .MGBarrel)
+
         // vehicles
         meshes.updateValue( Mesh( modelName: "Truck" ), forKey: .Truck)
         meshes.updateValue( Mesh( modelName: "interceptor"), forKey: .Interceptor )
