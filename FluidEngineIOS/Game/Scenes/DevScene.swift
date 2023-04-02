@@ -212,6 +212,10 @@ class DevScene : Scene {
         }
         switch buttonPressed {
         case .TestAction1:
+            if gunSelectionMenu != nil {
+                removeChild(gunSelectionMenu)
+                gunSelectionMenu = nil
+            }
             let newAlien = Infiltrator(origin: box2DOrigin, scale: 0.4, startingMesh: .Alien, gravity: 0.02)
             addChild(newAlien)
         case .None:

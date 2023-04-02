@@ -21,6 +21,7 @@ class Island: Infiltrator {
         island = bodyRefs.keys.first!
         buildIsland()
     }
+    
     func buildIsland() {
         let filter = BoxFilter(categoryBits: 0x0001, maskBits: 0xFFFF, groupIndex: 0, isFiltering: false)
         leftPalm = self.newBody(origin + leftPalmOffset, name: "front-wheel-body")
