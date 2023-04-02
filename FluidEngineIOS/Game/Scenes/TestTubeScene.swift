@@ -1,4 +1,3 @@
-import MetalKit
 import CoreHaptics
 
 enum States {

@@ -1,6 +1,7 @@
 import MetalKit
 import CoreMotion
 
+
 enum SceneTypes {
     case TestTubes
     case Menu
@@ -9,9 +10,9 @@ enum SceneTypes {
     case None
 }
 
-let SceneOrigins: [SceneTypes: float2] = [.TestTubes:float2(-25.0, 5.0),
+let SceneOrigins: [SceneTypes: float2] = [.TestTubes:float2(0.0,0.0),
                                           .Menu:float2(-5.0, 5.0),
-                                          .Dev:float2(0.0,0.0)]
+                                          .Dev:float2(-25.0, 5.0)]
 
 enum SmoothingStates {
     case Leaving

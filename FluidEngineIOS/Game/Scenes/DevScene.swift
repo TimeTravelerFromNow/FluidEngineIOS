@@ -109,6 +109,8 @@ class DevScene : Scene {
     
     private var _emptyKF = 0
     
+    var cleanBugLabel: TextObject!
+    
     let hapticDict = [
         CHHapticPattern.Key.pattern: [
             [CHHapticPattern.Key.event: [
@@ -152,7 +154,6 @@ class DevScene : Scene {
             }
         }
     }
-    var cleanBugLabel: TextObject!
     
     override func buildScene(){
         do {
@@ -187,9 +188,9 @@ class DevScene : Scene {
     
     
     func addTestButton() {
-        let menuButton = BoxButton(.Menu,.Menu, .ToMenu, center: box2DOrigin + float2(1.5,4.0), label: .MenuLabel, scale: 1.1)
-        let startButton = BoxButton(.Menu, .Menu, .StartGameAction, center: box2DOrigin + float2(-1.5,4.0), label: .StartGameLabel, scale: 1.1)
-        let cleanButton = BoxButton(.Menu, .Menu, .Clear, center: box2DOrigin + float2(-1.5,3), label: .TestLabel2, scale: 1.2 )
+        let menuButton = BoxButton(.Menu,.Menu, .ToMenu, center: box2DOrigin + float2(1.4,4.0), label: .MenuLabel, scale: 1.1)
+        let startButton = BoxButton(.Menu, .Menu, .StartGameAction, center: box2DOrigin + float2(-1,4.0), label: .StartGameLabel, scale: 1.1)
+        let cleanButton = BoxButton(.Menu, .Menu, .Clear, center: box2DOrigin + float2(-1,3), label: .TestLabel2, scale: 1.2 )
         buttons.append(menuButton)
         buttons.append(startButton)
         buttons.append(cleanButton)
@@ -313,6 +314,7 @@ class DevScene : Scene {
                 addChild(currentTube)
                 tubeGrid.append(currentTube)
                 tGid += 1
+                print("initial tube position: \(goodPos)")
             }
         }
         if( tGid != startLvl.count) { print("init tubegrid WARN::tube num not matching starting lvl count."); }
@@ -362,6 +364,7 @@ class DevScene : Scene {
     }
     
     private func boxHitTest( boxPos: float2, excludeDragging: Int ) -> TestTube? {
+        print(" box hit test at \(boxPos.x) \(boxPos.y) ")
         for testTube in tubeGrid {
             if let testTube = testTube.getTubeAtBox2DPosition(boxPos) {
                 if testTube.gridId != excludeDragging {
@@ -372,7 +375,7 @@ class DevScene : Scene {
         return nil
     }
     
-    // cant see much of difference from above now
+    // cant see much of difference from above now ( maybe exclude dragging can be the simplifier)
     private func kineticHitTest() -> TestTube? { // tests based on current location
         for testTube in tubeGrid {
             if let testTube = testTube.getTubeAtBox2DPosition(Touches.GetBoxPos()) {
@@ -456,7 +459,6 @@ class DevScene : Scene {
     }
     
     func unSelect() {
-        print("let go of tube")
         selectedTube?.reCaptured = false
         selectedTube?.returnToOrigin()
         selectedTube = nil
@@ -555,7 +557,7 @@ class DevScene : Scene {
                 _holdDelay = _defaultHoldTime
             }
         default:
-            print("nothing to do")
+            break
         }
     }
     
@@ -581,7 +583,7 @@ class DevScene : Scene {
         if( buttonPressed != nil ) {
             switch boxButtonHitTest(boxPos: Touches.GetBoxPos()) {
             case .None:
-                print("let go of a button")
+                break
             case .Clear:
                rePourTubes()
             case .ToMenu:
@@ -596,7 +598,7 @@ class DevScene : Scene {
             case .TestAction3:
                 destroyReservoirs()
             case nil:
-                print("let go of no button")
+                break
             default:
                 print("Button Action ADVISE::need \(boxButtonHitTest(boxPos: Touches.GetBoxPos())) action.")
                 break
@@ -639,7 +641,7 @@ class DevScene : Scene {
         case .Moving:
             unSelect()
         default:
-            print("nothing to do")
+            break
         }
         for n in children {
             if let testableNode = n as? Testable {
