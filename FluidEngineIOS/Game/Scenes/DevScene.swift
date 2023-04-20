@@ -407,6 +407,7 @@ class DevScene : Scene {
         self.selectedTube!.startPouring( newPourTubeColors: newPouringTubeColors,
                                          newCandidateTubeColors: newCandidateTubeColors,
                                          cTube: self.pourCandidate)
+        self.selectedTube = nil // dont control tube after pour
     }
     
     func hoverSelect(_ boxPos: float2, deltaTime: Float, excludeMoving: Int) {

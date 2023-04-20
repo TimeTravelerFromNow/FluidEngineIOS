@@ -77,7 +77,7 @@ class TestTubeScene : Scene {
     var hasCommittedtoPour: Bool = false
     
     // pipe fill animation constants
-    let defaultAskForLiquidDelay: Float = 1.5
+    let defaultAskForLiquidDelay: Float = 1.4
     private var _askForLiquidDelay: Float = 0.0
     
     // zoom when done initializing
@@ -159,7 +159,7 @@ class TestTubeScene : Scene {
             }
         }
 
-        tubeLevel = TubeLevel()
+        tubeLevel = TubeLevel(3)
        
         (currentCamera as? OrthoCamera)?.setFrameSize( largeZoom )
         addTestButton()
@@ -284,7 +284,7 @@ class TestTubeScene : Scene {
             measureTube = TestTube()
         }
         let xSep : Float = measureTube!.getTubeWidth() * 1.4
-        let ySep : Float = measureTube!.getTubeHeight() * 1.1
+        let ySep : Float = measureTube!.getTubeHeight() * 4.3
         if( measureTube != nil ) {
             measureTube = nil
         }

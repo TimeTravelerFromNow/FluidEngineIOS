@@ -138,7 +138,7 @@ class TestTube: Node {
     var pipes: [TubeColors: Pipe] = [:] // the pipes the tube will use for filling
     var currentFillNum = 0
     let quota = 30
-    let safetyTime: Float = 1.9
+    let safetyTime: Float = 3.0
     var timeTillSafety: Float = 0.0 // dont get stuck
     
     //visual states
@@ -335,6 +335,7 @@ class TestTube: Node {
             pipe.resetFilter()
         }
     }
+    
     func fillFromPipes() { // called every time we need a new color from a pipe
         skimTopParticles(_currentTopIndex)
         resetPipeFilters()
@@ -377,7 +378,7 @@ class TestTube: Node {
         }
         guard let currPipe = pipes[ newColor ] else { print("no pipe for \(newColor)"); return }
         
-        if( currentFillNum < quota || timeTillSafety < safetyTime)  {
+        if( currentFillNum < quota || timeTillSafety < safetyTime )  { // refactor currentFillNum to calculate whether the particles have reached the bottom instead
             currentFillNum += currPipe.transferParticles( particleSystem )
             if currentFillNum > quota {
                 currPipe.closeValve()
@@ -443,7 +444,7 @@ class TestTube: Node {
             return
         }
         _travelTime = defaultTravelSafetyTime // to make sure we dont miss simply because things are set wrong.
-        setBoxVelocity( vector( interpolatedPoints[ _paramTravelInd + 1] - getBoxPosition(), mag: _speed) )
+        setVelocity( vector( interpolatedPoints[ _paramTravelInd + 1] - getBoxPosition(), mag: _speed) )
     }
     
     func determinePourNavigation() { // determines from where to pour based on respective origins
@@ -513,9 +514,11 @@ class TestTube: Node {
     }
     
     func select() {
-        isSelected = true
-        self.selectEffect = .SelectHighlight
-        currentState = .Selected
+        if currentState == .AtRest {
+            isSelected = true
+            self.selectEffect = .SelectHighlight
+            currentState = .Selected
+        }
     }
     
     func returnToOrigin(_ optionalEngulf: UnsafeMutableRawPointer? = nil ) {
@@ -597,7 +600,7 @@ class TestTube: Node {
     private func willArrive( _ mag: Float, _ deltaTime: Float ) -> Bool {
         if !( _paramTravelInd < interpolatedPoints.count ) {// this controls the transition to tipping
             isTravelingToPourPos = false
-            setBoxVelocity()
+            setVelocity()
             return false
         }
         let pos = interpolatedPoints[ _paramTravelInd ]
@@ -638,7 +641,7 @@ class TestTube: Node {
                     startTipping()
                 }
                 if _paramTravelInd < _interpolatedPtsCount {
-                    setBoxVelocity( vector( interpolatedPoints[ _paramTravelInd ] - getBoxPosition(), mag: _speed) )
+                    setVelocity( vector( interpolatedPoints[ _paramTravelInd ] - getBoxPosition(), mag: _speed) )
                     _travelTime = defaultTravelSafetyTime
                 }
             }
@@ -648,7 +651,7 @@ class TestTube: Node {
              else {
                  if !( willArrive( _speed, deltaTime )) {// it wont arrive so we have to tell it to go to destination.
                      if( _paramTravelInd < _interpolatedPtsCount - 1) {
-                     setBoxVelocity( vector( interpolatedPoints[ _paramTravelInd ] - getBoxPosition(), mag: _speed) )
+                     setVelocity( vector( interpolatedPoints[ _paramTravelInd ] - getBoxPosition(), mag: _speed) )
                      _paramTravelInd += 1
                  }
                  }
@@ -763,11 +766,11 @@ class TestTube: Node {
                 let rotDirection = -self.getRotationZ() / abs(self.getRotationZ())
                 self.rotateZ( rotDirection )
             } else {
-                self.setBoxVelocity()
+                self.setVelocity()
                 self.rotateZ(0)
                 toBackground()
                 currentState = .CleanupValues
-                setBoxVelocity() //bring to stop
+                setVelocity() //bring to stop
                 print("Tube \(gridId) Returned To Origin.")
             }
         } else {
@@ -785,15 +788,15 @@ class TestTube: Node {
             else {
                 moveDirection = vector(moveDirection, mag: 0.3)
             }
-            setBoxVelocity(moveDirection)
+            setVelocity(moveDirection)
         }
     }
     
     func selectStep(_ deltaTime: Float) {
         if (self.getBoxPositionY() < selectPos ) {
-            setBoxVelocity(float2(x:0,y:3))
+            setVelocity(float2(x:0,y:3))
         } else {
-            setBoxVelocity()
+            setVelocity()
             currentState = .AtRest
         }
     }
@@ -990,7 +993,7 @@ class TestTube: Node {
             self.currentState = .Moving
             let currPos = getBoxPosition()
             let moveDirection = float2(x:(boxPos.x - currPos.x) * 3,y: (boxPos.y - currPos.y) * 3)
-            setBoxVelocity(moveDirection)
+            setVelocity(moveDirection)
         }
     }
  
@@ -998,7 +1001,7 @@ class TestTube: Node {
         LiquidFun.setAngularVelocity(_tube, angularVelocity: value)
     }
     
-    func setBoxVelocity(_ velocity: float2 = float2()) {
+    func setVelocity(_ velocity: float2 = float2()) {
         LiquidFun.setTubeVelocity(_tube, velocity: velocity)
     }
     func setBoxVelocityX(_ to: Float) {

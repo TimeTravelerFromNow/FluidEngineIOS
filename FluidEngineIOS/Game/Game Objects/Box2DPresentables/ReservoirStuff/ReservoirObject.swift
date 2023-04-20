@@ -152,7 +152,7 @@ class ReservoirObject: Node {
     func fill() {
         waterColor = WaterColors[reservoirFluidColor]!
         spawnParticleBox(origin,
-                         float2(1.0,2.2),
+                         float2(1.0,1.2),
                          color: waterColor)
     }
     var pipeWidth: Float = 0.0

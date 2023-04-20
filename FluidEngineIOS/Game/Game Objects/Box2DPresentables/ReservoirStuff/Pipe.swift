@@ -8,7 +8,7 @@ struct Arrow2D {
 }
 
 class Pipe: Node {
-    var isTesting = true
+    var isTesting = false
     var isShowingMiniMenu = false
     var particleSystemSharing: UnsafeMutableRawPointer?
     var fluidColor: TubeColors!
