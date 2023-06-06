@@ -608,28 +608,6 @@ class TestTube: Node {
         return willPass // means it will pass current position if true
     }
     
-    private func setOneStepSpeed(_ deltaTime: Float) { // a new speed for a single time step so that we hit the target.
-        
-        let pos = interpolatedPoints[ _travelToIndex ]
-        let difference =  pos - getBoxPosition()
-        let distance = length( difference )
-        
-        var vel =  getBoxVelocity()
-        var distanceWillJump = deltaTime * length(vel)
-        
-        var willPass = distanceWillJump > distance
-        var i: Int = 0
-        let safeIter: Int = 100
-        while willPass && i < safeIter {
-            vel *= oneStepDecayRate
-            distanceWillJump = deltaTime * length(vel)
-            
-            setVelocity(vel)
-            i += 1
-            willPass = distanceWillJump > distance
-        }
-    }
-    
     private func startTipping(resolution: Int = 30) {
         isTipping = true
         _rotStepTime = _defaultRotationTime / Float(resolution)
@@ -650,7 +628,6 @@ class TestTube: Node {
         }
     }
     
-    private var beforeFinalArrival: Bool = false // to allow one last timestep before reaching target
     private func pourStep(_ deltaTime: Float) {
         if( isTravelingToPourPos ) { // could refactor to be less complicated.
             let reachingPoint = willArrive( deltaTime )
@@ -661,37 +638,21 @@ class TestTube: Node {
                 setVelocity( vector( interpolatedPoints[ _travelToIndex ] - getBoxPosition(), mag: _speed) )
             }
             
-            if beforeFinalArrival {
-                // we were reaching the final point last step, and set one step speed, now we should have arrived.
-                _travelToIndex += 1
-            }
-            
             if ( reachingPoint && _travelToIndex < _interpolatedPtsCount  ){
-                // we will reach this one, start going towards next one, but only if it isnt the last one, then instead call one step speed.
-                if lastPoint {
-                    // first time we will be reaching final point
-                    beforeFinalArrival = true
-                    setOneStepSpeed(deltaTime)
+                //start tipping the tube halfway through the movement
+                if _travelToIndex == Int(_interpolatedPtsCount / 2) {
+                    startTipping() // we can be confident this code isn't executed twice, the index goes up one after.
                 }
-                else
-                {
-                    //start tipping the tube halfway through the movement
-                    if _travelToIndex == Int(_interpolatedPtsCount / 2) {
-                        startTipping() // we can be confident this code isn't executed twice, the index goes up one after.
-                    }
-                    // passing a point before the end, continue to the next one and +1 index
-                    _travelToIndex += 1
-                    if (_interpolatedPtsCount < _interpolatedPtsCount - 1) {
+                // passing a point before the end, continue to the next one and +1 index
+                _travelToIndex += 1
+                
+                // index is greater than interpolated points, we need to stop.
+                if _travelToIndex > _interpolatedPtsCount - 1 {
+                    setVelocity()
+                    isTravelingToPourPos = false
+                } else {
                     setVelocity( vector( interpolatedPoints[ _travelToIndex ] - getBoxPosition(), mag: _speed) )
-                    }
                 }
-            }
-            
-            // index is greater than interpolated points, we need to stop.
-            if _travelToIndex > _interpolatedPtsCount - 1 {
-                setVelocity()
-                beforeFinalArrival = false
-                isTravelingToPourPos = false
             }
         }
         
