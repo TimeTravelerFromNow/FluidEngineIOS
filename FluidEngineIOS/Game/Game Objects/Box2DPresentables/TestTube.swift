@@ -141,6 +141,7 @@ class TestTube: Node {
     let safetyTime: Float = 3.0
     var timeTillSafety: Float = 0.0 // dont get stuck
     private let oneStepDecayRate: Float = 0.99
+    private let _animationResolution: Int = 1
     
     //visual states
     var isSelected = false
@@ -179,8 +180,8 @@ class TestTube: Node {
     private var isTipping = false
     private var isFinishingTubePour = false
     private var _currentTravelTime: Float = 0.0
-    private var _paramTravelInd: Int = 0
-    private var _speed: Float = 2.0
+    private var _travelToIndex: Int = 0
+    private var _speed: Float = 5.0
     // translation step data
     private var isReleasing = false
     private var _defaultRecieveDelay: Float = 1.5
@@ -190,10 +191,6 @@ class TestTube: Node {
 //    private var _defaultRecieveDelay
     private var _pouredColor: TubeColors = .Empty
     private var isRecieving = false { didSet { _recieveTime = _defaultRecieveDelay; skimDelay = defaultSkimDelay } }
-    
-    private let defaultTravelSafetyTime: Float = 1.0
-    private var _travelTime: Float = 0.0
-    
     
     init( origin: float2 = float2(0,0), gridId: Int = -1, scale: Float = 0.2, startingColors: [TubeColors] = [.Empty] ) {
         super.init()
@@ -439,13 +436,11 @@ class TestTube: Node {
         isTravelingToPourPos = true
         _rotInd = 0
         _rotateDelay = 0.0
-        _paramTravelInd = 0
-        if( _paramTravelInd + 2 > interpolatedPoints.count ) {
+        _travelToIndex = 1 // need to start going to the second point from the origin
+        if( _travelToIndex + 2 > interpolatedPoints.count ) {
             print("start pour WARN::less than 2 interpolated points")
             return
         }
-        _travelTime = defaultTravelSafetyTime // to make sure we dont miss simply because things are set wrong.
-        setVelocity( vector( interpolatedPoints[ _paramTravelInd + 1] - getBoxPosition(), mag: _speed) )
     }
     
     func determinePourNavigation() { // determines from where to pour based on respective origins
@@ -467,7 +462,7 @@ class TestTube: Node {
         
         makeSpline()
 
-        (_, _sourceTPoints) = CustomMathMethods.getSourceTVals( _tParams, density: 3 )
+        (_, _sourceTPoints) = CustomMathMethods.getSourceTVals( _tParams, density: _animationResolution )
         interpolatedPoints = [float2].init(repeating: float2(0,0), count: _interpolatedPtsCount) // _sourceTPoints count
         _interpolatedTangents = interpolatedPoints.map { float2(x:$0.x,y:$0.y) }
         _interpolatedPtsX = _sourceTPoints
@@ -598,12 +593,12 @@ class TestTube: Node {
         }
     }
     
-    private func willArrive( _ mag: Float, _ deltaTime: Float ) -> Bool {
-        if !( _paramTravelInd < interpolatedPoints.count ) {// this controls the transition to tipping
+    private func willArrive( _ deltaTime: Float ) -> Bool {
+        if !( _travelToIndex < interpolatedPoints.count ) {// this controls the transition to tipping
             isTravelingToPourPos = false
             return false
         }
-        let pos = interpolatedPoints[ _paramTravelInd ]
+        let pos = interpolatedPoints[ _travelToIndex ]
         let difference =  pos - getBoxPosition()
         let distance = length( difference )
         let distanceWillJump = deltaTime * length( getBoxVelocity() )
@@ -615,7 +610,7 @@ class TestTube: Node {
     
     private func setOneStepSpeed(_ deltaTime: Float) { // a new speed for a single time step so that we hit the target.
         
-        let pos = interpolatedPoints[ _paramTravelInd ]
+        let pos = interpolatedPoints[ _travelToIndex ]
         let difference =  pos - getBoxPosition()
         let distance = length( difference )
         
@@ -655,34 +650,48 @@ class TestTube: Node {
         }
     }
     
+    private var beforeFinalArrival: Bool = false // to allow one last timestep before reaching target
     private func pourStep(_ deltaTime: Float) {
         if( isTravelingToPourPos ) { // could refactor to be less complicated.
-            if( willArrive( _speed, deltaTime )) {
-                _paramTravelInd += 1
-                
-//                if _paramTravelInd == Int(_interpolatedPtsCount / 2) {
-//                    startTipping()
-//                }
-                
-                if _paramTravelInd < _interpolatedPtsCount {
-                    setVelocity( vector( interpolatedPoints[ _paramTravelInd ] - getBoxPosition(), mag: _speed) )
-                    _travelTime = defaultTravelSafetyTime
+            let reachingPoint = willArrive( deltaTime )
+            let lastPoint = _travelToIndex == _interpolatedPtsCount
+            
+            if( !reachingPoint ) {
+                // keep going towards current position
+                setVelocity( vector( interpolatedPoints[ _travelToIndex ] - getBoxPosition(), mag: _speed) )
+            }
+            
+            if beforeFinalArrival {
+                // we were reaching the final point last step, and set one step speed, now we should have arrived.
+                _travelToIndex += 1
+            }
+            
+            if ( reachingPoint && _travelToIndex < _interpolatedPtsCount  ){
+                // we will reach this one, start going towards next one, but only if it isnt the last one, then instead call one step speed.
+                if lastPoint {
+                    // first time we will be reaching final point
+                    beforeFinalArrival = true
+                    setOneStepSpeed(deltaTime)
+                }
+                else
+                {
+                    //start tipping the tube halfway through the movement
+                    if _travelToIndex == Int(_interpolatedPtsCount / 2) {
+                        startTipping() // we can be confident this code isn't executed twice, the index goes up one after.
+                    }
+                    // passing a point before the end, continue to the next one and +1 index
+                    _travelToIndex += 1
+                    if (_interpolatedPtsCount < _interpolatedPtsCount - 1) {
+                    setVelocity( vector( interpolatedPoints[ _travelToIndex ] - getBoxPosition(), mag: _speed) )
+                    }
                 }
             }
-            if( _travelTime > 0.0) {
-                _travelTime -= deltaTime
-            }
-             else {
-                 if !( willArrive( _speed, deltaTime )) {// it wont arrive so we have to tell it to go to destination.
-                     if( _paramTravelInd < _interpolatedPtsCount - 1) {
-                     setVelocity( vector( interpolatedPoints[ _paramTravelInd ] - getBoxPosition(), mag: _speed) )
-                     _paramTravelInd += 1
-                 }
-                 }
-                 _travelTime = defaultTravelSafetyTime
-                 if( _paramTravelInd < _interpolatedPtsCount - 2) {
-                     _paramTravelInd += 1
-                 }
+            
+            // index is greater than interpolated points, we need to stop.
+            if _travelToIndex > _interpolatedPtsCount - 1 {
+                setVelocity()
+                beforeFinalArrival = false
+                isTravelingToPourPos = false
             }
         }
         

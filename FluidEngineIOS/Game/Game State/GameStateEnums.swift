@@ -1,20 +1,20 @@
 import Foundation
 
-enum TubeColors {
-    case Empty
-    case Red
-    case Green
-    case Blue
-    case Purple
-    case Dark
-    case Light
+enum TubeColors: String {
+    case Empty   = "empty"
+    case Red     = "red"
+    case Green   = "green"
+    case Blue    = "blue"
+    case Purple  = "purple"
+    case Dark    = "dark"
+    case Light   = "light"
 }
 
 let WaterColors: [TubeColors:float3] =
     [ .Empty    :float3(0.1,0.1,0.1),
       .Red      :float3(0.9, 30 / 255, 13 / 255),
       .Green    :float3(0.4, 0.8, 0.3),
-      .Blue     :float3(70 / 255, 130  / 255, 245 / 255),
+      .Blue     :float3(40 / 255, 120  / 255, 225 / 255),
       .Purple   :float3(48 / 255, 30  / 255, 80 / 255)
 ]
 //XMas ?
