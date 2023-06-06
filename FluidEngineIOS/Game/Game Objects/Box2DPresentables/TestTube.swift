@@ -140,6 +140,7 @@ class TestTube: Node {
     let quota = 30
     let safetyTime: Float = 3.0
     var timeTillSafety: Float = 0.0 // dont get stuck
+    private let oneStepDecayRate: Float = 0.99
     
     //visual states
     var isSelected = false
@@ -600,7 +601,6 @@ class TestTube: Node {
     private func willArrive( _ mag: Float, _ deltaTime: Float ) -> Bool {
         if !( _paramTravelInd < interpolatedPoints.count ) {// this controls the transition to tipping
             isTravelingToPourPos = false
-            setVelocity()
             return false
         }
         let pos = interpolatedPoints[ _paramTravelInd ]
@@ -611,6 +611,28 @@ class TestTube: Node {
         let willPass = distanceWillJump > distance
         
         return willPass // means it will pass current position if true
+    }
+    
+    private func setOneStepSpeed(_ deltaTime: Float) { // a new speed for a single time step so that we hit the target.
+        
+        let pos = interpolatedPoints[ _paramTravelInd ]
+        let difference =  pos - getBoxPosition()
+        let distance = length( difference )
+        
+        var vel =  getBoxVelocity()
+        var distanceWillJump = deltaTime * length(vel)
+        
+        var willPass = distanceWillJump > distance
+        var i: Int = 0
+        let safeIter: Int = 100
+        while willPass && i < safeIter {
+            vel *= oneStepDecayRate
+            distanceWillJump = deltaTime * length(vel)
+            
+            setVelocity(vel)
+            i += 1
+            willPass = distanceWillJump > distance
+        }
     }
     
     private func startTipping(resolution: Int = 30) {
@@ -637,9 +659,11 @@ class TestTube: Node {
         if( isTravelingToPourPos ) { // could refactor to be less complicated.
             if( willArrive( _speed, deltaTime )) {
                 _paramTravelInd += 1
-                if _paramTravelInd == Int(_interpolatedPtsCount / 2) {
-                    startTipping()
-                }
+                
+//                if _paramTravelInd == Int(_interpolatedPtsCount / 2) {
+//                    startTipping()
+//                }
+                
                 if _paramTravelInd < _interpolatedPtsCount {
                     setVelocity( vector( interpolatedPoints[ _paramTravelInd ] - getBoxPosition(), mag: _speed) )
                     _travelTime = defaultTravelSafetyTime
