@@ -82,13 +82,26 @@ final class CustomMathMethods {
             trimmedControlPoints.removeFirst()
             trimmedControlPoints.removeLast()
         }
+        // MARK: dangerous
         let minT = trimmedControlPoints.min()!
         let maxT = trimmedControlPoints.max()!
         var segmentCount = trimmedControlPoints.count * density
         let increment = (maxT - minT) / Float( segmentCount  )
-        let outputArr = Array( stride(from: minT, to: maxT, by: increment ))
-        if !(outputArr.count == segmentCount) {
-            print("param t src array WARN::trimmed totalSegments \(segmentCount) not equal to array size \(outputArr.count)")
+        var outputArr = Array( stride(from: minT, to: maxT, by: increment ))
+        
+        // we need the last control point to equal the target value no matter what, so we have accurate destinations.
+        guard var lastCtrPt = fromControlPts.last
+        else {
+            print("param t src array WARN:: wanted to get last t parameter to resize perfectly, but it was nil")
+            return (0, [])
+        }
+        if (outputArr.count != segmentCount) {
+            print("param t src array WARN::trimmed totalSegments \(segmentCount) not equal to array size \(outputArr.count), adding the final hardcoded t parameter")
+            // try to add the last t parameter as the last control point
+            outputArr.append( lastCtrPt )
+        } else {
+            // hardcode the last one to be the final control point, so that we reach our desired destination.
+            outputArr[ outputArr.count - 1 ] = lastCtrPt
         }
         segmentCount = outputArr.count
         return ( segmentCount, outputArr )

@@ -141,7 +141,7 @@ class TestTube: Node {
     let safetyTime: Float = 3.0
     var timeTillSafety: Float = 0.0 // dont get stuck
     private let oneStepDecayRate: Float = 0.99
-    private let _animationResolution: Int = 1
+    private let _animationResolution: Int = 3
     
     //visual states
     var isSelected = false
@@ -181,7 +181,7 @@ class TestTube: Node {
     private var isFinishingTubePour = false
     private var _currentTravelTime: Float = 0.0
     private var _travelToIndex: Int = 0
-    private var _speed: Float = 5.0
+    private var _speed: Float = 4.0
     // translation step data
     private var isReleasing = false
     private var _defaultRecieveDelay: Float = 1.5
@@ -454,14 +454,16 @@ class TestTube: Node {
         
         let start = getBoxPosition()
         guard let target = candidateTube.origin else { print("pourNavigation() WARN::No target candidate!"); return}
-        let xOffset = _pourDirection * abs(cos( pourAngle )) * tubeHeight / 2
-        let heightFirst = float2( start.x, target.y + tubeHeight )
-        let destination = float2( target.x + xOffset, target.y + tubeHeight )
+        let xOffset = _pourDirection * tubeHeight / 3
+        let heightFirst = float2( start.x, target.y + tubeHeight * 1.05)
+        let destination = float2( target.x + xOffset, target.y + tubeHeight * 1.05 )
         animationControlPoints = [ start, heightFirst, destination ]
+        // getting t parameter values from lengths
         _tParams = CustomMathMethods.tParameterArray(animationControlPoints)
         
+        // make sure we reset the spline reference each time we want a new animation spline
         makeSpline()
-
+        // get a bunch of inbetween t parameters into sourceTPoints
         (_, _sourceTPoints) = CustomMathMethods.getSourceTVals( _tParams, density: _animationResolution )
         interpolatedPoints = [float2].init(repeating: float2(0,0), count: _interpolatedPtsCount) // _sourceTPoints count
         _interpolatedTangents = interpolatedPoints.map { float2(x:$0.x,y:$0.y) }
@@ -472,17 +474,17 @@ class TestTube: Node {
             for i in 0..<_interpolatedPtsCount {
                 interpolatedPoints[i] = float2( _interpolatedPtsX[i], _interpolatedPtsY[i] )
             }
+            print("interpolated count: \(_interpolatedPtsCount)")
         }
     }
     
-    func makeSpline(resetRecursion: Bool = false) {
-        if( _splineRef == nil ){
-            _b2AnimationControlPts = animationControlPoints.map { float2(x:$0.x,y:$0.y) }
-            _splineRef = LiquidFun.makeSpline(&_tParams, withControlPoints: &_b2AnimationControlPts, controlPtsCount: _controlPointsCount)
-        } else if !resetRecursion {
+    private func makeSpline() {
+        if( _splineRef != nil ){
+            // clear spline ref each time
             _splineRef = nil
-            makeSpline(resetRecursion: true)
         }
+        _b2AnimationControlPts = animationControlPoints
+        _splineRef = LiquidFun.makeSpline(&_tParams, withControlPoints: &_b2AnimationControlPts, controlPtsCount: _controlPointsCount)
     }
     
     func resetPouringParameters() {
@@ -1064,8 +1066,8 @@ extension TestTube: Renderable {
         mesh.drawPrimitives(renderCommandEncoder, baseColorTextureType: .TestTube)
         
         fluidSystemRender( renderCommandEncoder )
-        controlPointsRender( renderCommandEncoder )
-        interpolatedPointsRender( renderCommandEncoder )
+//        controlPointsRender( renderCommandEncoder )
+//        interpolatedPointsRender( renderCommandEncoder )
     }
     
     func fluidSystemRender( _ renderCommandEncoder: MTLRenderCommandEncoder ) {
