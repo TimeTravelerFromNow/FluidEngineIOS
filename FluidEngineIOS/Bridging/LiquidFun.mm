@@ -485,16 +485,23 @@ static b2World *world;
     return sharedPosition;
 }
 
-+ (void *)getTubeAtPosition:(float2)position {
++ (bool)tubeIsAtPosition:(float2)position tube:(void *)tube {
     b2Vec2 pos = b2Vec2(position.x, position.y);
-    unsigned long tubeCount = tubes.size();
-    for( int i = 0; i < tubeCount; i++ ){
-        if ( tubes[i]->IsAtPosition(pos) ) {
-            return tubes[i];
-        };
-    };
-    return nil;
+    return ((Tube *)tube)->IsAtPosition(pos);
 }
+
+// MARK: Bad code, it will only return one tube RIGHT?
+//+ (void *)getTubeAtPosition:(float2)position {
+//    b2Vec2 pos = b2Vec2(position.x, position.y);
+//    unsigned long tubeCount = tubes.size();
+//    for( int i = 0; i < tubeCount; i++ ){
+//        if ( tubes[i]->IsAtPosition(pos) ) {
+//            return tubes[i];
+//        };
+//    };
+//    return nil;
+//}
+
 
 + (float)getTubeRotation:(void *)tube{
     return ((Tube *)tube)->GetRotation();

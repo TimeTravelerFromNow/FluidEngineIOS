@@ -512,7 +512,7 @@ class TestTube: Node {
     }
     
     func select() {
-        if currentState == .AtRest {
+        if currentState == .AtRest || reCaptured {
             isSelected = true
             self.selectEffect = .SelectHighlight
             currentState = .Selected
@@ -954,7 +954,7 @@ class TestTube: Node {
     
     // getters and helpers for position and rotation
     func getTubeAtBox2DPosition(_ position: float2) -> TestTube? {
-        if self._tube == LiquidFun.getTubeAtPosition( float2(x: position.x, y:position.y) ){
+        if LiquidFun.tubeIs( atPosition: position, tube: _tube ) {
         return self
         }
         return nil

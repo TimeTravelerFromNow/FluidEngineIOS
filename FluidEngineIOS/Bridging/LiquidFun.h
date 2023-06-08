@@ -139,7 +139,8 @@ BoxFilter BoxFilterInit() {
 + (void)setAngularVelocity:(void *)ofTube angularVelocity:(float)angularVelocity;
 
 + (float2)getTubePosition:(void *)tube;
-+ (void *)getTubeAtPosition:(float2)position;
++ (bool)tubeIsAtPosition:(float2)position tube:(void *)tube;
+//+ (void *)getTubeAtPosition:(float2)position;
 
 + (float)getTubeRotation:(void *)tube;
 
