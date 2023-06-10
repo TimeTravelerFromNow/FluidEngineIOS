@@ -72,12 +72,10 @@ class TestTubeScene : Scene {
     // tube pour selection
     var pourCandidate: TestTube?
     private var _selectorTime: Float = 0.6
-    var startedHovering: Bool = false
     let hoverSelectTime: Float = 0.6 // when we reach 0.0, pourCandidate becomes the tube we are hovering over.
-    var hasCommittedtoPour: Bool = false
     
     // pipe fill animation constants
-    let defaultAskForLiquidDelay: Float = 1.4
+    let defaultAskForLiquidDelay: Float = 0.2
     private var _askForLiquidDelay: Float = 0.0
     
     // zoom when done initializing
@@ -94,6 +92,8 @@ class TestTubeScene : Scene {
     private let _defaultHoldTime: Float = 0.2
     
     private var _emptyKF = 0
+    
+    var cleanBugLabel: TextObject!
     
     let hapticDict = [
         CHHapticPattern.Key.pattern: [
@@ -138,7 +138,6 @@ class TestTubeScene : Scene {
             }
         }
     }
-    var cleanBugLabel: TextObject!
     
     override func buildScene(){
         do {
@@ -159,7 +158,7 @@ class TestTubeScene : Scene {
             }
         }
 
-        tubeLevel = TubeLevel(3)
+        tubeLevel = TubeLevel()
        
         (currentCamera as? OrthoCamera)?.setFrameSize( largeZoom )
         addTestButton()
@@ -173,9 +172,9 @@ class TestTubeScene : Scene {
     
     
     func addTestButton() {
-        let menuButton = BoxButton(.Menu,.Menu, .ToMenu, center: box2DOrigin + float2(1.5,4.0), label: .MenuLabel, scale: 1.1)
-        let startButton = BoxButton(.Menu, .Menu, .StartGameAction, center: box2DOrigin + float2(-1.5,4.0), label: .StartGameLabel, scale: 1.1)
-        let cleanButton = BoxButton(.Menu, .Menu, .Clear, center: box2DOrigin + float2(-1.5,3), label: .TestLabel2, scale: 1.2 )
+        let menuButton = BoxButton(.Menu,.Menu, .ToMenu, center: box2DOrigin + float2(1.4,4.0), label: .MenuLabel, scale: 1.1)
+        let startButton = BoxButton(.Menu, .Menu, .StartGameAction, center: box2DOrigin + float2(-1,4.0), label: .StartGameLabel, scale: 1.1)
+        let cleanButton = BoxButton(.Menu, .Menu, .Clear, center: box2DOrigin + float2(-1,3), label: .TestLabel2, scale: 1.2 )
         buttons.append(menuButton)
         buttons.append(startButton)
         buttons.append(cleanButton)
@@ -284,7 +283,7 @@ class TestTubeScene : Scene {
             measureTube = TestTube()
         }
         let xSep : Float = measureTube!.getTubeWidth() * 1.4
-        let ySep : Float = measureTube!.getTubeHeight() * 4.3
+        let ySep : Float = measureTube!.getTubeHeight() * 1.1
         if( measureTube != nil ) {
             measureTube = nil
         }
@@ -299,6 +298,7 @@ class TestTubeScene : Scene {
                 addChild(currentTube)
                 tubeGrid.append(currentTube)
                 tGid += 1
+                print("initial tube position: \(goodPos)")
             }
         }
         if( tGid != startLvl.count) { print("init tubegrid WARN::tube num not matching starting lvl count."); }
@@ -358,7 +358,7 @@ class TestTubeScene : Scene {
         return nil
     }
     
-    // cant see much of difference from above now
+    // cant see much of difference from above now ( maybe exclude dragging can be the simplifier)
     private func kineticHitTest() -> TestTube? { // tests based on current location
         for testTube in tubeGrid {
             if let testTube = testTube.getTubeAtBox2DPosition(Touches.GetBoxPos()) {
@@ -382,51 +382,53 @@ class TestTubeScene : Scene {
     }
     
     func pourTubes() {
-        touchStatus = .AnimatingPour
+        if determineConflict() {
+            // if there was a conflict, and we weren't hovering the tube, unselect.
+            if touchStatus != .Moving {
+                unSelect()
+            }
+            return
+        }
         var newPouringTubeColors = [TubeColors].init(repeating: .Empty, count: 4)
         var newCandidateTubeColors = [TubeColors].init(repeating: .Empty, count: 4)
         
+        if pourCandidate?.currentState != .AtRest {
+            print("pourCandidate either nil or not AtRest")
+            if touchStatus != .Moving {
+                unSelect()
+            }
+            return
+        }
+        // MARK: watch unwrap here
         (newPouringTubeColors, newCandidateTubeColors) = tubeLevel.pourTube(pouringTubeIndex: self.selectedTube!.gridId, pourCandidateIndex: self.pourCandidate!.gridId)
         self.selectedTube!.startPouring( newPourTubeColors: newPouringTubeColors,
                                          newCandidateTubeColors: newCandidateTubeColors,
                                          cTube: self.pourCandidate)
+        self.selectedTube = nil // dont control tube after pour
+        
+        // reset hover variables just in case
+        dropTube()
+        touchStatus = .Idle
     }
     
     func hoverSelect(_ boxPos: float2, deltaTime: Float, excludeMoving: Int) {
-        guard let tubeHovering = boxHitTest(boxPos: boxPos, excludeDragging: excludeMoving ) else
+        if let tubeHovering = boxHitTest(boxPos: boxPos, excludeDragging: excludeMoving )
         {
-            startedHovering = false
-            _selectorTime = hoverSelectTime
-            return
-        }
-        if startedHovering {
-            print("started Hovering \(_selectorTime)")
-            if(tubeHovering.gridId == pourCandidate!.gridId) {
-                // make sure we have the same candidate as before
-            } else { startedHovering = false }
+            pourCandidate = tubeHovering
             _selectorTime -= deltaTime
             if _selectorTime < 0.0 {
-                if pourCandidate?.currentState == .AtRest {
-                    print("Committed to pOUR!")
-                    hasCommittedtoPour = true
-                    pourTubes()
-                    touchStatus = .Idle
-                } else {
-                    print("I want to commit to pour, but this candidate is not resting, instead \(pourCandidate?.currentState).")
-                }
-                // call level update
+                pourTubes()
             }
-        } else {
-            //logic for if a pour is possible
-            pourCandidate = tubeHovering
-            let candidateIndex = pourCandidate!.gridId!
-            
-            if !(tubeLevel.pourConflict(pouringTubeIndex: excludeMoving, pouringCandidateIndex: candidateIndex) ){
-                print("no conflict")
-                startedHovering = true
-                _selectorTime = hoverSelectTime
-            } else { startedHovering = false }
         }
+        else {
+            pourCandidate = nil
+            _selectorTime = hoverSelectTime
+        }
+    }
+    
+    func dropTube() {
+        _selectorTime = hoverSelectTime
+        unSelect()
     }
     
     override func freeze() {
@@ -442,12 +444,25 @@ class TestTubeScene : Scene {
     }
     
     func unSelect() {
-        print("let go of tube")
         selectedTube?.reCaptured = false
         selectedTube?.returnToOrigin()
         selectedTube = nil
         _holdDelay = _defaultHoldTime
         touchStatus = .Idle
+    }
+    
+    private func determineConflict() -> Bool {
+        guard let selectedId  = selectedTube?.gridId else {
+            return true
+        }
+        guard let candidateId = pourCandidate?.gridId else {
+            return true
+        }
+        let conflict = tubeLevel.pourConflict(pouringTubeIndex: selectedId, pouringCandidateIndex: candidateId)
+        if conflict {
+            pourCandidate?.conflict()
+        }
+        return conflict
     }
     
     private func playHaptic() {
@@ -506,23 +521,7 @@ class TestTubeScene : Scene {
                 touchStatus = .Idle
             }
         case .Selected:
-            guard let nodeAt = kineticHitTest() else {
-                unSelect()
-                return
-            }
-            if nodeAt.gridId == selectedTube?.gridId { // we clicked the same selected tube
-                unSelect()
-            } else { // pour into nodeAt
-                pourCandidate = nodeAt
-                if !(tubeLevel.pourConflict(pouringTubeIndex: selectedTube?.gridId ?? -1, pouringCandidateIndex: nodeAt.gridId ) ) && (nodeAt.currentState == .AtRest){
-                    pourTubes()
-                    touchStatus = .Idle
-                } else { // red highlights Flash
-                    currentMessageLabel = .TubeRejectLabel
-                    pourCandidate?.conflict()
-                    unSelect()
-                }
-            }
+            break
         case .Idle: // here's where grabbing during returning can take place.
             guard let nodeAt = boxHitTest(boxPos: Touches.GetBoxPos(), excludeDragging: -1) else {
                 unSelect();
@@ -535,18 +534,21 @@ class TestTubeScene : Scene {
                 _holdDelay = _defaultHoldTime
             } else if nodeAt.currentState == .ReturningToOrigin {
                 selectedTube = nodeAt
-                selectedTube?.select()
                 selectedTube?.reCaptured = true  // hard interrupts origin return
-                touchStatus = .HoldInterval
+                selectedTube?.select()
+                touchStatus = .Moving
                 _holdDelay = _defaultHoldTime
             }
         default:
-            print("nothing to do")
+            break
         }
     }
     
     func startGame() {
-        reservoirAction()
+//        reservoirAction()
+        for tube in tubeGrid {
+            tube.startFastFill()
+        }
         isWaitingToFill = true
     }
     
@@ -567,7 +569,7 @@ class TestTubeScene : Scene {
         if( buttonPressed != nil ) {
             switch boxButtonHitTest(boxPos: Touches.GetBoxPos()) {
             case .None:
-                print("let go of a button")
+                break
             case .Clear:
                rePourTubes()
             case .ToMenu:
@@ -582,7 +584,7 @@ class TestTubeScene : Scene {
             case .TestAction3:
                 destroyReservoirs()
             case nil:
-                print("let go of no button")
+                break
             default:
                 print("Button Action ADVISE::need \(boxButtonHitTest(boxPos: Touches.GetBoxPos())) action.")
                 break
@@ -624,8 +626,19 @@ class TestTubeScene : Scene {
             }
         case .Moving:
             unSelect()
+        case .Selected:
+            guard let nodeAt = boxHitTest(boxPos: Touches.GetBoxPos(), excludeDragging: -1) else {
+                unSelect()
+                return
+            }
+            if nodeAt.gridId == selectedTube?.gridId { // we clicked the same selected tube
+                unSelect()
+            } else { // pour into nodeAt
+                pourCandidate = nodeAt
+                pourTubes()
+            }
         default:
-            print("nothing to do")
+            break
         }
         for n in children {
             if let testableNode = n as? Testable {
@@ -653,11 +666,9 @@ class TestTubeScene : Scene {
             } else {
                 isWaitingToFill = false
                 isGridFilling = true
-                if( isPlaying ) { // in progress, dont repeat animation, just fill them.
-                    StartGridFastFill()
-                } else {
-                    StartGridPipeFill()
-                }
+                
+                StartGridFastFill()
+//                    StartGridPipeFill()
             }
         }
         
@@ -730,11 +741,13 @@ class TestTubeScene : Scene {
             case .Moving:
                 let boxPos = Touches.GetBoxPos()
                 selectedTube?.moveToCursor(boxPos)
-                guard let selectId = selectedTube?.gridId else { return }
+                guard let selectId = selectedTube?.gridId
+                else {
+                    break
+                }
                 hoverSelect(boxPos, deltaTime: deltaTime, excludeMoving: selectId)
             default:
                 break
-                print("current scene state: \(touchStatus)")
             }
             
             for n in children {

@@ -1,5 +1,28 @@
 import MetalKit
 
+enum ButtonActions {
+    case Clear
+    case NewGame
+    case ToMenu
+    case ToDev
+    
+    case StartGameAction
+    case TestAction1
+    case TestAction2
+    case TestAction3
+    
+    case Pause
+    case Fire
+    case TruckLeft
+    case TruckRight
+    case SteerTruck
+    
+    case HowitzerSelect
+    case MGSelect
+    case ShotgunSelect
+    
+    case None
+}
 
 class MenuScene : Scene {
     
