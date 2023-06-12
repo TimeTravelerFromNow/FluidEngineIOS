@@ -405,6 +405,7 @@ class TestTube: Node {
     
     //begin animations
     func startFastFill( ) {
+   
         self.currentState = .Initializing
         if particleSystem == nil { print("startFill WARN::particle system unitialized before initial fill.")}
         
@@ -502,11 +503,13 @@ class TestTube: Node {
     }
     
     func BeginEmpty() {
+        self.currentColors = [.Empty,.Empty,.Empty,.Empty] // will address the bug where directly after returning to origin, sometimes the bottom color wont fill
         self.rotateZ(0.0)
         print("rotation before empty: \(self.getRotationZ())")
         LiquidFun.beginEmpty( _tube )
         self.emptyKeyFrame = 0
         self.isEmptying = true
+        self.isRecieving = false // necessary to stop a glitch where it doesn't fill the bottom one
         self._emptyIncrement = _emptyDelay
         self.currentState = .Emptying
     }
@@ -801,6 +804,7 @@ class TestTube: Node {
         if( currentColors == newColors ) { // done
             returnToOrigin()
             _defaultRecieveDelay = 1.5
+            return
         }
         if( _recieveTime > 0.0 ) {
             _recieveTime -= deltaTime
@@ -811,9 +815,12 @@ class TestTube: Node {
                                                   y: self.getBoxPositionY() + yPos)
                 let groupSize = float2( tubeWidth, _dividerIncrement * 2 )
                 if( _currentTopIndex + 1 < _colors.count  && _currentTopIndex > -2 ) {
-                    spawnParticleBox(groupSpawnPosition,
-                                     groupSize,
-                                     color: _colors[_currentTopIndex + 1].xyz)
+                    // don't spawn the color if the next one isEmpty
+                    if newColors[_currentTopIndex + 1] != .Empty {
+                        spawnParticleBox(groupSpawnPosition,
+                                         groupSize,
+                                         color: _colors[_currentTopIndex + 1].xyz)
+                    }
                 } else {
                     print("fastFillStep WARN:: new color index out of color buffer range.")
                 }

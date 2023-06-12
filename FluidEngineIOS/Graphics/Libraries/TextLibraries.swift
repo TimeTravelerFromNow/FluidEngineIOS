@@ -20,6 +20,8 @@ enum FontRenderableTypes {
     
     case LevelTime
     case LevelScore
+    
+    case LevelNumber
 }
 enum TextLabelTypes {
     case NewGameLabel
@@ -39,6 +41,8 @@ enum TextLabelTypes {
     
     case LevelTimeLabel
     case LevelScoreLabel
+    
+    case LevelNumberLabel
     
     case CleanDescription
     
@@ -71,6 +75,7 @@ class FontRenderables: Library<FontRenderableTypes, FontRenderable> {
         fontRenderables.updateValue(FontRenderable(device: Engine.Device), forKey: .LevelTime  )
         fontRenderables.updateValue(FontRenderable(device: Engine.Device), forKey: .LevelScore  )
         fontRenderables.updateValue(FontRenderable(device: Engine.Device), forKey: .HumanStateLabel  )
+        fontRenderables.updateValue(FontRenderable(device: Engine.Device), forKey: .LevelNumber)
     }
     
     public static func Get(_ fontType : FontRenderableTypes) -> FontRenderable {
@@ -87,7 +92,7 @@ class TextLabels: Library<TextLabelTypes, TextObject> {
     }
     private static func createDefaultButtonLabels() {
         textObjects.updateValue(TextObject(.MenuText, "menu" ), forKey: .MenuLabel)
-        textObjects.updateValue(TextObject(.NewGameText, "tube lab"), forKey: .NewGameLabel)
+        textObjects.updateValue(TextObject(.NewGameText, "new game"), forKey: .NewGameLabel)
         textObjects.updateValue(TextObject(.StartGameText, "start"), forKey: .StartGameLabel)
         textObjects.updateValue(TextObject(.TestText1, "test #1"), forKey: .TestLabel1)
         textObjects.updateValue(TextObject(.TestText1, "clean bugs"), forKey: .TestLabel2)
@@ -105,8 +110,11 @@ class TextLabels: Library<TextLabelTypes, TextObject> {
         // Alien gamemode
         textObjects.updateValue(TextObject(.HumanStateLabel, "select your starting gun"), forKey:  .WeaponSelectText)
 
-        textObjects.updateValue(TextObject(.LevelTime, "time: 0"), forKey: .LevelTimeLabel)
+        textObjects.updateValue(TextObject(.LevelTime,  "time: 0"), forKey: .LevelTimeLabel)
         textObjects.updateValue(TextObject(.LevelScore, "score: 0"), forKey:  .LevelScoreLabel)
+        
+        // MARK: we will be creating many text objects with different level numbers, inefficient, but I needed to get this working
+        textObjects.updateValue(TextObject(.LevelNumber, "lv0"), forKey: .LevelNumberLabel)
     }
     
     public static func Get(_ labelType : TextLabelTypes) -> TextObject {

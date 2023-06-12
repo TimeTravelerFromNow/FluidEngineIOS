@@ -39,6 +39,12 @@ class TubeLevel: GameLevel {
         _moves = 0
     }
     
+    func setLevel(_ toLevel: Int) {
+        _moves = 0
+        self.startingLevel = MyGameLevels[toLevel]
+        self.colorStates = MyGameLevels[toLevel]
+    }
+    
     init(_ level: Int = 1) {
         self.levelNo = level
         if levelNo > MyGameLevels.count {

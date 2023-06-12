@@ -11,6 +11,9 @@ struct CustomMatrix<T> {
     func indexIsValid(row: Int, column: Int) -> Bool {
         return row >= 0 && row < rows && column >= 0 && column < columns
     }
+    func indexIsValid(index: Int) -> Bool {
+        return index > -1 && index < grid.count
+    }
     subscript(row: Int, column: Int) -> T {
         get {
             assert(indexIsValid(row: row, column: column), "Index out of range")
@@ -19,6 +22,16 @@ struct CustomMatrix<T> {
         set {
             assert(indexIsValid(row: row, column: column), "Index out of range")
             grid[(row * columns) + column] = newValue
+        }
+    }
+    subscript(index: Int) -> T {
+        get {
+            assert(indexIsValid(index: index), "Index out of range")
+            return grid[index]
+        }
+        set {
+            assert(indexIsValid(index: index), "Index out of range")
+            grid[index] = newValue
         }
     }
 }

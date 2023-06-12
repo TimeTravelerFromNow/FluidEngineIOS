@@ -1,7 +1,11 @@
 import Foundation
 
 
-var MyGameLevels = [  level0, level1, level2, level3]
+var MyGameLevels = [  level0,
+                      level1,
+                      level2,
+                      level3
+]
 
 
 let level0: [ [ TubeColors ] ] =

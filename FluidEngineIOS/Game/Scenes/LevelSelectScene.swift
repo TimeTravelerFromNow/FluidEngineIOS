@@ -1,7 +1,7 @@
 import Foundation
 import CoreHaptics
 
-class DevScene : Scene {
+class LevelSelectScene : Scene {
     // MARK: level select screen in progress
     var buttons: [ BoxButton ] = []
     

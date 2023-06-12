@@ -60,6 +60,7 @@
 		9240F0A3293ECF2600D81DD2 /* mgBarrel.mtl in Resources */ = {isa = PBXBuildFile; fileRef = 9240F0A0293ECF2600D81DD2 /* mgBarrel.mtl */; };
 		9240F0A4293ECF2600D81DD2 /* mgBarrel.obj in Resources */ = {isa = PBXBuildFile; fileRef = 9240F0A1293ECF2600D81DD2 /* mgBarrel.obj */; };
 		9240F0A6293ED62900D81DD2 /* fireBullet.png in Resources */ = {isa = PBXBuildFile; fileRef = 9240F0A5293ED62900D81DD2 /* fireBullet.png */; };
+		9241C8232A3540A40072AE85 /* LevelSelectScene.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9241C8222A3540A40072AE85 /* LevelSelectScene.swift */; };
 		92465D85291D79A2001CC08B /* TKSpline1D.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 92465D83291D79A2001CC08B /* TKSpline1D.cpp */; };
 		92489A0B2799D9BD00639B52 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 92489A0A2799D9BD00639B52 /* AppDelegate.swift */; };
 		92489A0D2799D9BD00639B52 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 92489A0C2799D9BD00639B52 /* SceneDelegate.swift */; };
@@ -302,6 +303,7 @@
 		9240F0A0293ECF2600D81DD2 /* mgBarrel.mtl */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = mgBarrel.mtl; sourceTree = "<group>"; };
 		9240F0A1293ECF2600D81DD2 /* mgBarrel.obj */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = mgBarrel.obj; sourceTree = "<group>"; };
 		9240F0A5293ED62900D81DD2 /* fireBullet.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = fireBullet.png; sourceTree = "<group>"; };
+		9241C8222A3540A40072AE85 /* LevelSelectScene.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LevelSelectScene.swift; sourceTree = "<group>"; };
 		92465D83291D79A2001CC08B /* TKSpline1D.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = TKSpline1D.cpp; sourceTree = "<group>"; };
 		92489A072799D9BD00639B52 /* FluidEngineIOS.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = FluidEngineIOS.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		92489A0A2799D9BD00639B52 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
@@ -1150,6 +1152,7 @@
 				92A9E3A228DA6D1F0000A77F /* Matrix.swift */,
 				92A9E3A528DA6D1F0000A77F /* MenuScene.swift */,
 				92A9E3A628DA6D1F0000A77F /* Node.swift */,
+				9241C8222A3540A40072AE85 /* LevelSelectScene.swift */,
 			);
 			path = Scenes;
 			sourceTree = "<group>";
@@ -1593,6 +1596,7 @@
 				92489BBA2799DA0400639B52 /* b2FreeList.cpp in Sources */,
 				923F2BD327A0FD7300443936 /* DepthStencilStates.swift in Sources */,
 				92A9E39028DA6CEB0000A77F /* Levels.swift in Sources */,
+				9241C8232A3540A40072AE85 /* LevelSelectScene.swift in Sources */,
 				92A9E3B328DA6D3E0000A77F /* Math.swift in Sources */,
 				92489BA62799DA0400639B52 /* b2DistanceJoint.cpp in Sources */,
 				920603B6290C4E8300C1C846 /* DevScene.swift in Sources */,

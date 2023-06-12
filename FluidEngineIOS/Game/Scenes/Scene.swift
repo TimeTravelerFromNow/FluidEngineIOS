@@ -4,6 +4,7 @@ import CoreMotion
 enum SceneTypes {
     case TestTubes
     case Menu
+    case LevelSelect
     case Dev
     
     case None
@@ -11,7 +12,8 @@ enum SceneTypes {
 
 let SceneOrigins: [SceneTypes: float2] = [.TestTubes:float2(0.0,0.0),
                                           .Menu:float2(-5.0, 5.0),
-                                          .Dev:float2(0.0, 5.0)]
+                                          .Dev:float2(0.0, 10.0),
+                                          .LevelSelect:float2(0.0, 5.0)]
 
 enum SmoothingStates {
     case Leaving
@@ -176,6 +178,7 @@ class SceneManager: Library<SceneTypes, Scene> {
         scenes.updateValue(TestTubeScene(.TestTubes), forKey: .TestTubes)
         scenes.updateValue(MenuScene(.Menu), forKey: .Menu)
         scenes.updateValue(DevScene(.Dev), forKey: .Dev)
+        scenes.updateValue(LevelSelectScene(.LevelSelect), forKey: .LevelSelect)
     }
     
     public static func Get(_ sceneType : SceneTypes) -> Scene {

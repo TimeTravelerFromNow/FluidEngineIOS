@@ -13,7 +13,9 @@ class BoxButton: GameObject {
     
     private var _textObject: TextObject?
     private var _selected: Bool = false
+    private var _level: Int = -1
     let isStatic: Bool!
+    
     init(_ meshType: MeshTypes,
          _ texture: TextureTypes,
          _ action: ButtonActions = .None,
@@ -39,6 +41,11 @@ class BoxButton: GameObject {
         }
         updateModelConstants()
         buttonAction = action
+    }
+    
+    func setLevelNumberLabel(levelNumber: Int) {
+        self._textObject? = TextObject(.LevelNumber, "lv" + String(levelNumber))
+        _level = levelNumber
     }
     
     func boxHitTest( _ atPos: float2) -> ButtonActions? {
@@ -89,6 +96,10 @@ class BoxButton: GameObject {
     
     override func getRotationZ() -> Float {
         return LiquidFun.getBoxButtonRotation(_boxRef)
+    }
+    
+    func getLevel() -> Int {
+        return _level
     }
     
     override func render(_ renderCommandEncoder: MTLRenderCommandEncoder) {

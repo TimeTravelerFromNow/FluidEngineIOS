@@ -4,6 +4,7 @@ enum ButtonActions {
     case Clear
     case NewGame
     case ToMenu
+    case ToLevel
     case ToDev
     
     case StartGameAction
@@ -179,10 +180,7 @@ class MenuScene : Scene {
         case .Clear:
             print("clear action now")
         case .NewGame:
-            SceneManager.sceneSwitchingTo = .TestTubes
-            print("start a new game now!")
-            SceneManager.Get( .TestTubes ).unFreeze()
-            LiquidFun.setGravity(float2(x:0,y:-9.8065))
+            SceneManager.sceneSwitchingTo = .LevelSelect
         case .ToMenu:
             print("pressed to menu button in the menu?")
         case .ToDev:

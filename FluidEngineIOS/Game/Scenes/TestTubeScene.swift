@@ -22,7 +22,7 @@ class TestTubeScene : Scene {
     var tubeLevel: TubeLevel!
     
     var buttonPressed: ButtonActions?
-  
+    
     // message text
     let defaultMessageDelay: Float = 1.1
     private var _messageDelay: Float = 0.0
@@ -139,6 +139,16 @@ class TestTubeScene : Scene {
         }
     }
     
+    func setLevel(_ toLevel: Int) {
+        for t in tubeGrid {
+            self.removeChild(t)
+        }
+        tubeGrid = []
+        tubeLevel.setLevel(toLevel)
+        InitializeGrid()
+        addCounters()
+    }
+    
     override func buildScene(){
         do {
             pattern = try CHHapticPattern(dictionary: hapticDict)
@@ -162,8 +172,7 @@ class TestTubeScene : Scene {
        
         (currentCamera as? OrthoCamera)?.setFrameSize( largeZoom )
         addTestButton()
-        InitializeGrid()
-        addCounters()
+        
         
         cleanBugLabel = TextLabels.Get(.CleanDescription)
         cleanBugLabel.setBoxPos( box2DOrigin )
